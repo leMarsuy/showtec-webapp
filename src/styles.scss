@@ -1,0 +1,54 @@
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// custom snackbars
+
+.showtec-snackbar {
+  --mdc-snackbar-container-color: rgb(255, 255, 255);
+}
+
+// custom table
+
+.mat-mdc-table {
+  background-color: transparent !important;
+}
+
+// custom form field
+
+.mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-shape: 1.5rem !important;
+}
+
+// custom paginator {
+
+.mat-mdc-paginator {
+  background-color: transparent !important;
+}
+
+.mat-mdc-paginator-container {
+  justify-content: center !important;
+}
+
+// custom card {
+
+.mat-mdc-card {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: 1px rgb(197, 197, 197) solid !important;
+}
+
+// custom button {
+
+.mat-button-lg {
+  padding-top: 1.7rem !important;
+  padding-bottom: 1.7rem !important;
+  font-size: large !important;
+}

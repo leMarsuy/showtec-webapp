@@ -1,0 +1,19 @@
+<div class="flex w-full text-gray-900">
+  <div
+    class="flex grow rounded{{ actions.length ? '-l' : '' }}-3xl p-4 bg-white"
+  >
+    <mat-icon class="mr-3"> {{ icon }} </mat-icon>
+    <p>{{ label }}</p>
+  </div>
+  <div class="flex">
+    @for (action of actions; track action) {
+    <div
+      class="flex flex-none border-l-2 bg-white border-gray-200 p-4 last:rounded-r-3xl hover:drop-shadow-lg cursor-pointer"
+      (click)="actionEmitter.emit(action.id)"
+    >
+      <mat-icon class="mr-2"> {{ action.icon }} </mat-icon>
+      <p>{{ action.label }}</p>
+    </div>
+    }
+  </div>
+</div>

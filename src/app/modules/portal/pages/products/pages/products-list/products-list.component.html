@@ -1,0 +1,51 @@
+<div class="flex gap-4">
+  <div
+    class="rounded-3xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16"
+  >
+    <form [formGroup]="searchForm">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-select formControlName="searchField">
+          @for (field of searchFields; track field) {
+          <mat-option [value]="field.value">{{ field.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <input
+          matInput
+          placeholder="Search Product"
+          formControlName="searchText"
+          (keyup.enter)="getProducts()"
+        />
+        <mat-icon matSuffix class="cursor-pointer" (click)="getProducts()">
+          search
+        </mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <input
+          matInput
+          placeholder="Classification"
+          formControlName="searchText"
+          (keyup.enter)="getProducts()"
+        />
+      </mat-form-field>
+    </form>
+  </div>
+  <div class="rounded-3xl bg-white p-4 w-full text-gray-900">
+    <div class="flex">
+      <button mat-icon-button>
+        <mat-icon class="mr-2"> refresh </mat-icon>
+      </button>
+      <button mat-icon-button>
+        <mat-icon class="mr-2"> download </mat-icon>
+      </button>
+    </div>
+
+    <app-table
+      [dataSource]="products"
+      [columns]="columns"
+      [page]="page"
+      (rowEmitter)="rowEvent($event)"
+    ></app-table>
+  </div>
+</div>

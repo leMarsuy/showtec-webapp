@@ -1,0 +1,42 @@
+<div class="px-4 py-4">
+  <app-content-header
+    icon="conveyor_belt"
+    label="SUPPLIERS"
+    [actions]="actions"
+    (actionEmitter)="actionEvent($event)"
+  ></app-content-header>
+</div>
+<div class="px-4">
+  <div class="grid rounded-3xl bg-white p-4">
+    <div class="flex">
+      <div class="grow">
+        <mat-form-field appearance="outline" class="w-[32rem]">
+          <input
+            matInput
+            placeholder="Search Supplier"
+            [formControl]="searchText"
+            (keyup.enter)="getSuppliers()"
+          />
+          <mat-icon matSuffix class="cursor-pointer" (click)="getSuppliers()">
+            search
+          </mat-icon>
+        </mat-form-field>
+      </div>
+      <div class="flex-none">
+        <button mat-icon-button>
+          <mat-icon class="mr-2"> refresh </mat-icon>
+        </button>
+        <button mat-icon-button>
+          <mat-icon class="mr-2"> download </mat-icon>
+        </button>
+      </div>
+    </div>
+    <app-table
+      [dataSource]="suppliers"
+      [columns]="columns"
+      [page]="page"
+      (rowEmitter)="openEditSupplier($event._id)"
+      (pageEmitter)="pageEvent($event)"
+    ></app-table>
+  </div>
+</div>

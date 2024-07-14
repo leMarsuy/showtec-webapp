@@ -1,0 +1,65 @@
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '@shared/services/api';
+import { HttpErrorResponse } from '@angular/common/http';
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-login',
+
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
+})
+export class LoginComponent implements OnInit {
+  loginForm = new FormGroup({
+    email: new FormControl('it@showtec.ph', [
+      Validators.required,
+      Validators.email,
+    ]),
+    password: new FormControl('Password123!', [Validators.required]),
+  });
+  showPassword = false;
+
+  constructor(
+    private authService: AuthService,
+    private snackbarService: SnackbarService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {}
+
+  // show or hide password
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  login() {
+    this.loginForm.disable();
+    this.snackbarService.openLoadingSnackbar(
+      'Login',
+      'Validating your credentials...'
+    );
+    const { email, password } = this.loginForm.getRawValue();
+    this.authService.login(email || '', password || '').subscribe({
+      next: () => {
+        this.snackbarService.closeLoadingSnackbar().then(() => {
+          this.snackbarService.openSuccessSnackbar(
+            'AuthSuccess',
+            'Redirecting to your dashboard...'
+          );
+          this.router.navigate(['portal']);
+        });
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.closeLoadingSnackbar().then(() => {
+          this.loginForm.enable();
+          this.snackbarService.openErrorSnackbar(
+            'AuthError',
+            err.error.message
+          );
+        });
+      },
+    });
+  }
+}

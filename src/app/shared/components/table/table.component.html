@@ -1,0 +1,61 @@
+<table mat-table [dataSource]="dataSource" class="w-full">
+  @for (column of columns; track column) {
+  <ng-container [matColumnDef]="column.label">
+    <th
+      mat-header-cell
+      *matHeaderCellDef
+      class="w-{{ column.width || 'auto' }}"
+    >
+      {{ column.label }}
+    </th>
+    @if (column.type == 'string') {
+    <td mat-cell *matCellDef="let element">
+      {{ column.dotNotationPath | deepFind : element }}
+    </td>
+    } @if (column.type == 'date') {
+    <td mat-cell *matCellDef="let element">
+      {{
+        column.dotNotationPath
+          | deepFind : element
+          | date : "MMM dd, YYYY, HHmm"
+      }}
+    </td>
+    } @if (column.type == 'number') {
+    <td mat-cell *matCellDef="let element">
+      {{ column.dotNotationPath | deepFind : element | number }}
+    </td>
+    } @if (column.type == 'currency') {
+    <td mat-cell *matCellDef="let element">
+      ₱{{ column.dotNotationPath | deepFind : element | number }}
+    </td>
+    }
+  </ng-container>
+  }
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr
+    mat-row
+    *matRowDef="let row; columns: displayedColumns"
+    (click)="rowEmitter.emit(row)"
+    class="hover:bg-gray-200"
+  ></tr>
+</table>
+@if(page.length == 0) {
+<div class="text-center py-12 text-gray-500">
+  <mat-icon>error</mat-icon>
+  <h1>No Data Available</h1>
+</div>
+} @else if(page.length < 0) {
+<div class="text-center py-12 text-gray-500">
+  <mat-icon>timer</mat-icon>
+  <h1>Loading Table...</h1>
+</div>
+}
+
+<mat-paginator
+  class="py-2 border-t-2 border-gray-200"
+  [length]="page.length"
+  [pageSize]="page.pageSize"
+  (page)="pageEmitter.emit(page)"
+  aria-label="Select page"
+>
+</mat-paginator>
