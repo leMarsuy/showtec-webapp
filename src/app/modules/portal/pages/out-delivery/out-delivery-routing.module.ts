@@ -6,6 +6,22 @@ const routes: Routes = [
   {
     path: '',
     component: OutDeliveryComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./pages/out-delivery-list/out-delivery-list.module').then(
+            (m) => m.OutDeliveryListModule
+          ),
+      },
+      {
+        path: 'create',
+        loadChildren: () =>
+          import('./pages/create-out-delivery/create-out-delivery.module').then(
+            (m) => m.CreateOutDeliveryModule
+          ),
+      },
+    ],
   },
 ];
 
