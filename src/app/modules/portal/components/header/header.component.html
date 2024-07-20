@@ -2,13 +2,13 @@
   <div class="grow p-4 text-white bg-rose-400">
     <div class="app-name-container w-auto flex">
       <img [src]="logoSrc" class="w-auto h-6" />
-      <p class="mx-2">{{ appName }}</p>
+      <p class="mx-2">{{ appName | uppercase }}</p>
     </div>
   </div>
   <div class="p-4 text-white bg-rose-500">
     @if (me) {
     <div class="rounded-lg w-auto flex pl-2">
-      <p>{{ me.name }}</p>
+      <p>{{ me.name | uppercase }}</p>
       <mat-icon class="ml-2 cursor-pointer" [matMenuTriggerFor]="menu">
         account_circle
       </mat-icon>

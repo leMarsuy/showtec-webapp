@@ -6,6 +6,7 @@ import { TableComponent } from './table.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { DeepFindPipe } from '@app/shared/pipes/deep-find/deep-find.pipe';
+import { AgingPipe } from '@app/shared/pipes/aging/aging.pipe';
 
 @NgModule({
   declarations: [TableComponent],
@@ -16,6 +17,7 @@ import { DeepFindPipe } from '@app/shared/pipes/deep-find/deep-find.pipe';
     MatPaginatorModule,
     MatSortModule,
     DeepFindPipe,
+    AgingPipe,
   ],
   exports: [TableComponent],
 })

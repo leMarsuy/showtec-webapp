@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TableColumn } from '@core/interfaces/table-column.interface';
 import { PageEvent } from '@angular/material/paginator';
+import { AgingType } from '@app/core/enums/aging-type.enum';
 
 @Component({
   selector: 'app-table',
@@ -8,6 +9,7 @@ import { PageEvent } from '@angular/material/paginator';
   styleUrl: './table.component.scss',
 })
 export class TableComponent {
+  agingDays = AgingType.DAYS;
   @Input() dataSource: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() page: PageEvent = {

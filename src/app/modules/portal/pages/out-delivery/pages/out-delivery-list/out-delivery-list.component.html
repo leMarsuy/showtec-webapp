@@ -2,6 +2,12 @@
   <div class="rounded-3xl bg-white p-4 w-[24rem] flex-none">search here</div>
 
   <div class="rounded-3xl bg-white p-4 w-full">
-    <app-table [dataSource]="[]" [columns]="columns" [page]="page"></app-table>
+    <app-table
+      [dataSource]="outdeliveries"
+      [columns]="columns"
+      [page]="page"
+      (pageEmitter)="pageEvent($event)"
+      (rowEmitter)="rowEvent($event)"
+    ></app-table>
   </div>
 </div>

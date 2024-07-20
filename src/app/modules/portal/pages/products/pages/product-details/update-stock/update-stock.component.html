@@ -99,10 +99,16 @@
             placeholder="Serial No."
             formControlName="serialNumber"
             (keyup.enter)="addStock()"
+            cdkFocusInitial
           />
           <mat-icon matSuffix>qr_code</mat-icon>
         </mat-form-field>
-        <button mat-flat-button class="mat-button-lg" (click)="addStock()">
+        <button
+          mat-flat-button
+          class="mat-button-lg"
+          (click)="addStock()"
+          [disabled]="!stockForm.valid"
+        >
           Encode
         </button>
       </div>

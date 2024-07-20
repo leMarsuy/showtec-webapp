@@ -16,7 +16,6 @@ export class SnackbarService {
     this._loadingSnackbarRef = this.snackbar.openFromComponent(
       LoadingComponent,
       {
-        panelClass: ['showtec-snackbar'],
         data: {
           title,
           message,
@@ -27,9 +26,9 @@ export class SnackbarService {
 
   openErrorSnackbar(title: string, message?: string) {
     this._loadingSnackbarRef = this.snackbar.openFromComponent(ErrorComponent, {
-      panelClass: ['showtec-snackbar'],
       data: {
         title,
+        duration: 3000,
         message:
           message || 'Something went wrong while connecting to our server.',
       },
@@ -40,7 +39,6 @@ export class SnackbarService {
     this._loadingSnackbarRef = this.snackbar.openFromComponent(
       SuccessComponent,
       {
-        panelClass: ['showtec-snackbar'],
         duration: 3000,
         data: {
           title,
@@ -53,9 +51,9 @@ export class SnackbarService {
   closeLoadingSnackbar(): Promise<Boolean> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        this._loadingSnackbarRef.dismiss();
+        // this._loadingSnackbarRef.dismiss();
         resolve(true);
-      }, 1300);
+      }, 100);
     });
   }
 }

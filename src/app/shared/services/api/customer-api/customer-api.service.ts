@@ -16,8 +16,16 @@ export class CustomerApiService {
     return this.httpService.post(`${this.apiPrefix}`, customer);
   }
 
-  getCustomers(query: QueryParams) {
-    return this.httpService.get(`${this.apiPrefix}`, query);
+  getCustomers(query?: QueryParams) {
+    var sanitizedQuery: QueryParams = {};
+    if (query)
+      sanitizedQuery = {
+        pageIndex: query.pageIndex || 0,
+        pageSize: query.pageSize || 0,
+        sort: query.sort,
+        searchText: query.searchText,
+      };
+    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
   getCustomerById(_id: string) {

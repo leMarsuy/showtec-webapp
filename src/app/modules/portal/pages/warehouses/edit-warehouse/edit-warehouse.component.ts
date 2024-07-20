@@ -35,7 +35,10 @@ export class EditWarehouseComponent {
         this.warehouseForm.patchValue(res as Warehouse);
       },
       error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar('GetError', err.error.message);
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
       },
     });
   }
@@ -57,7 +60,7 @@ export class EditWarehouseComponent {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.warehouseForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });

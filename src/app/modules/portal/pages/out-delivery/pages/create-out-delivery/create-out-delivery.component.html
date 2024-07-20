@@ -1,71 +1,211 @@
-<div class="block bg-white rounded-3xl p-4">
-  <h1 class="text-xl mb-4">Create a Delivery</h1>
-  <div class="container">
-    <div class="flex pb-6">
-      <div class="flex flex-none w-[22rem]">
-        <div class="w-full">
-          <p class="font-black text-gray-900">Recipient</p>
-          <small>
-            This will be the receiver of the Delivery. If you can't find the
-            customer, <a class="text-sky-500 cursor-pointer">add here</a>.
-          </small>
+<div class="flex gap-4 container">
+  <div class="bg-white rounded-3xl p-4 h-fit w-[24rem] flex-none sticky top-16">
+    <div class="flex mb-6">
+      <button mat-stroked-button class="w-full" [routerLink]="'../'">
+        <mat-icon>arrow_back</mat-icon>Back to Delivery List
+      </button>
+    </div>
+  </div>
+  <div class="flex flex-col w-full gap-4">
+    <div class="bg-white rounded-3xl p-4 text-gray-900 w-full">
+      <section [formGroup]="deliveryForm">
+        <div class="flex mb-6 py-2 border-b-2 border-sky-700">
+          <p class="text-sky-700 font-bold">Delivery Information</p>
         </div>
-      </div>
-      <div class="flex grow px-8">
-        <div class="w-full">
-          <p>MARCILIANO S. CHAVEZ III</p>
+        <div class="flex">
+          <div class="w-[15rem] flex-none p-4">Recipient Name</div>
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              matInput
+              placeholder="Type Customer Name..."
+              [matAutocomplete]="customerAuto"
+              formControlName="_customerId"
+            />
+            <mat-autocomplete
+              autoActiveFirstOption
+              #customerAuto="matAutocomplete"
+              (optionSelected)="autofillCustomerDetails($event.option.value)"
+              [displayWith]="displayCustomer"
+            >
+              @for (option of filteredCustomers | async; track option) {
+              <mat-option [value]="option">{{ option.name }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
         </div>
-      </div>
+        <div class="flex">
+          <div class="w-[15rem] flex-none p-4">Contact No.</div>
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              matInput
+              formControlName="mobile"
+              placeholder="09XXXXXXXXX"
+            />
+          </mat-form-field>
+        </div>
+        <div class="flex">
+          <div class="w-[15rem] flex-none p-4">Delivery Address</div>
+          <mat-form-field class="w-full" appearance="outline">
+            <textarea
+              matInput
+              rows="3"
+              placeholder="Delivery Address"
+              formControlName="address"
+            ></textarea>
+          </mat-form-field>
+        </div>
+        <div class="flex">
+          <div class="w-[15rem] flex-none p-4">Date of Delivery</div>
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              matInput
+              placeholder="MM/DD/YYYY"
+              formControlName="deliveryDate"
+              [matDatepicker]="picker"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </section>
+    </div>
+    <div class="bg-white rounded-3xl p-4 text-gray-600 w-full">
+      <section>
+        <div class="flex mb-1 py-2 border-b-2 border-sky-700">
+          <p class="text-sky-700 font-bold">Listing of Items</p>
+        </div>
+        <div class="flex font-bold p-4 pb-2">
+          <div class="w-full">Brand</div>
+          <div class="w-full">Model</div>
+          <div class="w-[10rem] flex-none">Serial No.</div>
+          <div class="w-[10rem] flex-none">Status</div>
+          <div class="w-[10rem] flex-none text-center">Remove</div>
+        </div>
+        @if(listedItems.length){
+        <div class="flex flex-col gap-4 p-4">
+          @for (item of listedItems; track $index) {
+          <div class="flex border-b-2 border-gray-100">
+            <div class="w-full">
+              <p>{{ item.brand }}</p>
+            </div>
+            <div class="w-full">{{ item.model }}</div>
+            <div class="w-[10rem] flex-none">
+              {{ item.stocks[0].serialNumber }}
+            </div>
+            <div class="w-[10rem] flex-none">
+              {{ item.stocks[0].status }}
+            </div>
+            <div
+              class="w-[10rem] flex-none text-center text-rose-500"
+              (click)="removeFromListedProducts($index)"
+            >
+              <mat-icon>close</mat-icon>
+            </div>
+          </div>
+          }
+        </div>
+        }
+        <div class="flex gap-4">
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              id="serialNumber"
+              [formControl]="serialNumberControl"
+              matInput
+              type="text"
+              placeholder="Scan or Encode Item Barcode Here..."
+              (keyup.enter)="searchSerialNumber()"
+            />
+            <mat-hint class="text-rose-400" *ngIf="errorMessage">
+              {{ errorMessage }}
+            </mat-hint>
+          </mat-form-field>
+          <button
+            mat-flat-button
+            class="mat-button-lg"
+            (click)="searchSerialNumber()"
+          >
+            Search
+          </button>
+        </div>
+      </section>
+    </div>
+    <div class="bg-white rounded-3xl p-4 text-gray-600 w-full">
+      <section>
+        <div class="flex mb-1 py-2 border-b-2 border-sky-700">
+          <p class="text-sky-700 font-bold">Signatories</p>
+        </div>
+        <div class="flex font-bold p-4 pb-2">
+          <div class="w-full">Name</div>
+          <div class="w-full">Designation</div>
+          <div class="w-full">Action</div>
+          <div class="w-[10rem] flex-none text-center">Remove</div>
+        </div>
+        @if(listedSignatories.length){
+        <div class="flex flex-col gap-4 p-4">
+          @for (user of listedSignatories; track $index) {
+          <div class="flex border-b-2 border-gray-100">
+            <div class="w-full">
+              <p>{{ user.name }}</p>
+            </div>
+            <div class="w-full">{{ user.designation }}</div>
+            <div class="w-full">
+              <mat-select [(ngModel)]="user.action">
+                @for (action of signatoryActions; track action) {
+                <mat-option [value]="action">{{ action }}</mat-option>
+                }
+              </mat-select>
+            </div>
+            <div class="w-[10rem] flex-none text-center">
+              <mat-icon (click)="removeFromListedSignatories($index)">
+                close
+              </mat-icon>
+            </div>
+          </div>
+          }
+        </div>
+        }
+        <div class="flex gap-4">
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              [formControl]="signatoryControl"
+              matInput
+              type="text"
+              placeholder="Seach User here..."
+              [matAutocomplete]="userAuto"
+            />
+            <mat-autocomplete
+              autoActiveFirstOption
+              #userAuto="matAutocomplete"
+              (optionSelected)="pushToListedSignatories($event.option.value)"
+            >
+              @for (option of filteredUsers | async; track option) {
+              <mat-option [value]="option">{{ option.name }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </section>
     </div>
 
-    <div class="flex pb-6">
-      <div class="flex flex-none w-[22rem]">
-        <div class="w-full">
-          <p class="font-black text-gray-900">Delivery Address</p>
-          <small>
-            This will be the receiver of the Delivery. If you can't find the
-            customer, <a class="text-sky-500 cursor-pointer">add here</a>.
-          </small>
+    <div class="bg-white rounded-3xl p-4 text-gray-600 w-full">
+      <section>
+        <div class="flex mb-1 py-2 justify-between gap-4">
+          <button mat-stroked-button class="mat-button-lg" color="warn">
+            Cancel Transaction
+          </button>
+          <button
+            mat-flat-button
+            class="mat-button-lg"
+            color="primary"
+            (click)="createOutDelivery()"
+          >
+            Create Delivery Receipt
+          </button>
         </div>
-      </div>
-      <div class="flex grow px-8">
-        <div class="w-full">
-          <p>#16 De Gloria St. Talanay B.</p>
-          <p>Barangay Batasan Hills</p>
-          <p>Quezon City</p>
-          <p>Philippines</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex pb-6">
-      <div class="flex flex-none w-[22rem]">
-        <div class="w-full">
-          <p class="font-black text-gray-900">Billing Address</p>
-          <small>
-            This will be the receiver of the Delivery. If you can't find the
-            customer, <a class="text-sky-500 cursor-pointer">add here</a>.
-          </small>
-        </div>
-      </div>
-      <div class="flex grow px-8">
-        <div class="w-full">
-          <p>#16 De Gloria St. Talanay B.</p>
-          <p>Barangay Batasan Hills</p>
-          <p>Quezon City</p>
-          <p>Philippines</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex pb-6">
-      <div class="flex flex-none w-[22rem]">
-        <div class="w-full">
-          <p class="font-black text-gray-900">Products</p>
-          <small> List of items to be received by the Customer. </small>
-        </div>
-      </div>
-      <div class="flex grow px-8"></div>
+      </section>
     </div>
   </div>
 </div>

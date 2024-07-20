@@ -1,11 +1,11 @@
-<div class="flex text-sky-500">
-  <span class="grow">
+<div
+  class="flex text-{{ color }}-500 border-l-4 border-{{ color }}-500 p-[14px]"
+>
+  <span class="grow pr-[1rem]">
     <p class="font-black">{{ data.title }}</p>
-    <p>
-      {{ data.message }}
-    </p>
+    <p [innerHTML]="data.message"></p>
   </span>
-  <span class="flex-none">
+  <span class="flex-none w-[1.25rem] float-right">
     <div role="status">
       <svg
         aria-hidden="true"

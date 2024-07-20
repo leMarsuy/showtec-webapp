@@ -44,7 +44,7 @@ export class AddWarehouseComponent {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.warehouseForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });

@@ -1,13 +1,13 @@
-<div class="flex text-emerald-500">
+<div
+  class="flex text-{{ color }}-500 border-l-4 border-{{ color }}-500 p-[14px]"
+>
   <span class="grow">
     <p class="font-black">{{ data.title }}</p>
-    <p>
-      {{ data.message }}
-    </p>
+    <p [innerHTML]="data.message"></p>
   </span>
-  <span class="flex-none">
+  <span class="flex-none w-[2rem] text-right">
     <mat-icon (click)="snackBarRef.dismiss()" class="cursor-pointer">
-      close</mat-icon
-    >
+      close
+    </mat-icon>
   </span>
 </div>

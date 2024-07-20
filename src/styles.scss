@@ -15,6 +15,15 @@ body {
   --mdc-snackbar-container-color: rgb(255, 255, 255);
 }
 
+.mdc-snackbar__label {
+  padding: 0 !important;
+  background-color: rgb(255, 255, 255);
+}
+
+.mat-mdc-snackbar-surface {
+  padding: 0 !important;
+}
+
 // custom table
 
 .mat-mdc-table {
@@ -25,6 +34,14 @@ body {
 
 .mdc-text-field--outlined {
   --mdc-outlined-text-field-container-shape: 1.5rem !important;
+  .mat-mdc-icon-button {
+    margin-right: 0.75rem !important;
+  }
+}
+
+.mdc-text-field--filled {
+  // --mdc-outlined-text-field-container-shape: 1.5rem !important;
+  background-color: rgb(240, 240, 240) !important;
 }
 
 // custom paginator {

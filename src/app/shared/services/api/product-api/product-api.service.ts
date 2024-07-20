@@ -17,8 +17,17 @@ export class ProductApiService {
     return this.httpService.post(`${this.apiPrefix}`, product);
   }
 
-  getProducts(query: QueryParams & { searchField: string }) {
-    return this.httpService.get(`${this.apiPrefix}`, query);
+  getProducts(query?: QueryParams & { searchField?: string }) {
+    var sanitizedQuery: QueryParams & { searchField?: string } = {};
+    if (query)
+      sanitizedQuery = {
+        pageIndex: query.pageIndex || 0,
+        pageSize: query.pageSize || 0,
+        sort: query.sort,
+        searchText: query.searchText,
+        searchField: query.searchField,
+      };
+    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
   getProductById(_id: string) {
@@ -31,5 +40,9 @@ export class ProductApiService {
 
   stockToProduct(_id: string, stocks: Stock[]) {
     return this.httpService.patch(`${this.apiPrefix}/stock/${_id}`, stocks);
+  }
+
+  getInStockProductBySerialNumber(sn: string) {
+    return this.httpService.get(`${this.apiPrefix}/stock/serial-number/${sn}`);
   }
 }

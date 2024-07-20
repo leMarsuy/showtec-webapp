@@ -79,13 +79,14 @@ export class ProductDetailsComponent implements OnInit {
     this.productApi.getProductById(this._id).subscribe({
       next: (res) => {
         this.product = res as Product;
-        this.page.length = this.product.stocks.length;
+        this.product.stocks = this.product.stocks || [];
+        this.page.length = this.product.stocks?.length;
         this.pageEvent(this.page);
       },
       error: (err) => {
         this.snackbarService.openErrorSnackbar(
-          'GetError',
-          'Product ' + err.error.message
+          err.error.errorCode,
+          err.error.message
         );
         setTimeout(() => {
           this.router.navigate(['/portal/products']);

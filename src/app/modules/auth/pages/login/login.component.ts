@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.loginForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'AuthError',
+            err.error.errorCode,
             err.error.message
           );
         });

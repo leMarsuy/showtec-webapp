@@ -44,7 +44,10 @@ export class EditCustomerComponent implements OnInit {
         this.customerForm.patchValue(res as Customer);
       },
       error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar('GetError', err.error.message);
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
       },
     });
 
@@ -74,7 +77,7 @@ export class EditCustomerComponent implements OnInit {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.customerForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });

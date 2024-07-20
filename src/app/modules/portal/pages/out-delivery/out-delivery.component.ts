@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { ContentHeaderAction } from '@app/core/interfaces/content-header-action.interface';
 
 @Component({
@@ -7,6 +8,9 @@ import { ContentHeaderAction } from '@app/core/interfaces/content-header-action.
   styleUrl: './out-delivery.component.scss',
 })
 export class OutDeliveryComponent {
+  //
+  constructor(private router: Router) {}
+
   // content header
 
   actions: ContentHeaderAction[] = [
@@ -17,7 +21,15 @@ export class OutDeliveryComponent {
     },
   ];
 
-  // table module
+  actionEvent(action: string) {
+    console.log(action);
+    switch (action) {
+      case 'add':
+        this.router.navigate(['/portal/out-delivery/create']);
+        break;
 
-  actionEvent(action: string) {}
+      default:
+        break;
+    }
+  }
 }

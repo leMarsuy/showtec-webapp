@@ -17,7 +17,15 @@ export class WarehouseApiService {
   }
 
   getWarehouses(query?: QueryParams) {
-    return this.httpService.get(`${this.apiPrefix}`, query);
+    var sanitizedQuery: QueryParams = {};
+    if (query)
+      sanitizedQuery = {
+        pageIndex: query.pageIndex,
+        pageSize: query.pageSize,
+        sort: query.sort,
+        searchText: query.searchText,
+      };
+    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
   getWarehouseById(_id: string) {

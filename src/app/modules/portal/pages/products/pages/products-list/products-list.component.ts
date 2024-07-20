@@ -89,7 +89,7 @@ export class ProductsListComponent {
         },
         error: (err: HttpErrorResponse) => {
           this.snackbarService.openErrorSnackbar(
-            'HttpGetError',
+            err.error.errorCode,
             err.error.message
           );
         },

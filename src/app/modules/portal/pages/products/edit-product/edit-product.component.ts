@@ -39,7 +39,10 @@ export class EditProductComponent {
         this.productForm.patchValue(res as Product);
       },
       error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar('GetError', err.error.message);
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
       },
     });
   }
@@ -61,7 +64,7 @@ export class EditProductComponent {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.productForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });

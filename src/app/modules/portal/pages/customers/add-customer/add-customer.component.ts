@@ -63,7 +63,7 @@ export class AddCustomerComponent implements OnInit {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.customerForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });

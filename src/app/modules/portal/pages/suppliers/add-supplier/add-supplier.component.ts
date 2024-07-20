@@ -45,7 +45,7 @@ export class AddSupplierComponent {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.supplierForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });

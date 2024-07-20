@@ -11,6 +11,7 @@ export class Customer {
   mobile: string;
   addressDelivery: string;
   addressBilling: string;
+  address: string;
   remarks: string;
   status: Status;
   createdAt: string;
@@ -32,6 +33,7 @@ export class Customer {
     this.mobile = model.mobile;
     this.addressDelivery = model.addressDelivery;
     this.addressBilling = model.addressBilling;
+    this.address = model.address;
     this.remarks = model.remarks;
     this.status = model.status;
     this.createdAt = model.createdAt;

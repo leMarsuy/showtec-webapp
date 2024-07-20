@@ -62,7 +62,7 @@ export class AddProductComponent {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.productForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });

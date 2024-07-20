@@ -47,15 +47,15 @@
           <small class="text-gray-500 mb-2">Stock</small>
           <div class="flex justify-between">
             <p class="font-black text-lg">
-              {{ product._$stockSummary["In Stock"] }}
+              {{ product._$stockSummary?.["In Stock"] || 0}}
             </p>
-            @if (!product._$stockSummary["In Stock"]) {
+            @if (!(product._$stockSummary?.["In Stock"]|| 0)) {
             <p
               class="border-2 border-rose-500 rounded-3xl px-2 bg-rose-200 text-rose-500"
             >
               Out of Stock
             </p>
-            } @else if(product._$stockSummary["In Stock"] < 5) {
+            } @else if((product._$stockSummary?.["In Stock"] || 0)< 5) {
             <p
               class="border-2 border-amber-500 rounded-3xl px-2 bg-amber-200 text-amber-500"
             >

@@ -68,10 +68,7 @@ export class UpdateStockComponent implements AfterViewInit {
 
   stockForm = this.fb.group({
     serialNumber: this.fb.control('', [Validators.required]),
-    quantity: this.fb.control({ value: 1, disabled: true }, [
-      Validators.required,
-    ]),
-    scanDate: this.fb.control(new Date(), [Validators.required]),
+    scanDate: this.fb.control(new Date()),
   });
 
   stockDetailsForm = this.fb.group({
@@ -87,7 +84,10 @@ export class UpdateStockComponent implements AfterViewInit {
   addStock() {
     this.stockForm.get('scanDate')?.setValue(new Date());
     var stock = this.stockForm.getRawValue() as Stock;
-    this.scannedStocks.unshift(stock);
+    if (!stock.serialNumber.trim()) var { serialNumber } = stock;
+    if (!this.scannedStocks.find((o) => o.serialNumber === serialNumber)) {
+      this.scannedStocks.unshift(stock);
+    }
     this.stockForm.get('serialNumber')?.reset();
   }
 
@@ -101,7 +101,10 @@ export class UpdateStockComponent implements AfterViewInit {
         this.dialogRef.close(true);
       },
       error: (err: HttpErrorResponse) => {
-        this.snackBarService.openErrorSnackbar('DataError', err.error.message);
+        this.snackBarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
       },
     });
   }

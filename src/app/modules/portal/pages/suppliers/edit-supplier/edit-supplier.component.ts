@@ -34,7 +34,10 @@ export class EditSupplierComponent {
         this.supplierForm.patchValue(res as Supplier);
       },
       error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar('GetError', err.error.message);
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
       },
     });
   }
@@ -56,7 +59,7 @@ export class EditSupplierComponent {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.supplierForm.enable();
           this.snackbarService.openErrorSnackbar(
-            'DataError',
+            err.error.errorCode,
             err.error.message
           );
         });
