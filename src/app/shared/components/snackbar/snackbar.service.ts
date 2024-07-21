@@ -51,9 +51,9 @@ export class SnackbarService {
   closeLoadingSnackbar(): Promise<Boolean> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        // this._loadingSnackbarRef.dismiss();
+        this._loadingSnackbarRef.dismiss();
         resolve(true);
-      }, 100);
+      }, 500);
     });
   }
 }

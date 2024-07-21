@@ -180,7 +180,7 @@ export class CreateOutDeliveryComponent implements OnInit {
           sku: item.sku,
           brand: item.brand,
           model: item.model,
-          serialNumbers: item.stocks[0].serialNumber,
+          serialNumber: item.stocks[0].serialNumber,
         },
       });
     });

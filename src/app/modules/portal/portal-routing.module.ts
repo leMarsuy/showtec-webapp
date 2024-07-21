@@ -50,6 +50,11 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'soa',
+        loadChildren: () =>
+          import('./pages/soa/soa.module').then((m) => m.SoaModule),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

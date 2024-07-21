@@ -2,15 +2,15 @@
   <div class="bg-white rounded-3xl p-4 h-fit w-[24rem] flex-none sticky top-16">
     <div class="flex mb-6">
       <button mat-stroked-button class="w-full" [routerLink]="'../'">
-        <mat-icon>arrow_back</mat-icon>Back to Delivery List
+        <mat-icon>arrow_back</mat-icon>Back to SOA List
       </button>
     </div>
   </div>
   <div class="flex flex-col w-full gap-4">
     <div class="bg-white rounded-3xl p-4 text-gray-900 w-full">
-      <section [formGroup]="deliveryForm">
+      <section [formGroup]="soaForm">
         <div class="flex mb-6 py-2 border-b-2 border-sky-700">
-          <p class="text-sky-700 font-bold">Delivery Information</p>
+          <p class="text-sky-700 font-bold">SOA Details</p>
         </div>
         <div class="flex">
           <div class="w-[15rem] flex-none p-4">Recipient Name</div>
@@ -44,30 +44,47 @@
           </mat-form-field>
         </div>
         <div class="flex">
-          <div class="w-[15rem] flex-none p-4">Delivery Address</div>
+          <div class="w-[15rem] flex-none p-4">Address</div>
           <mat-form-field class="w-full" appearance="outline">
             <textarea
               matInput
               rows="3"
-              placeholder="Delivery Address"
+              placeholder="Address"
               formControlName="address"
             ></textarea>
           </mat-form-field>
         </div>
         <div class="flex">
-          <div class="w-[15rem] flex-none p-4">Date of Delivery</div>
+          <div class="w-[15rem] flex-none p-4">SOA Date</div>
           <mat-form-field class="w-full" appearance="outline">
             <input
               matInput
               placeholder="MM/DD/YYYY"
-              formControlName="deliveryDate"
-              [matDatepicker]="picker"
+              formControlName="soaDate"
+              [matDatepicker]="soaDatePicker"
             />
             <mat-datepicker-toggle
               matIconSuffix
-              [for]="picker"
+              [for]="soaDatePicker"
             ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <mat-datepicker #soaDatePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="flex">
+          <div class="w-[15rem] flex-none p-4">Due Date</div>
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              matInput
+              placeholder="MM/DD/YYYY"
+              formControlName="dueDate"
+              [matDatepicker]="dueDatePicker"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="dueDatePicker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #dueDatePicker></mat-datepicker>
           </mat-form-field>
         </div>
       </section>
@@ -78,28 +95,28 @@
           <p class="text-sky-700 font-bold">Listing of Items</p>
         </div>
         <div class="flex font-bold p-4 pb-2">
-          <div class="w-full">Brand</div>
-          <div class="w-full">Model</div>
-          <div class="w-[10rem] flex-none">Serial No.</div>
-          <div class="w-[10rem] flex-none">Status</div>
-          <div class="w-[10rem] flex-none text-center">Remove</div>
+          <div class="w-full">Item</div>
+          <div class="w-[7rem] flex-none">Qty</div>
+          <div class="w-[10rem] flex-none">Unit Price</div>
+          <div class="w-[7rem] flex-none">Disc</div>
+          <div class="w-[10rem] flex-none">Amount</div>
+          <div class="w-[7rem] flex-none text-center">Remove</div>
         </div>
         @if(listedItems.length){
         <div class="flex flex-col gap-4 p-4">
           @for (item of listedItems; track $index) {
           <div class="flex border-b-2 border-gray-100">
             <div class="w-full">
-              <p>{{ item.brand }}</p>
+              <p>{{ item.brand }} {{ item.model }}</p>
             </div>
-            <div class="w-full">{{ item.model }}</div>
+            <div class="w-[7rem] flex-none">1</div>
             <div class="w-[10rem] flex-none">
-              {{ item.stocks[0].serialNumber }}
+              {{ item.price.amount }}
             </div>
-            <div class="w-[10rem] flex-none">
-              {{ item.stocks[0].status }}
-            </div>
+            <div class="w-[7rem] flex-none">25%</div>
+            <div class="w-[10rem] flex-none">{{ item.price }}</div>
             <div
-              class="w-[10rem] flex-none text-center text-rose-500"
+              class="w-[7rem] flex-none text-center text-rose-500"
               (click)="removeFromListedProducts($index)"
             >
               <mat-icon>close</mat-icon>
@@ -111,16 +128,23 @@
         <div class="flex gap-4">
           <mat-form-field class="w-full" appearance="outline">
             <input
-              id="serialNumber"
-              [formControl]="serialNumberControl"
+              [formControl]="productNameControl"
               matInput
               type="text"
-              placeholder="Scan or Encode Item Barcode Here..."
-              (keyup.enter)="searchSerialNumber()"
+              placeholder="Search Product Here..."
+              [matAutocomplete]="productAuto"
             />
-            <mat-hint class="text-rose-400" *ngIf="errorMessage">
-              {{ errorMessage }}
-            </mat-hint>
+            <mat-autocomplete
+              autoActiveFirstOption
+              #productAuto="matAutocomplete"
+              (optionSelected)="pushToListedProducts($event.option.value)"
+            >
+              @for (option of filteredProducts | async; track option) {
+              <mat-option [value]="option">
+                {{ option.brand }} {{ option.model }}
+              </mat-option>
+              }
+            </mat-autocomplete>
           </mat-form-field>
           <button
             mat-flat-button
@@ -186,24 +210,6 @@
               }
             </mat-autocomplete>
           </mat-form-field>
-        </div>
-      </section>
-    </div>
-
-    <div class="bg-white rounded-3xl p-4 text-gray-600 w-full mb-[10rem]">
-      <section>
-        <div class="flex mb-1 py-2 justify-between gap-4">
-          <button mat-stroked-button class="mat-button-lg" color="warn">
-            Cancel Transaction
-          </button>
-          <button
-            mat-flat-button
-            class="mat-button-lg"
-            color="primary"
-            (click)="createOutDelivery()"
-          >
-            Create Delivery Receipt
-          </button>
         </div>
       </section>
     </div>

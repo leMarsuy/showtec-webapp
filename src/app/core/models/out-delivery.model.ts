@@ -16,7 +16,7 @@ export interface OutDeliveryItems {
     sku: string;
     brand: string;
     model: string;
-    serialNumbers: string;
+    serialNumber: string;
   };
 }
 
