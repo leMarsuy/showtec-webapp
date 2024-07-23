@@ -1,26 +1,20 @@
 import { Status } from '../enums/status.enum';
+import { Signatory } from './out-delivery.model';
 
-export interface Signatory {
-  _userId: string;
-  STATIC: {
-    name: string;
-    designation: string;
-  };
-  action: string;
-}
-
-export interface OutDeliveryItems {
+export interface SOAItems {
   _productId: string;
   STATIC: {
-    _stockId: string;
     sku: string;
     brand: string;
     model: string;
-    serialNumber: string;
+    unit_price: number;
+    quantity: number;
+    disc: number;
+    total: number;
   };
 }
 
-export class OutDelivery {
+export class SOA {
   _id?: string;
   code?: {
     sequence: number;
@@ -34,32 +28,23 @@ export class OutDelivery {
     mobile: string;
     address: string;
   };
-  deliveryDate: Date;
-  actualDeliveryDate?: Date;
-  remarks?: string;
+  soaDate: Date;
+  dueDate?: Date;
   signatories: Signatory[];
-  items: OutDeliveryItems[];
+  items: SOAItems[];
   status?: Status;
   createdAt?: string;
   updatedAt?: string;
-
-  // billing address
-  // delivery address
-  // customer code
-  // customer type
-  // contactPerson (if not individual)
-
-  constructor(model: OutDelivery) {
+  disc?: number;
+  constructor(model: SOA) {
     this._id = model._id;
     this.code = model.code;
     this._customerId = model._customerId;
     this.STATIC = model.STATIC;
-    this.deliveryDate = model.deliveryDate;
-    this.actualDeliveryDate = model.actualDeliveryDate;
-    this.remarks = model.remarks;
+    this.soaDate = model.soaDate;
+    this.dueDate = model.dueDate;
     this.signatories = model.signatories;
     this.items = model.items;
-
     this.status = model.status;
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;

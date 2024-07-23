@@ -42,6 +42,7 @@ export class CreateOutDeliveryComponent implements OnInit {
     mobile: this.fb.control('', [Validators.required]),
     address: this.fb.control('', [Validators.required]),
     deliveryDate: this.fb.control(new Date(), [Validators.required]),
+    remarks: this.fb.control(''),
   });
 
   constructor(
@@ -163,6 +164,7 @@ export class CreateOutDeliveryComponent implements OnInit {
     var outdelivery: OutDelivery = {
       _customerId: rawOutdelivery._customerId._id,
       deliveryDate: rawOutdelivery.deliveryDate,
+      remarks: rawOutdelivery.remarks,
       STATIC: {
         name: rawOutdelivery._customerId.name,
         mobile: rawOutdelivery._customerId.mobile,

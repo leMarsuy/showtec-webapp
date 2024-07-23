@@ -109,12 +109,16 @@
             <div class="w-full">
               <p>{{ item.brand }} {{ item.model }}</p>
             </div>
-            <div class="w-[7rem] flex-none">1</div>
-            <div class="w-[10rem] flex-none">
-              {{ item.price.amount }}
+            <div class="w-[7rem] flex-none pr-2">
+              <input [(ngModel)]="item.STATIC.quantity" class="w-full" />
             </div>
-            <div class="w-[7rem] flex-none">25%</div>
-            <div class="w-[10rem] flex-none">{{ item.price }}</div>
+            <div class="w-[10rem] flex-none">
+              {{ item.STATIC.unit_price }}
+            </div>
+            <div class="w-[7rem] flex-none pr-2">
+              <input [(ngModel)]="item.STATIC.disc" class="w-full" />
+            </div>
+            <div class="w-[10rem] flex-none">{{ item.STATIC.total }}</div>
             <div
               class="w-[7rem] flex-none text-center text-rose-500"
               (click)="removeFromListedProducts($index)"
@@ -210,6 +214,24 @@
               }
             </mat-autocomplete>
           </mat-form-field>
+        </div>
+      </section>
+    </div>
+
+    <div class="bg-white rounded-3xl p-4 text-gray-600 w-full mb-[10rem]">
+      <section>
+        <div class="flex mb-1 py-2 justify-between gap-4">
+          <button mat-stroked-button class="mat-button-lg" color="warn">
+            Cancel Transaction
+          </button>
+          <button
+            mat-flat-button
+            class="mat-button-lg"
+            color="primary"
+            (click)="createSOA()"
+          >
+            Create SOA
+          </button>
         </div>
       </section>
     </div>

@@ -21,10 +21,12 @@ import {
 } from 'rxjs';
 
 interface Pricing {
-  unit_price: number;
-  quantity: number;
-  disc?: number;
-  total: number;
+  STATIC: {
+    unit_price: number;
+    quantity: number;
+    disc?: number;
+    total: number;
+  };
 }
 
 @Component({
@@ -73,7 +75,15 @@ export class CreateSoaComponent implements OnInit {
   pushToListedProducts(product: Product & Pricing) {
     var li = this.listedItems;
     if (!li.find((o) => o.stocks[0]._id === product.stocks[0]._id))
-      this.listedItems.push(product);
+      this.listedItems.push({
+        ...product,
+        STATIC: {
+          unit_price: product.price.amount,
+          quantity: 1,
+          disc: 0,
+          total: product.price.amount,
+        },
+      });
 
     console.log(this.listedItems);
   }
@@ -106,10 +116,13 @@ export class CreateSoaComponent implements OnInit {
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((val: any) => {
+        this.productNameControl.reset();
         return this._filterProducts(val || '');
       })
     );
   }
+
+  createSOA() {}
 
   pushToListedSignatories(user: User) {
     if (!this.listedSignatories.find((o) => o._id === user._id))
