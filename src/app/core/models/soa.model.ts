@@ -11,7 +11,13 @@ export interface SOAItems {
     quantity: number;
     disc: number;
     total: number;
+    classification: string;
   };
+}
+
+export interface Discount {
+  name: string;
+  value: number;
 }
 
 export class SOA {
@@ -32,10 +38,11 @@ export class SOA {
   dueDate?: Date;
   signatories: Signatory[];
   items: SOAItems[];
+  remarks: string;
   status?: Status;
   createdAt?: string;
   updatedAt?: string;
-  disc?: number;
+  discounts?: Array<Discount>;
   constructor(model: SOA) {
     this._id = model._id;
     this.code = model.code;
@@ -45,6 +52,7 @@ export class SOA {
     this.dueDate = model.dueDate;
     this.signatories = model.signatories;
     this.items = model.items;
+    this.remarks = model.remarks;
     this.status = model.status;
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;

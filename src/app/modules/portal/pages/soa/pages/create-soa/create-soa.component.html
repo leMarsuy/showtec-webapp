@@ -10,7 +10,7 @@
     <div class="bg-white rounded-3xl p-4 text-gray-900 w-full">
       <section [formGroup]="soaForm">
         <div class="flex mb-6 py-2 border-b-2 border-sky-700">
-          <p class="text-sky-700 font-bold">SOA Details</p>
+          <p class="text-sky-700 font-bold">SOA Information</p>
         </div>
         <div class="flex">
           <div class="w-[15rem] flex-none p-4">Recipient Name</div>
@@ -87,6 +87,13 @@
             <mat-datepicker #dueDatePicker></mat-datepicker>
           </mat-form-field>
         </div>
+
+        <div class="flex">
+          <div class="w-[15rem] flex-none p-4">Remarks</div>
+          <mat-form-field class="w-full" appearance="outline">
+            <textarea rows="5" matInput formControlName="remarks"></textarea>
+          </mat-form-field>
+        </div>
       </section>
     </div>
     <div class="bg-white rounded-3xl p-4 text-gray-600 w-full">
@@ -94,41 +101,13 @@
         <div class="flex mb-1 py-2 border-b-2 border-sky-700">
           <p class="text-sky-700 font-bold">Listing of Items</p>
         </div>
-        <div class="flex font-bold p-4 pb-2">
-          <div class="w-full">Item</div>
-          <div class="w-[7rem] flex-none">Qty</div>
-          <div class="w-[10rem] flex-none">Unit Price</div>
-          <div class="w-[7rem] flex-none">Disc</div>
-          <div class="w-[10rem] flex-none">Amount</div>
-          <div class="w-[7rem] flex-none text-center">Remove</div>
-        </div>
-        @if(listedItems.length){
-        <div class="flex flex-col gap-4 p-4">
-          @for (item of listedItems; track $index) {
-          <div class="flex border-b-2 border-gray-100">
-            <div class="w-full">
-              <p>{{ item.brand }} {{ item.model }}</p>
-            </div>
-            <div class="w-[7rem] flex-none pr-2">
-              <input [(ngModel)]="item.STATIC.quantity" class="w-full" />
-            </div>
-            <div class="w-[10rem] flex-none">
-              {{ item.STATIC.unit_price }}
-            </div>
-            <div class="w-[7rem] flex-none pr-2">
-              <input [(ngModel)]="item.STATIC.disc" class="w-full" />
-            </div>
-            <div class="w-[10rem] flex-none">{{ item.STATIC.total }}</div>
-            <div
-              class="w-[7rem] flex-none text-center text-rose-500"
-              (click)="removeFromListedProducts($index)"
-            >
-              <mat-icon>close</mat-icon>
-            </div>
-          </div>
-          }
-        </div>
-        }
+        <app-table
+          [columns]="listedItemsColumns"
+          [dataSource]="listedItems"
+          [page]="listedItemsPage"
+          (actionEmitter)="actionEventHandler($event)"
+          (updateCellEmitter)="updateCellEventHandler($event)"
+        ></app-table>
         <div class="flex gap-4">
           <mat-form-field class="w-full" appearance="outline">
             <input
@@ -150,16 +129,69 @@
               }
             </mat-autocomplete>
           </mat-form-field>
+        </div>
+      </section>
+    </div>
+
+    <div class="bg-white rounded-3xl p-4 text-gray-600 w-full">
+      <section>
+        <div class="flex mb-1 py-2 border-b-2 border-sky-700">
+          <p class="text-sky-700 font-bold">Discounts</p>
+        </div>
+        <div class="flex font-bold p-4 pb-2">
+          <div class="w-full">Description</div>
+          <div class="w-full">Discount</div>
+          <div class="w-[10rem] flex-none text-center">Remove</div>
+        </div>
+        @if(listedDiscounts.length){
+        <div class="flex flex-col gap-4 p-4">
+          @for (disc of listedDiscounts; track $index) {
+          <div class="flex border-b-2 border-gray-100">
+            <div class="w-full">
+              <p>{{ disc.name }}</p>
+            </div>
+            <div class="w-full">{{ disc.value }}</div>
+            <div class="w-[10rem] flex-none text-center">
+              <mat-icon (click)="removeFromListedDiscounts($index)">
+                close
+              </mat-icon>
+            </div>
+          </div>
+          }
+        </div>
+        }
+        <div class="flex gap-4" [formGroup]="discountForm">
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              formControlName="name"
+              matInput
+              type="text"
+              placeholder="Name of Discount"
+            />
+          </mat-form-field>
+
+          <mat-form-field class="w-full" appearance="outline">
+            <input
+              formControlName="value"
+              matInput
+              type="number"
+              placeholder="Amount"
+            />
+          </mat-form-field>
+
           <button
             mat-flat-button
-            class="mat-button-lg"
-            (click)="searchSerialNumber()"
+            color="primary"
+            class="mat-button-lg w-[25rem]"
+            [disabled]="!discountForm.valid"
+            (click)="pushToListedDiscounts()"
           >
-            Search
+            Add Discount
           </button>
         </div>
       </section>
     </div>
+
     <div class="bg-white rounded-3xl p-4 text-gray-600 w-full">
       <section>
         <div class="flex mb-1 py-2 border-b-2 border-sky-700">
@@ -230,7 +262,7 @@
             color="primary"
             (click)="createSOA()"
           >
-            Create SOA
+            Create Statement of Account
           </button>
         </div>
       </section>

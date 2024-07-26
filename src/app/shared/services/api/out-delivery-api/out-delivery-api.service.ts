@@ -32,6 +32,15 @@ export class OutDeliveryApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}`);
   }
 
+  getPdfOutDelivery(_id: string) {
+    console.log(_id);
+    return this.httpService.get(`${this.apiPrefix}/pdf/${_id}`);
+  }
+
+  getMostRecentOutDelivery() {
+    return this.httpService.get(`${this.apiPrefix}/recent`);
+  }
+
   updateOutDeliveryById(_id: string, updateBody: OutDelivery) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }

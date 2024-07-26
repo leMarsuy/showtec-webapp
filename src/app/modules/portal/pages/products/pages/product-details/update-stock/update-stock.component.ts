@@ -12,6 +12,7 @@ import { HttpGetResponse } from '@core/interfaces/http-get-response.interface';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { StockType } from '@app/core/enums/stock-type.enum';
 
 @Component({
   selector: 'app-update-stock',
@@ -86,7 +87,7 @@ export class UpdateStockComponent implements AfterViewInit {
     var stock = this.stockForm.getRawValue() as Stock;
     if (!stock.serialNumber.trim()) var { serialNumber } = stock;
     if (!this.scannedStocks.find((o) => o.serialNumber === serialNumber)) {
-      this.scannedStocks.unshift(stock);
+      this.scannedStocks.unshift({ ...stock, type: StockType.SEALED });
     }
     this.stockForm.get('serialNumber')?.reset();
   }

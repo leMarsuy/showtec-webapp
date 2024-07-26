@@ -12,6 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { TableModule } from '@app/shared/components/table/table.module';
 
 @NgModule({
   declarations: [CreateSoaComponent],
@@ -28,6 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatDatepickerModule,
+    TableModule,
   ],
 })
 export class CreateSoaModule {}

@@ -18,9 +18,14 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { TableModule } from '@shared/components/table/table.module';
 import { ProductDetailsRoutingModule } from './product-details-routing.module';
 import { ProductDetailsComponent } from './product-details.component';
+import { EditStockComponent } from './edit-stock/edit-stock.component';
 
 @NgModule({
-  declarations: [ProductDetailsComponent, UpdateStockComponent],
+  declarations: [
+    ProductDetailsComponent,
+    UpdateStockComponent,
+    EditStockComponent,
+  ],
   imports: [
     DeepFindPipe,
     CommonModule,

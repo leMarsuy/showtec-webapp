@@ -1,0 +1,18 @@
+<p mat-dialog-title>
+  {{ data.title || "Confirmation" }}
+</p>
+
+<mat-dialog-content>
+  <div class="flex p-2 text-lg">
+    <p [innerHTML]="data.message || 'Are you sure?'"></p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="flex w-full justify-between">
+    <button mat-button color="warn" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" [mat-dialog-close]="true">
+      Confirm Action
+    </button>
+  </div>
+</mat-dialog-actions>

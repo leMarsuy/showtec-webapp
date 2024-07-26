@@ -5,112 +5,68 @@
   >
     <div>
       <div class="flex mb-6">
-        <button mat-stroked-button class="w-full" [routerLink]="'../'">
+        <button mat-button [routerLink]="'../'">
           <mat-icon>arrow_back</mat-icon>Back to Product List
         </button>
       </div>
       <div class="grid grid-cols-2 gap-2 w-full">
         <mat-card class="col-span-2 p-4">
-          <mat-icon
-            class="absolute cursor-pointer top-3 right-3 hover:opacity-100 opacity-20"
-          >
-            edit
-          </mat-icon>
           <small class="text-gray-500 mb-2">SKU</small>
-          <p>{{ product.sku }}</p>
+          <input [(ngModel)]="product.sku" class="focus:border-b-2" />
         </mat-card>
         <mat-card class="col-span-2 p-4">
-          <mat-icon
-            class="absolute cursor-pointer top-3 right-3 hover:opacity-100 opacity-20"
-          >
-            edit
-          </mat-icon>
           <small class="text-gray-500 mb-2">Brand</small>
           <p>{{ product.brand }}</p>
         </mat-card>
 
         <mat-card class="col-span-2 p-4">
-          <mat-icon
-            class="absolute cursor-pointer top-3 right-3 hover:opacity-100 opacity-20"
-          >
-            edit
-          </mat-icon>
           <small class="text-gray-500 mb-2">Model</small>
           <p>{{ product.model }}</p>
         </mat-card>
+
         <mat-card class="col-span-2 p-4">
-          <mat-icon
-            class="absolute cursor-pointer top-3 right-3 hover:opacity-100 opacity-20"
-          >
-            settings
-          </mat-icon>
-          <small class="text-gray-500 mb-2">Stock</small>
-          <div class="flex justify-between">
-            <p class="font-black text-lg">
-              {{ product._$stockSummary?.["In Stock"] || 0}}
-            </p>
-            @if (!(product._$stockSummary?.["In Stock"]|| 0)) {
-            <p
-              class="border-2 border-rose-500 rounded-3xl px-2 bg-rose-200 text-rose-500"
-            >
-              Out of Stock
-            </p>
-            } @else if((product._$stockSummary?.["In Stock"] || 0)< 5) {
-            <p
-              class="border-2 border-amber-500 rounded-3xl px-2 bg-amber-200 text-amber-500"
-            >
-              Low on Stock
-            </p>
-            }@else {
-            <p
-              class="border-2 border-emerald-500 rounded-3xl px-2 bg-emerald-200 text-emerald-500"
-            >
-              Healthy
-            </p>
-            }
-          </div>
+          <small class="text-gray-500 mb-2">Classification</small>
+          <p>{{ product.classification }}</p>
         </mat-card>
+
+        <mat-card class="col-span-2 p-4">
+          <small class="text-gray-500 mb-2">SRP</small>
+          <p>{{ product.price.amount | number }}</p>
+        </mat-card>
+
+        <!-- <div class="col-span-2 pt-4 flex justify-end">
+          <button mat-button color="warn">Discard</button>
+          <button mat-raised-button>Save Changes</button>
+        </div> -->
       </div>
     </div>
   </div>
   <div class="rounded-3xl bg-white p-4 w-full text-gray-900">
-    <div class="flex">
-      <div class="grow flex gap-2" [formGroup]="searchForm">
-        <mat-form-field appearance="outline" class="w-[18rem]">
-          <input
-            matInput
-            type="text"
-            placeholder="Search SKU"
-            formControlName="searchText"
-          />
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-[10rem]">
-          <mat-select formControlName="stockStatus" placeholder="Stock Status">
-            @for (type of stockTypes; track type) {
-            <mat-option [value]="type.value">
-              {{ type.name }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="flex-none">
-        <button
-          mat-flat-button
-          class="mat-button-lg"
-          color="primary"
-          (click)="openNewStock()"
-        >
-          New Stock
+    <div class="flex gap-4 mb-4 justify-between">
+      <div class="flex gap-2">
+        @for (status of STOCK_STATUSES; track $index) { @if( selectedStockStatus
+        == status) {
+        <button mat-flat-button>
+          {{ status }}
         </button>
+        } @else{
+        <button mat-stroked-button (click)="filterStocks(status)">
+          {{ status }}
+        </button>
+
+        } }
       </div>
+      <button mat-flat-button color="primary" (click)="openNewStock()">
+        + New Stock
+      </button>
     </div>
     <div class="w-full">
       <app-table
         [dataSource]="filteredStocks"
         [columns]="columns"
         [page]="page"
+        (pageEmitter)="pageEvent($event)"
+        (rowEmitter)="editStock($event)"
       ></app-table>
     </div>
   </div>

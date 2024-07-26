@@ -3,6 +3,7 @@ export enum Color {
   SUCCESS = 'emerald',
   WARNING = 'amber',
   INFO = 'sky',
+  DEAD = 'gray',
   // special
 }
 

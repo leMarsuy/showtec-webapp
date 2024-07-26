@@ -1,0 +1,34 @@
+<p mat-dialog-title>Add New User</p>
+<mat-dialog-content>
+  <form [formGroup]="userForm" class="grid grid-cols-2">
+    <mat-form-field class="col-span-2">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" formControlName="name" />
+    </mat-form-field>
+    <mat-form-field class="col-span-2">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+    <mat-form-field class="col-span-2">
+      <mat-label>Designation</mat-label>
+      <input matInput type="text" formControlName="designation" />
+    </mat-form-field>
+    <mat-form-field class="col-span-2">
+      <mat-label>Password</mat-label>
+      <input matInput readonly type="text" formControlName="password" />
+      <mat-icon matSuffix (click)="generatePassword()">refresh</mat-icon>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button color="warn" mat-dialog-close="">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!userForm.valid"
+    cdkFocusInitial
+    (click)="onSubmit()"
+  >
+    Add New User
+  </button>
+</mat-dialog-actions>

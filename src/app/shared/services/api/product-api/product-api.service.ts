@@ -38,11 +38,15 @@ export class ProductApiService {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }
 
-  stockToProduct(_id: string, stocks: Stock[]) {
-    return this.httpService.patch(`${this.apiPrefix}/stock/${_id}`, stocks);
-  }
-
   getInStockProductBySerialNumber(sn: string) {
     return this.httpService.get(`${this.apiPrefix}/stock/serial-number/${sn}`);
+  }
+
+  stockToProduct(_id: string, stocks: Stock[]) {
+    return this.httpService.post(`${this.apiPrefix}/stock/${_id}`, stocks);
+  }
+
+  updateStockById(_id: string, updateBody: Stock) {
+    return this.httpService.patch(`${this.apiPrefix}/stock/${_id}`, updateBody);
   }
 }

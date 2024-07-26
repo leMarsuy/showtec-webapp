@@ -55,6 +55,11 @@ const routes: Routes = [
           import('./pages/soa/soa.module').then((m) => m.SoaModule),
       },
       {
+        path: 'users',
+        loadChildren: () =>
+          import('./pages/users/users.module').then((m) => m.UsersModule),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

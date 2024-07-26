@@ -64,4 +64,14 @@ export const NAV_ROUTES = [
       },
     ],
   },
+  {
+    group: 'System Management',
+    items: [
+      {
+        name: 'Users',
+        path: 'users',
+        icon: 'person',
+      },
+    ],
+  },
 ];

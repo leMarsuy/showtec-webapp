@@ -11,6 +11,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { UpdateStockComponent } from './update-stock/update-stock.component';
 import { Stock } from '@core/models/stock.model';
 import { ColumnType } from '@core/enums/column-type.enum';
+import { Color } from '@app/core/enums/color.enum';
+import { STOCK_STATUSES, StockStatus } from '@app/core/enums/stock-status.enum';
+import { UpdateFieldComponent } from './update-field/update-field.component';
+import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
+import { FieldType } from '@app/core/enums/field-type.enum';
+import { FormField } from '@app/core/interfaces/form-field.interface';
+import { StockType } from '@app/core/enums/stock-type.enum';
+import { EditStockComponent } from './edit-stock/edit-stock.component';
 
 @Component({
   selector: 'app-product-details',
@@ -18,25 +26,18 @@ import { ColumnType } from '@core/enums/column-type.enum';
   styleUrl: './product-details.component.scss',
 })
 export class ProductDetailsComponent implements OnInit {
-  searchForm = new FormGroup({
-    searchText: new FormControl(''),
-    stockStatus: new FormControl(''),
-  });
+  STOCK_STATUSES = ['All', ...STOCK_STATUSES];
+  selectedStockStatus = '';
+
   page: PageEvent = {
     pageIndex: 0,
-    pageSize: 5,
-    length: 1,
+    pageSize: 10,
+    length: -1,
   };
   filteredStocks: Stock[] = [];
   total = 0;
   _id!: string;
   product!: Product;
-  stockTypes = [
-    { name: 'All', value: '' },
-    { name: 'In Stock', value: 'In Stock' },
-    { name: 'Out of Stock', value: 'Out of Stock' },
-    { name: 'Reserved', value: 'Reserved' },
-  ];
   constructor(
     private productApi: ProductApiService,
     private activatedRoute: ActivatedRoute,
@@ -62,14 +63,52 @@ export class ProductDetailsComponent implements OnInit {
       type: ColumnType.STRING,
     },
     {
-      label: 'Cost',
+      label: 'Purchase Cost',
       dotNotationPath: 'purchaseCost',
       type: ColumnType.CURRENCY,
     },
     {
+      label: 'Stock Age',
+      dotNotationPath: 'scanDate',
+      type: ColumnType.AGE_IN_DAYS,
+    },
+    {
+      label: 'Unit Type',
+      dotNotationPath: 'type',
+      type: ColumnType.STATUS,
+      colorCodes: [
+        {
+          color: Color.SUCCESS,
+          value: StockType.SEALED,
+        },
+        {
+          color: Color.INFO,
+          value: StockType.DEMO,
+        },
+        {
+          color: Color.WARNING,
+          value: StockType.SERVICE,
+        },
+      ],
+    },
+    {
       label: 'Status',
       dotNotationPath: 'status',
-      type: ColumnType.STRING,
+      type: ColumnType.STATUS,
+      colorCodes: [
+        {
+          color: Color.SUCCESS,
+          value: StockStatus.IN_STOCK,
+        },
+        {
+          color: Color.INFO,
+          value: StockStatus.FOR_DELIVERY,
+        },
+        {
+          color: Color.ERROR,
+          value: StockStatus.RETURNED,
+        },
+      ],
     },
   ];
 
@@ -80,8 +119,8 @@ export class ProductDetailsComponent implements OnInit {
       next: (res) => {
         this.product = res as Product;
         this.product.stocks = this.product.stocks || [];
-        this.page.length = this.product.stocks?.length;
-        this.pageEvent(this.page);
+        this.page.length = this.product.stocks.length;
+        this.filterStocks(StockStatus.IN_STOCK);
       },
       error: (err) => {
         this.snackbarService.openErrorSnackbar(
@@ -99,8 +138,22 @@ export class ProductDetailsComponent implements OnInit {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
     var skip = this.page.pageSize * this.page.pageIndex;
-    this.filteredStocks = [...this.product.stocks.slice(skip)];
-    console.log(this.filteredStocks);
+    this.filteredStocks = [
+      ...this.product.stocks.slice(skip, skip + this.page.pageSize),
+    ];
+
+    console.log(skip, e);
+  }
+
+  filterStocks(status: string) {
+    this.selectedStockStatus = status;
+    if (this.selectedStockStatus != 'All')
+      this.filteredStocks = [
+        ...this.product.stocks.filter(
+          (o) => o.status === this.selectedStockStatus
+        ),
+      ];
+    else this.filteredStocks = [...this.product.stocks];
   }
 
   openNewStock() {
@@ -112,6 +165,69 @@ export class ProductDetailsComponent implements OnInit {
         data: {
           _id: this.product._id,
           name: this.product.brand + ' ' + this.product.model,
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) this.getProductById();
+      });
+  }
+
+  fields: FormField[] = [
+    {
+      label: 'SKU',
+      path: 'sku',
+    },
+    {
+      label: 'Brand',
+      path: 'brand',
+    },
+    {
+      label: 'Model',
+      path: 'model',
+    },
+    {
+      label: 'Classification',
+      path: 'classification',
+      select: { options: [...PRODUCT_CLASSIFICATIONS] },
+    },
+    {
+      label: 'Price',
+      path: 'price.amount',
+    },
+  ];
+
+  onClickEditField(field: FormField, value: any) {
+    this.dialog
+      .open(UpdateFieldComponent, {
+        width: '50rem',
+        maxWidth: '50rem',
+        disableClose: true,
+        data: {
+          field,
+          value,
+          product: this.product,
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res)
+          this.snackbarService.openSuccessSnackbar(
+            'DataModify',
+            `${this.product.brand} ${this.product.model}`
+          );
+      });
+  }
+
+  editStock(stock: Stock) {
+    this.dialog
+      .open(EditStockComponent, {
+        width: '50rem',
+        maxWidth: '50rem',
+        disableClose: true,
+        data: {
+          stock,
+          _id: this.product._id,
         },
       })
       .afterClosed()

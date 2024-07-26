@@ -10,6 +10,9 @@ import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ColumnType } from '@core/enums/column-type.enum';
+import { Color } from '@app/core/enums/color.enum';
+import { ProductStatus } from '@app/core/enums/product-status.enum';
+import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
 
 @Component({
   selector: 'app-products-list',
@@ -20,7 +23,11 @@ export class ProductsListComponent {
   searchForm = new FormGroup({
     searchField: new FormControl(''),
     searchText: new FormControl(''),
+    classification: new FormControl(''),
   });
+
+  CLASSIFICATIONS = PRODUCT_CLASSIFICATIONS;
+
   searchFields = [
     { label: 'All', value: '' },
     { label: 'SKU', value: 'sku' },
@@ -59,11 +66,29 @@ export class ProductsListComponent {
       dotNotationPath: '_$stockSummary.In Stock',
       type: ColumnType.NUMBER,
     },
+    {
+      label: 'Status',
+      dotNotationPath: 'status',
+      type: ColumnType.STATUS,
+      colorCodes: [
+        {
+          color: Color.SUCCESS,
+          value: ProductStatus.ACTIVE,
+        },
+        {
+          color: Color.DEAD,
+          value: ProductStatus.DISCONTINUED,
+        },
+        {
+          color: Color.ERROR,
+          value: ProductStatus.OUT_OF_STOCK,
+        },
+      ],
+    },
   ];
   products!: Product[];
 
   constructor(
-    private dialog: MatDialog,
     private productApi: ProductApiService,
     private snackbarService: SnackbarService,
     public router: Router,
@@ -99,6 +124,17 @@ export class ProductsListComponent {
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
+    this.getProducts();
+  }
+
+  clearForm() {
+    this.searchForm.patchValue({
+      searchText: '',
+      classification: '',
+      searchField: '',
+    });
+
+    this.searchForm.markAsUntouched();
     this.getProducts();
   }
 

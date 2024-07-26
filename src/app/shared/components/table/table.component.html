@@ -1,47 +1,119 @@
+<!-- <button (click)="check()">checker</button> -->
 <table mat-table [dataSource]="dataSource" class="w-full">
-  @for (column of columns; track column) {
+  @for (column of columns; track $index) {
   <ng-container [matColumnDef]="column.label">
     <th
       mat-header-cell
       *matHeaderCellDef
       class="w-{{ column.width || 'auto' }}"
     >
-      {{ column.label }}
+      <div class="flex justify-{{ column.align || 'start' }}">
+        {{ column.label }}
+      </div>
     </th>
-    @if (column.type == 'string') {
-    <td mat-cell *matCellDef="let element">
+
+    <td mat-cell *matCellDef="let element; let i = index">
+      @if (column.type == 'string') {
+
+      <!--  -->
       {{ column.dotNotationPath | deepFind : element }}
+
+      } @else if (column.type == 'date') {
+
+      <!--  -->
+      {{ column.dotNotationPath | deepFind : element | date : "MMM dd, YYYY" }}
+
+      } @else if (column.type == 'number') {
+
+      <!--  -->
+      <div
+        class="flex"
+        *ngIf="!element['__editOn' + $index + '_' + i]"
+        (click)="
+          element['__editOn' + $index + '_' + i] = true && column.editable
+        "
+      >
+        <span>
+          {{ column.dotNotationPath | deepFind : element || 0 | number }}
+        </span>
+      </div>
+
+      <div class="flex gap-2" *ngIf="element['__editOn' + $index + '_' + i]">
+        <input
+          *ngIf="element['__editOn' + $index + '_' + i]"
+          [(ngModel)]="element['__value' + $index + '_' + i]"
+          class="border-2 rounded-lg border-gray-200 w-10"
+          type="number"
+        />
+        <mat-icon
+          (click)="
+            updateCell(
+              element,
+              column,
+              element['__value' + $index + '_' + i],
+              i,
+              $index
+            )
+          "
+          class="text-emerald-500 cursor-pointer"
+        >
+          check
+        </mat-icon>
+      </div>
+
+      } @else if (column.type == 'currency') {
+
+      <!--  -->
+      {{ "₱" }}{{ column.dotNotationPath | deepFind : element | number }}
+
+      } @else if (column.type == 'age-in-days') {
+
+      <!--  -->
+      {{ column.dotNotationPath | deepFind : element | aging : agingDays }}
+
+      } @else if (column.type == 'action') {
+
+      <!--  -->
+      <div class="flex justify-center text-center">
+        @for (action of column.actions; track action) {
+        <button
+          [matTooltip]="action.name"
+          mat-icon-button
+          (click)="actionEmitter.emit({action, element, i})"
+        >
+          <mat-icon class="text-{{ action.color }}-500 cursor-pointer">
+            {{ action.icon }}
+          </mat-icon>
+        </button>
+        }
+      </div>
+
+      } @else if (column.type == 'status') {
+
+      <!--  -->
+      <div [class]="_cssStatus(element, column)">
+        {{ column.dotNotationPath | deepFind : element }}
+      </div>
+
+      }
     </td>
-    } @if (column.type == 'date') {
-    <td mat-cell *matCellDef="let element">
-      {{
-        column.dotNotationPath
-          | deepFind : element
-          | date : "MMM dd, YYYY, HHmm"
-      }}
-    </td>
-    } @if (column.type == 'number') {
-    <td mat-cell *matCellDef="let element">
-      {{ column.dotNotationPath | deepFind : element | number }}
-    </td>
-    } @if (column.type == 'currency') {
-    <td mat-cell *matCellDef="let element">
-      ₱{{ column.dotNotationPath | deepFind : element | number }}
-    </td>
-    } @if (column.type == 'age-in-days') {
-    <td mat-cell *matCellDef="let element">
-      {{ column.dotNotationPath | deepFind : element | aging : agingDays }} DAYS
-    </td>
-    }
   </ng-container>
   }
+
+  <!--  -->
+
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+  @if (page.length>=0) {
   <tr
     mat-row
     *matRowDef="let row; columns: displayedColumns"
     (click)="rowEmitter.emit(row)"
     class="hover:bg-gray-200"
   ></tr>
+  }
+
+  <!--  -->
 </table>
 @if(page.length == 0) {
 <div class="text-center py-12 text-gray-500">
@@ -53,13 +125,13 @@
   <mat-icon>timer</mat-icon>
   <h1>Loading Table...</h1>
 </div>
-}
-
+} @if (page) {
 <mat-paginator
   class="py-2 border-t-2 border-gray-200"
   [length]="page.length"
   [pageSize]="page.pageSize"
-  (page)="pageEmitter.emit(page)"
+  (page)="pageEmitter.emit($event)"
   aria-label="Select page"
 >
 </mat-paginator>
+}

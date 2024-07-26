@@ -4,6 +4,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Alignment } from '@app/core/enums/align.enum';
+import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
@@ -18,7 +20,6 @@ import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api
 })
 export class OutDeliveryListComponent {
   searchForm = new FormGroup({
-    searchField: new FormControl(''),
     searchText: new FormControl(''),
   });
 
@@ -50,21 +51,40 @@ export class OutDeliveryListComponent {
       type: ColumnType.DATE,
     },
     {
-      label: 'Aging',
+      label: 'Due Date',
       dotNotationPath: 'deliveryDate',
       type: ColumnType.AGE_IN_DAYS,
     },
+    // {
+    //   label: 'Status',
+    //   dotNotationPath: 'status',
+    //   type: ColumnType.STRING,
+    // },
+
     {
-      label: 'Status',
-      dotNotationPath: 'status',
-      type: ColumnType.STRING,
+      label: 'Action',
+      dotNotationPath: '_id',
+      type: ColumnType.ACTION,
+      align: Alignment.CENTER,
+      actions: [
+        {
+          name: 'print',
+          icon: 'print',
+          color: Color.DEAD,
+        },
+        {
+          name: 'edit',
+          icon: 'edit',
+          color: Color.WARNING,
+        },
+      ],
     },
   ];
 
   outdeliveries!: OutDelivery[];
 
   constructor(
-    private productApi: OutDeliveryApiService,
+    private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
     public router: Router,
     public activatedRoute: ActivatedRoute
@@ -73,11 +93,13 @@ export class OutDeliveryListComponent {
   }
 
   getOutDeliverys() {
-    this.snackbarService.openLoadingSnackbar('GetData', 'Fetching products...');
-    this.productApi
+    this.snackbarService.openLoadingSnackbar(
+      'GetData',
+      'Fetching Delivery Receipts...'
+    );
+    this.outdeliveryApi
       .getOutDeliverys({
         searchText: this.searchForm.get('searchText')?.value || '',
-        // searchField: this.searchForm.get('searchField')?.value || '',
         ...this.page,
       })
       .subscribe({
@@ -102,7 +124,30 @@ export class OutDeliveryListComponent {
     this.getOutDeliverys();
   }
 
-  rowEvent(product: OutDelivery) {
-    this.router.navigate([product._id], { relativeTo: this.activatedRoute });
+  actionEvent(e: any) {
+    if (e.action.name == 'print') {
+      this.print(e.element);
+    } else if (e.action.name == 'edit') {
+      // lets edit this shit
+    }
+  }
+
+  print(outdelivery: OutDelivery) {
+    this.snackbarService.openLoadingSnackbar(
+      'Loading',
+      'Generating PDF. Please wait...'
+    );
+    if (outdelivery._id)
+      this.outdeliveryApi.getPdfOutDelivery(outdelivery._id).subscribe({
+        next: (pdf: any) => {
+          this.snackbarService._loadingSnackbarRef.dismiss();
+          var w = window.open('', '_blank');
+          w?.document.write(
+            `<iframe width='100%' height='100%' src='${encodeURI(
+              pdf.base64
+            )}'></iframe>`
+          );
+        },
+      });
   }
 }

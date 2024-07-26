@@ -17,6 +17,7 @@ export interface OutDeliveryItems {
     brand: string;
     model: string;
     serialNumber: string;
+    classification: string;
   };
 }
 

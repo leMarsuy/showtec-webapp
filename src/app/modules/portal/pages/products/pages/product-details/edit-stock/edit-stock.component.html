@@ -1,0 +1,36 @@
+<p mat-dialog-title>
+  {{ data.stock.serialNumber }}
+</p>
+
+<mat-dialog-content>
+  <form class="flex flex-col w-full" [formGroup]="stockForm">
+    <mat-form-field class="w-full">
+      <mat-label>Serial Number</mat-label>
+      <input matInput formControlName="serialNumber" />
+    </mat-form-field>
+    <mat-form-field class="w-full">
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="type">
+        @for (item of STOCK_TYPES; track $index) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" mat-dialog-close="">Cancel</button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      cdkFocusInitial
+      [disabled]="!stockForm"
+      (click)="editStock()"
+    >
+      Update Details
+    </button>
+  </div>
+</mat-dialog-actions>

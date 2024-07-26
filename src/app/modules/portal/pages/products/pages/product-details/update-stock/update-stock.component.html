@@ -69,23 +69,27 @@
     </mat-card>
     <mat-card class="p-4 grow">
       <div class="flex border-b-2 border-gray-200 py-2 mb-2">
-        <div class="w-[5rem] flex-none">
-          <mat-checkbox></mat-checkbox>
-        </div>
         <div class="w-full px-4 font-black content-center">
           <p>Serial Number</p>
         </div>
+        <div class="w-full px-4 font-black content-center">Unit Type</div>
         <div class="w-[12rem] flex-none px-4 font-black content-center">
           Date Scanned
         </div>
+        <div class="w-[5rem] flex-none px-4 font-black content-center"></div>
       </div>
       <div class="h-[13rem] overflow-y-auto border-b-2 border-gray-200 pb-2">
         @for (stock of scannedStocks; track $index) {
         <div class="flex">
-          <div class="w-[5rem] flex-none"><mat-checkbox></mat-checkbox></div>
           <div class="w-full px-4 content-center">{{ stock.serialNumber }}</div>
+          <div class="w-full px-4 content-center">{{ stock.type }}</div>
           <div class="w-[12rem] flex-none px-4 content-center">
             {{ stock.scanDate | date : "MM-dd-YY, hh:mm:ss" }}
+          </div>
+          <div class="w-[5rem] flex-none px-4 content-center">
+            <mat-icon class="text-rose-500" (click)="removeStock($index)"
+              >remove</mat-icon
+            >
           </div>
         </div>
         }
@@ -113,7 +117,7 @@
         </button>
       </div>
     </mat-card>
-    <mat-card class="p-4 w-full w-[20rem] flex flex-none">
+    <mat-card class="p-4 w-full w-[15rem] flex flex-none">
       <h1 class="text-5xl font-black mb-3">{{ scannedStocks.length }}</h1>
       <p>Total Count</p>
     </mat-card>

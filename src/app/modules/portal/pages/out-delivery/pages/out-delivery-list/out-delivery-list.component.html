@@ -1,5 +1,34 @@
 <div class="flex gap-4">
-  <div class="rounded-3xl bg-white p-4 w-[24rem] flex-none">search here</div>
+  <div class="rounded-3xl bg-white p-4 w-[24rem] flex-none h-fit">
+    <form [formGroup]="searchForm">
+      <mat-form-field appearance="outline" class="w-full">
+        <input
+          matInput
+          placeholder="Search DR No or Customer Name"
+          formControlName="searchText"
+          (keyup.enter)="getOutDeliverys()"
+        />
+      </mat-form-field>
+    </form>
+    <div class="flex justify-end gap-4">
+      <button
+        *ngIf="searchForm.dirty"
+        mat-button
+        color="warn"
+        (click)="searchForm.reset(); getOutDeliverys()"
+      >
+        Clear
+      </button>
+      <button
+        mat-raised-button
+        [disabled]="!searchForm.dirty"
+        color="primary"
+        (click)="getOutDeliverys()"
+      >
+        Apply Filter
+      </button>
+    </div>
+  </div>
 
   <div class="rounded-3xl bg-white p-4 w-full">
     <app-table
@@ -7,7 +36,7 @@
       [columns]="columns"
       [page]="page"
       (pageEmitter)="pageEvent($event)"
-      (rowEmitter)="rowEvent($event)"
+      (actionEmitter)="actionEvent($event)"
     ></app-table>
   </div>
 </div>

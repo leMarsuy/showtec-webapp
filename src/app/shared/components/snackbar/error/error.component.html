@@ -2,8 +2,12 @@
   class="flex text-{{ color }}-500 border-l-4 border-{{ color }}-500 p-[14px]"
 >
   <span class="grow">
-    <p class="font-black">{{ data.title }}</p>
-    <p [innerHTML]="data.message"></p>
+    <p class="font-black">{{ data.title || "ERROR" }}</p>
+    <p
+      [innerHTML]="
+        data.message || 'Something went wrong while performing this action.'
+      "
+    ></p>
   </span>
   <span class="flex-none w-[2rem] text-right">
     <mat-icon (click)="snackBarRef.dismiss()" class="cursor-pointer">

@@ -1,3 +1,5 @@
+import { StockType } from '../enums/stock-type.enum';
+
 export class Stock {
   _id: string;
   serialNumber: string;
@@ -6,6 +8,7 @@ export class Stock {
   purchaseDate?: Date;
   purchaseCost?: Number;
   scanDate: Date;
+  type: StockType;
   remarks?: string;
   status: 'In Stock' | 'Out of Stock' | 'Reserved';
 
@@ -17,6 +20,7 @@ export class Stock {
     this.purchaseDate = model.purchaseDate;
     this.purchaseCost = model.purchaseCost;
     this.scanDate = model.scanDate;
+    this.type = model.type;
     this.remarks = model.remarks;
     this.status = model.status;
   }

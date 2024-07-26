@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { TableModule } from '@app/shared/components/table/table.module';
+import { ConfirmationModule } from '@app/shared/components/confirmation/confirmation.module';
 
 @NgModule({
   declarations: [CreateOutDeliveryComponent],
@@ -28,6 +30,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     ReactiveFormsModule,
     MatAutocompleteModule,
     MatDatepickerModule,
+    TableModule,
+    ConfirmationModule,
   ],
 })
 export class CreateOutDeliveryModule {}
