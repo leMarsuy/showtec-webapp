@@ -75,7 +75,7 @@
     </div>
     <form class="grid grid-cols-2 gap-2" [formGroup]="deliveryForm">
       <div class="col-span-2">
-        <mat-form-field class="w-full">
+        <mat-form-field class="w-full" *ngIf="!_id">
           <mat-label>Customer's Name</mat-label>
           <input
             matInput
@@ -94,6 +94,13 @@
             }
           </mat-autocomplete>
         </mat-form-field>
+
+        <div *ngIf="outDelivery" class="p-4 bg-sky-500 text-white">
+          <p>{{ outDelivery.STATIC.name }}</p>
+          <p>
+            <b>{{ outDelivery.code?.value }}</b>
+          </p>
+        </div>
       </div>
       <div class="col-span-1">
         <mat-form-field class="w-full">
@@ -135,13 +142,23 @@
     </form>
 
     <div class="flex justify-between">
-      <button mat-stroked-button class="" color="warn">
-        Cancel Transaction
-      </button>
+      @if(_id){
 
-      <button mat-flat-button class="" color="primary" (click)="confirm()">
+      <div class="flex">
+        <button mat-stroked-button color="warn">Discard Changes</button>
+        <button mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
+      <button mat-raised-button color="primary" (click)="confirmChanges()">
+        Apply Changes
+      </button>
+      } @else {
+      <button mat-stroked-button color="warn">Cancel Transaction</button>
+      <button mat-flat-button color="primary" (click)="confirm()">
         Create Delivery Receipt
       </button>
+      }
     </div>
   </div>
 </div>

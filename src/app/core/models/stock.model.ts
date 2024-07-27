@@ -1,3 +1,4 @@
+import { StockStatus } from '../enums/stock-status.enum';
 import { StockType } from '../enums/stock-type.enum';
 
 export class Stock {
@@ -10,7 +11,7 @@ export class Stock {
   scanDate: Date;
   type: StockType;
   remarks?: string;
-  status: 'In Stock' | 'Out of Stock' | 'Reserved';
+  status: StockStatus;
 
   constructor(model: Stock) {
     this._id = model._id;

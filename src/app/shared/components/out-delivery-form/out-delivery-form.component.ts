@@ -42,12 +42,14 @@ export class OutDeliveryFormComponent implements OnInit {
   serialNumberControl = new FormControl('');
   signatoryControl = new FormControl('');
   errorMessage = '';
+  outDelivery!: OutDelivery;
   @Input() _id!: string;
 
   searchId() {
     this.outdeliveryApi.getOutDeliveryById(this._id).subscribe({
       next: (res) => {
-        this.autoFillForm(res as OutDelivery);
+        this.outDelivery = res as OutDelivery;
+        this.autoFillForm();
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
@@ -58,7 +60,8 @@ export class OutDeliveryFormComponent implements OnInit {
     });
   }
 
-  autoFillForm(outDelivery: OutDelivery) {
+  autoFillForm() {
+    var outDelivery = this.outDelivery;
     this.deliveryForm.patchValue({
       _customerId: outDelivery.STATIC.name,
       mobile: outDelivery.STATIC.mobile,
@@ -69,6 +72,7 @@ export class OutDeliveryFormComponent implements OnInit {
 
     outDelivery.items.forEach((item) => {
       var listedItem = {
+        sku: item.STATIC.sku,
         _id: item._productId,
         brand: item.STATIC.brand,
         model: item.STATIC.model,
@@ -83,6 +87,18 @@ export class OutDeliveryFormComponent implements OnInit {
       };
       this.listedItems.push(listedItem as Product);
     });
+
+    outDelivery.signatories.forEach((sig: any) => {
+      this.listedSignatories.push({
+        name: sig.STATIC.name,
+        designation: sig.STATIC.designation,
+        action: sig.action,
+        _id: sig._userId,
+      });
+    });
+
+    this.listedSignatories = [...this.listedSignatories];
+    this.listedSignatoriesPage.length = this.listedSignatories.length;
 
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
@@ -231,18 +247,24 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   removeFromListedProducts(i: number) {
+    var li = this.listedItems[i];
+    if (li.stocks[0].status == StockStatus.FOR_DELIVERY) {
+      this.snackbarService.openErrorSnackbar(
+        'ACTION NOT ALLOWED',
+        `Unable to delete <b>${li.brand} ${li.model}, S/N: ${li.stocks[0].serialNumber}</b>.`
+      );
+      return;
+    }
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
   }
 
   pushToListedSignatories(user: User) {
-    var ls = this.listedSignatories;
-    if (!ls.find((o) => o._id === user._id))
-      this.listedSignatories.push({
-        ...user,
-        action: SignatoryAction.APPROVED,
-      });
+    this.listedSignatories.push({
+      ...user,
+      action: SignatoryAction.APPROVED,
+    });
     this.listedSignatories = [...this.listedSignatories];
     this.listedSignatoriesPage.length = this.listedSignatories.length;
     this.signatoryControl.reset();
@@ -258,13 +280,16 @@ export class OutDeliveryFormComponent implements OnInit {
     return this.deliveryForm.get('_customerId') as FormControl;
   }
 
+  get customerName() {
+    return this.deliveryForm.getRawValue()._customerId;
+  }
+
   filteredCustomers!: Observable<Customer[]>;
   filteredUsers!: Observable<User[]>;
 
   ngOnInit() {
     if (this._id) this.searchId();
-
-    this.getLastOutDelivery();
+    else this.getLastOutDelivery();
 
     this.filteredCustomers = this._customerId.valueChanges.pipe(
       startWith(''),
@@ -323,6 +348,80 @@ export class OutDeliveryFormComponent implements OnInit {
       .subscribe((res) => {
         if (res) this.createOutDelivery();
       });
+  }
+
+  confirmChanges() {
+    this.confirmation
+      .open(
+        'Before you apply the changes...',
+        `You will be <b>REMOVING 2 ITEMS</b> and <b>ADDING 2 NEW ITEMS</b> for:
+        <br/> <b class='text-rose-500'>${this.customerName}</b>
+        <br/><br/> Would you like to continue?`
+      )
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          this.updateOutDelivery();
+        }
+      });
+  }
+
+  updateOutDelivery() {
+    var rawOutdelivery = this.deliveryForm.getRawValue() as any;
+    var outdelivery: any = {
+      deliveryDate: rawOutdelivery.deliveryDate,
+      remarks: rawOutdelivery.remarks,
+      STATIC: {
+        mobile: rawOutdelivery.mobile,
+        address: rawOutdelivery.address,
+      },
+      signatories: [],
+      items: [],
+    };
+
+    this.listedItems.forEach((item) => {
+      outdelivery.items.push({
+        _productId: item._id,
+        STATIC: {
+          _stockId: item.stocks[0]._id,
+          sku: item.sku,
+          brand: item.brand,
+          model: item.model,
+          serialNumber: item.stocks[0].serialNumber,
+          classification: item.classification || '-',
+        },
+      });
+    });
+
+    this.listedSignatories.forEach((signatory) => {
+      outdelivery.signatories.push({
+        _userId: signatory._id,
+        STATIC: {
+          name: signatory.name,
+          designation: signatory.designation,
+        },
+        action: signatory.action,
+      });
+    });
+
+    this.outdeliveryApi.updateOutDeliveryById(this._id, outdelivery).subscribe({
+      next: (res: any) => {
+        this.snackbarService.openSuccessSnackbar(
+          'UPDATE_SUCCESS',
+          'Successfully Updated D/R: ' +
+            this.outDelivery.code?.value +
+            ' for ' +
+            this.outDelivery.STATIC.name +
+            '.'
+        );
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 
   createOutDelivery() {
