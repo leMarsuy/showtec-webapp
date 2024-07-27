@@ -247,14 +247,6 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   removeFromListedProducts(i: number) {
-    var li = this.listedItems[i];
-    if (li.stocks[0].status == StockStatus.FOR_DELIVERY) {
-      this.snackbarService.openErrorSnackbar(
-        'ACTION NOT ALLOWED',
-        `Unable to delete <b>${li.brand} ${li.model}, S/N: ${li.stocks[0].serialNumber}</b>.`
-      );
-      return;
-    }
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
@@ -354,14 +346,26 @@ export class OutDeliveryFormComponent implements OnInit {
     this.confirmation
       .open(
         'Before you apply the changes...',
-        `You will be <b>REMOVING 2 ITEMS</b> and <b>ADDING 2 NEW ITEMS</b> for:
-        <br/> <b class='text-rose-500'>${this.customerName}</b>
-        <br/><br/> Would you like to continue?`
+        `This will modify the delivery receipt for <b class='text-rose-500'>${this.customerName}</b>. Would you like to proceed with this action?`
       )
       .afterClosed()
       .subscribe((res) => {
         if (res) {
           this.updateOutDelivery();
+        }
+      });
+  }
+
+  confirmDiscard() {
+    this.confirmation
+      .open(
+        'Cancel Edit',
+        `Any changes will not be saved for <b class='text-rose-500'>${this.customerName}</b>. Are you sure?`
+      )
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          this.router.navigate(['portal/out-delivery']);
         }
       });
   }
