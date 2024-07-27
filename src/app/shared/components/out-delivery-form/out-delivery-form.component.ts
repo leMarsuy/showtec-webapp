@@ -29,6 +29,7 @@ import {
 import { ConfirmationService } from '../confirmation/confirmation.service';
 import { SnackbarService } from '../snackbar/snackbar.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { StockStatus } from '@app/core/enums/stock-status.enum';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -58,8 +59,34 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   autoFillForm(outDelivery: OutDelivery) {
-    // create the autofill form here
-    console.log(outDelivery);
+    this.deliveryForm.patchValue({
+      _customerId: outDelivery.STATIC.name,
+      mobile: outDelivery.STATIC.mobile,
+      address: outDelivery.STATIC.address,
+      deliveryDate: outDelivery.deliveryDate,
+      remarks: outDelivery.remarks,
+    });
+
+    outDelivery.items.forEach((item) => {
+      var listedItem = {
+        _id: item._productId,
+        brand: item.STATIC.brand,
+        model: item.STATIC.model,
+        classification: item.STATIC.classification,
+        stocks: [
+          {
+            serialNumber: item.STATIC.serialNumber,
+            _id: item.STATIC._stockId,
+            status: StockStatus.FOR_DELIVERY,
+          },
+        ],
+      };
+      this.listedItems.push(listedItem as Product);
+    });
+
+    this.listedItems = [...this.listedItems];
+    this.listedItemsPage.length = this.listedItems.length;
+    this.deliveryForm.get('_customerId')?.disable();
   }
 
   deliveryForm = this.fb.group({
