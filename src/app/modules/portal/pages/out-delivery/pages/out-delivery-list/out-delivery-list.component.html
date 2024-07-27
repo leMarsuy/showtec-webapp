@@ -1,7 +1,7 @@
 <div class="flex gap-4">
-  <div class="rounded-3xl bg-white p-4 w-[24rem] flex-none h-fit">
+  <div class="rounded-xl bg-white p-4 w-[24rem] flex-none h-fit">
     <form [formGroup]="searchForm">
-      <mat-form-field appearance="outline" class="w-full">
+      <mat-form-field class="w-full">
         <input
           matInput
           placeholder="Search DR No or Customer Name"
@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <div class="rounded-3xl bg-white p-4 w-full">
+  <div class="rounded-xl bg-white p-4 w-full">
     <app-table
       [dataSource]="outdeliveries"
       [columns]="columns"

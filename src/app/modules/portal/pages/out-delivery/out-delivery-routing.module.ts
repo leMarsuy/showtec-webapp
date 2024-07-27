@@ -21,6 +21,13 @@ const routes: Routes = [
             (m) => m.CreateOutDeliveryModule
           ),
       },
+      {
+        path: 'edit/:_id',
+        loadChildren: () =>
+          import('./pages/edit-out-delivery/edit-out-delivery.module').then(
+            (m) => m.EditOutDeliveryModule
+          ),
+      },
     ],
   },
 ];

@@ -1,0 +1,146 @@
+<div class="flex text-gray-900 gap-4">
+  <div class="bg-white rounded-xl p-4 grow gap-4 flex flex-col">
+    <section>
+      <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+        <p>PRODUCTS</p>
+      </div>
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedItemsColumns"
+        [dataSource]="listedItems"
+        [page]="listedItemsPage"
+        (actionEmitter)="actionEventItems($event)"
+      ></app-table>
+      <div class="flex gap-4">
+        <mat-form-field class="w-full">
+          <input
+            id="serialNumber"
+            [formControl]="serialNumberControl"
+            matInput
+            type="text"
+            placeholder="Scan or Encode Item Barcode Here..."
+            (keyup.enter)="searchSerialNumber()"
+          />
+          <mat-hint class="text-rose-400" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </mat-hint>
+        </mat-form-field>
+        <button
+          mat-flat-button
+          class="mat-button-lg"
+          (click)="searchSerialNumber()"
+        >
+          Search
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+        <p>SIGNATORIES</p>
+      </div>
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedSignatoriesColumns"
+        [dataSource]="listedSignatories"
+        [page]="listedSignatoriesPage"
+        (actionEmitter)="actionEventSignatories($event)"
+      ></app-table>
+      <div class="flex gap-4">
+        <mat-form-field class="w-full">
+          <mat-label>Find System User</mat-label>
+          <input
+            [formControl]="signatoryControl"
+            matInput
+            type="text"
+            [matAutocomplete]="userAuto"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #userAuto="matAutocomplete"
+            (optionSelected)="pushToListedSignatories($event.option.value)"
+          >
+            @for (option of filteredUsers | async; track option) {
+            <mat-option [value]="option">{{ option.name }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </section>
+  </div>
+
+  <div class="bg-white rounded-xl p-4 w-[40rem] sticky top-16 h-fit">
+    <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+      <p>DELIVERY INFORMATION</p>
+    </div>
+    <form class="grid grid-cols-2 gap-2" [formGroup]="deliveryForm">
+      <div class="col-span-2">
+        <mat-form-field class="w-full">
+          <mat-label>Customer's Name</mat-label>
+          <input
+            matInput
+            placeholder="Type Customer Name..."
+            [matAutocomplete]="customerAuto"
+            formControlName="_customerId"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #customerAuto="matAutocomplete"
+            (optionSelected)="autofillCustomerDetails($event.option.value)"
+            [displayWith]="displayCustomer"
+          >
+            @for (option of filteredCustomers | async; track option) {
+            <mat-option [value]="option">{{ option.name }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="col-span-1">
+        <mat-form-field class="w-full">
+          <mat-label>Contact No.</mat-label>
+          <input matInput formControlName="mobile" placeholder="09XXXXXXXXX" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-span-1">
+        <mat-form-field class="w-full">
+          <mat-label>Date of Delivery</mat-label>
+          <input
+            matInput
+            placeholder="MM/DD/YYYY"
+            formControlName="deliveryDate"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-span-2">
+        <mat-form-field class="w-full">
+          <mat-label>Delivery Address</mat-label>
+          <textarea matInput rows="2" formControlName="address"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="col-span-2">
+        <mat-form-field class="w-full">
+          <mat-label>Remarks</mat-label>
+          <textarea rows="2" matInput formControlName="remarks"></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="flex justify-between">
+      <button mat-stroked-button class="" color="warn">
+        Cancel Transaction
+      </button>
+      <button mat-flat-button class="" color="primary" (click)="confirm()">
+        Create Delivery Receipt
+      </button>
+    </div>
+  </div>
+</div>

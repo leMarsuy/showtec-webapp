@@ -109,23 +109,23 @@
     mat-row
     *matRowDef="let row; columns: displayedColumns"
     (click)="rowEmitter.emit(row)"
-    class="hover:bg-gray-200"
+    class="hover:bg-gray-100"
   ></tr>
   }
 
   <!--  -->
 </table>
 @if(page.length == 0) {
-<div class="text-center py-12 text-gray-500">
+<div class="py-5 text-gray-500 flex justify-center gap-4">
   <mat-icon>error</mat-icon>
-  <h1>No Data Available</h1>
+  <h1>Empty Table</h1>
 </div>
 } @else if(page.length < 0) {
 <div class="text-center py-12 text-gray-500">
   <mat-icon>timer</mat-icon>
   <h1>Loading Table...</h1>
 </div>
-} @if (page) {
+} @if (page && hasPagination) {
 <mat-paginator
   class="py-2 border-t-2 border-gray-200"
   [length]="page.length"

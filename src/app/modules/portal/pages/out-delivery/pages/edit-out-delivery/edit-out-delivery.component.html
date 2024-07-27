@@ -1,10 +1,12 @@
 <div class="flex gap-4">
   <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
-    <div class="flex" [routerLink]="'../'">
+    <div class="flex" [routerLink]="'../../'">
       <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
     </div>
   </div>
+  @if(_id) {
   <div class="w-full">
-    <app-out-delivery-form></app-out-delivery-form>
+    <app-out-delivery-form [_id]="_id"></app-out-delivery-form>
   </div>
+  }
 </div>

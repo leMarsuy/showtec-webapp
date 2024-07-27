@@ -12,6 +12,7 @@ import { deepFind } from '@app/shared/utils/deepfind';
 })
 export class TableComponent {
   agingDays = AgingType.DAYS;
+  @Input() hasPagination: boolean = true;
   @Input() dataSource: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() page: PageEvent = {

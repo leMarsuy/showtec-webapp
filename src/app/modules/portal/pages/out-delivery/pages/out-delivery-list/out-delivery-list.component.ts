@@ -55,11 +55,6 @@ export class OutDeliveryListComponent {
       dotNotationPath: 'deliveryDate',
       type: ColumnType.AGE_IN_DAYS,
     },
-    // {
-    //   label: 'Status',
-    //   dotNotationPath: 'status',
-    //   type: ColumnType.STRING,
-    // },
 
     {
       label: 'Action',
@@ -128,7 +123,7 @@ export class OutDeliveryListComponent {
     if (e.action.name == 'print') {
       this.print(e.element);
     } else if (e.action.name == 'edit') {
-      // lets edit this shit
+      this.router.navigate(['portal/out-delivery/edit/' + e.element._id]);
     }
   }
 
