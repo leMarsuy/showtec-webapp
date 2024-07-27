@@ -30,22 +30,6 @@ body {
   background-color: transparent !important;
 }
 
-// custom form field
-
-.mdc-text-field--outlined {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  --mdc-outlined-text-field-container-shape: 1.5rem !important;
-  .mat-mdc-icon-button {
-    margin-right: 0.75rem !important;
-  }
-
-  .mat-mdc-form-field-icon-suffix {
-    margin-right: 0.75rem !important;
-    cursor: pointer;
-  }
-}
-
 // custom paginator {
 
 .mat-mdc-paginator {
