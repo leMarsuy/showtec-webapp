@@ -1,0 +1,15 @@
+<p mat-dialog-title>Batch Product Upload</p>
+<mat-dialog-content>
+  <app-file-upload (fileUploaded)="fileUploaded($event)"></app-file-upload>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" mat-dialog-close>Cancel</button>
+    <div class="gap-4">
+      <button mat-button (click)="downloadTemplate()">Download Template</button>
+      <button mat-raised-button color="primary" disabled>
+        Add to Product Table
+      </button>
+    </div>
+  </div>
+</mat-dialog-actions>

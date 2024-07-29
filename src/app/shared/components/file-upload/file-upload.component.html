@@ -1,0 +1,18 @@
+<div
+  class="border-2 border-gray-500 border-dashed py-[5rem] text-center justify-center"
+>
+  <mat-icon class="text-sky-500">cloud_upload</mat-icon>
+  <p class="text-lg">Choose a File</p>
+  <p class="text-gray-400">Allowed File Extensions: .XLSX, up to 50MB.</p>
+  <button mat-stroked-button class="mt-4" (click)="fileInput.click()">
+    Browse File
+  </button>
+
+  <input
+    hidden
+    type="file"
+    (change)="fileSelected($event)"
+    [disabled]="isUploading"
+    #fileInput
+  />
+</div>

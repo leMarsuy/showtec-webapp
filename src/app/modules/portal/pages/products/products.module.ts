@@ -15,9 +15,16 @@ import { AddProductComponent } from './add-product/add-product.component';
 import { EditProductComponent } from './edit-product/edit-product.component';
 import { ContentHeaderModule } from '@shared/components/content-header/content-header.module';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { BatchAddProductComponent } from './batch-add-product/batch-add-product.component';
+import { FileUploadModule } from '../../../../shared/components/file-upload/file-upload.module';
 
 @NgModule({
-  declarations: [ProductsComponent, AddProductComponent, EditProductComponent],
+  declarations: [
+    ProductsComponent,
+    AddProductComponent,
+    EditProductComponent,
+    BatchAddProductComponent,
+  ],
   imports: [
     CommonModule,
     ProductsRoutingModule,
@@ -31,6 +38,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatDialogModule,
     ContentHeaderModule,
     MatAutocompleteModule,
+    FileUploadModule,
   ],
 })
 export class ProductsModule {}

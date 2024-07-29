@@ -1,12 +1,12 @@
 import { commonEnv } from './environment.common';
 
 const env = {
-  ENVIRONMENT_NAME: 'development',
+  ENVIRONMENT_NAME: 'staging',
   PRODUCTION: false,
-  API_URL: 'http://localhost:3500/api/v1',
+  API_URL: '',
 };
 
-export const enviroment = {
+export const environment = {
   ...commonEnv,
   ...env,
 };

@@ -4,4 +4,5 @@ export const PRODUCT_CLASSIFICATIONS = [
   'AMPLIFIER',
   'EFFECTS',
   'HEADPHONES',
+  'UNKNOWN',
 ];
