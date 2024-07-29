@@ -5,3 +5,8 @@ const env = {
   PRODUCTION: true,
   API_URL: 'https://sea-turtle-app-jwxg7.ondigitalocean.app/api/v1',
 };
+
+export const enviroment = {
+  ...commonEnv,
+  ...env,
+};
