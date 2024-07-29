@@ -56,6 +56,6 @@ export class TableComponent {
       ? column.colorCodes.find((cc) => cc.value == value)?.color || Color.DEAD
       : Color.DEAD;
 
-    return `w-fit px-4 border-2 border-${color}-500 text-${color}-500 bg-${color}-100 text-center rounded-lg`;
+    return `w-fit px-4 border-2 border-${color}-500 text-${color}-500 bg-${color}-100 text-center rounded-xl`;
   }
 }

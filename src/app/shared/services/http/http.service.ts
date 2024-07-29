@@ -11,6 +11,7 @@ export class HttpService {
 
   constructor(private http: HttpClient) {
     console.log(this.apiUrl);
+    console.log(enviroment);
   }
 
   get options() {
