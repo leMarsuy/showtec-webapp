@@ -1,13 +1,47 @@
 <p mat-dialog-title>Batch Product Upload</p>
 <mat-dialog-content>
+  @if(showTable) {
+  <div>
+    <div class="w-full mb-2 sticky top-0">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="(progress / page.length) * 100"
+      ></mat-progress-bar>
+    </div>
+    <app-table
+      [dataSource]="products"
+      [page]="page"
+      [columns]="columns"
+      [hasPagination]="false"
+    ></app-table>
+  </div>
+  } @else {
   <app-file-upload (fileUploaded)="fileUploaded($event)"></app-file-upload>
+  }
 </mat-dialog-content>
 <mat-dialog-actions>
   <div class="w-full flex justify-between">
-    <button mat-button color="warn" mat-dialog-close>Cancel</button>
+    <div class="gap-4">
+      @if(showTable) {
+      <button
+        mat-button
+        (click)="showTable = !showTable"
+        [disabled]="uploading"
+      >
+        <mat-icon>arrow_left</mat-icon>Change File
+      </button>
+      } @else {
+      <button mat-button color="warn" mat-dialog-close>Cancel</button>
+      }
+    </div>
     <div class="gap-4">
       <button mat-button (click)="downloadTemplate()">Download Template</button>
-      <button mat-raised-button color="primary" disabled>
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="!showTable || uploading"
+        (click)="batching()"
+      >
         Add to Product Table
       </button>
     </div>

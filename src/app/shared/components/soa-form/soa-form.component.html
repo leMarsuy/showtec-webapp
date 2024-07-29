@@ -1,0 +1,245 @@
+<div class="flex text-gray-900 gap-4">
+  <div class="bg-white rounded-xl p-4 grow gap-4 flex flex-col">
+    <section>
+      <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+        <p>PRODUCTS</p>
+      </div>
+      <app-table
+        [columns]="listedItemsColumns"
+        [dataSource]="listedItems"
+        [page]="listedItemsPage"
+        (actionEmitter)="actionEventHandler($event)"
+        (updateCellEmitter)="updateCellEventHandler($event)"
+      ></app-table>
+      <div class="flex gap-4">
+        <mat-form-field class="w-full" appearance="outline">
+          <input
+            [formControl]="productNameControl"
+            matInput
+            type="text"
+            placeholder="Search Product Here..."
+            [matAutocomplete]="productAuto"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #productAuto="matAutocomplete"
+            (optionSelected)="pushToListedProducts($event.option.value)"
+          >
+            @for (option of filteredProducts | async; track option) {
+            <mat-option [value]="option">
+              {{ option.brand }} {{ option.model }}
+            </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+        <p>DISCOUNTS</p>
+      </div>
+      <div class="flex font-bold p-4 pb-2">
+        <div class="w-full">Description</div>
+        <div class="w-full">Discount</div>
+        <div class="w-[10rem] flex-none text-center">Remove</div>
+      </div>
+      @if(listedDiscounts.length){
+      <div class="flex flex-col gap-4 p-4">
+        @for (disc of listedDiscounts; track $index) {
+        <div class="flex border-b-2 border-gray-100">
+          <div class="w-full">
+            <p>{{ disc.name }}</p>
+          </div>
+          <div class="w-full">{{ disc.value }}</div>
+          <div class="w-[10rem] flex-none text-center">
+            <mat-icon (click)="removeFromListedDiscounts($index)">
+              close
+            </mat-icon>
+          </div>
+        </div>
+        }
+      </div>
+      }
+      <div class="flex gap-4" [formGroup]="discountForm">
+        <mat-form-field class="w-full" appearance="outline">
+          <input
+            formControlName="name"
+            matInput
+            type="text"
+            placeholder="Name of Discount"
+          />
+        </mat-form-field>
+
+        <mat-form-field class="w-full" appearance="outline">
+          <input
+            formControlName="value"
+            matInput
+            type="number"
+            placeholder="Amount"
+          />
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="mat-button-lg w-[25rem]"
+          [disabled]="!discountForm.valid"
+          (click)="pushToListedDiscounts()"
+        >
+          Add Discount
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+        <p>SIGNATORIES</p>
+      </div>
+      <div class="flex font-bold p-4 pb-2">
+        <div class="w-full">Name</div>
+        <div class="w-full">Designation</div>
+        <div class="w-full">Action</div>
+        <div class="w-[10rem] flex-none text-center">Remove</div>
+      </div>
+      @if(listedSignatories.length){
+      <div class="flex flex-col gap-4 p-4">
+        @for (user of listedSignatories; track $index) {
+        <div class="flex border-b-2 border-gray-100">
+          <div class="w-full">
+            <p>{{ user.name }}</p>
+          </div>
+          <div class="w-full">{{ user.designation }}</div>
+          <div class="w-full">
+            <mat-select [(ngModel)]="user.action">
+              @for (action of signatoryActions; track action) {
+              <mat-option [value]="action">{{ action }}</mat-option>
+              }
+            </mat-select>
+          </div>
+          <div class="w-[10rem] flex-none text-center">
+            <mat-icon (click)="removeFromListedSignatories($index)">
+              close
+            </mat-icon>
+          </div>
+        </div>
+        }
+      </div>
+      }
+      <div class="flex gap-4">
+        <mat-form-field class="w-full" appearance="outline">
+          <input
+            [formControl]="signatoryControl"
+            matInput
+            type="text"
+            placeholder="Seach User here..."
+            [matAutocomplete]="userAuto"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #userAuto="matAutocomplete"
+            (optionSelected)="pushToListedSignatories($event.option.value)"
+          >
+            @for (option of filteredUsers | async; track option) {
+            <mat-option [value]="option">{{ option.name }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </section>
+  </div>
+
+  <div class="bg-white rounded-xl p-4 w-[40rem] sticky top-16 h-fit">
+    <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+      <p>ACCOUNT INFORMATION</p>
+    </div>
+    <form class="grid grid-cols-2 gap-2" [formGroup]="soaForm">
+      <div class="col-span-2">
+        <mat-form-field class="w-full" *ngIf="!_id">
+          <mat-label>Customer's Name</mat-label>
+          <input
+            matInput
+            placeholder="Type Customer Name..."
+            [matAutocomplete]="customerAuto"
+            formControlName="_customerId"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #customerAuto="matAutocomplete"
+            (optionSelected)="autofillCustomerDetails($event.option.value)"
+            [displayWith]="displayCustomer"
+          >
+            @for (option of filteredCustomers | async; track option) {
+            <mat-option [value]="option">{{ option.name }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <div *ngIf="soa" class="p-4 bg-sky-500 text-white">
+          <p>{{ soa.STATIC.name }}</p>
+          <p>
+            <b>{{ soa.code?.value }}</b>
+          </p>
+        </div>
+      </div>
+      <div class="col-span-1">
+        <mat-form-field class="w-full">
+          <mat-label>Contact No.</mat-label>
+          <input matInput formControlName="mobile" placeholder="09XXXXXXXXX" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-span-1">
+        <mat-form-field class="w-full">
+          <mat-label>SOA Date</mat-label>
+          <input
+            matInput
+            placeholder="MM/DD/YYYY"
+            formControlName="soaDate"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="col-span-2">
+        <mat-form-field class="w-full">
+          <mat-label>Address</mat-label>
+          <textarea matInput rows="2" formControlName="address"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="col-span-2">
+        <mat-form-field class="w-full">
+          <mat-label>Remarks</mat-label>
+          <textarea rows="2" matInput formControlName="remarks"></textarea>
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="flex justify-between">
+      @if(_id){
+      <div class="flex">
+        <button mat-stroked-button color="warn" (click)="confirmDiscard()">
+          Discard Changes
+        </button>
+        <button mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
+      <button mat-raised-button color="primary" (click)="confirmChanges()">
+        Apply Changes
+      </button>
+      } @else {
+      <button mat-stroked-button color="warn">Cancel Transaction</button>
+      <button mat-flat-button color="primary" (click)="confirm()">
+        Create Statement of Account
+      </button>
+      }
+    </div>
+  </div>
+</div>

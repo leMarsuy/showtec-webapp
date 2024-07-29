@@ -17,6 +17,8 @@ import { ContentHeaderModule } from '@shared/components/content-header/content-h
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { BatchAddProductComponent } from './batch-add-product/batch-add-product.component';
 import { FileUploadModule } from '../../../../shared/components/file-upload/file-upload.module';
+import { TableModule } from '@app/shared/components/table/table.module';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,8 @@ import { FileUploadModule } from '../../../../shared/components/file-upload/file
     ContentHeaderModule,
     MatAutocompleteModule,
     FileUploadModule,
+    TableModule,
+    MatProgressBarModule,
   ],
 })
 export class ProductsModule {}

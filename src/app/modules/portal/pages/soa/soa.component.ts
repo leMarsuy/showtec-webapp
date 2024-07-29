@@ -16,7 +16,7 @@ export class SoaComponent {
   actions: ContentHeaderAction[] = [
     {
       id: 'add',
-      label: 'Create Statement of Accountz',
+      label: 'Create Statement of Account',
       icon: 'add',
     },
   ];

@@ -17,6 +17,10 @@ export class ProductApiService {
     return this.httpService.post(`${this.apiPrefix}`, product);
   }
 
+  createProductByBatch(products: Product[]) {
+    return this.httpService.post(`${this.apiPrefix}/batch`, products);
+  }
+
   getProducts(query?: QueryParams & { searchField?: string }) {
     var sanitizedQuery: QueryParams & { searchField?: string } = {};
     if (query)

@@ -12,17 +12,25 @@ import { BatchAddProductComponent } from './batch-add-product/batch-add-product.
 export class ProductsComponent {
   actions: ContentHeaderAction[] = [
     {
+      id: 'batch',
+      icon: 'post_add',
+      label: 'Batch Insert',
+    },
+    {
       id: 'add',
       icon: 'add',
       label: 'Add Product',
     },
   ];
 
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog) {}
+
+  openBatchAdd() {
     this.dialog
       .open(BatchAddProductComponent, {
         maxWidth: '60rem',
         width: '60rem',
+        disableClose: true,
       })
       .afterClosed()
       .subscribe((refresh) => {
@@ -51,6 +59,10 @@ export class ProductsComponent {
     switch (action) {
       case 'add':
         this.openAddProduct();
+        break;
+
+      case 'batch':
+        this.openBatchAdd();
         break;
 
       default:

@@ -18,7 +18,7 @@
           (keyup.enter)="getProducts()"
         />
       </mat-form-field>
-      <mat-form-field appearance="outline" class="w-full">
+      <!-- <mat-form-field appearance="outline" class="w-full">
         <mat-select
           placeholder="Classification"
           formControlName="classification"
@@ -27,7 +27,7 @@
           <mat-option [value]="classification">{{ classification }}</mat-option>
           }
         </mat-select>
-      </mat-form-field>
+      </mat-form-field> -->
     </form>
 
     <div class="flex justify-end gap-4">
@@ -64,6 +64,7 @@
       [columns]="columns"
       [page]="page"
       (rowEmitter)="rowEvent($event)"
+      (pageEmitter)="pageEvent($event)"
     ></app-table>
   </div>
 </div>

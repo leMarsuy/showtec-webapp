@@ -3,16 +3,10 @@ import { CommonModule } from '@angular/common';
 
 import { CreateSoaRoutingModule } from './create-soa-routing.module';
 import { CreateSoaComponent } from './create-soa.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { TableModule } from '@app/shared/components/table/table.module';
+import { SoaFormModule } from '@app/shared/components/soa-form/soa-form.module';
 
 @NgModule({
   declarations: [CreateSoaComponent],
@@ -21,15 +15,8 @@ import { TableModule } from '@app/shared/components/table/table.module';
     CreateSoaRoutingModule,
     MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCheckboxModule,
     MatButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule,
-    MatDatepickerModule,
-    TableModule,
+    SoaFormModule,
   ],
 })
 export class CreateSoaModule {}
