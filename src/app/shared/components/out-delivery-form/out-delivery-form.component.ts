@@ -164,6 +164,11 @@ export class OutDeliveryFormComponent implements OnInit {
       type: ColumnType.STRING,
     },
     {
+      label: 'Model',
+      dotNotationPath: 'model',
+      type: ColumnType.STRING,
+    },
+    {
       label: 'Description',
       dotNotationPath: 'classification',
       type: ColumnType.STRING,
@@ -173,11 +178,11 @@ export class OutDeliveryFormComponent implements OnInit {
       dotNotationPath: 'stocks.0.serialNumber',
       type: ColumnType.STRING,
     },
-    {
-      label: 'Status',
-      dotNotationPath: 'stocks.0.status',
-      type: ColumnType.STRING,
-    },
+    // {
+    //   label: 'Status',
+    //   dotNotationPath: 'stocks.0.status',
+    //   type: ColumnType.STRING,
+    // },
     {
       label: 'Remove',
       dotNotationPath: 'stocks',

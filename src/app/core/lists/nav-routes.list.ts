@@ -18,7 +18,7 @@ export const NAV_ROUTES = [
         icon: 'inventory_2',
       },
       {
-        name: 'Out-Delivery',
+        name: 'Delivery Receipt',
         path: 'out-delivery',
         icon: 'local_shipping',
       },
