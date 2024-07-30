@@ -29,6 +29,7 @@ import {
 import { SnackbarService } from '../snackbar/snackbar.service';
 import { Router } from '@angular/router';
 import { ConfirmationService } from '../confirmation/confirmation.service';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 interface Pricing {
   STATIC: {
@@ -42,6 +43,7 @@ interface Pricing {
 @Component({
   selector: 'app-soa-form',
   templateUrl: './soa-form.component.html',
+  providers: [provideNativeDateAdapter()],
   styleUrl: './soa-form.component.scss',
 })
 export class SoaFormComponent {
@@ -69,11 +71,6 @@ export class SoaFormComponent {
     dueDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
   });
-
-  listedItems: Array<Product & Pricing> = [];
-  listedSignatories: Array<User & { action: string }> = [];
-  listedDiscounts: Array<Discount> = [];
-
   constructor(
     private fb: FormBuilder,
     private productApi: ProductApiService,
@@ -85,6 +82,64 @@ export class SoaFormComponent {
     private confirmation: ConfirmationService
   ) {}
 
+  listedDiscounts: Array<Discount> = [];
+  listedDiscountsColumns: TableColumn[] = [
+    {
+      label: 'Name',
+      dotNotationPath: 'name',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Value',
+      dotNotationPath: 'value',
+      type: ColumnType.NUMBER,
+    },
+    {
+      label: 'Remove',
+      dotNotationPath: '_id',
+      type: ColumnType.ACTION,
+      width: '[2rem]',
+      actions: [{ icon: 'remove', name: 'remove', color: Color.ERROR }],
+    },
+  ];
+  listedDiscountsPage: PageEvent = {
+    pageIndex: 0,
+    pageSize: 100,
+    length: 0,
+  };
+
+  listedSignatories: Array<any> = [];
+  listedSignatoriesColumns: TableColumn[] = [
+    {
+      label: 'Name',
+      dotNotationPath: 'name',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Designation',
+      dotNotationPath: 'designation',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Action',
+      dotNotationPath: 'action',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Remove',
+      dotNotationPath: '_id',
+      type: ColumnType.ACTION,
+      width: '[2rem]',
+      actions: [{ icon: 'remove', name: 'remove', color: Color.ERROR }],
+    },
+  ];
+  listedSignatoriesPage: PageEvent = {
+    pageIndex: 0,
+    pageSize: 100,
+    length: 0,
+  };
+
+  listedItems: Array<Product & Pricing> = [];
   listedItemsColumns: TableColumn[] = [
     {
       label: 'Item',
@@ -143,11 +198,38 @@ export class SoaFormComponent {
   };
 
   actionEventHandler(e: any) {
-    console.log(e);
     if (e.action.name == 'remove') {
       console.log('removing');
       this.removeFromListedProducts(e.i);
     }
+  }
+
+  actionEventSignatories(e: any) {
+    if (e.action.name == 'remove') {
+      this.removeFromListedSignatories(e.i);
+    }
+  }
+
+  actionEventDiscounts(e: any) {
+    if (e.action.name == 'remove') {
+      this.removeFromListedDiscounts(e.i);
+    }
+  }
+
+  getLastSOA() {
+    // this.soaApi.getMostRecentSOA().subscribe({
+    //   next: (res: any) => {
+    //     res.signatories.forEach((sig: any) => {
+    //       this.listedSignatories.push({
+    //         name: sig.STATIC.name,
+    //         designation: sig.STATIC.designation,
+    //         action: sig.action,
+    //       });
+    //     });
+    //     this.listedSignatories = [...this.listedSignatories];
+    //     this.listedSignatoriesPage.length = this.listedSignatories.length;
+    //   },
+    // });
   }
 
   updateCellEventHandler(e: {
@@ -292,29 +374,34 @@ export class SoaFormComponent {
   }
 
   pushToListedSignatories(user: User) {
-    if (!this.listedSignatories.find((o) => o._id === user._id))
-      this.listedSignatories.push({
-        ...user,
-        action: SignatoryAction.APPROVED,
-      });
-
+    this.listedSignatories.push({
+      ...user,
+      action: SignatoryAction.APPROVED,
+    });
+    this.listedSignatories = [...this.listedSignatories];
+    this.listedSignatoriesPage.length = this.listedSignatories.length;
     this.signatoryControl.reset();
   }
 
   removeFromListedSignatories(i: number) {
     this.listedSignatories.splice(i, 1);
+    this.listedSignatories = [...this.listedSignatories];
+    this.listedSignatoriesPage.length = this.listedSignatories.length;
   }
 
   pushToListedDiscounts() {
     this.listedDiscounts.push({
       ...(this.discountForm.getRawValue() as Discount),
     });
-
+    this.listedDiscounts = [...this.listedDiscounts];
+    this.listedDiscountsPage.length = this.listedDiscounts.length;
     this.discountForm.reset();
   }
 
   removeFromListedDiscounts(i: number) {
     this.listedDiscounts.splice(i, 1);
+    this.listedDiscounts = [...this.listedDiscounts];
+    this.listedDiscountsPage.length = this.listedDiscounts.length;
   }
 
   private _filterCustomers(value: string) {

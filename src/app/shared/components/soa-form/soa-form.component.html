@@ -39,28 +39,13 @@
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>DISCOUNTS</p>
       </div>
-      <div class="flex font-bold p-4 pb-2">
-        <div class="w-full">Description</div>
-        <div class="w-full">Discount</div>
-        <div class="w-[10rem] flex-none text-center">Remove</div>
-      </div>
-      @if(listedDiscounts.length){
-      <div class="flex flex-col gap-4 p-4">
-        @for (disc of listedDiscounts; track $index) {
-        <div class="flex border-b-2 border-gray-100">
-          <div class="w-full">
-            <p>{{ disc.name }}</p>
-          </div>
-          <div class="w-full">{{ disc.value }}</div>
-          <div class="w-[10rem] flex-none text-center">
-            <mat-icon (click)="removeFromListedDiscounts($index)">
-              close
-            </mat-icon>
-          </div>
-        </div>
-        }
-      </div>
-      }
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedDiscountsColumns"
+        [dataSource]="listedDiscounts"
+        [page]="listedDiscountsPage"
+        (actionEmitter)="actionEventDiscounts($event)"
+      ></app-table>
       <div class="flex gap-4" [formGroup]="discountForm">
         <mat-form-field class="w-full" appearance="outline">
           <input
@@ -96,43 +81,20 @@
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>SIGNATORIES</p>
       </div>
-      <div class="flex font-bold p-4 pb-2">
-        <div class="w-full">Name</div>
-        <div class="w-full">Designation</div>
-        <div class="w-full">Action</div>
-        <div class="w-[10rem] flex-none text-center">Remove</div>
-      </div>
-      @if(listedSignatories.length){
-      <div class="flex flex-col gap-4 p-4">
-        @for (user of listedSignatories; track $index) {
-        <div class="flex border-b-2 border-gray-100">
-          <div class="w-full">
-            <p>{{ user.name }}</p>
-          </div>
-          <div class="w-full">{{ user.designation }}</div>
-          <div class="w-full">
-            <mat-select [(ngModel)]="user.action">
-              @for (action of signatoryActions; track action) {
-              <mat-option [value]="action">{{ action }}</mat-option>
-              }
-            </mat-select>
-          </div>
-          <div class="w-[10rem] flex-none text-center">
-            <mat-icon (click)="removeFromListedSignatories($index)">
-              close
-            </mat-icon>
-          </div>
-        </div>
-        }
-      </div>
-      }
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedSignatoriesColumns"
+        [dataSource]="listedSignatories"
+        [page]="listedSignatoriesPage"
+        (actionEmitter)="actionEventSignatories($event)"
+      ></app-table>
       <div class="flex gap-4">
-        <mat-form-field class="w-full" appearance="outline">
+        <mat-form-field class="w-full">
+          <mat-label>Find System User</mat-label>
           <input
             [formControl]="signatoryControl"
             matInput
             type="text"
-            placeholder="Seach User here..."
             [matAutocomplete]="userAuto"
           />
           <mat-autocomplete
@@ -220,6 +182,45 @@
         </mat-form-field>
       </div>
     </form>
+
+    <div
+      class="gap-2x grid grid-cols-2 border-2 border-dashed border-gray-500 p-4 mb-4"
+    >
+      <div class="col-span-1">
+        <p>SUB-TOTAL</p>
+      </div>
+      <div class="col-span-1 text-right">
+        <p>PHP 180,000</p>
+      </div>
+
+      <div class="col-span-1">
+        <p>PRODUCT DISCOUNT</p>
+      </div>
+      <div class="col-span-1 text-right">
+        <p>(PHP 7,200)</p>
+      </div>
+
+      <div class="col-span-1">
+        <p>SALES DISCOUNT</p>
+      </div>
+      <div class="col-span-1 text-right">
+        <p>(PHP 1,200)</p>
+      </div>
+
+      <div class="col-span-1">
+        <p>VAT (12%)</p>
+      </div>
+      <div class="col-span-1 text-right">
+        <p>PHP 13,900</p>
+      </div>
+
+      <div class="col-span-1">
+        <p class="font-bold">GRAND TOTAL</p>
+      </div>
+      <div class="col-span-1 text-right">
+        <p class="font-bold">PHP 166,200</p>
+      </div>
+    </div>
 
     <div class="flex justify-between">
       @if(_id){
