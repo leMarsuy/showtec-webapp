@@ -10,9 +10,17 @@ import { AgingPipe } from '@app/shared/pipes/aging/aging.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TableCellComponent } from './table-cell/table-cell.component';
+import { StaticTableCellComponent } from './static-table-cell/static-table-cell.component';
+import { EditableTableCellComponent } from './editable-table-cell/editable-table-cell.component';
 
 @NgModule({
-  declarations: [TableComponent],
+  declarations: [
+    TableComponent,
+    TableCellComponent,
+    StaticTableCellComponent,
+    EditableTableCellComponent,
+  ],
   imports: [
     CommonModule,
     MatTableModule,
@@ -26,6 +34,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatTooltipModule,
   ],
-  exports: [TableComponent],
+  exports: [TableComponent, TableCellComponent],
 })
 export class TableModule {}

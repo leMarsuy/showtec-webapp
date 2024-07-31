@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Color } from '@app/core/enums/color.enum';
@@ -11,7 +11,7 @@ import {
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Customer } from '@app/core/models/customer.model';
 import { Product } from '@app/core/models/product.model';
-import { Discount, SOA } from '@app/core/models/soa.model';
+import { Discount, SOA, Tax } from '@app/core/models/soa.model';
 import { User } from '@app/core/models/user.model';
 import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
 import { ProductApiService } from '@app/shared/services/api/product-api/product-api.service';
@@ -30,6 +30,7 @@ import { SnackbarService } from '../snackbar/snackbar.service';
 import { Router } from '@angular/router';
 import { ConfirmationService } from '../confirmation/confirmation.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { Alignment } from '@app/core/enums/align.enum';
 
 interface Pricing {
   STATIC: {
@@ -46,7 +47,7 @@ interface Pricing {
   providers: [provideNativeDateAdapter()],
   styleUrl: './soa-form.component.scss',
 })
-export class SoaFormComponent {
+export class SoaFormComponent implements OnInit {
   signatoryActions = SIGNATORY_ACTIONS;
   productNameControl = this.fb.control('');
   signatoryControl = this.fb.control('');
@@ -54,6 +55,12 @@ export class SoaFormComponent {
     name: this.fb.control('', [Validators.required]),
     value: this.fb.control(0, [Validators.required]),
   });
+
+  taxForm = this.fb.group({
+    name: this.fb.control('', [Validators.required]),
+    value: this.fb.control(0, [Validators.required]),
+  });
+
   soa!: SOA;
   @Input() _id!: string;
 
@@ -108,6 +115,32 @@ export class SoaFormComponent {
     length: 0,
   };
 
+  listedTaxes: Array<Discount> = [];
+  listedTaxesColumns: TableColumn[] = [
+    {
+      label: 'Name',
+      dotNotationPath: 'name',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Value',
+      dotNotationPath: 'value',
+      type: ColumnType.PERCENTAGE,
+    },
+    {
+      label: 'Remove',
+      dotNotationPath: '_id',
+      type: ColumnType.ACTION,
+      width: '[2rem]',
+      actions: [{ icon: 'remove', name: 'remove', color: Color.ERROR }],
+    },
+  ];
+  listedTaxesPage: PageEvent = {
+    pageIndex: 0,
+    pageSize: 100,
+    length: 0,
+  };
+
   listedSignatories: Array<any> = [];
   listedSignatoriesColumns: TableColumn[] = [
     {
@@ -142,25 +175,26 @@ export class SoaFormComponent {
   listedItems: Array<Product & Pricing> = [];
   listedItemsColumns: TableColumn[] = [
     {
-      label: 'Item',
+      label: 'Brand',
       dotNotationPath: 'brand',
       type: ColumnType.STRING,
     },
     {
-      label: 'Desc',
-      dotNotationPath: 'classification',
+      label: 'Model',
+      dotNotationPath: 'model',
       type: ColumnType.STRING,
     },
     {
-      label: 'In Stock',
-      dotNotationPath: '_$stockSummary.In Stock',
+      label: 'Desc.',
+      dotNotationPath: 'classification',
       type: ColumnType.STRING,
+      editable: true,
     },
-
     {
       label: 'Price',
       dotNotationPath: 'STATIC.unit_price',
       type: ColumnType.CURRENCY,
+      editable: true,
     },
     {
       label: 'Qty',
@@ -172,7 +206,7 @@ export class SoaFormComponent {
       label: 'Disc.',
       dotNotationPath: 'STATIC.disc',
       editable: true,
-      type: ColumnType.NUMBER,
+      type: ColumnType.PERCENTAGE,
     },
     {
       label: 'Total',
@@ -180,10 +214,11 @@ export class SoaFormComponent {
       type: ColumnType.CURRENCY,
     },
     {
-      label: 'Action',
+      label: '#',
+      align: Alignment.CENTER,
       dotNotationPath: '_id',
       type: ColumnType.ACTION,
-      width: '[4rem]',
+      width: 'fit',
       actions: [
         { icon: 'remove', name: 'remove', color: Color.ERROR },
         // { icon: 'add', name: 'edit', color: Color.SUCCESS },
@@ -216,6 +251,12 @@ export class SoaFormComponent {
     }
   }
 
+  actionEventTaxes(e: any) {
+    if (e.action.name == 'remove') {
+      this.removeFromListedTaxes(e.i);
+    }
+  }
+
   getLastSOA() {
     // this.soaApi.getMostRecentSOA().subscribe({
     //   next: (res: any) => {
@@ -237,19 +278,15 @@ export class SoaFormComponent {
     column: TableColumn;
     element: Product & Pricing;
   }) {
+    console.log('update');
     deepInsert(e.newValue, e.column.dotNotationPath, e.element);
     var total = e.element.STATIC.quantity * e.element.STATIC.unit_price;
     e.element.STATIC.total = total - (e.element.STATIC.disc || 0) * total;
-
-    console.log(total);
-
     this.listedItems = [...this.listedItems];
-    console.log(this.listedItems);
-
     this.listedItemsPage.length = -1;
-
     setTimeout(() => {
       this.listedItemsPage.length = this.listedItems.length;
+      this._calculateSummary();
     }, 20);
   }
 
@@ -259,7 +296,7 @@ export class SoaFormComponent {
 
   pushToListedProducts(product: Product & Pricing) {
     var li = this.listedItems;
-    if (!li.find((o) => o.stocks[0]._id === product.stocks[0]._id))
+    if (!li.find((o) => o._id === product._id))
       this.listedItems.push({
         ...product,
         STATIC: {
@@ -271,6 +308,7 @@ export class SoaFormComponent {
       });
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length++;
+    this._calculateSummary();
     this.productNameControl.reset();
   }
 
@@ -278,6 +316,7 @@ export class SoaFormComponent {
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length--;
+    this._calculateSummary();
   }
 
   ngOnInit(): void {
@@ -304,6 +343,7 @@ export class SoaFormComponent {
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((val: any) => {
+        console.log(val);
         return this._filterProducts(val || '');
       })
     );
@@ -316,13 +356,14 @@ export class SoaFormComponent {
       STATIC: {
         name: rawSoaForm._customerId.name,
         mobile: rawSoaForm._customerId.mobile,
-        address: rawSoaForm._customerId.address,
+        address: rawSoaForm._customerId.addressBilling,
       },
       soaDate: rawSoaForm.soaDate,
       dueDate: rawSoaForm.dueDate,
       signatories: [],
       items: [],
       discounts: this.listedDiscounts,
+      taxes: this.listedTaxes,
       remarks: rawSoaForm.remarks,
     };
 
@@ -360,7 +401,7 @@ export class SoaFormComponent {
           'SOA Successfully Created.'
         );
         setTimeout(() => {
-          this.router.navigate(['/portal/out-delivery']);
+          this.router.navigate(['/portal/soa']);
         }, 1400);
       },
       error: (err: HttpErrorResponse) => {
@@ -395,13 +436,32 @@ export class SoaFormComponent {
     });
     this.listedDiscounts = [...this.listedDiscounts];
     this.listedDiscountsPage.length = this.listedDiscounts.length;
+    this._calculateSummary();
     this.discountForm.reset();
+  }
+
+  pushToListedTaxes() {
+    this.listedTaxes.push({
+      ...(this.taxForm.getRawValue() as Tax),
+    });
+    this.listedTaxes = [...this.listedTaxes];
+    this.listedTaxesPage.length = this.listedTaxes.length;
+    this._calculateSummary();
+    this.taxForm.reset();
   }
 
   removeFromListedDiscounts(i: number) {
     this.listedDiscounts.splice(i, 1);
     this.listedDiscounts = [...this.listedDiscounts];
     this.listedDiscountsPage.length = this.listedDiscounts.length;
+    this._calculateSummary();
+  }
+
+  removeFromListedTaxes(i: number) {
+    this.listedTaxes.splice(i, 1);
+    this.listedTaxes = [...this.listedTaxes];
+    this.listedTaxesPage.length = this.listedTaxes.length;
+    this._calculateSummary();
   }
 
   private _filterCustomers(value: string) {
@@ -478,5 +538,40 @@ export class SoaFormComponent {
       mobile,
       address: addressBilling,
     });
+  }
+
+  soaSummary = {
+    total: 0,
+    productDiscount: 0,
+    subtotal: 0,
+    grandtotal: 0,
+  };
+
+  _calculateSummary() {
+    this.soaSummary = {
+      total: 0,
+      productDiscount: 0,
+      subtotal: 0,
+      grandtotal: 0,
+    };
+
+    for (var item of this.listedItems) {
+      this.soaSummary.total += item.STATIC.unit_price * item.STATIC.quantity;
+      this.soaSummary.productDiscount +=
+        item.STATIC.unit_price * item.STATIC.quantity * (item.STATIC.disc || 0);
+    }
+
+    this.soaSummary.subtotal =
+      this.soaSummary.total - this.soaSummary.productDiscount;
+
+    for (var disc of this.listedDiscounts) {
+      this.soaSummary.subtotal -= disc.value;
+    }
+
+    this.soaSummary.grandtotal = this.soaSummary.subtotal;
+
+    for (var tax of this.listedTaxes) {
+      this.soaSummary.grandtotal += this.soaSummary.subtotal * tax.value;
+    }
   }
 }

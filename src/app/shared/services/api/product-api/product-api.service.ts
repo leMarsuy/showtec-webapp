@@ -29,7 +29,7 @@ export class ProductApiService {
         pageSize: query.pageSize || 0,
         sort: query.sort,
         searchText: query.searchText,
-        searchField: query.searchField,
+        searchField: query.searchField || '',
       };
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }

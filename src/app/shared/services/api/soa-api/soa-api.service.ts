@@ -35,4 +35,8 @@ export class SoaApiService {
   updateSoaById(_id: string, updateBody: SOA) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }
+
+  getPdfSoa(_id: string) {
+    return this.httpService.get(`${this.apiPrefix}/pdf/${_id}`);
+  }
 }

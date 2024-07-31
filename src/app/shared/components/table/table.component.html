@@ -13,89 +13,14 @@
     </th>
 
     <td mat-cell *matCellDef="let element; let i = index">
-      @if (column.type == 'string') {
-
-      <!--  -->
-      {{ column.dotNotationPath | deepFind : element }}
-
-      } @else if (column.type == 'date') {
-
-      <!--  -->
-      {{ column.dotNotationPath | deepFind : element | date : "MMM dd, YYYY" }}
-
-      } @else if (column.type == 'number') {
-
-      <!--  -->
-      <div
-        class="flex"
-        *ngIf="!element['__editOn' + $index + '_' + i]"
-        (click)="
-          element['__editOn' + $index + '_' + i] = true && column.editable
-        "
-      >
-        <span>
-          {{ column.dotNotationPath | deepFind : element || 0 | number }}
-        </span>
-      </div>
-
-      <div class="flex gap-2" *ngIf="element['__editOn' + $index + '_' + i]">
-        <input
-          *ngIf="element['__editOn' + $index + '_' + i]"
-          [(ngModel)]="element['__value' + $index + '_' + i]"
-          class="border-2 rounded-lg border-gray-200 w-10"
-          type="number"
-        />
-        <mat-icon
-          (click)="
-            updateCell(
-              element,
-              column,
-              element['__value' + $index + '_' + i],
-              i,
-              $index
-            )
-          "
-          class="text-emerald-500 cursor-pointer"
-        >
-          check
-        </mat-icon>
-      </div>
-
-      } @else if (column.type == 'currency') {
-
-      <!--  -->
-      {{ "₱" }}{{ column.dotNotationPath | deepFind : element | number }}
-
-      } @else if (column.type == 'age-in-days') {
-
-      <!--  -->
-      {{ column.dotNotationPath | deepFind : element | aging : agingDays }}
-
-      } @else if (column.type == 'action') {
-
-      <!--  -->
-      <div class="flex justify-center text-center">
-        @for (action of column.actions; track action) {
-        <button
-          [matTooltip]="action.name"
-          mat-icon-button
-          (click)="actionEmitter.emit({action, element, i})"
-        >
-          <mat-icon class="text-{{ action.color }}-500 cursor-pointer">
-            {{ action.icon }}
-          </mat-icon>
-        </button>
-        }
-      </div>
-
-      } @else if (column.type == 'status') {
-
-      <!--  -->
-      <div [class]="_cssStatus(element, column)">
-        {{ column.dotNotationPath | deepFind : element }}
-      </div>
-
-      }
+      <app-table-cell
+        [colIndex]="$index"
+        [rowIndex]="i"
+        [element]="element"
+        [column]="column"
+        (updateCellEmitter)="updateCellEmitter.emit($event)"
+        (actionEmitter)="actionEmitter.emit($event)"
+      ></app-table-cell>
     </td>
   </ng-container>
   }

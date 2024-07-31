@@ -20,6 +20,11 @@ export interface Discount {
   value: number;
 }
 
+export interface Tax {
+  name: string;
+  value: number;
+}
+
 export class SOA {
   _id?: string;
   code?: {
@@ -43,6 +48,7 @@ export class SOA {
   createdAt?: string;
   updatedAt?: string;
   discounts?: Array<Discount>;
+  taxes?: Array<Tax>;
   constructor(model: SOA) {
     this._id = model._id;
     this.code = model.code;

@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Alignment } from '@app/core/enums/align.enum';
+import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
@@ -40,23 +42,32 @@ export class SoaListComponent {
     },
     {
       label: 'Total',
-      dotNotationPath: 'items.length',
-      type: ColumnType.STRING,
+      dotNotationPath: 'summary.grandtotal',
+      type: ColumnType.CURRENCY,
     },
     {
-      label: 'Due Date',
-      dotNotationPath: 'dueDate',
-      type: ColumnType.DATE,
-    },
-    {
-      label: 'Aging',
-      dotNotationPath: 'dueDate',
+      label: 'Date of SOA',
+      dotNotationPath: 'soaDate',
       type: ColumnType.AGE_IN_DAYS,
     },
+
     {
-      label: 'Status',
-      dotNotationPath: 'status',
-      type: ColumnType.STRING,
+      label: 'Action',
+      dotNotationPath: '_id',
+      type: ColumnType.ACTION,
+      align: Alignment.CENTER,
+      actions: [
+        {
+          name: 'print',
+          icon: 'print',
+          color: Color.DEAD,
+        },
+        {
+          name: 'edit',
+          icon: 'edit',
+          color: Color.WARNING,
+        },
+      ],
     },
   ];
 
@@ -101,7 +112,30 @@ export class SoaListComponent {
     this.getSoas();
   }
 
-  rowEvent(product: SOA) {
-    this.router.navigate([product._id], { relativeTo: this.activatedRoute });
+  actionEvent(e: any) {
+    if (e.action.name == 'print') {
+      this.print(e.element);
+    } else if (e.action.name == 'edit') {
+      this.router.navigate(['portal/soa/edit/' + e.element._id]);
+    }
+  }
+
+  print(soa: SOA) {
+    if (!soa._id) return;
+    this.snackbarService.openLoadingSnackbar(
+      'Loading',
+      'Generating PDF. Please wait...'
+    );
+    this.soaApi.getPdfSoa(soa._id).subscribe({
+      next: (pdf: any) => {
+        this.snackbarService._loadingSnackbarRef.dismiss();
+        var w = window.open('', '_blank');
+        w?.document.write(
+          `<iframe width='100%' height='100%' src='${encodeURI(
+            pdf.base64
+          )}'></iframe>`
+        );
+      },
+    });
   }
 }

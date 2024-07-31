@@ -33,7 +33,6 @@ export class OutDeliveryApiService {
   }
 
   getPdfOutDelivery(_id: string) {
-    console.log(_id);
     return this.httpService.get(`${this.apiPrefix}/pdf/${_id}`);
   }
 

@@ -5,6 +5,7 @@
         <p>PRODUCTS</p>
       </div>
       <app-table
+        [hasPagination]="false"
         [columns]="listedItemsColumns"
         [dataSource]="listedItems"
         [page]="listedItemsPage"
@@ -79,6 +80,48 @@
 
     <section>
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
+        <p>TAXES</p>
+      </div>
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedTaxesColumns"
+        [dataSource]="listedTaxes"
+        [page]="listedTaxesPage"
+        (actionEmitter)="actionEventTaxes($event)"
+      ></app-table>
+      <div class="flex gap-4" [formGroup]="taxForm">
+        <mat-form-field class="w-full" appearance="outline">
+          <input
+            formControlName="name"
+            matInput
+            type="text"
+            placeholder="Name of Tax"
+          />
+        </mat-form-field>
+
+        <mat-form-field class="w-full" appearance="outline">
+          <input
+            formControlName="value"
+            matInput
+            type="number"
+            placeholder="Amount"
+          />
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="mat-button-lg w-[25rem]"
+          [disabled]="!taxForm.valid"
+          (click)="pushToListedTaxes()"
+        >
+          Add Tax
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>SIGNATORIES</p>
       </div>
       <app-table
@@ -111,11 +154,8 @@
     </section>
   </div>
 
-  <div class="bg-white rounded-xl p-4 w-[40rem] sticky top-16 h-fit">
-    <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
-      <p>ACCOUNT INFORMATION</p>
-    </div>
-    <form class="grid grid-cols-2 gap-2" [formGroup]="soaForm">
+  <div class="bg-white rounded-xl p-4 w-[25rem] sticky top-16 h-fit">
+    <form class="grid grid-cols-2 gap-x-1" [formGroup]="soaForm">
       <div class="col-span-2">
         <mat-form-field class="w-full" *ngIf="!_id">
           <mat-label>Customer's Name</mat-label>
@@ -184,41 +224,56 @@
     </form>
 
     <div
-      class="gap-2x grid grid-cols-2 border-2 border-dashed border-gray-500 p-4 mb-4"
+      class="gap-2x grid grid-cols-2 border-2 border-dashed border-gray-500 p-4 mb-4 text-sm"
     >
       <div class="col-span-1">
-        <p>SUB-TOTAL</p>
+        <p>Total</p>
       </div>
       <div class="col-span-1 text-right">
-        <p>PHP 180,000</p>
+        <p>PHP {{ soaSummary.total | number }}</p>
       </div>
 
       <div class="col-span-1">
-        <p>PRODUCT DISCOUNT</p>
+        <p>Product Disc.</p>
       </div>
       <div class="col-span-1 text-right">
-        <p>(PHP 7,200)</p>
+        <p>- PHP {{ soaSummary.productDiscount | number }}</p>
       </div>
-
+      @for (item of listedDiscounts; track $index) {
       <div class="col-span-1">
-        <p>SALES DISCOUNT</p>
+        <p>{{ item.name }}</p>
       </div>
       <div class="col-span-1 text-right">
-        <p>(PHP 1,200)</p>
+        <p>PHP {{ item.value | number }}</p>
       </div>
-
+      }
+      <div
+        class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"
+      ></div>
       <div class="col-span-1">
-        <p>VAT (12%)</p>
+        <p>Sub-Total</p>
       </div>
       <div class="col-span-1 text-right">
-        <p>PHP 13,900</p>
+        <p class="font-bold">PHP {{ soaSummary.subtotal | number }}</p>
       </div>
+      <!--  -->
+      @for (item of listedTaxes; track $index) {
+      <div class="col-span-1">
+        <p>{{ item.name }} {{ item.value | percent }}</p>
+      </div>
+      <div class="col-span-1 text-right">
+        <p>PHP {{ soaSummary.subtotal * item.value | number }}</p>
+      </div>
+      }
 
+      <div
+        class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"
+      ></div>
       <div class="col-span-1">
         <p class="font-bold">GRAND TOTAL</p>
       </div>
       <div class="col-span-1 text-right">
-        <p class="font-bold">PHP 166,200</p>
+        <p class="font-bold">PHP {{ soaSummary.grandtotal | number }}</p>
       </div>
     </div>
 
@@ -226,19 +281,19 @@
       @if(_id){
       <div class="flex">
         <button mat-stroked-button color="warn" (click)="confirmDiscard()">
-          Discard Changes
+          Discard
         </button>
         <button mat-icon-button>
           <mat-icon>more_vert</mat-icon>
         </button>
       </div>
       <button mat-raised-button color="primary" (click)="confirmChanges()">
-        Apply Changes
+        Save
       </button>
       } @else {
-      <button mat-stroked-button color="warn">Cancel Transaction</button>
+      <button mat-stroked-button color="warn">Cancel</button>
       <button mat-flat-button color="primary" (click)="confirm()">
-        Create Statement of Account
+        Create
       </button>
       }
     </div>
