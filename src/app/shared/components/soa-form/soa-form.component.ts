@@ -478,7 +478,7 @@ export class SoaFormComponent implements OnInit {
 
   private _filterProducts(value: string) {
     return this.productApi
-      .getProducts({ searchText: value, pageSize: 5 })
+      .getProducts({ searchText: value, pageSize: 30 })
       .pipe(map((response: any) => response.records));
   }
 

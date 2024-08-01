@@ -8,11 +8,8 @@ import { QueryParams } from '@core/interfaces/query-params.interface';
 })
 export class HttpService {
   apiUrl = enviroment.API_URL;
-
-  constructor(private http: HttpClient) {
-    console.log(this.apiUrl);
-    console.log(enviroment);
-  }
+  query!: QueryParams;
+  constructor(private http: HttpClient) {}
 
   get options() {
     const authToken = localStorage.getItem('auth');
@@ -25,15 +22,25 @@ export class HttpService {
 
   queryParams(query: QueryParams) {
     return new HttpParams({
-      fromObject: query as any,
+      fromObject: this.query as any,
     });
   }
 
-  get<T>(endpoint: string, query?: any) {
+  get<T>(endpoint: string, query?: QueryParams) {
     return this.http.get<T>(`${this.apiUrl}/${endpoint}`, {
       ...this.options,
       params: query ? this.queryParams(query) : {},
     });
+  }
+
+  getBlob<T>(endpoint: string) {
+    var options: any = {
+      headers: this.options.headers,
+      responseType: 'blob',
+      observe: 'response',
+    };
+
+    return this.http.get<T>(`${this.apiUrl}/${endpoint}`, options);
   }
 
   post<T>(endpoint: string, body: any) {

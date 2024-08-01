@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Alignment } from '@app/core/enums/align.enum';
@@ -9,6 +10,7 @@ import { ColumnType } from '@app/core/enums/column-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { SOA } from '@app/core/models/soa.model';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
 
@@ -77,7 +79,8 @@ export class SoaListComponent {
     private soaApi: SoaApiService,
     private snackbarService: SnackbarService,
     public router: Router,
-    public activatedRoute: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    private dialog: MatDialog
   ) {
     this.getSoas();
   }
@@ -122,20 +125,15 @@ export class SoaListComponent {
 
   print(soa: SOA) {
     if (!soa._id) return;
-    this.snackbarService.openLoadingSnackbar(
-      'Loading',
-      'Generating PDF. Please wait...'
-    );
-    this.soaApi.getPdfSoa(soa._id).subscribe({
-      next: (pdf: any) => {
-        this.snackbarService._loadingSnackbarRef.dismiss();
-        var w = window.open('', '_blank');
-        w?.document.write(
-          `<iframe width='100%' height='100%' src='${encodeURI(
-            pdf.base64
-          )}'></iframe>`
-        );
+    this.dialog.open(PdfViewerComponent, {
+      data: {
+        apiCall: this.soaApi.getPdfSoa(soa._id),
+        title: 'View Statement of Account',
       },
+      maxWidth: '70rem',
+      width: '100%',
+      disableClose: true,
+      autoFocus: false,
     });
   }
 }

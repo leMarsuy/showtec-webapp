@@ -10,6 +10,7 @@ import { ColumnType } from '@app/core/enums/column-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
 
@@ -82,7 +83,8 @@ export class OutDeliveryListComponent {
     private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
     public router: Router,
-    public activatedRoute: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    private dialog: MatDialog
   ) {
     this.getOutDeliverys();
   }
@@ -128,21 +130,16 @@ export class OutDeliveryListComponent {
   }
 
   print(outdelivery: OutDelivery) {
-    this.snackbarService.openLoadingSnackbar(
-      'Loading',
-      'Generating PDF. Please wait...'
-    );
     if (outdelivery._id)
-      this.outdeliveryApi.getPdfOutDelivery(outdelivery._id).subscribe({
-        next: (pdf: any) => {
-          this.snackbarService._loadingSnackbarRef.dismiss();
-          var w = window.open('', '_blank');
-          w?.document.write(
-            `<iframe width='100%' height='100%' src='${encodeURI(
-              pdf.base64
-            )}'></iframe>`
-          );
+      this.dialog.open(PdfViewerComponent, {
+        data: {
+          apiCall: this.outdeliveryApi.getPdfOutDelivery(outdelivery._id),
+          title: 'View Delivery Receipt',
         },
+        maxWidth: '70rem',
+        width: '100%',
+        disableClose: true,
+        autoFocus: false,
       });
   }
 }

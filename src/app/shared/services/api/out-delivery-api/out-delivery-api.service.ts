@@ -3,6 +3,8 @@ import { HttpService } from '../../http/http.service';
 import { OutDelivery } from '@core/models/out-delivery.model';
 import { enviroment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
+import { FileService } from '../../file/file.service';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +12,7 @@ import { QueryParams } from '@core/interfaces/query-params.interface';
 export class OutDeliveryApiService {
   apiUrl = enviroment.API_URL;
   apiPrefix = 'out-deliveries';
-  constructor(private httpService: HttpService) {}
+  constructor(private httpService: HttpService, private file: FileService) {}
 
   createOutDelivery(outdelivery: OutDelivery) {
     return this.httpService.post(`${this.apiPrefix}`, outdelivery);
@@ -33,7 +35,15 @@ export class OutDeliveryApiService {
   }
 
   getPdfOutDelivery(_id: string) {
-    return this.httpService.get(`${this.apiPrefix}/pdf/${_id}`);
+    return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
+      map((response: any) => {
+        const filename = this.file.getFileNameFromResponseHeader(response);
+        return {
+          blob: response.body,
+          filename,
+        };
+      })
+    );
   }
 
   getMostRecentOutDelivery() {

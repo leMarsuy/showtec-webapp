@@ -3,6 +3,8 @@ import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { SOA } from '@app/core/models/soa.model';
 import { enviroment } from '@env/environment';
 import { HttpService } from '../../http/http.service';
+import { map } from 'rxjs';
+import { FileService } from '../../file/file.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +12,7 @@ import { HttpService } from '../../http/http.service';
 export class SoaApiService {
   apiUrl = enviroment.API_URL;
   apiPrefix = 'soa';
-  constructor(private httpService: HttpService) {}
+  constructor(private httpService: HttpService, private file: FileService) {}
 
   createSoa(soa: SOA) {
     return this.httpService.post(`${this.apiPrefix}`, soa);
@@ -37,6 +39,14 @@ export class SoaApiService {
   }
 
   getPdfSoa(_id: string) {
-    return this.httpService.get(`${this.apiPrefix}/pdf/${_id}`);
+    return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
+      map((response: any) => {
+        const filename = this.file.getFileNameFromResponseHeader(response);
+        return {
+          blob: response.body,
+          filename,
+        };
+      })
+    );
   }
 }
