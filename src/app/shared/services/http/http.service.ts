@@ -8,7 +8,7 @@ import { QueryParams } from '@core/interfaces/query-params.interface';
 })
 export class HttpService {
   apiUrl = enviroment.API_URL;
-  query!: QueryParams;
+
   constructor(private http: HttpClient) {}
 
   get options() {
@@ -22,7 +22,7 @@ export class HttpService {
 
   queryParams(query: QueryParams) {
     return new HttpParams({
-      fromObject: this.query as any,
+      fromObject: query as any,
     });
   }
 
