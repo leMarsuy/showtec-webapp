@@ -38,8 +38,10 @@ export class PdfViewerComponent {
         this.blob = response.blob;
         this.fileName = response.filename;
         const pdfLink = window.URL.createObjectURL(response.blob);
-        this.pdfData =
-          this.domSanitizer.bypassSecurityTrustResourceUrl(pdfLink);
+        setTimeout(() => {
+          this.pdfData =
+            this.domSanitizer.bypassSecurityTrustResourceUrl(pdfLink);
+        }, 1000);
       },
       (error) => {
         var { errorCode, message } = error.error;
