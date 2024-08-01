@@ -33,6 +33,7 @@ export class ProductsListComponent {
     { label: 'SKU', value: 'sku' },
     { label: 'Brand', value: 'brand' },
     { label: 'Model', value: 'model' },
+    { label: 'Classification', value: 'classification' },
   ];
   page: PageEvent = {
     pageIndex: 0,
@@ -98,6 +99,7 @@ export class ProductsListComponent {
   }
 
   getProducts() {
+    console.log(this.searchForm.getRawValue());
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching products...');
     this.productApi
       .getProducts({

@@ -48,7 +48,11 @@ export class PdfViewerComponent {
     );
   }
 
-  downloadPdf() {
+  download() {
+    this.sb.openLoadingSnackbar('Downloading', 'Please wait...');
+    setTimeout(() => {
+      this.sb._loadingSnackbarRef.dismiss();
+    }, 1500);
     this.file.downloadFile(this.blob, this.fileName);
   }
 }
