@@ -64,6 +64,70 @@ export class SoaFormComponent implements OnInit {
   soa!: SOA;
   @Input() _id!: string;
 
+  searchId() {
+    this.soaApi.getSoaById(this._id).subscribe({
+      next: (res) => {
+        this.soa = res as SOA;
+        this.autoFillForm();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
+  }
+
+  autoFillForm() {
+    var soa = this.soa;
+    this.soaForm.patchValue({
+      _customerId: soa.STATIC.name,
+      mobile: soa.STATIC.mobile,
+      address: soa.STATIC.address,
+      soaDate: soa.soaDate,
+      remarks: soa.remarks,
+    });
+
+    for (let item of soa.items) {
+      this.listedItems.push({
+        brand: item.STATIC.brand,
+        model: item.STATIC.model,
+        classification: item.STATIC.classification,
+        price: {
+          amount: item.STATIC.unit_price,
+          currency: 'PHP',
+        },
+        STATIC: {
+          unit_price: item.STATIC.unit_price,
+          quantity: item.STATIC.quantity,
+          disc: item.STATIC.disc,
+          total: item.STATIC.total,
+        },
+      } as unknown as Product & Pricing);
+    }
+
+    soa.signatories.forEach((sig: any) => {
+      this.listedSignatories.push({
+        name: sig.STATIC.name,
+        designation: sig.STATIC.designation,
+        action: sig.action,
+        _id: sig._userId,
+      });
+    });
+
+    this.listedDiscounts = soa.discounts || [];
+    this.listedTaxes = soa.taxes || [];
+
+    this.listedSignatories = [...this.listedSignatories];
+    this.listedSignatoriesPage.length = this.listedSignatories.length;
+
+    this.listedItems = [...this.listedItems];
+    this.listedItemsPage.length = this.listedItems.length;
+    this.soaForm.get('_customerId')?.disable();
+    this._calculateSummary();
+  }
+
   errorMessage = '';
 
   filteredCustomers!: Observable<Customer[]>;
@@ -320,6 +384,9 @@ export class SoaFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this._id) this.searchId();
+    else this.getLastSOA();
+
     this.filteredCustomers = this._customerId.valueChanges.pipe(
       startWith(''),
       debounceTime(400),

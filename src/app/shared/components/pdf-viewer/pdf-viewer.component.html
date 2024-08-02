@@ -9,6 +9,7 @@
     </div>
   </div>
   <iframe
+    id="pdfFrame"
     *ngIf="pdfData"
     [src]="pdfData"
     width="100%"
@@ -19,6 +20,6 @@
 <mat-dialog-actions align="end">
   <div class="w-full flex justify-between">
     <button mat-button color="warn" mat-dialog-close>Close</button>
-    <button mat-flat-button (click)="download()">Download</button>
+    <button mat-flat-button (click)="print()">Print</button>
   </div>
 </mat-dialog-actions>

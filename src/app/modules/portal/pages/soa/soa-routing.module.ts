@@ -21,6 +21,13 @@ const routes: Routes = [
             (m) => m.CreateSoaModule
           ),
       },
+      {
+        path: 'edit/:_id',
+        loadChildren: () =>
+          import('./pages/edit-soa/edit-soa.module').then(
+            (m) => m.EditSoaModule
+          ),
+      },
     ],
   },
 ];
