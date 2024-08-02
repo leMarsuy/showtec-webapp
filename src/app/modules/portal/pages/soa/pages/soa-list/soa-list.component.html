@@ -1,5 +1,37 @@
 <div class="flex gap-4">
-  <div class="rounded-xl bg-white p-4 w-[24rem] flex-none">search here</div>
+  <div
+    class="rounded-xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16 flex-none"
+  >
+    <form [formGroup]="searchForm">
+      <mat-form-field appearance="outline" class="w-full">
+        <input
+          matInput
+          placeholder="Search SOA"
+          formControlName="searchText"
+          (keyup.enter)="getSoas()"
+        />
+      </mat-form-field>
+    </form>
+
+    <div class="flex justify-end gap-4">
+      <button
+        *ngIf="searchForm.dirty"
+        mat-button
+        color="warn"
+        (click)="clearForm()"
+      >
+        Clear
+      </button>
+      <button
+        mat-button
+        [disabled]="!searchForm.dirty"
+        color="primary"
+        (click)="getSoas()"
+      >
+        Apply Filter
+      </button>
+    </div>
+  </div>
 
   <div class="rounded-xl bg-white p-4 w-full">
     <app-table

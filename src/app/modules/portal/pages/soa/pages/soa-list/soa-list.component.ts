@@ -21,7 +21,6 @@ import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service'
 })
 export class SoaListComponent {
   searchForm = new FormGroup({
-    searchField: new FormControl(''),
     searchText: new FormControl(''),
   });
 
@@ -85,12 +84,17 @@ export class SoaListComponent {
     this.getSoas();
   }
 
+  clearForm() {
+    this.searchForm.reset();
+    this.searchForm.markAsUntouched();
+    this.getSoas();
+  }
+
   getSoas() {
-    this.snackbarService.openLoadingSnackbar('GetData', 'Fetching products...');
+    this.snackbarService.openLoadingSnackbar('GetData', 'Fetching SOAs...');
     this.soaApi
       .getSoas({
         searchText: this.searchForm.get('searchText')?.value || '',
-        // searchField: this.searchForm.get('searchField')?.value || '',
         ...this.page,
       })
       .subscribe({
