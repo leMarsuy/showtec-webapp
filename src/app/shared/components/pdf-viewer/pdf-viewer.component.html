@@ -20,6 +20,8 @@
 <mat-dialog-actions align="end">
   <div class="w-full flex justify-between">
     <button mat-button color="warn" mat-dialog-close>Close</button>
-    <button mat-flat-button (click)="print()">Print</button>
+    <button mat-flat-button (click)="print()" [disabled]="!pdfData">
+      Print
+    </button>
   </div>
 </mat-dialog-actions>
