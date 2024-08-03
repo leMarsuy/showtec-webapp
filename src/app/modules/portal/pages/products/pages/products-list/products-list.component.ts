@@ -33,7 +33,7 @@ export class ProductsListComponent {
     { label: 'SKU', value: 'sku' },
     { label: 'Brand', value: 'brand' },
     { label: 'Model', value: 'model' },
-    { label: 'Classification', value: 'classification' },
+    { label: 'Description', value: 'description' },
   ];
   page: PageEvent = {
     pageIndex: 0,
