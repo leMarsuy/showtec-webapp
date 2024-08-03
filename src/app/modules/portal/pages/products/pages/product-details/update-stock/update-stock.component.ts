@@ -85,11 +85,17 @@ export class UpdateStockComponent implements AfterViewInit {
   addStock() {
     this.stockForm.get('scanDate')?.setValue(new Date());
     var stock = this.stockForm.getRawValue() as Stock;
-    if (!stock.serialNumber.trim()) var { serialNumber } = stock;
-    if (!this.scannedStocks.find((o) => o.serialNumber === serialNumber)) {
+    var serialNumber = '';
+
+    if (!stock.serialNumber.trim()) serialNumber = stock.serialNumber;
+    if (
+      !this.scannedStocks.find(
+        (o) => o.serialNumber.trim() == serialNumber.trim()
+      )
+    ) {
       this.scannedStocks.unshift({ ...stock, type: StockType.SEALED });
     }
-    this.stockForm.get('serialNumber')?.reset();
+    this.stockForm.reset();
   }
 
   removeStock(i: number) {
@@ -99,7 +105,7 @@ export class UpdateStockComponent implements AfterViewInit {
   stockToProduct() {
     this.productApi.stockToProduct(this.data._id, this.stocks).subscribe({
       next: (res) => {
-        this.snackBarService.openErrorSnackbar(
+        this.snackBarService.openSuccessSnackbar(
           'Stock Success',
           `Successfully Stocked ${this.scannedStocks.length} New Items.`
         );
