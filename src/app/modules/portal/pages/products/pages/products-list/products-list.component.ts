@@ -58,8 +58,8 @@ export class ProductsListComponent {
       type: ColumnType.STRING,
     },
     {
-      label: 'Classification',
-      dotNotationPath: 'classification',
+      label: 'Description',
+      dotNotationPath: 'description',
       type: ColumnType.STRING,
     },
     {
