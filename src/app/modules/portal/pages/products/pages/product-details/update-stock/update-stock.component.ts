@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Inject,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
@@ -26,6 +32,8 @@ export class UpdateStockComponent implements AfterViewInit {
 
   filteredWarehouses!: Observable<Warehouse[]>;
   filteredSuppliers!: Observable<Supplier[]>;
+
+  @ViewChild('serialNumber') serialNumber!: ElementRef;
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -95,10 +103,12 @@ export class UpdateStockComponent implements AfterViewInit {
     }
 
     this.stockForm.reset();
+    this.serialNumber.nativeElement.focus();
   }
 
   removeStock(i: number) {
     this.scannedStocks.splice(i, 1);
+    this.serialNumber.nativeElement.focus();
   }
 
   stockToProduct() {
