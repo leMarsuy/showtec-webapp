@@ -66,6 +66,7 @@ export class OutDeliveryFormComponent implements OnInit {
       _customerId: outDelivery.STATIC.name,
       mobile: outDelivery.STATIC.mobile,
       address: outDelivery.STATIC.address,
+      tin: outDelivery.STATIC.tin,
       deliveryDate: outDelivery.deliveryDate,
       remarks: outDelivery.remarks,
     });
@@ -109,6 +110,7 @@ export class OutDeliveryFormComponent implements OnInit {
     _customerId: this.fb.control('', [Validators.required]),
     mobile: this.fb.control('', [Validators.required]),
     address: this.fb.control('', [Validators.required]),
+    tin: this.fb.control(''),
     deliveryDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
   });
@@ -320,9 +322,10 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   autofillCustomerDetails(selectedCustomer: Customer) {
-    var { mobile, addressDelivery } = selectedCustomer;
+    var { mobile, addressDelivery, tin } = selectedCustomer;
     this.deliveryForm.patchValue({
       mobile,
+      tin,
       address: addressDelivery,
     });
   }
@@ -383,6 +386,7 @@ export class OutDeliveryFormComponent implements OnInit {
       STATIC: {
         mobile: rawOutdelivery.mobile,
         address: rawOutdelivery.address,
+        tin: rawOutdelivery.tin,
       },
       signatories: [],
       items: [],
@@ -443,6 +447,7 @@ export class OutDeliveryFormComponent implements OnInit {
         name: rawOutdelivery._customerId.name,
         mobile: rawOutdelivery.mobile,
         address: rawOutdelivery.address,
+        tin: rawOutdelivery.tin,
       },
       signatories: [],
       items: [],
@@ -477,19 +482,7 @@ export class OutDeliveryFormComponent implements OnInit {
       next: (res: any) => {
         this.outdeliveryApi.getPdfOutDelivery(res._id).subscribe({
           next: (pdf: any) => {
-            var w = window.open('', '_blank');
-            w?.document.write(
-              `<iframe width='100%' height='100%' src='${encodeURI(
-                pdf.base64
-              )}'></iframe>`
-            );
-            this.snackbarService.openSuccessSnackbar(
-              'Success',
-              'Out Delivery Successfully Created.'
-            );
-            setTimeout(() => {
-              this.router.navigate(['/portal/out-delivery']);
-            }, 1400);
+            this.router.navigate(['/portal/out-delivery']);
           },
         });
       },

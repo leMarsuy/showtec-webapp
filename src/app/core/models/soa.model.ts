@@ -38,6 +38,7 @@ export class SOA {
     name: string;
     mobile: string;
     address: string;
+    tin?: string;
   };
   soaDate: Date;
   dueDate?: Date;

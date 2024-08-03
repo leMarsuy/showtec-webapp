@@ -34,6 +34,7 @@ export class OutDelivery {
     name: string;
     mobile: string;
     address: string;
+    tin?: string;
   };
   deliveryDate: Date;
   actualDeliveryDate?: Date;

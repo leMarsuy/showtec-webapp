@@ -9,6 +9,7 @@ export class Customer {
   contactPerson: string;
   email: string;
   mobile: string;
+  tin?: string;
   addressDelivery: string;
   addressBilling: string;
   remarks: string;

@@ -85,12 +85,15 @@ export class SoaFormComponent implements OnInit {
       _customerId: soa.STATIC.name,
       mobile: soa.STATIC.mobile,
       address: soa.STATIC.address,
+      tin: soa.STATIC.tin,
       soaDate: soa.soaDate,
       remarks: soa.remarks,
     });
 
     for (let item of soa.items) {
       this.listedItems.push({
+        sku: item.STATIC.sku,
+        _id: item._productId,
         brand: item.STATIC.brand,
         model: item.STATIC.model,
         classification: item.STATIC.classification,
@@ -117,10 +120,14 @@ export class SoaFormComponent implements OnInit {
     });
 
     this.listedDiscounts = soa.discounts || [];
-    this.listedTaxes = soa.taxes || [];
+    this.listedTaxes =
+      soa.taxes?.map((a) => ({ name: a.name, value: a.value })) || [];
 
     this.listedSignatories = [...this.listedSignatories];
     this.listedSignatoriesPage.length = this.listedSignatories.length;
+
+    this.listedDiscountsPage.length = this.listedDiscounts.length;
+    this.listedTaxesPage.length = this.listedSignatories.length;
 
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
@@ -138,6 +145,7 @@ export class SoaFormComponent implements OnInit {
     _customerId: this.fb.control('', [Validators.required]),
     mobile: this.fb.control('', [Validators.required]),
     address: this.fb.control('', [Validators.required]),
+    tin: this.fb.control(''),
     soaDate: this.fb.control(new Date(), [Validators.required]),
     dueDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
@@ -366,7 +374,7 @@ export class SoaFormComponent implements OnInit {
         STATIC: {
           unit_price: product.price.amount,
           quantity: 1,
-          disc: 0,
+          disc: 0.5,
           total: product.price.amount,
         },
       });
@@ -422,8 +430,9 @@ export class SoaFormComponent implements OnInit {
       _customerId: rawSoaForm._customerId._id,
       STATIC: {
         name: rawSoaForm._customerId.name,
-        mobile: rawSoaForm._customerId.mobile,
-        address: rawSoaForm._customerId.addressBilling,
+        mobile: rawSoaForm.mobile,
+        address: rawSoaForm.address,
+        tin: rawSoaForm.tin,
       },
       soaDate: rawSoaForm.soaDate,
       dueDate: rawSoaForm.dueDate,
@@ -473,6 +482,72 @@ export class SoaFormComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         console.log(err);
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
+  }
+
+  updateSOA() {
+    var rawSoaForm = this.soaForm.getRawValue() as any;
+
+    var soa: any = {
+      STATIC: {
+        mobile: rawSoaForm.mobile,
+        address: rawSoaForm.address,
+        tin: rawSoaForm.tin,
+      },
+      soaDate: rawSoaForm.soaDate,
+      // dueDate: rawSoaForm.dueDate,
+      signatories: [],
+      items: [],
+      discounts: this.listedDiscounts,
+      taxes: this.listedTaxes,
+      remarks: rawSoaForm.remarks,
+    };
+
+    this.listedItems.forEach((item) => {
+      soa.items.push({
+        _productId: item._id,
+        STATIC: {
+          sku: item.sku,
+          brand: item.brand,
+          model: item.model,
+          classification: item.classification || '-',
+          unit_price: item.STATIC.unit_price,
+          quantity: item.STATIC.quantity,
+          disc: item.STATIC.disc || 0,
+          total: item.STATIC.total,
+        },
+      });
+    });
+
+    this.listedSignatories.forEach((signatory) => {
+      soa.signatories.push({
+        _userId: signatory._id,
+        STATIC: {
+          name: signatory.name,
+          designation: signatory.designation,
+        },
+        action: signatory.action,
+      });
+    });
+
+    console.log(soa);
+
+    this.soaApi.updateSoaById(this._id, soa).subscribe({
+      next: () => {
+        this.snackbarService.openSuccessSnackbar(
+          'Update Success',
+          `SOA ${soa.code?.value} successfully updated.`
+        );
+        setTimeout(() => {
+          this.router.navigate(['/portal/soa']);
+        }, 1400);
+      },
+      error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
           err.error.message
@@ -580,7 +655,7 @@ export class SoaFormComponent implements OnInit {
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-          // this.updateOutDelivery();
+          this.updateSOA();
         }
       });
   }
@@ -600,10 +675,11 @@ export class SoaFormComponent implements OnInit {
   }
 
   autofillCustomerDetails(selectedCustomer: Customer) {
-    var { mobile, addressBilling } = selectedCustomer;
+    var { mobile, addressBilling, tin } = selectedCustomer;
     this.soaForm.patchValue({
       mobile,
       address: addressBilling,
+      tin,
     });
   }
 

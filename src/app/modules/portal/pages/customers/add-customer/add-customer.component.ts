@@ -31,6 +31,7 @@ export class AddCustomerComponent implements OnInit {
     contactPerson: new FormControl('', [Validators.required]),
     email: new FormControl(''),
     mobile: new FormControl(''),
+    tin: new FormControl(''),
     addressDelivery: new FormControl(''),
     addressBilling: new FormControl(''),
     remarks: new FormControl(''),

@@ -70,9 +70,6 @@
   </div>
 
   <div class="bg-white rounded-xl p-4 w-[40rem] sticky top-16 h-fit">
-    <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
-      <p>DELIVERY INFORMATION</p>
-    </div>
     <form class="grid grid-cols-2 gap-2" [formGroup]="deliveryForm">
       <div class="col-span-2">
         <mat-form-field class="w-full" *ngIf="!_id">
@@ -102,6 +99,14 @@
           </p>
         </div>
       </div>
+
+      <div class="col-span-2">
+        <mat-form-field class="w-full">
+          <mat-label>TIN No.</mat-label>
+          <input matInput formControlName="tin" />
+        </mat-form-field>
+      </div>
+
       <div class="col-span-1">
         <mat-form-field class="w-full">
           <mat-label>Contact No.</mat-label>
