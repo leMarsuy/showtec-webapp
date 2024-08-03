@@ -85,16 +85,15 @@ export class UpdateStockComponent implements AfterViewInit {
   addStock() {
     this.stockForm.get('scanDate')?.setValue(new Date());
     var stock = this.stockForm.getRawValue() as Stock;
-    var serialNumber = '';
 
-    if (!stock.serialNumber.trim()) serialNumber = stock.serialNumber;
     if (
       !this.scannedStocks.find(
-        (o) => o.serialNumber.trim() == serialNumber.trim()
+        (o) => o.serialNumber.trim() == stock.serialNumber.trim()
       )
     ) {
       this.scannedStocks.unshift({ ...stock, type: StockType.SEALED });
     }
+
     this.stockForm.reset();
   }
 
