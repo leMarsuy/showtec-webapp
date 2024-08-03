@@ -99,7 +99,13 @@ export class UpdateStockComponent implements AfterViewInit {
   stockToProduct() {
     this.productApi.stockToProduct(this.data._id, this.stocks).subscribe({
       next: (res) => {
-        this.dialogRef.close(true);
+        this.snackBarService.openErrorSnackbar(
+          'Stock Success',
+          `Successfully Stocked ${this.scannedStocks.length} New Items.`
+        );
+        setTimeout(() => {
+          this.dialogRef.close(true);
+        }, 1500);
       },
       error: (err: HttpErrorResponse) => {
         this.snackBarService.openErrorSnackbar(
