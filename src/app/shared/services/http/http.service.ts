@@ -33,6 +33,13 @@ export class HttpService {
     });
   }
 
+  delete<T>(endpoint: string, query?: QueryParams) {
+    return this.http.delete<T>(`${this.apiUrl}/${endpoint}`, {
+      ...this.options,
+      params: query ? this.queryParams(query) : {},
+    });
+  }
+
   getBlob<T>(endpoint: string) {
     var options: any = {
       headers: this.options.headers,

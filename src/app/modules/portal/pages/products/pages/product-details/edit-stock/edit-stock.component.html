@@ -1,6 +1,4 @@
-<p mat-dialog-title>
-  {{ data.stock.serialNumber }}
-</p>
+<p mat-dialog-title>S/N: {{ data.stock.serialNumber }}</p>
 
 <mat-dialog-content>
   <form class="flex flex-col w-full" [formGroup]="stockForm">
@@ -21,16 +19,28 @@
 
 <mat-dialog-actions>
   <div class="w-full flex justify-between">
-    <button mat-button color="warn" mat-dialog-close="">Cancel</button>
+    <button mat-button color="warn" mat-dialog-close>Cancel</button>
 
-    <button
-      mat-raised-button
-      color="primary"
-      cdkFocusInitial
-      [disabled]="!stockForm"
-      (click)="editStock()"
-    >
-      Update Details
-    </button>
+    <div class="flex w-fit">
+      <button
+        mat-raised-button
+        color="primary"
+        cdkFocusInitial
+        [disabled]="!stockForm"
+        (click)="editStock()"
+      >
+        Update Details
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+
+      <mat-menu #menu="matMenu">
+        <button mat-button color="warn" (click)="removeStockFromProduct()">
+          <mat-icon>delete</mat-icon>
+          <span>Delete Serial Number</span>
+        </button>
+      </mat-menu>
+    </div>
   </div>
 </mat-dialog-actions>

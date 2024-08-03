@@ -1,7 +1,3 @@
-<div class="px-4 pt-4">
-  <mat-icon class="text-amber-500">developer_mode</mat-icon>
-</div>
-
 @for (nav of navList; track nav) {
 <div class class="py-3 px-4 text-gray-500">
   <small>
@@ -22,3 +18,18 @@
   }
 </div>
 } }
+
+<!-- DEVELOPER MODE -->
+
+@if(isDeveloperMode){
+<div
+  class="flex px-4 py-4 text-amber-500"
+  [matTooltip]="'DEVELOPER MODE'"
+  matTooltipPosition="right"
+>
+  <mat-icon>code</mat-icon>
+  @if (expanded) {
+  <div class="pl-4 grow">DEVELOPER MODE</div>
+  }
+</div>
+}

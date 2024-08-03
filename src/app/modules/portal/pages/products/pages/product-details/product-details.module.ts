@@ -19,6 +19,7 @@ import { TableModule } from '@shared/components/table/table.module';
 import { ProductDetailsRoutingModule } from './product-details-routing.module';
 import { ProductDetailsComponent } from './product-details.component';
 import { EditStockComponent } from './edit-stock/edit-stock.component';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { EditStockComponent } from './edit-stock/edit-stock.component';
     MatAutocompleteModule,
     MatDatepickerModule,
     TableModule,
+    MatMenuModule,
   ],
 })
 export class ProductDetailsModule {}

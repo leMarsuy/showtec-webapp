@@ -187,7 +187,12 @@ export class SoaFormComponent implements OnInit {
     length: 0,
   };
 
-  listedTaxes: Array<Discount> = [];
+  listedTaxes: Array<Discount> = [
+    {
+      name: 'VAT 12%',
+      value: 0.12,
+    },
+  ];
   listedTaxesColumns: TableColumn[] = [
     {
       label: 'Name',
@@ -210,7 +215,7 @@ export class SoaFormComponent implements OnInit {
   listedTaxesPage: PageEvent = {
     pageIndex: 0,
     pageSize: 100,
-    length: 0,
+    length: 1,
   };
 
   listedSignatories: Array<any> = [];

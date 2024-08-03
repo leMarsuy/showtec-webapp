@@ -50,6 +50,11 @@ export class ProductApiService {
     return this.httpService.post(`${this.apiPrefix}/stock/${_id}`, stocks);
   }
 
+  removeStockFromProduct(_stockId: string) {
+    var _id = _stockId;
+    return this.httpService.delete(`${this.apiPrefix}/stock/${_id}`);
+  }
+
   updateStockById(_id: string, updateBody: Stock) {
     return this.httpService.patch(`${this.apiPrefix}/stock/${_id}`, updateBody);
   }

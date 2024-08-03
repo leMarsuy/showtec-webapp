@@ -46,4 +46,22 @@ export class EditStockComponent {
       },
     });
   }
+
+  removeStockFromProduct() {
+    this.productApi.removeStockFromProduct(this.data.stock._id).subscribe({
+      next: (res) => {
+        this.snackbarService.openSuccessSnackbar(
+          'DeleteSuccess',
+          'Stock successfully remove from Product'
+        );
+        this.dialogRef.close(true);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
+  }
 }

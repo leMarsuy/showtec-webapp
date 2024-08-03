@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NAV_ROUTES } from '@app/core/lists/nav-routes.list';
+import { enviroment } from '@env/environment';
 
 @Component({
   selector: 'app-sidenav',
@@ -11,4 +12,5 @@ export class SidenavComponent {
   @Input() expanded!: Boolean;
 
   // check development mode
+  isDeveloperMode = enviroment.ENVIRONMENT_NAME === 'development';
 }
