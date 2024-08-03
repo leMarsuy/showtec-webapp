@@ -1,44 +1,48 @@
 <div class="flex gap-4">
   <div
-    class="rounded-xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16 flex-none"
+    class="flex flex-col w-[24rem] text-gray-900 h-fit sticky top-16 flex-none gap-4"
   >
-    <form [formGroup]="searchForm">
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-select formControlName="searchField">
-          @for (field of searchFields; track field) {
-          <mat-option [value]="field.value">{{ field.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="w-full">
-        <input
-          matInput
-          placeholder="Search Product"
-          formControlName="searchText"
-          (keyup.enter)="getProducts()"
-        />
-      </mat-form-field>
-    </form>
+    <div class="rounded-xl bg-white p-4">
+      <form [formGroup]="searchForm">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select formControlName="searchField">
+            @for (field of searchFields; track field) {
+            <mat-option [value]="field.value">{{ field.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <input
+            matInput
+            placeholder="Search Product"
+            formControlName="searchText"
+            (keyup.enter)="getProducts()"
+          />
+        </mat-form-field>
+      </form>
 
-    <div class="flex justify-end gap-4">
-      <button
-        *ngIf="searchForm.dirty"
-        mat-button
-        color="warn"
-        (click)="clearForm()"
-      >
-        Clear
-      </button>
-      <button
-        mat-button
-        [disabled]="!searchForm.dirty"
-        color="primary"
-        (click)="getProducts()"
-      >
-        Apply Filter
-      </button>
+      <div class="flex justify-end gap-4">
+        <button
+          *ngIf="searchForm.dirty"
+          mat-button
+          color="warn"
+          (click)="clearForm()"
+        >
+          Clear
+        </button>
+        <button
+          mat-button
+          [disabled]="!searchForm.dirty"
+          color="primary"
+          (click)="getProducts()"
+        >
+          Apply Filter
+        </button>
+      </div>
     </div>
+    <!-- <div class="rounded-xl bg-white p-4">asdasdasd</div> -->
   </div>
+
   <div class="rounded-xl bg-white p-4 w-full text-gray-900">
     <div class="flex">
       <button mat-icon-button (click)="getProducts()">

@@ -1,5 +1,5 @@
 <div
-  class="flex"
+  class="flex justify-{{ column.align || 'start' }}"
   *ngIf="!element['__editOn' + rowIndex + '_' + colIndex]"
   (click)="
     element['__editOn' + rowIndex + '_' + colIndex] = true && column.editable

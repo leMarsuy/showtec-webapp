@@ -13,6 +13,7 @@ import { ColumnType } from '@core/enums/column-type.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ProductStatus } from '@app/core/enums/product-status.enum';
 import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
+import { Alignment } from '@app/core/enums/align.enum';
 
 @Component({
   selector: 'app-products-list',
@@ -63,9 +64,10 @@ export class ProductsListComponent {
       type: ColumnType.STRING,
     },
     {
-      label: 'Quantity',
+      label: 'Stock',
       dotNotationPath: '_$stockSummary.In Stock',
       type: ColumnType.NUMBER,
+      align: Alignment.CENTER,
     },
     {
       label: 'Status',
