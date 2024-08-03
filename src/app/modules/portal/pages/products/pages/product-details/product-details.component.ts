@@ -118,7 +118,11 @@ export class ProductDetailsComponent implements OnInit {
     this.productApi.getProductById(this._id).subscribe({
       next: (res) => {
         this.product = res as Product;
-        this.product.stocks = this.product.stocks || [];
+        this.product.stocks =
+          this.product.stocks.sort((a, b) => {
+            if (a.serialNumber > b.serialNumber) return 1;
+            return -1;
+          }) || [];
         this.page.length = this.product.stocks.length;
         this.filterStocks(StockStatus.IN_STOCK);
       },

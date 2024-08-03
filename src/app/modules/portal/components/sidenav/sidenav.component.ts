@@ -9,4 +9,6 @@ import { NAV_ROUTES } from '@app/core/lists/nav-routes.list';
 export class SidenavComponent {
   navList = NAV_ROUTES;
   @Input() expanded!: Boolean;
+
+  // check development mode
 }
