@@ -13,6 +13,8 @@ import { AddProductComponent } from '../add-product/add-product.component';
   styleUrl: './edit-product.component.scss',
 })
 export class EditProductComponent {
+  product!: Product;
+
   constructor(
     private productApi: ProductApiService,
     private _dialogRef: MatDialogRef<AddProductComponent>,
@@ -25,6 +27,7 @@ export class EditProductComponent {
     brand: new FormControl('', Validators.required),
     model: new FormControl('', Validators.required),
     description: new FormControl(''),
+    classification: new FormControl('UNKNOWN'),
     price: new FormGroup({
       amount: new FormControl(0, Validators.required),
       currency: new FormControl({ value: 'PHP', disabled: true }, [
@@ -36,6 +39,7 @@ export class EditProductComponent {
   ngOnInit(): void {
     this.productApi.getProductById(this.data._id).subscribe({
       next: (res) => {
+        this.product = res as Product;
         this.productForm.patchValue(res as Product);
       },
       error: (err: HttpErrorResponse) => {

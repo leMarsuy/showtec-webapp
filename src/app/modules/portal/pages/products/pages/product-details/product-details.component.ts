@@ -5,7 +5,6 @@ import { map } from 'rxjs';
 import { Product } from '@core/models/product.model';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { TableColumn } from '@core/interfaces/table-column.interface';
-import { FormControl, FormGroup } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateStockComponent } from './update-stock/update-stock.component';
@@ -15,10 +14,11 @@ import { Color } from '@app/core/enums/color.enum';
 import { STOCK_STATUSES, StockStatus } from '@app/core/enums/stock-status.enum';
 import { UpdateFieldComponent } from './update-field/update-field.component';
 import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
-import { FieldType } from '@app/core/enums/field-type.enum';
+
 import { FormField } from '@app/core/interfaces/form-field.interface';
 import { StockType } from '@app/core/enums/stock-type.enum';
 import { EditStockComponent } from './edit-stock/edit-stock.component';
+import { EditProductComponent } from '../../edit-product/edit-product.component';
 
 @Component({
   selector: 'app-product-details',
@@ -231,6 +231,22 @@ export class ProductDetailsComponent implements OnInit {
         disableClose: true,
         data: {
           stock,
+          _id: this.product._id,
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) this.getProductById();
+      });
+  }
+
+  editProduct() {
+    this.dialog
+      .open(EditProductComponent, {
+        width: '50rem',
+        maxWidth: '50rem',
+        disableClose: true,
+        data: {
           _id: this.product._id,
         },
       })

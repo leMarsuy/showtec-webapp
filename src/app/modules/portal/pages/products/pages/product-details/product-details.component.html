@@ -33,11 +33,9 @@
           <small class="text-gray-500 mb-2">SRP</small>
           <p>{{ product.price.amount | number }}</p>
         </mat-card>
-
-        <!-- <div class="col-span-2 pt-4 flex justify-end">
-          <button mat-button color="warn">Discard</button>
-          <button mat-raised-button>Save Changes</button>
-        </div> -->
+      </div>
+      <div class="flex pt-4 justify-end">
+        <button mat-raised-button (click)="editProduct()">Edit Details</button>
       </div>
     </div>
   </div>

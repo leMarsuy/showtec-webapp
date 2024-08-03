@@ -4,7 +4,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileService } from '@app/shared/services/file/file.service';
 import { Observable } from 'rxjs';
 import { SnackbarService } from '../snackbar/snackbar.service';
-import * as jsPDF from 'jspdf';
 
 interface PdfViewerProps {
   apiCall: Observable<{
