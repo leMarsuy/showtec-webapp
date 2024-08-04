@@ -1,3 +1,5 @@
+import { PaymentMethod } from '../enums/payment-method.enum';
+import { SoaStatus } from '../enums/soa-status.enum';
 import { Status } from '../enums/status.enum';
 import { Signatory } from './out-delivery.model';
 
@@ -20,6 +22,14 @@ export interface Discount {
   value: number;
 }
 
+export interface Transaction {
+  paymentMethod: PaymentMethod;
+  amount: number;
+  paymentDate: Date;
+  remarks?: string;
+  recordedBy?: string;
+}
+
 export interface Tax {
   name: string;
   value: number;
@@ -40,12 +50,23 @@ export class SOA {
     address: string;
     tin?: string;
   };
+  summary?: {
+    total: number;
+    productDiscount: number;
+    subtotal: number;
+    grandtotal: number;
+  };
+  payment?: {
+    balance: number;
+    paid: number;
+  };
+  transactions?: Transaction[];
   soaDate: Date;
   dueDate?: Date;
   signatories: Signatory[];
   items: SOAItems[];
   remarks: string;
-  status?: Status;
+  status?: SoaStatus;
   createdAt?: string;
   updatedAt?: string;
   discounts?: Array<Discount>;

@@ -7,12 +7,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
+import { SoaStatus } from '@app/core/enums/soa-status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { SOA } from '@app/core/models/soa.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
+import { ViewSoaComponent } from '../view-soa/view-soa.component';
 
 @Component({
   selector: 'app-soa-list',
@@ -42,6 +44,29 @@ export class SoaListComponent {
       type: ColumnType.STRING,
     },
     {
+      label: 'Status',
+      dotNotationPath: 'status',
+      type: ColumnType.STATUS,
+      colorCodes: [
+        {
+          value: SoaStatus.PENDING,
+          color: Color.DEAD,
+        },
+        {
+          value: SoaStatus.PAID,
+          color: Color.SUCCESS,
+        },
+        {
+          value: SoaStatus.PARTIAL,
+          color: Color.WARNING,
+        },
+        {
+          value: SoaStatus.CANCELLED,
+          color: Color.ERROR,
+        },
+      ],
+    },
+    {
       label: 'Total',
       dotNotationPath: 'summary.grandtotal',
       type: ColumnType.CURRENCY,
@@ -67,6 +92,11 @@ export class SoaListComponent {
           name: 'edit',
           icon: 'edit',
           color: Color.WARNING,
+        },
+        {
+          name: 'payments',
+          icon: 'money',
+          color: Color.SUCCESS,
         },
       ],
     },
@@ -124,6 +154,20 @@ export class SoaListComponent {
       this.print(e.element);
     } else if (e.action.name == 'edit') {
       this.router.navigate(['portal/soa/edit/' + e.element._id]);
+    } else if (e.action.name == 'payments') {
+      this.dialog
+        .open(ViewSoaComponent, {
+          width: '80rem',
+          maxWidth: '80rem',
+          disableClose: true,
+          data: {
+            _id: e.element._id,
+          },
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res) this.getSoas();
+        });
     }
   }
 

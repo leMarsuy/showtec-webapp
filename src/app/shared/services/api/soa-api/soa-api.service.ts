@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
-import { SOA } from '@app/core/models/soa.model';
+import { SOA, Transaction } from '@app/core/models/soa.model';
 import { enviroment } from '@env/environment';
 import { HttpService } from '../../http/http.service';
 import { map } from 'rxjs';
@@ -16,6 +16,17 @@ export class SoaApiService {
 
   createSoa(soa: SOA) {
     return this.httpService.post(`${this.apiPrefix}`, soa);
+  }
+
+  createPayment(_id: string, transaction: Transaction) {
+    return this.httpService.post(
+      `${this.apiPrefix}/payment/${_id}`,
+      transaction
+    );
+  }
+
+  deletePayment(_transId: string) {
+    return this.httpService.delete(`${this.apiPrefix}/payment/${_transId}`);
   }
 
   getSoas(query?: QueryParams) {

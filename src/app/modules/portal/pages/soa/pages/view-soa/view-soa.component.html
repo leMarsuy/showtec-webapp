@@ -1,0 +1,83 @@
+<p mat-dialog-title>PAYMENT RECORDS</p>
+<mat-dialog-content>
+  <div class="flex w-full gap-2">
+    <section
+      class="grid grid-cols-2 gap-2 w-[20rem] flex-none p-4 border-2 border-gray-200 rounded-xl"
+      *ngIf="soa"
+    >
+      <div class="col-span-2"><p class="font-bold">Summary</p></div>
+      <div class="col-span-1">SubTotal</div>
+      <div class="col-span-1 text-right">
+        PHP {{ productTotal | number : "0.2" }}
+      </div>
+      <div class="col-span-1">Product Discounts</div>
+      <div class="col-span-1 text-right">
+        - PHP {{ productDiscount | number : "0.2" }}
+      </div>
+      @for (item of soa.discounts; track $index) {
+      <div class="col-span-1">{{ item.name }}</div>
+      <div class="col-span-1 text-right">
+        - PHP {{ item.value | number : "0.2" }}
+      </div>
+      }
+      <div class="col-span-2">
+        <mat-divider></mat-divider>
+      </div>
+      <div class="col-span-1"><p class="font-bold">SUB-TOTAL</p></div>
+      <div class="col-span-1 text-right">
+        PHP {{ soa.summary?.subtotal | number : "0.2" }}
+      </div>
+      @for (item of soa.taxes; track $index) {
+      <div class="col-span-1">{{ item.name }} {{ item.value | percent }}</div>
+      <div class="col-span-1 text-right">
+        PHP {{ item.value * (soa.summary?.subtotal || 0) | number : "0.2" }}
+      </div>
+      }
+      <div class="col-span-2">
+        <mat-divider></mat-divider>
+      </div>
+      <div class="col-span-1"><p class="font-bold">GRAND TOTAL</p></div>
+      <div class="col-span-1 text-right bg-amber-200 font-bold">
+        PHP {{ soa.summary?.grandtotal || 0 | number : "0.2" }}
+      </div>
+
+      <div class="col-span-1">Paid</div>
+      <div class="col-span-1 text-right">
+        PHP {{ soa.payment?.paid || 0 | number : "0.2" }}
+      </div>
+      <div class="col-span-2 pb-2">
+        <mat-divider></mat-divider>
+      </div>
+      <div class="col-span-1">Balance</div>
+      <div class="col-span-1 text-right">
+        PHP {{ soa.payment?.balance || 0 | number : "0.2" }}
+      </div>
+      <div class="col-span-1">Status</div>
+      <div class="col-span-1 text-right text-{{ codeStatus }}-500">
+        {{ soa.status | uppercase }}
+      </div>
+    </section>
+    <section
+      class="flex w-full p-4 border-2 border-gray-200 rounded-xl"
+      *ngIf="soa"
+    >
+      <section class="w-full">
+        <app-table
+          [dataSource]="soa.transactions || []"
+          [columns]="columns"
+          [page]="page"
+          [hasPagination]="false"
+          (actionEmitter)="actionEvent($event)"
+        ></app-table>
+      </section>
+    </section>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" (click)="addPayment()">
+      Add Payment
+    </button>
+  </div>
+</mat-dialog-actions>
