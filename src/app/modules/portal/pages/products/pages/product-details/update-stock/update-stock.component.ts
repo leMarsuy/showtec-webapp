@@ -31,6 +31,7 @@ export class UpdateStockComponent implements AfterViewInit {
   suppliers: Supplier[] = [];
 
   allowDuplicates = false;
+  loading = false;
 
   filteredWarehouses!: Observable<Warehouse[]>;
   filteredSuppliers!: Observable<Supplier[]>;
@@ -115,6 +116,7 @@ export class UpdateStockComponent implements AfterViewInit {
   }
 
   stockToProduct() {
+    this.loading = true;
     this.productApi
       .stockToProduct(this.data._id, this.stocks, this.allowDuplicates)
       .subscribe({
@@ -123,11 +125,10 @@ export class UpdateStockComponent implements AfterViewInit {
             'Stock Success',
             `Successfully Stocked ${this.scannedStocks.length} New Items.`
           );
-          setTimeout(() => {
-            this.dialogRef.close(true);
-          }, 1500);
+          this.dialogRef.close(true);
         },
         error: (err: HttpErrorResponse) => {
+          this.loading = false;
           this.snackBarService.openErrorSnackbar(
             err.error.errorCode,
             err.error.message

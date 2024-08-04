@@ -150,7 +150,7 @@
       mat-raised-button
       color="primary"
       cdkFocusInitial
-      [disabled]="!scannedStocks.length"
+      [disabled]="!scannedStocks.length || loading"
       (click)="stockToProduct()"
     >
       Stock to {{ data.name }}

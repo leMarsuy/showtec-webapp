@@ -14,6 +14,7 @@ import { Color } from '@app/core/enums/color.enum';
 import { ProductStatus } from '@app/core/enums/product-status.enum';
 import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
 import { Alignment } from '@app/core/enums/align.enum';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 
 @Component({
   selector: 'app-products-list',
@@ -95,7 +96,8 @@ export class ProductsListComponent {
     private productApi: ProductApiService,
     private snackbarService: SnackbarService,
     public router: Router,
-    public activatedRoute: ActivatedRoute
+    public activatedRoute: ActivatedRoute,
+    private confirmation: ConfirmationService
   ) {
     this.getProducts();
   }
@@ -145,4 +147,20 @@ export class ProductsListComponent {
   rowEvent(product: Product) {
     this.router.navigate([product._id], { relativeTo: this.activatedRoute });
   }
+
+  download() {
+    this.confirmation
+      .open(
+        'Confirmation',
+        'You will be downloading all the products with serial numbers. <span class="text-rose-500">Would you like to proceed?</span>'
+      )
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          this.productApi.getProducts();
+        }
+      });
+  }
+
+  _batchDownload() {}
 }
