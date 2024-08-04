@@ -30,6 +30,8 @@ export class UpdateStockComponent implements AfterViewInit {
   warehouses: Warehouse[] = [];
   suppliers: Supplier[] = [];
 
+  allowDuplicates = false;
+
   filteredWarehouses!: Observable<Warehouse[]>;
   filteredSuppliers!: Observable<Supplier[]>;
 
@@ -95,6 +97,7 @@ export class UpdateStockComponent implements AfterViewInit {
     var stock = this.stockForm.getRawValue() as Stock;
 
     if (
+      this.allowDuplicates ||
       !this.scannedStocks.find(
         (o) => o.serialNumber.trim() == stock.serialNumber.trim()
       )
@@ -112,23 +115,25 @@ export class UpdateStockComponent implements AfterViewInit {
   }
 
   stockToProduct() {
-    this.productApi.stockToProduct(this.data._id, this.stocks).subscribe({
-      next: (res) => {
-        this.snackBarService.openSuccessSnackbar(
-          'Stock Success',
-          `Successfully Stocked ${this.scannedStocks.length} New Items.`
-        );
-        setTimeout(() => {
-          this.dialogRef.close(true);
-        }, 1500);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.snackBarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
-      },
-    });
+    this.productApi
+      .stockToProduct(this.data._id, this.stocks, this.allowDuplicates)
+      .subscribe({
+        next: (res) => {
+          this.snackBarService.openSuccessSnackbar(
+            'Stock Success',
+            `Successfully Stocked ${this.scannedStocks.length} New Items.`
+          );
+          setTimeout(() => {
+            this.dialogRef.close(true);
+          }, 1500);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.snackBarService.openErrorSnackbar(
+            err.error.errorCode,
+            err.error.message
+          );
+        },
+      });
   }
 
   get stocks(): Stock[] {

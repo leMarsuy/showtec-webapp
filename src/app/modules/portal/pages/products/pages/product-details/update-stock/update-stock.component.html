@@ -1,11 +1,11 @@
 <p mat-dialog-title>
   NEW STOCK: <u>{{ data.name }}</u>
-  <small
+  <span
     class="text-xs float-right mt-2 font-light text-emerald-500 top-0"
     matTooltip="Barcode Listener Activated"
   >
-    <mat-icon>rss_feed</mat-icon>
-  </small>
+    <mat-checkbox [(ngModel)]="allowDuplicates">Allow Duplicates</mat-checkbox>
+  </span>
 </p>
 <mat-dialog-content>
   <div class="flex gap-2">
@@ -78,7 +78,7 @@
         </div>
         <div class="w-[5rem] flex-none px-4 font-black content-center"></div>
       </div>
-      <div class="h-[13rem] overflow-y-auto border-b-2 border-gray-200 pb-2">
+      <div class="h-[18rem] overflow-y-auto border-b-2 border-gray-200 pb-2">
         @for (stock of scannedStocks; track $index) {
         <div class="flex">
           <div class="w-full px-4 content-center">{{ stock.serialNumber }}</div>
@@ -96,8 +96,11 @@
         <div class="p-4 text-center text-gray-400">-- end of list --</div>
       </div>
 
-      <div class="absolute bottom-0 flex gap-2" [formGroup]="stockForm">
-        <mat-form-field class="w-[20rem]" appearance="outline">
+      <div
+        class="absolute bottom-0 flex w-full gap-2 pr-8"
+        [formGroup]="stockForm"
+      >
+        <mat-form-field class="w-full" appearance="outline">
           <input
             id="serialNumber"
             #serialNumber
@@ -119,9 +122,23 @@
         </button>
       </div>
     </mat-card>
-    <mat-card class="p-4 w-full w-[15rem] flex flex-none">
-      <h1 class="text-5xl font-black mb-3">{{ scannedStocks.length }}</h1>
-      <p>Total Count</p>
+    <mat-card
+      class="p-4 w-full w-[15rem] flex flex-none justify-center text-center"
+    >
+      <h1
+        class="text-[5rem] font-black mb-10 text-{{
+          allowDuplicates ? 'rose' : 'emerald'
+        }}-500"
+      >
+        {{ scannedStocks.length }}
+      </h1>
+      <p class="font-black text-{{ allowDuplicates ? 'rose' : 'emerald' }}-500">
+        Total Count
+      </p>
+      <p class="text-rose-500 mt-6" *ngIf="allowDuplicates">
+        <mat-icon>warning</mat-icon><br />
+        <span><b>WARNING:</b> <br />DUPLICATE SERIAL NUMBER MIGHT EXIST</span>
+      </p>
     </mat-card>
   </div>
 </mat-dialog-content>

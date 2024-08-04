@@ -46,7 +46,13 @@ export class ProductApiService {
     return this.httpService.get(`${this.apiPrefix}/stock/serial-number/${sn}`);
   }
 
-  stockToProduct(_id: string, stocks: Stock[]) {
+  stockToProduct(_id: string, stocks: Stock[], allowDuplicates: boolean) {
+    if (allowDuplicates) {
+      return this.httpService.post(
+        `${this.apiPrefix}/stock-with-duplicate/${_id}`,
+        stocks
+      );
+    }
     return this.httpService.post(`${this.apiPrefix}/stock/${_id}`, stocks);
   }
 
