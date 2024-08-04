@@ -15,6 +15,7 @@ import { ProductStatus } from '@app/core/enums/product-status.enum';
 import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
 import { Alignment } from '@app/core/enums/align.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { ExcelService } from '@app/shared/services/excel/excel.service';
 
 @Component({
   selector: 'app-products-list',
@@ -97,7 +98,8 @@ export class ProductsListComponent {
     private snackbarService: SnackbarService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
-    private confirmation: ConfirmationService
+    private confirmation: ConfirmationService,
+    private excel: ExcelService
   ) {
     this.getProducts();
   }
@@ -148,19 +150,82 @@ export class ProductsListComponent {
     this.router.navigate([product._id], { relativeTo: this.activatedRoute });
   }
 
-  download() {
+  downloadAllStocks() {
     this.confirmation
       .open(
         'Confirmation',
-        'You will be downloading all the products with serial numbers. <span class="text-rose-500">Would you like to proceed?</span>'
+        'You will be downloading all the products serial numbers. <span class="text-rose-500">Would you like to proceed?</span>'
       )
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-          this.productApi.getProducts();
+          this.allStocks = [];
+          this.totalDownload = 0;
+          this.snackbarService.openLoadingSnackbar(
+            'Downloading',
+            'Downloading All Stocks. Please Wait...'
+          );
+          this._batchDownload(0, this.batchSize);
         }
       });
   }
 
-  _batchDownload() {}
+  allStocks: any = [];
+  downloading = false;
+  batchSize = 1;
+  totalDownload = 0;
+  progressPercentage = 0;
+
+  private _batchDownload(pageIndex: number, pageSize: number) {
+    this.downloading = true;
+    this.productApi.getAllStocks({ pageSize, pageIndex }).subscribe({
+      next: (response: any) => {
+        var products = response.records as Product[];
+
+        for (let product of products) {
+          const { brand, model, description } = product;
+          product.stocks = product.stocks.sort((a, b) => {
+            if (a.serialNumber > b.serialNumber) return 1;
+            return -1;
+          });
+          for (let stock of product.stocks) {
+            const { serialNumber, type } = stock;
+            this.allStocks.push({
+              brand,
+              model,
+              description,
+              serialNumber,
+              type,
+            });
+          }
+        }
+        this.totalDownload += products.length;
+        this.progressPercentage = (this.totalDownload / response.total) * 100;
+        if (products.length < pageSize) {
+          this._downloadExcel();
+          return;
+        }
+        setTimeout(() => {
+          this._batchDownload(pageIndex + 1, pageSize);
+        }, 2000);
+      },
+      error: (err) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
+  }
+
+  private _downloadExcel() {
+    this.downloading = false;
+    setTimeout(() => {
+      this.snackbarService.openSuccessSnackbar(
+        'DownloadSuccess',
+        'All stocks successfully downloaded'
+      );
+      this.excel.download('All Stocks', this.allStocks);
+    }, 500);
+  }
 }

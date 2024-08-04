@@ -34,6 +34,10 @@ export class ProductApiService {
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
+  getAllStocks(query?: QueryParams) {
+    return this.httpService.get(`${this.apiPrefix}/all-stocks`, query);
+  }
+
   getProductById(_id: string) {
     return this.httpService.get(`${this.apiPrefix}/${_id}`);
   }

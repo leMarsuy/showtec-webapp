@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DeepFindPipe } from '@shared/pipes/deep-find/deep-find.pipe';
 import { TableModule } from '@shared/components/table/table.module';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [ProductsListComponent],
@@ -30,6 +31,7 @@ import { TableModule } from '@shared/components/table/table.module';
     FormsModule,
     ReactiveFormsModule,
     TableModule,
+    MatProgressBarModule,
   ],
 })
 export class ProductsListModule {}

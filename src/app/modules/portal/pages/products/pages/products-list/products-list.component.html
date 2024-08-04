@@ -48,10 +48,23 @@
       <button mat-icon-button (click)="getProducts()">
         <mat-icon class="mr-2"> refresh </mat-icon>
       </button>
-      <button mat-icon-button (click)="download()">
-        <mat-icon class="mr-2"> download </mat-icon>
+      <button
+        mat-icon-button
+        (click)="downloadAllStocks()"
+        [disabled]="downloading"
+      >
+        <mat-icon class="mr-2">
+          {{ downloading ? "downloading" : "download" }}
+        </mat-icon>
       </button>
     </div>
+    @if(downloading){
+    <mat-progress-bar
+      mode="determinate"
+      [value]="progressPercentage"
+      color="warn"
+    ></mat-progress-bar>
+    }
 
     <app-table
       [dataSource]="products"
