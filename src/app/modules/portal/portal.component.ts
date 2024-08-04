@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { enviroment } from '@env/environment';
 
 @Component({
   selector: 'app-portal',
@@ -7,4 +8,5 @@ import { Component } from '@angular/core';
 })
 export class PortalComponent {
   expanded = false;
+  isDeveloperMode = enviroment.ENVIRONMENT_NAME === 'development';
 }

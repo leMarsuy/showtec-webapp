@@ -13,7 +13,12 @@
   </div>
   <div class="grow h-full bg-gray-800 overflow-auto pb-10">
     <app-header></app-header>
-
+    <div
+      class="w-full bg-amber-400 text-center text-white sticky top-0"
+      *ngIf="isDeveloperMode"
+    >
+      WARNING: You are currenty in <b>DEVELOPER MODE</b>.
+    </div>
     <router-outlet></router-outlet>
   </div>
 </div>
