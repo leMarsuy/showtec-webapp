@@ -172,7 +172,7 @@ export class ProductsListComponent {
 
   allStocks: any = [];
   downloading = false;
-  batchSize = 1;
+  batchSize = 20;
   totalDownload = 0;
   progressPercentage = 0;
 
@@ -205,9 +205,7 @@ export class ProductsListComponent {
           this._downloadExcel();
           return;
         }
-        setTimeout(() => {
-          this._batchDownload(pageIndex + 1, pageSize);
-        }, 2000);
+        this._batchDownload(pageIndex + 1, pageSize);
       },
       error: (err) => {
         this.snackbarService.openErrorSnackbar(
