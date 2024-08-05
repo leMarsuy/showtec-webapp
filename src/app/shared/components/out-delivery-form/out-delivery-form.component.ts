@@ -103,7 +103,7 @@ export class OutDeliveryFormComponent implements OnInit {
 
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
-    this.deliveryForm.get('_customerId')?.disable();
+    // this.deliveryForm.get('_customerId')?.disable();
   }
 
   deliveryForm = this.fb.group({
