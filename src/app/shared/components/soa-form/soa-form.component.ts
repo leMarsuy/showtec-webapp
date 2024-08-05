@@ -337,19 +337,19 @@ export class SoaFormComponent implements OnInit {
   }
 
   getLastSOA() {
-    // this.soaApi.getMostRecentSOA().subscribe({
-    //   next: (res: any) => {
-    //     res.signatories.forEach((sig: any) => {
-    //       this.listedSignatories.push({
-    //         name: sig.STATIC.name,
-    //         designation: sig.STATIC.designation,
-    //         action: sig.action,
-    //       });
-    //     });
-    //     this.listedSignatories = [...this.listedSignatories];
-    //     this.listedSignatoriesPage.length = this.listedSignatories.length;
-    //   },
-    // });
+    this.soaApi.getMostRecentSoa().subscribe({
+      next: (res: any) => {
+        res.signatories.forEach((sig: any) => {
+          this.listedSignatories.push({
+            name: sig.STATIC.name,
+            designation: sig.STATIC.designation,
+            action: sig.action,
+          });
+        });
+        this.listedSignatories = [...this.listedSignatories];
+        this.listedSignatoriesPage.length = this.listedSignatories.length;
+      },
+    });
   }
 
   updateCellEventHandler(e: {

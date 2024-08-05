@@ -60,4 +60,8 @@ export class SoaApiService {
       })
     );
   }
+
+  getMostRecentSoa() {
+    return this.httpService.get(`${this.apiPrefix}/recent`);
+  }
 }
