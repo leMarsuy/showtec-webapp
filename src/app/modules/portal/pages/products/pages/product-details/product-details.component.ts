@@ -52,20 +52,10 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   columns: TableColumn[] = [
-    // {
-    //   label: 'Stock Age',
-    //   dotNotationPath: 'ageInDays',
-    //   type: ColumnType.AGE_IN_DAYS,
-    // },
     {
       label: 'S/N',
       dotNotationPath: 'serialNumber',
       type: ColumnType.STRING,
-    },
-    {
-      label: 'Purchase Cost',
-      dotNotationPath: 'purchaseCost',
-      type: ColumnType.CURRENCY,
     },
     {
       label: 'Stock Age',
@@ -124,7 +114,7 @@ export class ProductDetailsComponent implements OnInit {
             return -1;
           }) || [];
         this.page.length = this.product.stocks.length;
-        this.filterStocks(StockStatus.IN_STOCK);
+        this.filterStocks('All');
       },
       error: (err) => {
         this.snackbarService.openErrorSnackbar(

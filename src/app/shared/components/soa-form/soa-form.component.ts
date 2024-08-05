@@ -371,10 +371,10 @@ export class SoaFormComponent implements OnInit {
 
   updateSignatories(e: any) {
     deepInsert(e.newValue, e.column.dotNotationPath, e.element);
-    this.listedItems = [...this.listedItems];
-    this.listedItemsPage.length = -1;
+    this.listedSignatories = [...this.listedSignatories];
+    this.listedSignatoriesPage.length = -1;
     setTimeout(() => {
-      this.listedItemsPage.length = this.listedItems.length;
+      this.listedSignatoriesPage.length = this.listedSignatories.length;
     }, 20);
   }
 
