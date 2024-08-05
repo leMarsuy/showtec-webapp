@@ -63,7 +63,7 @@ export class OutDeliveryFormComponent implements OnInit {
   autoFillForm() {
     var outDelivery = this.outDelivery;
     this.deliveryForm.patchValue({
-      _customerId: outDelivery.STATIC.name,
+      _customerId: outDelivery._customerId,
       mobile: outDelivery.STATIC.mobile,
       address: outDelivery.STATIC.address,
       tin: outDelivery.STATIC.tin,
@@ -280,7 +280,8 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   get customerName() {
-    return this.deliveryForm.getRawValue()._customerId;
+    return (this.deliveryForm.getRawValue()._customerId as unknown as Customer)
+      .name;
   }
 
   filteredCustomers!: Observable<Customer[]>;
@@ -381,9 +382,11 @@ export class OutDeliveryFormComponent implements OnInit {
   updateOutDelivery() {
     var rawOutdelivery = this.deliveryForm.getRawValue() as any;
     var outdelivery: any = {
+      _customerId: rawOutdelivery._customerId._id,
       deliveryDate: rawOutdelivery.deliveryDate,
       remarks: rawOutdelivery.remarks,
       STATIC: {
+        name: rawOutdelivery._customerId.name,
         mobile: rawOutdelivery.mobile,
         address: rawOutdelivery.address,
         tin: rawOutdelivery.tin,
@@ -419,12 +422,13 @@ export class OutDeliveryFormComponent implements OnInit {
 
     this.outdeliveryApi.updateOutDeliveryById(this._id, outdelivery).subscribe({
       next: (res: any) => {
+        var od = res;
         this.snackbarService.openSuccessSnackbar(
           'UPDATE_SUCCESS',
           'Successfully Updated D/R: ' +
-            this.outDelivery.code?.value +
+            od.code?.value +
             ' for ' +
-            this.outDelivery.STATIC.name +
+            od.STATIC.name +
             '.'
         );
       },

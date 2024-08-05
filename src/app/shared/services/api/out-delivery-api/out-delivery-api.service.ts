@@ -51,6 +51,7 @@ export class OutDeliveryApiService {
   }
 
   updateOutDeliveryById(_id: string, updateBody: OutDelivery) {
+    console.log(updateBody);
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }
 }
