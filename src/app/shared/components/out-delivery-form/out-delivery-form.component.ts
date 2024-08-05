@@ -30,6 +30,7 @@ import { ConfirmationService } from '../confirmation/confirmation.service';
 import { SnackbarService } from '../snackbar/snackbar.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { StockStatus } from '@app/core/enums/stock-status.enum';
+import { deepInsert } from '@app/shared/utils/deepInsert';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -142,6 +143,7 @@ export class OutDeliveryFormComponent implements OnInit {
       label: 'Action',
       dotNotationPath: 'action',
       type: ColumnType.STRING,
+      editable: true,
     },
     {
       label: 'Remove',
@@ -329,6 +331,15 @@ export class OutDeliveryFormComponent implements OnInit {
       tin,
       address: addressDelivery,
     });
+  }
+
+  updateSignatories(e: any) {
+    deepInsert(e.newValue, e.column.dotNotationPath, e.element);
+    this.listedItems = [...this.listedItems];
+    this.listedItemsPage.length = -1;
+    setTimeout(() => {
+      this.listedItemsPage.length = this.listedItems.length;
+    }, 20);
   }
 
   displayCustomer(value: any) {

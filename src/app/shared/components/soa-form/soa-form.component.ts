@@ -82,7 +82,7 @@ export class SoaFormComponent implements OnInit {
   autoFillForm() {
     var soa = this.soa;
     this.soaForm.patchValue({
-      _customerId: soa.STATIC.name,
+      _customerId: soa._customerId,
       mobile: soa.STATIC.mobile,
       address: soa.STATIC.address,
       tin: soa.STATIC.tin,
@@ -119,7 +119,8 @@ export class SoaFormComponent implements OnInit {
       });
     });
 
-    this.listedDiscounts = soa.discounts || [];
+    this.listedDiscounts =
+      soa.discounts?.map((a) => ({ name: a.name, value: a.value })) || [];
     this.listedTaxes =
       soa.taxes?.map((a) => ({ name: a.name, value: a.value })) || [];
 
@@ -131,7 +132,7 @@ export class SoaFormComponent implements OnInit {
 
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
-    this.soaForm.get('_customerId')?.disable();
+    // this.soaForm.get('_customerId')?.disable();
     this._calculateSummary();
   }
 
@@ -234,6 +235,7 @@ export class SoaFormComponent implements OnInit {
       label: 'Action',
       dotNotationPath: 'action',
       type: ColumnType.STRING,
+      editable: true,
     },
     {
       label: 'Remove',
@@ -364,6 +366,15 @@ export class SoaFormComponent implements OnInit {
     setTimeout(() => {
       this.listedItemsPage.length = this.listedItems.length;
       this._calculateSummary();
+    }, 20);
+  }
+
+  updateSignatories(e: any) {
+    deepInsert(e.newValue, e.column.dotNotationPath, e.element);
+    this.listedItems = [...this.listedItems];
+    this.listedItemsPage.length = -1;
+    setTimeout(() => {
+      this.listedItemsPage.length = this.listedItems.length;
     }, 20);
   }
 
@@ -499,13 +510,15 @@ export class SoaFormComponent implements OnInit {
     var rawSoaForm = this.soaForm.getRawValue() as any;
 
     var soa: any = {
+      _customerId: rawSoaForm._customerId._id,
       STATIC: {
-        mobile: rawSoaForm.mobile,
+        name: rawSoaForm._customerId.name,
         address: rawSoaForm.address,
+        mobile: rawSoaForm.mobile,
         tin: rawSoaForm.tin,
       },
       soaDate: rawSoaForm.soaDate,
-      // dueDate: rawSoaForm.dueDate,
+      dueDate: rawSoaForm.dueDate,
       signatories: [],
       items: [],
       discounts: this.listedDiscounts,
@@ -543,10 +556,10 @@ export class SoaFormComponent implements OnInit {
     console.log(soa);
 
     this.soaApi.updateSoaById(this._id, soa).subscribe({
-      next: () => {
+      next: (newSoa: any) => {
         this.snackbarService.openSuccessSnackbar(
           'Update Success',
-          `SOA ${soa.code?.value} successfully updated.`
+          `SOA ${newSoa.code?.value} successfully updated.`
         );
         setTimeout(() => {
           this.router.navigate(['/portal/soa']);

@@ -130,6 +130,7 @@
         [dataSource]="listedSignatories"
         [page]="listedSignatoriesPage"
         (actionEmitter)="actionEventSignatories($event)"
+        (updateCellEmitter)="updateSignatories($event)"
       ></app-table>
       <div class="flex gap-4">
         <mat-form-field class="w-full">
@@ -157,7 +158,7 @@
   <div class="bg-white rounded-xl p-4 w-[25rem] sticky top-16 h-fit">
     <form class="grid grid-cols-2 gap-x-1" [formGroup]="soaForm">
       <div class="col-span-2">
-        <mat-form-field class="w-full" *ngIf="!_id">
+        <mat-form-field class="w-full">
           <mat-label>Customer's Name</mat-label>
           <input
             matInput
@@ -176,13 +177,6 @@
             }
           </mat-autocomplete>
         </mat-form-field>
-
-        <div *ngIf="soa" class="p-4 bg-sky-500 text-white mb-4">
-          <p>{{ soa.STATIC.name }}</p>
-          <p>
-            <b>{{ soa.code?.value }}</b>
-          </p>
-        </div>
       </div>
 
       <div class="col-span-2">

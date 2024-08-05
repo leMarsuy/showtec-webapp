@@ -45,6 +45,7 @@
         [dataSource]="listedSignatories"
         [page]="listedSignatoriesPage"
         (actionEmitter)="actionEventSignatories($event)"
+        (updateCellEmitter)="updateSignatories($event)"
       ></app-table>
       <div class="flex gap-4">
         <mat-form-field class="w-full">
