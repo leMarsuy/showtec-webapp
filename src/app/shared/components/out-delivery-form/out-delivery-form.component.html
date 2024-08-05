@@ -72,7 +72,7 @@
   <div class="bg-white rounded-xl p-4 w-[40rem] sticky top-16 h-fit">
     <form class="grid grid-cols-2 gap-2" [formGroup]="deliveryForm">
       <div class="col-span-2">
-        <mat-form-field class="w-full" *ngIf="!_id">
+        <mat-form-field class="w-full">
           <mat-label>Customer's Name</mat-label>
           <input
             matInput
@@ -91,13 +91,6 @@
             }
           </mat-autocomplete>
         </mat-form-field>
-
-        <div *ngIf="outDelivery" class="p-4 bg-sky-500 text-white">
-          <p>{{ outDelivery.STATIC.name }}</p>
-          <p>
-            <b>{{ outDelivery.code?.value }}</b>
-          </p>
-        </div>
       </div>
 
       <div class="col-span-2">

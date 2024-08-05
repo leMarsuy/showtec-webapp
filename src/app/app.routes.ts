@@ -12,6 +12,13 @@ export const routes: Routes = [
       import('./modules/portal/portal.module').then((m) => m.PortalModule),
   },
   {
+    path: 'customer-registration',
+    loadChildren: () =>
+      import(
+        './modules/customer-registration/customer-registration.module'
+      ).then((m) => m.CustomerRegistrationModule),
+  },
+  {
     path: '',
     redirectTo: 'auth',
     pathMatch: 'full',
