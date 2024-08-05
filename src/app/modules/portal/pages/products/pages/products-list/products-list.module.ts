@@ -14,6 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DeepFindPipe } from '@shared/pipes/deep-find/deep-find.pipe';
 import { TableModule } from '@shared/components/table/table.module';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [ProductsListComponent],
@@ -32,6 +33,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     ReactiveFormsModule,
     TableModule,
     MatProgressBarModule,
+    MatTooltipModule,
   ],
 })
 export class ProductsListModule {}

@@ -105,13 +105,13 @@ export class ProductsListComponent {
   }
 
   getProducts() {
-    console.log(this.searchForm.getRawValue());
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching products...');
     this.productApi
       .getProducts({
         searchText: this.searchForm.get('searchText')?.value || '',
         searchField: this.searchForm.get('searchField')?.value || '',
         ...this.page,
+        sort: 'brand model',
       })
       .subscribe({
         next: (resp) => {
@@ -171,6 +171,7 @@ export class ProductsListComponent {
   }
 
   allStocks: any = [];
+  allProducts: any = [];
   downloading = false;
   batchSize = 20;
   totalDownload = 0;
@@ -202,7 +203,7 @@ export class ProductsListComponent {
         this.totalDownload += products.length;
         this.progressPercentage = (this.totalDownload / response.total) * 100;
         if (products.length < pageSize) {
-          this._downloadExcel();
+          this._downloadExcel(this.allStocks, 'ALL STOCKS');
           return;
         }
         this._batchDownload(pageIndex + 1, pageSize);
@@ -216,14 +217,76 @@ export class ProductsListComponent {
     });
   }
 
-  private _downloadExcel() {
+  private _downloadExcel(json: Array<any>, filename: string) {
     this.downloading = false;
     setTimeout(() => {
       this.snackbarService.openSuccessSnackbar(
         'DownloadSuccess',
-        'All stocks successfully downloaded'
+        filename + ' successfully downloaded'
       );
-      this.excel.download('All Stocks', this.allStocks);
+      this.excel.download(filename, json);
+      this.allProducts = [];
+      this.totalDownload = 0;
+      this.allStocks = [];
     }, 500);
+  }
+
+  downloadAllProducts() {
+    this.confirmation
+      .open(
+        'Confirmation',
+        'You will be downloading all the products. <span class="text-rose-500">Would you like to proceed?</span>'
+      )
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          this.allProducts = [];
+          this.totalDownload = 0;
+          this.snackbarService.openLoadingSnackbar(
+            'Downloading',
+            'Downloading All Products. Please Wait...'
+          );
+          this._batchDownloadProducts(0, this.batchSize);
+        }
+      });
+  }
+
+  private _batchDownloadProducts(pageIndex: number, pageSize: number) {
+    this.downloading = true;
+    this.productApi
+      .getProducts({
+        pageSize,
+        pageIndex,
+        sort: 'brand model',
+      })
+      .subscribe({
+        next: (response: any) => {
+          var products = response.records as Product[];
+          for (let product of products) {
+            const { brand, model, description } = product;
+            this.allProducts.push({
+              brand,
+              model,
+              description,
+              stocks: product?._$stockSummary?.['In Stock'] || 0,
+              withDR: product?._$stockSummary?.['For Delivery'] || 0,
+            });
+          }
+
+          this.totalDownload += products.length;
+          this.progressPercentage = (this.totalDownload / response.total) * 100;
+          if (products.length < pageSize) {
+            this._downloadExcel(this.allProducts, 'ALL PRODUCTS');
+            return;
+          }
+          this._batchDownloadProducts(pageIndex + 1, pageSize);
+        },
+        error: (err) => {
+          this.snackbarService.openErrorSnackbar(
+            err.error.errorCode,
+            err.error.message
+          );
+        },
+      });
   }
 }

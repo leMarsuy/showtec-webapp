@@ -52,9 +52,20 @@
         mat-icon-button
         (click)="downloadAllStocks()"
         [disabled]="downloading"
+        matTooltip="Download Serial Numbers"
       >
         <mat-icon class="mr-2">
           {{ downloading ? "downloading" : "download" }}
+        </mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="downloadAllProducts()"
+        [disabled]="downloading"
+        matTooltip="Download Products"
+      >
+        <mat-icon class="mr-2">
+          {{ downloading ? "downloading" : "download_for_offline" }}
         </mat-icon>
       </button>
     </div>
