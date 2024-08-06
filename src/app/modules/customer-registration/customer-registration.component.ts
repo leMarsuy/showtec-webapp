@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
@@ -54,6 +53,14 @@ export class CustomerRegistrationComponent {
       .subscribe({
         next: (value) => {
           this.loading = false;
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth',
+          });
+
+          this.customerForm.reset();
+          this.customerForm.enable();
           this.sb
             .openSuccessSnackbar(
               'RegisterSuccess',
@@ -61,13 +68,12 @@ export class CustomerRegistrationComponent {
             )
             .afterDismissed()
             .subscribe({
-              next: () => {
-                this.customerForm.reset();
-              },
+              next: () => {},
             });
         },
         error: (err: HttpErrorResponse) => {
           this.loading = false;
+          this.customerForm.enable();
           this.sb.openErrorSnackbar(err.error.errorCode, err.error.message);
         },
       });
