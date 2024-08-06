@@ -4,7 +4,9 @@
     class="text-xs float-right mt-2 font-light text-emerald-500 top-0"
     matTooltip="Barcode Listener Activated"
   >
-    <mat-checkbox [(ngModel)]="allowDuplicates">Allow Duplicates</mat-checkbox>
+    <mat-checkbox [(ngModel)]="allowDuplicates" (change)="focusToSerialNumber()"
+      >Allow Duplicates</mat-checkbox
+    >
   </span>
 </p>
 <mat-dialog-content>

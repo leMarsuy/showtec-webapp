@@ -107,11 +107,15 @@ export class UpdateStockComponent implements AfterViewInit {
     }
 
     this.stockForm.reset();
-    this.serialNumber.nativeElement.focus();
+    this.focusToSerialNumber();
   }
 
   removeStock(i: number) {
     this.scannedStocks.splice(i, 1);
+    this.focusToSerialNumber();
+  }
+
+  focusToSerialNumber() {
     this.serialNumber.nativeElement.focus();
   }
 
