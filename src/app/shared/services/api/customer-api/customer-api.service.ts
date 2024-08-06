@@ -16,6 +16,24 @@ export class CustomerApiService {
     return this.httpService.post(`${this.apiPrefix}`, customer);
   }
 
+  registerCustomer(
+    contactPerson: string,
+    name: string,
+    tin: string,
+    email: string,
+    mobile: string,
+    address: string
+  ) {
+    return this.httpService.post(`${this.apiPrefix}/register`, {
+      name,
+      tin,
+      contactPerson,
+      email,
+      mobile,
+      address,
+    });
+  }
+
   getCustomers(query?: QueryParams) {
     var sanitizedQuery: QueryParams = {};
     if (query)

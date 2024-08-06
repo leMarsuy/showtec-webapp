@@ -25,7 +25,7 @@ export class SnackbarService {
   }
 
   openErrorSnackbar(title: string, message?: string) {
-    this._loadingSnackbarRef = this.snackbar.openFromComponent(ErrorComponent, {
+    return this.snackbar.openFromComponent(ErrorComponent, {
       data: {
         title,
         duration: 3000,
@@ -36,16 +36,13 @@ export class SnackbarService {
   }
 
   openSuccessSnackbar(title: string, message?: string) {
-    this._loadingSnackbarRef = this.snackbar.openFromComponent(
-      SuccessComponent,
-      {
-        duration: 3000,
-        data: {
-          title,
-          message: message,
-        },
-      }
-    );
+    return this.snackbar.openFromComponent(SuccessComponent, {
+      duration: 3000,
+      data: {
+        title,
+        message: message,
+      },
+    });
   }
 
   closeLoadingSnackbar(): Promise<Boolean> {
