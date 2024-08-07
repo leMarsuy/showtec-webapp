@@ -182,11 +182,6 @@ export class OutDeliveryFormComponent implements OnInit {
       dotNotationPath: 'stocks.0.serialNumber',
       type: ColumnType.STRING,
     },
-    // {
-    //   label: 'Status',
-    //   dotNotationPath: 'stocks.0.status',
-    //   type: ColumnType.STRING,
-    // },
     {
       label: 'Remove',
       dotNotationPath: 'stocks',
@@ -236,6 +231,7 @@ export class OutDeliveryFormComponent implements OnInit {
     if (serialNumber)
       this.productApi.getInStockProductBySerialNumber(serialNumber).subscribe({
         next: (res: any) => {
+          console.log(res);
           this.pushToListedProducts(res);
           this.serialNumberControl.reset();
           this.errorMessage = '';
@@ -248,9 +244,20 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   pushToListedProducts(product: Product) {
-    var li = this.listedItems;
-    if (!li.find((o) => o.stocks[0]._id === product.stocks[0]._id))
+    var items = this.listedItems;
+    for (let item of items) {
+      var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
+      product.stocks.splice(index, 1);
+    }
+
+    if (product.stocks.length <= 0) {
+      return;
+    }
+
+    if (!items.find((o) => o.stocks[0]._id === product.stocks[0]._id)) {
+      product.stocks = [product.stocks[0]];
       this.listedItems.push(product);
+    }
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
   }
