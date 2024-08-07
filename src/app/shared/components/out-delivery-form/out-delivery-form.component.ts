@@ -201,7 +201,6 @@ export class OutDeliveryFormComponent implements OnInit {
   };
 
   actionEventItems(e: any) {
-    console.log(e);
     if (e.action.name == 'remove') {
       this.removeFromListedProducts(e.i);
     }
@@ -249,8 +248,18 @@ export class OutDeliveryFormComponent implements OnInit {
 
   pushToListedProducts(product: Product) {
     var items = this.listedItems;
+    // for (let item of items) {
+    //   var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
+    //   product.stocks.splice(index, 1);
+    // }
+
+    // if (product.stocks.length <= 0) {
+    //   this.snackbarService.openErrorSnackbar('Duplicate', 'Possible duplicate');
+    //   return;
+    // }
 
     if (!items.find((o) => o.stocks[0]._id === product.stocks[0]._id)) {
+      // product.stocks = [product.stocks[0]];
       this.listedItems.push(product);
     }
     this.listedItems = [...this.listedItems];
