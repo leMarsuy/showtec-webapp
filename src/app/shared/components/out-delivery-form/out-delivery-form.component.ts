@@ -248,17 +248,8 @@ export class OutDeliveryFormComponent implements OnInit {
 
   pushToListedProducts(product: Product) {
     var items = this.listedItems;
-    // for (let item of items) {
-    //   var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
-    //   product.stocks.splice(index, 1);
-    // }
-
-    // if (product.stocks.length <= 0) {
-    //   return;
-    // }
 
     if (!items.find((o) => o.stocks[0]._id === product.stocks[0]._id)) {
-      product.stocks = [product.stocks[0]];
       this.listedItems.push(product);
     }
     this.listedItems = [...this.listedItems];
@@ -266,6 +257,7 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   removeFromListedProducts(i: number) {
+    console.log(i);
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
