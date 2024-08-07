@@ -47,7 +47,6 @@ export class CustomersComponent {
   };
 
   columns: TableColumn[] = [
-    { label: 'Code', dotNotationPath: 'code', type: ColumnType.STRING },
     { label: 'Entity', dotNotationPath: 'name', type: ColumnType.STRING },
     { label: 'Type', dotNotationPath: 'type', type: ColumnType.STRING },
     {

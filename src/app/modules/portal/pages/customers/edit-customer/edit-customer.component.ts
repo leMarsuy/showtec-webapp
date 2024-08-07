@@ -27,7 +27,6 @@ export class EditCustomerComponent implements OnInit {
   ) {}
 
   customerForm = new FormGroup({
-    code: new FormControl(''),
     name: new FormControl('', Validators.required),
     type: new FormControl('', [Validators.required]),
     contactPerson: new FormControl('', [Validators.required]),
