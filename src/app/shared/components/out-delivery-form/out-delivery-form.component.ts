@@ -201,6 +201,7 @@ export class OutDeliveryFormComponent implements OnInit {
   };
 
   actionEventItems(e: any) {
+    console.log(e);
     if (e.action.name == 'remove') {
       this.removeFromListedProducts(e.i);
     }
