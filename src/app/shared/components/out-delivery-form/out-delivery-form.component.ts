@@ -31,6 +31,8 @@ import { SnackbarService } from '../snackbar/snackbar.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { StockStatus } from '@app/core/enums/stock-status.enum';
 import { deepInsert } from '@app/shared/utils/deepInsert';
+import { MatDialog } from '@angular/material/dialog';
+import { PdfViewerComponent } from '../pdf-viewer/pdf-viewer.component';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -124,7 +126,8 @@ export class OutDeliveryFormComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private snackbarService: SnackbarService,
-    private confirmation: ConfirmationService
+    private confirmation: ConfirmationService,
+    private dialog: MatDialog
   ) {}
 
   listedSignatories: Array<any> = [];
@@ -245,14 +248,14 @@ export class OutDeliveryFormComponent implements OnInit {
 
   pushToListedProducts(product: Product) {
     var items = this.listedItems;
-    for (let item of items) {
-      var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
-      product.stocks.splice(index, 1);
-    }
+    // for (let item of items) {
+    //   var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
+    //   product.stocks.splice(index, 1);
+    // }
 
-    if (product.stocks.length <= 0) {
-      return;
-    }
+    // if (product.stocks.length <= 0) {
+    //   return;
+    // }
 
     if (!items.find((o) => o.stocks[0]._id === product.stocks[0]._id)) {
       product.stocks = [product.stocks[0]];
@@ -449,6 +452,7 @@ export class OutDeliveryFormComponent implements OnInit {
             od.STATIC.name +
             '.'
         );
+        this.displayPDF(od);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
@@ -457,6 +461,20 @@ export class OutDeliveryFormComponent implements OnInit {
         );
       },
     });
+  }
+
+  displayPDF(outdelivery: OutDelivery) {
+    if (outdelivery._id)
+      this.dialog.open(PdfViewerComponent, {
+        data: {
+          apiCall: this.outdeliveryApi.getPdfOutDelivery(outdelivery._id),
+          title: 'View Delivery Receipt',
+        },
+        maxWidth: '70rem',
+        width: '100%',
+        disableClose: true,
+        autoFocus: false,
+      });
   }
 
   createOutDelivery() {

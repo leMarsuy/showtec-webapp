@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ConfirmationModule } from '../confirmation/confirmation.module';
 import { TableModule } from '../table/table.module';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [OutDeliveryFormComponent],
@@ -29,6 +30,7 @@ import { TableModule } from '../table/table.module';
     MatDatepickerModule,
     TableModule,
     ConfirmationModule,
+    MatDialogModule,
   ],
   exports: [OutDeliveryFormComponent],
 })
