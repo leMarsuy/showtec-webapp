@@ -27,7 +27,7 @@ export class ProductApiService {
       sanitizedQuery = {
         pageIndex: query.pageIndex || 0,
         pageSize: query.pageSize || 0,
-        sort: query.sort,
+        sort: query.sort || '',
         searchText: query.searchText || '',
         searchField: query.searchField || '',
       };
