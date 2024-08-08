@@ -248,15 +248,15 @@ export class OutDeliveryFormComponent implements OnInit {
 
   pushToListedProducts(product: Product) {
     var items = this.listedItems;
-    // for (let item of items) {
-    //   var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
-    //   product.stocks.splice(index, 1);
-    // }
+    for (let item of items) {
+      var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
+      if (index >= 0) product.stocks.splice(index, 1);
+    }
 
-    // if (product.stocks.length <= 0) {
-    //   this.snackbarService.openErrorSnackbar('Duplicate', 'Possible duplicate');
-    //   return;
-    // }
+    if (product.stocks.length <= 0) {
+      this.snackbarService.openErrorSnackbar('Duplicate', 'Possible duplicate');
+      return;
+    }
 
     if (!items.find((o) => o.stocks[0]._id === product.stocks[0]._id)) {
       // product.stocks = [product.stocks[0]];
