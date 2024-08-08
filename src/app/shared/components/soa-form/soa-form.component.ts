@@ -391,7 +391,7 @@ export class SoaFormComponent implements OnInit {
           unit_price: product.price.amount,
           quantity: 1,
           disc: 0.5,
-          total: product.price.amount,
+          total: product.price.amount - product.price.amount * 0.5,
         },
       });
     this.listedItems = [...this.listedItems];
