@@ -72,6 +72,11 @@ export class SoaListComponent {
       type: ColumnType.CURRENCY,
     },
     {
+      label: 'Paid',
+      dotNotationPath: 'payment.paid',
+      type: ColumnType.CURRENCY,
+    },
+    {
       label: 'Date of SOA',
       dotNotationPath: 'soaDate',
       type: ColumnType.AGE_IN_DAYS,
