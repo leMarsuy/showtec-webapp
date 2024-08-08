@@ -254,7 +254,10 @@ export class OutDeliveryFormComponent implements OnInit {
     }
 
     if (product.stocks.length <= 0) {
-      this.snackbarService.openErrorSnackbar('Duplicate', 'Possible duplicate');
+      this.snackbarService.openErrorSnackbar(
+        'Ooops',
+        'Reached Maximum No. of Available Stocks.'
+      );
       return;
     }
 
@@ -522,14 +525,9 @@ export class OutDeliveryFormComponent implements OnInit {
 
     this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
       next: (res: any) => {
-        this.outdeliveryApi.getPdfOutDelivery(res._id).subscribe({
-          next: (pdf: any) => {
-            this.router.navigate(['/portal/out-delivery']);
-          },
-        });
+        this.displayPDF(res);
       },
       error: (err: HttpErrorResponse) => {
-        console.log(err);
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
           err.error.message

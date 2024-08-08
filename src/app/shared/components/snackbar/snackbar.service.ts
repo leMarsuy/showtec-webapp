@@ -28,7 +28,7 @@ export class SnackbarService {
     return this.snackbar.openFromComponent(ErrorComponent, {
       data: {
         title,
-        duration: 3000,
+        duration: 1500,
         message:
           message || 'Something went wrong while connecting to our server.',
       },
