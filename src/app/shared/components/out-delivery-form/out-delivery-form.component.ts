@@ -33,6 +33,7 @@ import { StockStatus } from '@app/core/enums/stock-status.enum';
 import { deepInsert } from '@app/shared/utils/deepInsert';
 import { MatDialog } from '@angular/material/dialog';
 import { PdfViewerComponent } from '../pdf-viewer/pdf-viewer.component';
+import { CustomerType } from '@app/core/enums/customer-type.enum';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -358,7 +359,16 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   displayCustomer(value: any) {
-    return value.name || value || '';
+    var displayStr = '';
+    if (value.name) {
+      displayStr = value.name;
+      if (value.type === CustomerType.COMPANY) {
+        displayStr += ` (${value.contactPerson})`;
+      }
+    } else {
+      displayStr = value || '';
+    }
+    return displayStr;
   }
 
   displayUser(value: any) {

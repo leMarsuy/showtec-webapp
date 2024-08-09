@@ -173,7 +173,12 @@
             [displayWith]="displayCustomer"
           >
             @for (option of filteredCustomers | async; track option) {
-            <mat-option [value]="option">{{ option.name }}</mat-option>
+            <mat-option [value]="option">
+              <p>{{ option.name }}</p>
+              <small class="text-xs text-gray-600">
+                {{ option.contactPerson }}
+              </small>
+            </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>

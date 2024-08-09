@@ -40,8 +40,8 @@ export class CustomerApiService {
       sanitizedQuery = {
         pageIndex: query.pageIndex || 0,
         pageSize: query.pageSize || 0,
-        sort: query.sort,
-        searchText: query.searchText,
+        sort: query.sort || '',
+        searchText: query.searchText || '',
       };
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }

@@ -31,6 +31,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService } from '../confirmation/confirmation.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { Alignment } from '@app/core/enums/align.enum';
+import { CustomerType } from '@app/core/enums/customer-type.enum';
 
 interface Pricing {
   STATIC: {
@@ -643,7 +644,17 @@ export class SoaFormComponent implements OnInit {
   }
 
   displayCustomer(value: any) {
-    return value.name || value || '';
+    console.log(value);
+    var displayStr = '';
+    if (value.name) {
+      displayStr = value.name;
+      if (value.name != value.contactPerson) {
+        displayStr += ` (${value.contactPerson})`;
+      }
+    } else {
+      displayStr = value || '';
+    }
+    return displayStr;
   }
 
   displayUser(value: any) {

@@ -54,7 +54,7 @@ export class CustomersComponent {
       dotNotationPath: 'contactPerson',
       type: ColumnType.STRING,
     },
-    { label: 'Email', dotNotationPath: 'email', type: ColumnType.STRING },
+    { label: 'Remarks', dotNotationPath: 'remarks', type: ColumnType.STRING },
     { label: 'Mobile No.', dotNotationPath: 'mobile', type: ColumnType.STRING },
   ];
   customers!: Customer[];

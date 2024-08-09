@@ -16,6 +16,8 @@ export class Product {
   stocks: Stock[];
   _$stockSummary: any;
 
+  $$expectedOrders?: any; //wont be use
+
   constructor(model: Product) {
     this._id = model._id;
     this.brand = model.brand;

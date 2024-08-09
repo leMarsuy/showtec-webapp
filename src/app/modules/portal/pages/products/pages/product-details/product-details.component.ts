@@ -107,6 +107,7 @@ export class ProductDetailsComponent implements OnInit {
   getProductById() {
     this.productApi.getProductById(this._id).subscribe({
       next: (res) => {
+        console.log(res);
         this.product = res as Product;
         this.product.stocks =
           this.product.stocks.sort((a, b) => {

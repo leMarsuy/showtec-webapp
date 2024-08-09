@@ -10,29 +10,35 @@
         </button>
       </div>
       <div class="grid grid-cols-2 gap-2 w-full">
-        <mat-card class="col-span-2 p-4">
-          <small class="text-gray-500 mb-2">SKU</small>
-          <input [(ngModel)]="product.sku" class="focus:border-b-2" />
-        </mat-card>
-        <mat-card class="col-span-2 p-4">
-          <small class="text-gray-500 mb-2">Brand</small>
-          <p>{{ product.brand }}</p>
-        </mat-card>
+        <div
+          class="col-span-2 p-4 bg-amber-100 rounded-xl border-2 border-amber-500"
+        >
+          <p>
+            <b>{{ product.brand }} {{ product.model }} </b>
+          </p>
+        </div>
 
-        <mat-card class="col-span-2 p-4">
-          <small class="text-gray-500 mb-2">Model</small>
-          <p>{{ product.model }}</p>
-        </mat-card>
+        <div class="col-span-2 p-4 rounded-xl border-2">
+          <small class="text-gray-500 mb-2">Expected Orders</small>
+          <p>{{ product.$$expectedOrders.count }}</p>
+        </div>
 
-        <mat-card class="col-span-2 p-4">
-          <small class="text-gray-500 mb-2">Classification</small>
-          <p>{{ product.classification }}</p>
-        </mat-card>
+        <div class="col-span-2 p-4 rounded-xl border-2">
+          <small class="text-gray-500 mb-2">In Stock</small>
+          <p>{{ product._$stockSummary?.["In Stock"] }}</p>
+        </div>
 
-        <mat-card class="col-span-2 p-4">
+        <div class="col-span-2 p-4 rounded-xl border-2">
+          <small class="text-gray-500 mb-2">With DR</small>
+          <p>
+            {{ product._$stockSummary?.["For Delivery"] }}
+          </p>
+        </div>
+
+        <div class="col-span-2 p-4 rounded-xl border-2">
           <small class="text-gray-500 mb-2">SRP</small>
           <p>{{ product.price.amount | number }}</p>
-        </mat-card>
+        </div>
       </div>
       <div class="flex pt-4 justify-end">
         <button mat-raised-button (click)="editProduct()">Edit Details</button>
