@@ -24,6 +24,11 @@
         </div>
 
         <div class="col-span-2 p-4 rounded-xl border-2">
+          <small class="text-gray-500 mb-2">Total Sale as of Today</small>
+          <p>PHP {{ product.$$expectedOrders?.saleAmount || 0 }}</p>
+        </div>
+
+        <div class="col-span-2 p-4 rounded-xl border-2">
           <small class="text-gray-500 mb-2">In Stock</small>
           <p>{{ product._$stockSummary?.["In Stock"] }}</p>
         </div>
