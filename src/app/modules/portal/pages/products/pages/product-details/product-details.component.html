@@ -25,7 +25,9 @@
 
         <div class="col-span-2 p-4 rounded-xl border-2">
           <small class="text-gray-500 mb-2">Total Sale as of Today</small>
-          <p>PHP {{ product.$$expectedOrders?.saleAmount || 0 | number }}</p>
+          <p>
+            PHP {{ product.$$expectedOrders?.saleAmount || 0 | number : "0.2" }}
+          </p>
         </div>
 
         <div class="col-span-2 p-4 rounded-xl border-2">
