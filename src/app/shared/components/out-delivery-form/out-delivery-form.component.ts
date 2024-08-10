@@ -533,18 +533,16 @@ export class OutDeliveryFormComponent implements OnInit {
       });
     });
 
-    console.log(outdelivery);
-
-    // this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
-    //   next: (res: any) => {
-    //     this.displayPDF(res);
-    //   },
-    //   error: (err: HttpErrorResponse) => {
-    //     this.snackbarService.openErrorSnackbar(
-    //       err.error.errorCode,
-    //       err.error.message
-    //     );
-    //   },
-    // });
+    this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
+      next: (res: any) => {
+        this.displayPDF(res);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 }
