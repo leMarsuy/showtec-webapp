@@ -161,7 +161,12 @@
       </button>
       } @else {
       <button mat-stroked-button color="warn">Cancel Transaction</button>
-      <button mat-flat-button color="primary" (click)="confirm()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="confirm()"
+        [disabled]="!deliveryForm.valid"
+      >
         Create Delivery Receipt
       </button>
       }

@@ -368,7 +368,7 @@ export class OutDeliveryFormComponent implements OnInit {
     } else {
       displayStr = value || '';
     }
-    return displayStr;
+    return value.name || value || '';
   }
 
   displayUser(value: any) {
@@ -533,16 +533,18 @@ export class OutDeliveryFormComponent implements OnInit {
       });
     });
 
-    this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
-      next: (res: any) => {
-        this.displayPDF(res);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
-      },
-    });
+    console.log(outdelivery);
+
+    // this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
+    //   next: (res: any) => {
+    //     this.displayPDF(res);
+    //   },
+    //   error: (err: HttpErrorResponse) => {
+    //     this.snackbarService.openErrorSnackbar(
+    //       err.error.errorCode,
+    //       err.error.message
+    //     );
+    //   },
+    // });
   }
 }
