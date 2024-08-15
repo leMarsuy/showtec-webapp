@@ -190,10 +190,10 @@ export class SoaFormComponent implements OnInit {
   };
 
   listedTaxes: Array<Discount> = [
-    {
-      name: 'VAT 12%',
-      value: 0.12,
-    },
+    // {
+    //   name: 'VAT 12%',
+    //   value: 0.12,
+    // },
   ];
   listedTaxesColumns: TableColumn[] = [
     {
@@ -391,8 +391,8 @@ export class SoaFormComponent implements OnInit {
         STATIC: {
           unit_price: product.price.amount,
           quantity: 1,
-          disc: 0.5,
-          total: product.price.amount - product.price.amount * 0.5,
+          disc: 0,
+          total: product.price.amount - product.price.amount * 0,
         },
       });
     this.listedItems = [...this.listedItems];

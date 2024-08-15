@@ -79,7 +79,7 @@ export class SoaListComponent {
     {
       label: 'Date of SOA',
       dotNotationPath: 'soaDate',
-      type: ColumnType.AGE_IN_DAYS,
+      type: ColumnType.DATE,
     },
 
     {
