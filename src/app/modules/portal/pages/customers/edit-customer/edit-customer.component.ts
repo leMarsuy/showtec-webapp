@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Customer } from '@core/models/customer.model';
@@ -10,14 +10,18 @@ import {
   CUSTOMER_TYPES,
   CustomerType,
 } from '@app/core/enums/customer-type.enum';
+import { CustomerFormComponent } from '@app/shared/forms/customer-form/customer-form.component';
 
 @Component({
   selector: 'app-edit-customer',
   templateUrl: './edit-customer.component.html',
   styleUrl: './edit-customer.component.scss',
 })
-export class EditCustomerComponent implements OnInit {
-  customerTypes = CUSTOMER_TYPES;
+export class EditCustomerComponent {
+  @ViewChild(CustomerFormComponent)
+  customerFormComponent!: CustomerFormComponent;
+
+  customerForm!: FormGroup;
 
   constructor(
     private customerApi: CustomerApiService,
@@ -26,22 +30,18 @@ export class EditCustomerComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { _id: string }
   ) {}
 
-  customerForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    type: new FormControl('', [Validators.required]),
-    contactPerson: new FormControl('', [Validators.required]),
-    email: new FormControl(''),
-    mobile: new FormControl(''),
-    tin: new FormControl(''),
-    addressDelivery: new FormControl(''),
-    addressBilling: new FormControl(''),
-    remarks: new FormControl(''),
-  });
+  formEventHandler(e: FormGroup) {
+    this.customerForm = e;
+  }
 
-  ngOnInit(): void {
-    this.customerApi.getCustomerById(this.data._id).subscribe({
-      next: (res) => {
-        this.customerForm.patchValue(res as Customer);
+  deleteCustomer() {
+    this.customerApi.deleteCustomerById(this.data._id).subscribe({
+      next: (response) => {
+        this.snackbarService.openSuccessSnackbar(
+          'Delete',
+          'Customer Successfully Delete from the Table'
+        );
+        this._dialogRef.close(true);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
@@ -49,14 +49,6 @@ export class EditCustomerComponent implements OnInit {
           err.error.message
         );
       },
-    });
-
-    this.customerForm.get('type')?.valueChanges.subscribe((value) => {
-      if (value === CustomerType.INDIVIDUAL) {
-        this.customerForm
-          .get('contactPerson')
-          ?.setValue(this.customerForm.get('name')?.value || '');
-      }
     });
   }
 

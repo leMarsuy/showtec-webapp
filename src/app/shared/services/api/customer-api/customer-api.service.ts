@@ -50,6 +50,10 @@ export class CustomerApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}`);
   }
 
+  deleteCustomerById(_id: string) {
+    return this.httpService.delete(`${this.apiPrefix}/${_id}`);
+  }
+
   updateCustomerById(_id: string, updateBody: Customer) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }

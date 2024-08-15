@@ -356,9 +356,9 @@ export class SoaFormComponent implements OnInit {
     column: TableColumn;
     element: Product & Pricing;
   }) {
-    console.log('update');
     if (typeof e.column.dotNotationPath == 'string')
       deepInsert(e.newValue, e.column.dotNotationPath, e.element);
+
     var total = e.element.STATIC.quantity * e.element.STATIC.unit_price;
     e.element.STATIC.total = total - (e.element.STATIC.disc || 0) * total;
     this.listedItems = [...this.listedItems];

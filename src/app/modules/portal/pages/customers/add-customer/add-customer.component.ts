@@ -1,22 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ViewChild } from '@angular/core';
 import { CustomerApiService } from '@shared/services/api/customer-api/customer-api.service';
 import { Customer } from '@core/models/customer.model';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  CUSTOMER_TYPES,
-  CustomerType,
-} from '@app/core/enums/customer-type.enum';
+import { FormGroup } from '@angular/forms';
+import { CustomerFormComponent } from '@app/shared/forms/customer-form/customer-form.component';
 
 @Component({
   selector: 'app-add-customer',
   templateUrl: './add-customer.component.html',
   styleUrl: './add-customer.component.scss',
 })
-export class AddCustomerComponent implements OnInit {
-  customerTypes = CUSTOMER_TYPES;
+export class AddCustomerComponent {
+  @ViewChild(CustomerFormComponent)
+  customerFormComponent!: CustomerFormComponent;
+
+  customerForm!: FormGroup;
 
   constructor(
     private customerApi: CustomerApiService,
@@ -24,26 +24,8 @@ export class AddCustomerComponent implements OnInit {
     private snackbarService: SnackbarService
   ) {}
 
-  customerForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    type: new FormControl('', [Validators.required]),
-    contactPerson: new FormControl('', [Validators.required]),
-    email: new FormControl(''),
-    mobile: new FormControl(''),
-    tin: new FormControl(''),
-    addressDelivery: new FormControl(''),
-    addressBilling: new FormControl(''),
-    remarks: new FormControl(''),
-  });
-
-  ngOnInit(): void {
-    this.customerForm.get('type')?.valueChanges.subscribe((value) => {
-      if (value === CustomerType.INDIVIDUAL) {
-        this.customerForm
-          .get('contactPerson')
-          ?.setValue(this.customerForm.get('name')?.value || '');
-      }
-    });
+  formEventHandler(e: FormGroup) {
+    this.customerForm = e;
   }
 
   onSubmit() {

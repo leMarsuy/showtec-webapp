@@ -1,63 +1,20 @@
 <p mat-dialog-title>Add New Customer</p>
 <mat-dialog-content>
-  <form [formGroup]="customerForm" class="grid grid-cols-2">
-    <mat-form-field class="col-span-2">
-      <mat-label>Customer Name</mat-label>
-      <input matInput type="text" formControlName="name" />
-    </mat-form-field>
-
-    <mat-form-field class="col-span-2">
-      <mat-label>Type</mat-label>
-      <mat-select type="text" formControlName="type">
-        @for (customerType of customerTypes; track $index) {
-        <mat-option [value]="customerType">
-          {{ customerType }}
-        </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="col-span-2">
-      <mat-label>TIN No.</mat-label>
-      <input matInput type="text" formControlName="tin" />
-    </mat-form-field>
-
-    <mat-form-field class="col-span-2">
-      <mat-label>Contact Person</mat-label>
-      <input matInput type="text" formControlName="contactPerson" />
-    </mat-form-field>
-
-    <mat-form-field class="col-span-2">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" />
-    </mat-form-field>
-    <mat-form-field class="col-span-2">
-      <mat-label>Mobile</mat-label>
-      <input matInput type="text" formControlName="mobile" />
-    </mat-form-field>
-    <mat-form-field class="col-span-2">
-      <mat-label>Delivery Address</mat-label>
-      <textarea matInput rows="3" formControlName="addressDelivery"></textarea>
-    </mat-form-field>
-    <mat-form-field class="col-span-2">
-      <mat-label>Billing Address</mat-label>
-      <textarea matInput rows="3" formControlName="addressBilling"></textarea>
-    </mat-form-field>
-    <mat-form-field class="col-span-2">
-      <mat-label>Remarks</mat-label>
-      <input matInput type="text" formControlName="remarks" />
-    </mat-form-field>
-  </form>
+  <app-customer-form
+    (formEmitter)="formEventHandler($event)"
+  ></app-customer-form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button color="warn" mat-dialog-close="">Cancel</button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="!customerForm.valid"
-    cdkFocusInitial
-    (click)="onSubmit()"
-  >
-    Add to Customer Table
-  </button>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" mat-dialog-close="">Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!customerForm.valid"
+      cdkFocusInitial
+      (click)="onSubmit()"
+    >
+      Add to Customer Table
+    </button>
+  </div>
 </mat-dialog-actions>
