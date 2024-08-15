@@ -18,7 +18,10 @@ export class TableCellComponent {
 
   _cssStatus(element: any, column: TableColumn) {
     var color: Color = Color.DEAD;
-    var value = deepFind(element, column.dotNotationPath);
+    var value: any;
+
+    if (typeof column.dotNotationPath == 'string')
+      value = deepFind(element, column.dotNotationPath);
 
     color = column.colorCodes
       ? column.colorCodes.find((cc) => cc.value == value)?.color || Color.DEAD

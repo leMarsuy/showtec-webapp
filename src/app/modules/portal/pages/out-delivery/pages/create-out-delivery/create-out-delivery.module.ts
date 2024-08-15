@@ -5,7 +5,7 @@ import { CreateOutDeliveryRoutingModule } from './create-out-delivery-routing.mo
 import { CreateOutDeliveryComponent } from './create-out-delivery.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { OutDeliveryFormModule } from '@app/shared/components/out-delivery-form/out-delivery-form.module';
+import { OutDeliveryFormModule } from '@app/shared/forms/out-delivery-form/out-delivery-form.module';
 
 @NgModule({
   declarations: [CreateOutDeliveryComponent],

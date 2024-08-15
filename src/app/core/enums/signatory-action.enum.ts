@@ -1,8 +1,8 @@
 export enum SignatoryAction {
+  REQUESTED = 'Requested',
   PREPARED = 'Prepared',
-  APPROVED = 'Approved',
   CHECKED = 'Checked',
-  // special
+  APPROVED = 'Approved',
 }
 
 export const SIGNATORY_ACTIONS = Object.values(SignatoryAction);

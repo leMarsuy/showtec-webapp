@@ -26,13 +26,13 @@ import {
   switchMap,
   map,
 } from 'rxjs';
-import { ConfirmationService } from '../confirmation/confirmation.service';
-import { SnackbarService } from '../snackbar/snackbar.service';
+import { ConfirmationService } from '../../components/confirmation/confirmation.service';
+import { SnackbarService } from '../../components/snackbar/snackbar.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { StockStatus } from '@app/core/enums/stock-status.enum';
 import { deepInsert } from '@app/shared/utils/deepInsert';
 import { MatDialog } from '@angular/material/dialog';
-import { PdfViewerComponent } from '../pdf-viewer/pdf-viewer.component';
+import { PdfViewerComponent } from '../../components/pdf-viewer/pdf-viewer.component';
 import { CustomerType } from '@app/core/enums/customer-type.enum';
 
 @Component({
@@ -102,8 +102,7 @@ export class OutDeliveryFormComponent implements OnInit {
       });
     });
 
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = this.listedSignatories.length;
+    this._copySignatoriesToSelf();
 
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
@@ -148,6 +147,8 @@ export class OutDeliveryFormComponent implements OnInit {
       dotNotationPath: 'action',
       type: ColumnType.STRING,
       editable: true,
+      options: SIGNATORY_ACTIONS,
+      width: '[20rem]',
     },
     {
       label: 'Remove',
@@ -168,13 +169,9 @@ export class OutDeliveryFormComponent implements OnInit {
   listedItemsColumns: TableColumn[] = [
     {
       label: 'Item',
-      dotNotationPath: 'brand',
+      dotNotationPath: ['brand', 'model'],
       type: ColumnType.STRING,
-    },
-    {
-      label: 'Model',
-      dotNotationPath: 'model',
-      type: ColumnType.STRING,
+      width: '[20rem]',
     },
     {
       label: 'Description',
@@ -224,8 +221,7 @@ export class OutDeliveryFormComponent implements OnInit {
           });
         });
 
-        this.listedSignatories = [...this.listedSignatories];
-        this.listedSignatoriesPage.length = this.listedSignatories.length;
+        this._copySignatoriesToSelf();
       },
     });
   }
@@ -282,15 +278,14 @@ export class OutDeliveryFormComponent implements OnInit {
       ...user,
       action: SignatoryAction.APPROVED,
     });
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = this.listedSignatories.length;
+
+    this._copySignatoriesToSelf();
     this.signatoryControl.reset();
   }
 
   removeFromListedSignatories(i: number) {
     this.listedSignatories.splice(i, 1);
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = this.listedSignatories.length;
+    this._copySignatoriesToSelf();
   }
 
   get _customerId() {
@@ -351,6 +346,15 @@ export class OutDeliveryFormComponent implements OnInit {
 
   updateSignatories(e: any) {
     deepInsert(e.newValue, e.column.dotNotationPath, e.element);
+    this._copySignatoriesToSelf();
+  }
+
+  private _copySignatoriesToSelf() {
+    this.listedSignatories.sort((a, b) => {
+      var aIndex = SIGNATORY_ACTIONS.findIndex((action) => action === a.action);
+      var bIndex = SIGNATORY_ACTIONS.findIndex((action) => action === b.action);
+      return aIndex - bIndex;
+    });
     this.listedSignatories = [...this.listedSignatories];
     this.listedSignatoriesPage.length = -1;
     setTimeout(() => {

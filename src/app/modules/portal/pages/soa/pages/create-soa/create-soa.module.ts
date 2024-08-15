@@ -6,7 +6,7 @@ import { CreateSoaComponent } from './create-soa.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { SoaFormModule } from '@app/shared/components/soa-form/soa-form.module';
+import { SoaFormModule } from '@app/shared/forms/soa-form/soa-form.module';
 
 @NgModule({
   declarations: [CreateSoaComponent],

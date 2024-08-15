@@ -26,12 +26,11 @@ import {
   switchMap,
   map,
 } from 'rxjs';
-import { SnackbarService } from '../snackbar/snackbar.service';
+import { SnackbarService } from '../../components/snackbar/snackbar.service';
 import { Router } from '@angular/router';
-import { ConfirmationService } from '../confirmation/confirmation.service';
+import { ConfirmationService } from '../../components/confirmation/confirmation.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { Alignment } from '@app/core/enums/align.enum';
-import { CustomerType } from '@app/core/enums/customer-type.enum';
 
 interface Pricing {
   STATIC: {
@@ -125,8 +124,7 @@ export class SoaFormComponent implements OnInit {
     this.listedTaxes =
       soa.taxes?.map((a) => ({ name: a.name, value: a.value })) || [];
 
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = this.listedSignatories.length;
+    this._copySignatoriesToSelf();
 
     this.listedDiscountsPage.length = this.listedDiscounts.length;
     this.listedTaxesPage.length = this.listedSignatories.length;
@@ -217,7 +215,7 @@ export class SoaFormComponent implements OnInit {
   listedTaxesPage: PageEvent = {
     pageIndex: 0,
     pageSize: 100,
-    length: 1,
+    length: 0,
   };
 
   listedSignatories: Array<any> = [];
@@ -237,6 +235,8 @@ export class SoaFormComponent implements OnInit {
       dotNotationPath: 'action',
       type: ColumnType.STRING,
       editable: true,
+      options: SIGNATORY_ACTIONS,
+      width: '[20rem]',
     },
     {
       label: 'Remove',
@@ -255,13 +255,8 @@ export class SoaFormComponent implements OnInit {
   listedItems: Array<Product & Pricing> = [];
   listedItemsColumns: TableColumn[] = [
     {
-      label: 'Brand',
-      dotNotationPath: 'brand',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Model',
-      dotNotationPath: 'model',
+      label: 'Item',
+      dotNotationPath: ['brand', 'model'],
       type: ColumnType.STRING,
     },
     {
@@ -269,24 +264,28 @@ export class SoaFormComponent implements OnInit {
       dotNotationPath: 'classification',
       type: ColumnType.STRING,
       editable: true,
+      width: '[10rem]',
     },
     {
       label: 'Price',
       dotNotationPath: 'STATIC.unit_price',
       type: ColumnType.CURRENCY,
       editable: true,
+      width: '[9rem]',
     },
     {
       label: 'Qty',
       dotNotationPath: 'STATIC.quantity',
       editable: true,
       type: ColumnType.NUMBER,
+      width: '[7rem]',
     },
     {
       label: 'Disc.',
       dotNotationPath: 'STATIC.disc',
       editable: true,
       type: ColumnType.PERCENTAGE,
+      width: '[7rem]',
     },
     {
       label: 'Total',
@@ -347,8 +346,7 @@ export class SoaFormComponent implements OnInit {
             action: sig.action,
           });
         });
-        this.listedSignatories = [...this.listedSignatories];
-        this.listedSignatoriesPage.length = this.listedSignatories.length;
+        this._copySignatoriesToSelf();
       },
     });
   }
@@ -359,7 +357,8 @@ export class SoaFormComponent implements OnInit {
     element: Product & Pricing;
   }) {
     console.log('update');
-    deepInsert(e.newValue, e.column.dotNotationPath, e.element);
+    if (typeof e.column.dotNotationPath == 'string')
+      deepInsert(e.newValue, e.column.dotNotationPath, e.element);
     var total = e.element.STATIC.quantity * e.element.STATIC.unit_price;
     e.element.STATIC.total = total - (e.element.STATIC.disc || 0) * total;
     this.listedItems = [...this.listedItems];
@@ -372,11 +371,7 @@ export class SoaFormComponent implements OnInit {
 
   updateSignatories(e: any) {
     deepInsert(e.newValue, e.column.dotNotationPath, e.element);
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = -1;
-    setTimeout(() => {
-      this.listedSignatoriesPage.length = this.listedSignatories.length;
-    }, 20);
+    this._copySignatoriesToSelf();
   }
 
   get _customerId() {
@@ -406,6 +401,19 @@ export class SoaFormComponent implements OnInit {
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length--;
     this._calculateSummary();
+  }
+
+  private _copySignatoriesToSelf() {
+    this.listedSignatories.sort((a, b) => {
+      var aIndex = SIGNATORY_ACTIONS.findIndex((action) => action === a.action);
+      var bIndex = SIGNATORY_ACTIONS.findIndex((action) => action === b.action);
+      return aIndex - bIndex;
+    });
+    this.listedSignatories = [...this.listedSignatories];
+    this.listedSignatoriesPage.length = -1;
+    setTimeout(() => {
+      this.listedSignatoriesPage.length = this.listedSignatories.length;
+    }, 20);
   }
 
   ngOnInit(): void {
@@ -580,15 +588,13 @@ export class SoaFormComponent implements OnInit {
       ...user,
       action: SignatoryAction.APPROVED,
     });
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = this.listedSignatories.length;
+    this._copySignatoriesToSelf();
     this.signatoryControl.reset();
   }
 
   removeFromListedSignatories(i: number) {
     this.listedSignatories.splice(i, 1);
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = this.listedSignatories.length;
+    this._copySignatoriesToSelf();
   }
 
   pushToListedDiscounts() {

@@ -10,8 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ConfirmationModule } from '../confirmation/confirmation.module';
-import { TableModule } from '../table/table.module';
+import { ConfirmationModule } from '../../components/confirmation/confirmation.module';
+import { TableModule } from '../../components/table/table.module';
 import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({

@@ -1,7 +1,16 @@
-<div class="flex w-auto gap-2">
-  @if (column.options?.length) {
+@if(element['__editOn' + rowIndex + '_' + colIndex]){
+<div class="flex w-full gap-2">
+  @if(column.options && column.options.length) {
+  <select
+    [(ngModel)]="element['__value' + rowIndex + '_' + colIndex]"
+    class="border-2 rounded-md border-gray-200 w-full"
+  >
+    @for(option of column.options; track $index){
+    <option [value]="option">{{ option }}</option>
+    }
+  </select>
+  }@else {
   <input
-    *ngIf="element['__editOn' + rowIndex + '_' + colIndex]"
     [(ngModel)]="element['__value' + rowIndex + '_' + colIndex]"
     (keyup.enter)="
       updateCell(
@@ -12,40 +21,8 @@
         colIndex
       )
     "
-    type="text"
-    class="border-2 rounded-lg border-gray-200 w-[8rem]"
-  />
-  } @else if (['number' , 'percentage' , 'currency'].includes(column.type)) {
-  <input
-    *ngIf="element['__editOn' + rowIndex + '_' + colIndex]"
-    [(ngModel)]="element['__value' + rowIndex + '_' + colIndex]"
-    (keyup.enter)="
-      updateCell(
-        element,
-        column,
-        element['__value' + rowIndex + '_' + colIndex],
-        rowIndex,
-        colIndex
-      )
-    "
-    class="border-2 rounded-lg border-gray-200 w-[4rem]"
-    type="number"
-  />
-  } @else if (['string'].includes(column.type)) {
-  <input
-    *ngIf="element['__editOn' + rowIndex + '_' + colIndex]"
-    [(ngModel)]="element['__value' + rowIndex + '_' + colIndex]"
-    (keyup.enter)="
-      updateCell(
-        element,
-        column,
-        element['__value' + rowIndex + '_' + colIndex],
-        rowIndex,
-        colIndex
-      )
-    "
-    type="text"
-    class="border-2 rounded-lg border-gray-200 w-[8rem]"
+    class="border-2 rounded-md border-gray-200 w-full"
+    [type]="type"
   />
   }
 
@@ -64,3 +41,4 @@
     check
   </mat-icon>
 </div>
+}

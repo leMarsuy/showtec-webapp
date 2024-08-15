@@ -6,7 +6,15 @@ import { deepFind } from '../../utils/deepfind';
   standalone: true,
 })
 export class DeepFindPipe implements PipeTransform {
-  transform(path: string, obj: any): any {
-    return deepFind(obj, path);
+  transform(path: string | string[], obj: any): any {
+    if (typeof path == 'string') {
+      return deepFind(obj, path);
+    } else {
+      var str = '';
+      for (let p of path) {
+        str += deepFind(obj, p) + ' ';
+      }
+      return str.trim();
+    }
   }
 }

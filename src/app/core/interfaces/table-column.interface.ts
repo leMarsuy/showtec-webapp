@@ -15,7 +15,7 @@ interface Action {
 
 export interface TableColumn {
   label: string;
-  dotNotationPath: string;
+  dotNotationPath: string | string[];
   type: ColumnType;
   width?: string;
   editable?: boolean;
