@@ -1,5 +1,21 @@
 <div class="flex w-auto gap-2">
-  @if (['number' , 'percentage' , 'currency'].includes(column.type)) {
+  @if (column.options?.length) {
+  <input
+    *ngIf="element['__editOn' + rowIndex + '_' + colIndex]"
+    [(ngModel)]="element['__value' + rowIndex + '_' + colIndex]"
+    (keyup.enter)="
+      updateCell(
+        element,
+        column,
+        element['__value' + rowIndex + '_' + colIndex],
+        rowIndex,
+        colIndex
+      )
+    "
+    type="text"
+    class="border-2 rounded-lg border-gray-200 w-[8rem]"
+  />
+  } @else if (['number' , 'percentage' , 'currency'].includes(column.type)) {
   <input
     *ngIf="element['__editOn' + rowIndex + '_' + colIndex]"
     [(ngModel)]="element['__value' + rowIndex + '_' + colIndex]"
@@ -28,6 +44,7 @@
         colIndex
       )
     "
+    type="text"
     class="border-2 rounded-lg border-gray-200 w-[8rem]"
   />
   }

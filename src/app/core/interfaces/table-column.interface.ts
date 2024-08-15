@@ -22,4 +22,5 @@ export interface TableColumn {
   actions?: Action[];
   colorCodes?: ColorCode[];
   align?: Alignment;
+  options?: Array<string | number>;
 }
