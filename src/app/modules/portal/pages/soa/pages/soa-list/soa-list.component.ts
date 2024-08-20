@@ -15,6 +15,10 @@ import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
 import { ViewSoaComponent } from '../view-soa/view-soa.component';
+import {
+  MONITOR_STATUSES,
+  MonitorStatus,
+} from '@app/core/enums/monitor-status.enum';
 
 @Component({
   selector: 'app-soa-list',
@@ -22,6 +26,10 @@ import { ViewSoaComponent } from '../view-soa/view-soa.component';
   styleUrl: './soa-list.component.scss',
 })
 export class SoaListComponent {
+  monitorStatuses = MONITOR_STATUSES;
+
+  monitorStatus = 'All';
+
   searchForm = new FormGroup({
     searchText: new FormControl(''),
   });
@@ -128,10 +136,13 @@ export class SoaListComponent {
   getSoas() {
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching SOAs...');
     this.soaApi
-      .getSoas({
-        searchText: this.searchForm.get('searchText')?.value || '',
-        ...this.page,
-      })
+      .getSoas(
+        {
+          searchText: this.searchForm.get('searchText')?.value || '',
+          ...this.page,
+        },
+        this.monitorStatus
+      )
       .subscribe({
         next: (resp) => {
           var response = resp as HttpGetResponse;
@@ -162,8 +173,8 @@ export class SoaListComponent {
     } else if (e.action.name == 'payments') {
       this.dialog
         .open(ViewSoaComponent, {
-          width: '80rem',
-          maxWidth: '80rem',
+          width: '100rem',
+          maxWidth: '100rem',
           disableClose: true,
           data: {
             _id: e.element._id,
@@ -189,4 +200,12 @@ export class SoaListComponent {
       autoFocus: false,
     });
   }
+
+  // _selectedCss(status: MonitorStatus) {
+  //   var color = Color.DEAD
+
+  //   return "py-2 px-4 border-2 border-{{
+  //         monitorStatus === item ? 'emerald' : 'gray'
+  //       }}-400  cursor-pointer rounded-3xl"
+  // }
 }

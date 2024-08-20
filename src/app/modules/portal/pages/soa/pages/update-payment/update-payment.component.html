@@ -1,0 +1,81 @@
+<p mat-dialog-title>UPDATE PAYMENT</p>
+<mat-dialog-content>
+  <div class="mb-4 p-4 border-2 border-gray-200 grid grid-cols-2 gap-2">
+    <div class="col-span-1">
+      <p class="text-xl font-medium">₱{{ data.amount | number : "0.2" }}</p>
+      <p>{{ data.paymentMethod | uppercase }}</p>
+    </div>
+    <div class="col-span-1" *ngIf="data.paymentMethod === 'Bank Transfer'">
+      <p class="text-xl font-medium">REF# {{ data.referenceNo | uppercase }}</p>
+    </div>
+    <div class="col-span-1" *ngIf="data.paymentMethod === 'Check'">
+      <p class="text-xl font-medium">C/N: {{ data.checkNo | uppercase }}</p>
+      <p class="text-rose-500 font-medium">
+        {{ data.issuingBank | uppercase }}
+      </p>
+      <p *ngIf="data.accountName">{{ data.accountName }}</p>
+      <p *ngIf="data.accountNo">{{ data.accountNo }}</p>
+    </div>
+  </div>
+
+  <form class="w-full gap-2" [formGroup]="transactionForm">
+    <!--  -->
+    <mat-form-field class="w-full">
+      <mat-label>Payment Status</mat-label>
+      <mat-select formControlName="status">
+        @for (item of paymentStatuses; track $index) {
+        <mat-option [value]="item"> {{ item }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if(transactionForm.value.status == 'Completed') {
+    <!--  -->
+    @if (data.paymentMethod === 'Check') {
+
+    <mat-form-field class="w-full">
+      <mat-label>Deposited Date</mat-label>
+      <input
+        matInput
+        placeholder="MM/DD/YYYY"
+        formControlName="depositedDate"
+        [matDatepicker]="depositPicker"
+      />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="depositPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #depositPicker></mat-datepicker>
+    </mat-form-field>
+
+    } @if (data.paymentMethod != 'Cash'){
+
+    <mat-form-field class="w-full">
+      <mat-label>Receiving Bank</mat-label>
+      <mat-select formControlName="bank">
+        @for (item of registeredBanks; track $index) {
+        <mat-option [value]="item"> {{ item }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    } }
+    <mat-form-field class="w-full">
+      <mat-label>Remarks</mat-label>
+      <input matInput type="text" formControlName="remarks" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" mat-dialog-close>Discard</button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="submit()"
+      [disabled]="!transactionForm.valid || submitting"
+    >
+      Update Payment
+    </button>
+  </div>
+</mat-dialog-actions>

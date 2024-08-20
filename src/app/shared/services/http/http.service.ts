@@ -26,7 +26,7 @@ export class HttpService {
     });
   }
 
-  get<T>(endpoint: string, query?: QueryParams) {
+  get<T>(endpoint: string, query?: any) {
     return this.http.get<T>(`${this.apiUrl}/${endpoint}`, {
       ...this.options,
       params: query ? this.queryParams(query) : {},

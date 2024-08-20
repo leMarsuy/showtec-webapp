@@ -29,7 +29,14 @@ export class SoaApiService {
     return this.httpService.delete(`${this.apiPrefix}/payment/${_transId}`);
   }
 
-  getSoas(query?: QueryParams) {
+  updatePayment(_transId: string, body: any) {
+    return this.httpService.patch(
+      `${this.apiPrefix}/payment/${_transId}`,
+      body
+    );
+  }
+
+  getSoas(query?: QueryParams, monitorStatus?: string) {
     var sanitizedQuery: QueryParams = {};
     if (query)
       sanitizedQuery = {
@@ -38,7 +45,13 @@ export class SoaApiService {
         sort: query.sort || '',
         searchText: query.searchText || '',
       };
-    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
+
+    monitorStatus = monitorStatus || '';
+
+    return this.httpService.get(`${this.apiPrefix}`, {
+      ...sanitizedQuery,
+      monitorStatus,
+    });
   }
 
   getSoaById(_id: string) {

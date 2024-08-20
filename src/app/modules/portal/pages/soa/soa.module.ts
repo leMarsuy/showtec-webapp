@@ -15,9 +15,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTableModule } from '@angular/material/table';
+import { UpdatePaymentComponent } from './pages/update-payment/update-payment.component';
 
 @NgModule({
-  declarations: [SoaComponent, AddPaymentComponent, ViewSoaComponent],
+  declarations: [
+    SoaComponent,
+    AddPaymentComponent,
+    UpdatePaymentComponent,
+    ViewSoaComponent,
+  ],
   imports: [
     CommonModule,
     SoaRoutingModule,
@@ -32,6 +40,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDatepickerModule,
+    MatTableModule,
   ],
 })
 export class SoaModule {}
