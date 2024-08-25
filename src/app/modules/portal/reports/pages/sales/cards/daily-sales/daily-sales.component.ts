@@ -56,8 +56,11 @@ export class DailySalesComponent implements OnInit {
 
   ngOnInit(): void {
     this.data.forEach((val) => {
+      var date = new Date(val.date);
+      var month = date.getMonth() + 1;
+      var label = month + '/' + date.getDate() + '/' + date.getFullYear();
       this.options.series[0].data.push(val.sales);
-      this.options.xaxis.categories.push(val.date);
+      this.options.xaxis.categories.push(label);
     });
   }
 }
