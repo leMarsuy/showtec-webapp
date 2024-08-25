@@ -8,9 +8,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SalesBreakdownComponent } from './cards/sales-breakdown/sales-breakdown.component';
 import { DailySalesComponent } from './cards/daily-sales/daily-sales.component';
+import { TotalSalesComponent } from './cards/total-sales/total-sales.component';
+import { TotalBalanceComponent } from './cards/total-balance/total-balance.component';
+import { ProductsSoldComponent } from './cards/products-sold/products-sold.component';
 
 @NgModule({
-  declarations: [SalesComponent, SalesBreakdownComponent, DailySalesComponent],
+  declarations: [
+    SalesComponent,
+    SalesBreakdownComponent,
+    DailySalesComponent,
+    TotalSalesComponent,
+    TotalBalanceComponent,
+    ProductsSoldComponent,
+  ],
   imports: [
     CommonModule,
     SalesRoutingModule,

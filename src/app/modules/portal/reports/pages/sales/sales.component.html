@@ -11,34 +11,22 @@
     </div>
     <div class="flex flex-col gap-4 w-full">
       <div class="flex gap-4">
+        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
+          <app-total-sales
+            [data]="salesReport.salesTotal.saleAmount"
+          ></app-total-sales>
+        </div>
+
         <div class="rounded-xl bg-white p-4 text-gray-900 h-fit">
-          <p class="mb-2 text-gray-500">TOTAL SALES</p>
-          <div class="flex content-end h-fit gap-2">
-            <p class="text-5xl font-medium text-sky-500">₱412,290.75</p>
-            <div
-              class="bg-emerald-100 text-emerald-600 h-fit font-medium px-2 rounded-lg"
-            >
-              +21.5%
-            </div>
-          </div>
+          <app-total-balance
+            [data]="salesReport.balanceTotal.balance"
+          ></app-total-balance>
         </div>
 
         <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
-          <p class="mb-2 text-gray-500">BALANCE</p>
-          <div class="flex content-end h-fit gap-2">
-            <p class="text-5xl font-medium">₱180,024.00</p>
-            <div
-              class="bg-emerald-100 text-emerald-600 h-fit font-medium px-2 rounded-lg"
-            ></div>
-          </div>
-        </div>
-
-        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
-          <p class="mb-2 text-gray-500">ITEMS SOLD</p>
-          <div class="flex content-end h-fit gap-2">
-            <p class="text-5xl font-medium">151</p>
-            <div class="h-fit font-medium px-2 rounded-lg">PCS</div>
-          </div>
+          <app-products-sold
+            [data]="salesReport.productsSoldCount.count"
+          ></app-products-sold>
         </div>
       </div>
       <div class="rounded-xl bg-white p-4 text-gray-900 h-fit w-fit">
