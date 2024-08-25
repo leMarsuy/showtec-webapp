@@ -12,20 +12,18 @@
     <div class="flex flex-col gap-4 w-full">
       <div class="flex gap-4">
         <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
-          <app-total-sales
-            [data]="salesReport.salesTotal.saleAmount"
-          ></app-total-sales>
+          <app-total-sales [data]="salesReport.salesTotal"></app-total-sales>
         </div>
 
         <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
           <app-total-balance
-            [data]="salesReport.balanceTotal.balance"
+            [data]="salesReport.balanceTotal"
           ></app-total-balance>
         </div>
 
         <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
           <app-products-sold
-            [data]="salesReport.productsSoldCount.count"
+            [data]="salesReport.productsSoldCount"
           ></app-products-sold>
         </div>
       </div>
