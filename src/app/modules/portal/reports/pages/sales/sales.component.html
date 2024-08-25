@@ -1,0 +1,49 @@
+<div class="p-4">
+  <div class="flex w-full rounded-xl bg-white p-4 text-gray-900 mb-4">
+    <mat-icon class="mr-4"> dashboard </mat-icon>
+    <p>REPORTS</p>
+  </div>
+  <div class="flex gap-4" *ngIf="salesReport">
+    <div class="rounded-xl bg-white p-4 text-gray-500 w-fit text-center h-fit">
+      <app-sales-breakdown
+        [data]="salesReport.paymentMethodAgg"
+      ></app-sales-breakdown>
+    </div>
+    <div class="flex flex-col gap-4 w-full">
+      <div class="flex gap-4">
+        <div class="rounded-xl bg-white p-4 text-gray-900 h-fit">
+          <p class="mb-2 text-gray-500">TOTAL SALES</p>
+          <div class="flex content-end h-fit gap-2">
+            <p class="text-5xl font-medium text-sky-500">₱412,290.75</p>
+            <div
+              class="bg-emerald-100 text-emerald-600 h-fit font-medium px-2 rounded-lg"
+            >
+              +21.5%
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
+          <p class="mb-2 text-gray-500">BALANCE</p>
+          <div class="flex content-end h-fit gap-2">
+            <p class="text-5xl font-medium">₱180,024.00</p>
+            <div
+              class="bg-emerald-100 text-emerald-600 h-fit font-medium px-2 rounded-lg"
+            ></div>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
+          <p class="mb-2 text-gray-500">ITEMS SOLD</p>
+          <div class="flex content-end h-fit gap-2">
+            <p class="text-5xl font-medium">151</p>
+            <div class="h-fit font-medium px-2 rounded-lg">PCS</div>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-xl bg-white p-4 text-gray-900 h-fit w-fit">
+        <app-daily-sales [data]="salesReport.dailySalesAgg"></app-daily-sales>
+      </div>
+    </div>
+  </div>
+</div>
