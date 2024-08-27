@@ -10,7 +10,7 @@ import { SalesBreakdownComponent } from './cards/sales-breakdown/sales-breakdown
 import { DailySalesComponent } from './cards/daily-sales/daily-sales.component';
 import { TotalSalesComponent } from './cards/total-sales/total-sales.component';
 import { TotalBalanceComponent } from './cards/total-balance/total-balance.component';
-import { ProductsSoldComponent } from './cards/products-sold/products-sold.component';
+import { TotalPaidComponent } from './cards/total-paid/total-paid.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +19,7 @@ import { ProductsSoldComponent } from './cards/products-sold/products-sold.compo
     DailySalesComponent,
     TotalSalesComponent,
     TotalBalanceComponent,
-    ProductsSoldComponent,
+    TotalPaidComponent,
   ],
   imports: [
     CommonModule,

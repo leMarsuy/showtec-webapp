@@ -1,6 +1,6 @@
 <div class="p-4">
   <div class="flex w-full rounded-xl bg-white p-4 text-gray-900 mb-4">
-    <mat-icon class="mr-4"> dashboard </mat-icon>
+    <mat-icon class="mr-4"> summarize </mat-icon>
     <p>REPORTS</p>
   </div>
   <div class="flex gap-4" *ngIf="salesReport">
@@ -15,16 +15,14 @@
           <app-total-sales [data]="salesReport.salesTotal"></app-total-sales>
         </div>
 
-        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit w-full">
+        <div class="rounded-xl bg-white p-4 text-emerald-500 h-fit w-full">
+          <app-total-paid [data]="salesReport.paidTotal"></app-total-paid>
+        </div>
+
+        <div class="rounded-xl bg-white p-4 text-gray-400 h-fit w-full">
           <app-total-balance
             [data]="salesReport.balanceTotal"
           ></app-total-balance>
-        </div>
-
-        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit w-full">
-          <app-products-sold
-            [data]="salesReport.productsSoldCount"
-          ></app-products-sold>
         </div>
       </div>
       <div class="rounded-xl bg-white p-4 text-gray-900 h-full w-full">
