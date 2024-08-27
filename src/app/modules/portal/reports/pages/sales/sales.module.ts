@@ -11,6 +11,8 @@ import { DailySalesComponent } from './cards/daily-sales/daily-sales.component';
 import { TotalSalesComponent } from './cards/total-sales/total-sales.component';
 import { TotalBalanceComponent } from './cards/total-balance/total-balance.component';
 import { TotalPaidComponent } from './cards/total-paid/total-paid.component';
+import { TransactionsListComponent } from './cards/transactions-list/transactions-list.component';
+import { TableModule } from '@app/shared/components/table/table.module';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import { TotalPaidComponent } from './cards/total-paid/total-paid.component';
     TotalSalesComponent,
     TotalBalanceComponent,
     TotalPaidComponent,
+    TransactionsListComponent,
   ],
   imports: [
     CommonModule,
@@ -27,6 +30,7 @@ import { TotalPaidComponent } from './cards/total-paid/total-paid.component';
     MatIconModule,
     MatButtonModule,
     NgApexchartsModule,
+    TableModule,
   ],
 })
 export class SalesModule {}

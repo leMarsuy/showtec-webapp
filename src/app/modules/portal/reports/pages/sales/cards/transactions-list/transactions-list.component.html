@@ -1,0 +1,9 @@
+<p class="mb-2 text-gray-500 ml-4">TRANSACTIONS</p>
+<div class="grid">
+  <app-table
+    [dataSource]="pagedTransactions"
+    [columns]="columns"
+    [page]="page"
+    (pageEmitter)="pageEventHandler($event)"
+  ></app-table>
+</div>

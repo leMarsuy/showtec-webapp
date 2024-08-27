@@ -1,10 +1,10 @@
-<div class="p-4">
-  <div class="flex w-full rounded-xl bg-white p-4 text-gray-900 mb-4">
+<div class="flex flex-col gap-4 p-4">
+  <div class="flex w-full rounded-xl bg-white p-4 text-gray-900">
     <mat-icon class="mr-4"> summarize </mat-icon>
     <p>REPORTS</p>
   </div>
   <div class="flex gap-4" *ngIf="salesReport">
-    <div class="rounded-xl bg-white p-4 text-gray-500 w-fit text-center h-fit">
+    <div class="flex rounded-xl bg-white p-4 text-gray-500 w-fit text-center">
       <app-sales-breakdown
         [data]="salesReport.paymentMethodAgg"
       ></app-sales-breakdown>
@@ -12,7 +12,10 @@
     <div class="flex flex-col gap-4 w-full">
       <div class="flex gap-4">
         <div class="rounded-xl bg-white p-4 text-gray-500 h-fit w-full">
-          <app-total-sales [data]="salesReport.salesTotal"></app-total-sales>
+          <app-total-sales
+            [value]="salesReport.salesTotal"
+            [increase]="salesReport.salesTodayTotal"
+          ></app-total-sales>
         </div>
 
         <div class="rounded-xl bg-white p-4 text-emerald-500 h-fit w-full">
@@ -26,8 +29,18 @@
         </div>
       </div>
       <div class="rounded-xl bg-white p-4 text-gray-900 h-full w-full">
-        <app-daily-sales [data]="salesReport.dailySalesAgg"></app-daily-sales>
+        <app-daily-sales
+          [data]="salesReport.dailySalesAgg"
+          [pastDays]="pastDays"
+        ></app-daily-sales>
       </div>
     </div>
+  </div>
+
+  <div class="grid rounded-xl bg-white p-4 text-gray-500 w-full">
+    <app-transactions-list
+      [dateFrom]="dateFrom"
+      [dateTo]="dateTo"
+    ></app-transactions-list>
   </div>
 </div>

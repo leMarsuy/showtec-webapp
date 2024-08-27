@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { getDateFloor, getPastDate } from '@app/shared/utils/dateUtil';
+import { toComma } from '@app/shared/utils/numberUtil';
 
 @Component({
   selector: 'app-daily-sales',
@@ -7,6 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class DailySalesComponent implements OnInit {
   @Input() data: Array<any> = [];
+  @Input() pastDays: number = 0;
 
   options: any = {
     series: [
@@ -17,7 +20,7 @@ export class DailySalesComponent implements OnInit {
     ],
     chart: {
       type: 'bar',
-      height: 238,
+      height: 300,
     },
     plotOptions: {
       bar: {
@@ -43,7 +46,7 @@ export class DailySalesComponent implements OnInit {
       },
       labels: {
         formatter: function (val: number) {
-          return Math.round(val);
+          return toComma(Math.round(val));
         },
       },
     },
@@ -53,19 +56,44 @@ export class DailySalesComponent implements OnInit {
     tooltip: {
       y: {
         formatter: function (val: any) {
-          return '₱ ' + val;
+          return '₱ ' + toComma(val);
         },
       },
     },
   };
 
   ngOnInit(): void {
-    this.data.forEach((val) => {
-      var date = new Date(val.date);
-      var month = date.getMonth() + 1;
-      var label = month + '/' + date.getDate() + '/' + date.getFullYear();
-      this.options.series[0].data.push(val.sales);
+    this.populateLabelWithDates();
+    // this.data.forEach((val) => {
+    //   var date = new Date(val.date);
+    //   var month = date.getMonth() + 1;
+    //   var label =
+    //     month + '/' + date.getDate() + '/' + (date.getFullYear() - 2000);
+    //   this.options.series[0].data.push(val.sales);
+    //   this.options.xaxis.categories.push(label);
+    // });
+  }
+
+  populateLabelWithDates() {
+    var today = new Date();
+    var startDate = getDateFloor(getPastDate(new Date(today), this.pastDays));
+
+    while (startDate < today) {
+      var label =
+        startDate.getMonth() +
+        1 +
+        '/' +
+        startDate.getDate() +
+        '/' +
+        (startDate.getFullYear() - 2000);
+
+      var value = this.data.find(
+        (o) => new Date(o.date).getDate() === new Date(startDate).getDate()
+      );
+
       this.options.xaxis.categories.push(label);
-    });
+      this.options.series[0].data.push(value?.sales || 0);
+      startDate.setDate(startDate.getDate() + 1);
+    }
   }
 }

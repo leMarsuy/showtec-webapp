@@ -1,4 +1,11 @@
 <p class="mb-2 text-gray-500">TOTAL SALES</p>
-<div class="flex content-end h-fit gap-2 pr-2">
-  <p class="text-4xl font-medium text-sky-500">₱{{ data | number : "0.2" }}</p>
+<div class="flex content-end h-fit gap-2">
+  <p class="text-3xl font-medium text-sky-500">₱{{ value | number : "0.2" }}</p>
+  <div
+    class="bg-emerald-100 text-emerald-500 px-2 h-fit rounded-lg border-2 border-emerald-500"
+  >
+    <p class="text-xs font-medium">
+      +{{ increaseInPercent | percent : "0.3" }}
+    </p>
+  </div>
 </div>

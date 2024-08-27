@@ -17,4 +17,11 @@ export class SalesAnalyticsService {
       dateTo,
     });
   }
+
+  getTransactions(dateFrom: Date, dateTo: Date) {
+    return this.httpService.get(`${this.apiPrefix}/transactions`, {
+      dateFrom,
+      dateTo,
+    });
+  }
 }

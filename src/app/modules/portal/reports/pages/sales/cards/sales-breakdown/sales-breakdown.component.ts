@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { toComma } from '@app/shared/utils/numberUtil';
 
 @Component({
   selector: 'app-sales-breakdown',
@@ -14,6 +15,17 @@ export class SalesBreakdownComponent implements OnInit {
       type: 'donut',
     },
     labels: [],
+    legend: {
+      position: 'bottom',
+      horizontalAlign: 'center',
+    },
+    tooltip: {
+      y: {
+        formatter: function (val: any) {
+          return '₱ ' + toComma(val);
+        },
+      },
+    },
   };
 
   constructor() {}
@@ -21,7 +33,7 @@ export class SalesBreakdownComponent implements OnInit {
   ngOnInit(): void {
     this.data.forEach((val) => {
       this.options.series.push(val.saleAmount);
-      this.options.labels.push(val._id);
+      this.options.labels.push(val._id || '');
     });
   }
 }
