@@ -32,11 +32,11 @@ export const NAV_ROUTES = [
         path: 'soa',
         icon: 'article',
       },
-      // {
-      //   name: 'Orders',
-      //   path: 'orders',
-      //   icon: 'receipt_long',
-      // },
+      {
+        name: 'Reports',
+        path: 'reports/sales',
+        icon: 'summarize',
+      },
       // {
       //   name: 'Returns',
       //   path: 'suppliers',

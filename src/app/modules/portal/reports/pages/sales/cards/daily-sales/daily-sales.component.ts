@@ -39,7 +39,12 @@ export class DailySalesComponent implements OnInit {
     },
     yaxis: {
       title: {
-        text: '₱ (thousands)',
+        text: 'Sales',
+      },
+      labels: {
+        formatter: function (val: number) {
+          return Math.round(val);
+        },
       },
     },
     fill: {

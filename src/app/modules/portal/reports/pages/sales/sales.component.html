@@ -11,23 +11,23 @@
     </div>
     <div class="flex flex-col gap-4 w-full">
       <div class="flex gap-4">
-        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
+        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit w-full">
           <app-total-sales [data]="salesReport.salesTotal"></app-total-sales>
         </div>
 
-        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
+        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit w-full">
           <app-total-balance
             [data]="salesReport.balanceTotal"
           ></app-total-balance>
         </div>
 
-        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit">
+        <div class="rounded-xl bg-white p-4 text-gray-500 h-fit w-full">
           <app-products-sold
             [data]="salesReport.productsSoldCount"
           ></app-products-sold>
         </div>
       </div>
-      <div class="rounded-xl bg-white p-4 text-gray-900 h-fit w-fit">
+      <div class="rounded-xl bg-white p-4 text-gray-900 h-full w-full">
         <app-daily-sales [data]="salesReport.dailySalesAgg"></app-daily-sales>
       </div>
     </div>
