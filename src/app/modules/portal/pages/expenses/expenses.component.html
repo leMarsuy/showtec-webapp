@@ -1,0 +1,42 @@
+<div class="px-4 py-4">
+  <app-content-header
+    icon="attach_money"
+    label="SUPPLIERS"
+    [actions]="actions"
+    (actionEmitter)="actionEvent($event)"
+  ></app-content-header>
+</div>
+<div class="px-4">
+  <div class="grid rounded-xl bg-white p-4">
+    <div class="flex">
+      <div class="grow">
+        <mat-form-field appearance="outline" class="w-[32rem]">
+          <input
+            matInput
+            placeholder="Search Supplier"
+            [formControl]="searchText"
+            (keyup.enter)="getExpenses()"
+          />
+          <mat-icon matSuffix class="cursor-pointer" (click)="getExpenses()">
+            search
+          </mat-icon>
+        </mat-form-field>
+      </div>
+      <div class="flex-none">
+        <button mat-icon-button>
+          <mat-icon class="mr-2"> refresh </mat-icon>
+        </button>
+        <button mat-icon-button>
+          <mat-icon class="mr-2"> download </mat-icon>
+        </button>
+      </div>
+    </div>
+    <app-table
+      [dataSource]="suppliers"
+      [columns]="columns"
+      [page]="page"
+      (rowEmitter)="openEditExpense($event._id)"
+      (pageEmitter)="pageEvent($event)"
+    ></app-table>
+  </div>
+</div>

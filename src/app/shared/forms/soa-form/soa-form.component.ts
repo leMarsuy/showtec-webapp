@@ -31,6 +31,8 @@ import { Router } from '@angular/router';
 import { ConfirmationService } from '../../components/confirmation/confirmation.service';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { Alignment } from '@app/core/enums/align.enum';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
+import { MatDialog } from '@angular/material/dialog';
 
 interface Pricing {
   STATIC: {
@@ -158,7 +160,8 @@ export class SoaFormComponent implements OnInit {
     private soaApi: SoaApiService,
     private snackbarService: SnackbarService,
     private router: Router,
-    private confirmation: ConfirmationService
+    private confirmation: ConfirmationService,
+    private dialog: MatDialog
   ) {}
 
   listedDiscounts: Array<Discount> = [];
@@ -496,13 +499,13 @@ export class SoaFormComponent implements OnInit {
     });
 
     this.soaApi.createSoa(soa).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.snackbarService.openSuccessSnackbar(
           'Success',
           'SOA Successfully Created.'
         );
         setTimeout(() => {
-          this.router.navigate(['/portal/soa']);
+          this.displayPDF(res);
         }, 1400);
       },
       error: (err: HttpErrorResponse) => {
@@ -513,6 +516,20 @@ export class SoaFormComponent implements OnInit {
         );
       },
     });
+  }
+
+  displayPDF(soa: SOA) {
+    if (soa._id)
+      this.dialog.open(PdfViewerComponent, {
+        data: {
+          apiCall: this.soaApi.getPdfSoa(soa._id),
+          title: 'View SOA Receipt',
+        },
+        maxWidth: '70rem',
+        width: '100%',
+        disableClose: true,
+        autoFocus: false,
+      });
   }
 
   updateSOA() {
@@ -571,7 +588,7 @@ export class SoaFormComponent implements OnInit {
           `SOA ${newSoa.code?.value} successfully updated.`
         );
         setTimeout(() => {
-          this.router.navigate(['/portal/soa']);
+          this.displayPDF(newSoa);
         }, 1400);
       },
       error: (err: HttpErrorResponse) => {
@@ -671,7 +688,7 @@ export class SoaFormComponent implements OnInit {
     this.confirmation
       .open(
         'Confirmation',
-        'You will be adding a <b>Delivery Receipt</b>. Would you like to proceed on this action?'
+        'You will be adding a <b>Statement Of Account</b>. Would you like to proceed on this action?'
       )
       .afterClosed()
       .subscribe((res) => {
