@@ -1,6 +1,9 @@
+import { PaymentMethod } from '../enums/payment-method.enum';
+import { PaymentStatus } from '../enums/payment-status.enum';
+
 export class Expense {
   _id?: string;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
   bank: string;
   paymentDate: string;
   refNo: string;
@@ -9,7 +12,7 @@ export class Expense {
   purpose: string;
   description: string;
   amount: number;
-  status: string;
+  status: PaymentStatus;
   createdAt: string;
   updatedAt: string;
 

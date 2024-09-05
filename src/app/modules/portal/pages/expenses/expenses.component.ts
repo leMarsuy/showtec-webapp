@@ -10,6 +10,10 @@ import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Expense } from '@app/core/models/expense.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { ExpenseApiService } from '@app/shared/services/api/expense-api/expense-api.service';
+import { EXPENSES_CONFIG } from './expenses-config';
+import { PaymentStatus } from '@app/core/enums/payment-status.enum';
+import { UpsertExpenseComponent } from './upsert-expense/upsert-expense.component';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-expenses',
@@ -17,98 +21,56 @@ import { ExpenseApiService } from '@app/shared/services/api/expense-api/expense-
   styleUrl: './expenses.component.scss',
 })
 export class ExpensesComponent {
-  // in page
-
   searchText = new FormControl('');
 
-  // content header
-
-  actions: ContentHeaderAction[] = [
-    {
-      id: 'add',
-      label: 'Add Expense',
-      icon: 'add',
-    },
-  ];
+  actions: ContentHeaderAction[];
+  tableFilterStatuses: Array<PaymentStatus | string>;
+  tableFilterStatus: PaymentStatus | string = 'All';
 
   // table module
-
+  expenses: Expense[] = [];
+  columns: TableColumn[];
   page: PageEvent = {
     pageIndex: 0,
     pageSize: 50,
     length: -1,
   };
 
-  columns: TableColumn[] = [
-    { label: 'Code', dotNotationPath: 'code', type: ColumnType.STRING },
-    { label: 'Company', dotNotationPath: 'name', type: ColumnType.STRING },
-    {
-      label: 'Contact Person',
-      dotNotationPath: 'contactPerson',
-      type: ColumnType.STRING,
-    },
-    { label: 'Email', dotNotationPath: 'email', type: ColumnType.STRING },
-    { label: 'Mobile No.', dotNotationPath: 'mobile', type: ColumnType.STRING },
-  ];
-  suppliers: Expense[] = [];
+  placeholder: string;
+  icon: string;
 
+  dialogProps: any;
   constructor(
     private dialog: MatDialog,
-    private supplierApi: ExpenseApiService,
+    private expenseApi: ExpenseApiService,
     private snackbarService: SnackbarService
   ) {
     this.getExpenses();
+
+    this.actions = EXPENSES_CONFIG.headerActions;
+    this.columns = EXPENSES_CONFIG.tableColumns;
+    this.tableFilterStatuses = EXPENSES_CONFIG.tableFilters.statuses;
+
+    this.placeholder = EXPENSES_CONFIG.tableFilters.searchPlaceHolder;
+    this.icon = EXPENSES_CONFIG.tableFilters.searchIcon;
+    this.dialogProps = EXPENSES_CONFIG.dialogProps;
   }
 
-  openAddExpense() {
-    // this.dialog
-    //   .open(AddExpenseComponent, {
-    //     width: '100rem',
-    //     disableClose: true,
-    //   })
-    //   .afterClosed()
-    //   .subscribe((refresh: boolean) => {
-    //     if (refresh) this.getExpenses();
-    //   });
+  onAddExpenseClick() {
+    this.openUpsertDialog().subscribe((result) => {
+      if (result) this.getExpenses();
+    });
   }
 
-  openEditExpense(_id: string) {
-    // this.dialog
-    //   .open(EditExpenseComponent, {
-    //     width: '100rem',
-    //     disableClose: true,
-    //     data: { _id },
-    //   })
-    //   .afterClosed()
-    //   .subscribe((refresh: boolean) => {
-    //     if (refresh) this.getExpenses();
-    //   });
+  onSelectExpense(expense: Expense) {
+    this.openUpsertDialog(expense).subscribe((result) => {
+      if (result) this.getExpenses();
+    });
   }
 
-  getExpenses() {
-    this.snackbarService.openLoadingSnackbar(
-      'GetData',
-      'Fetching suppliers...'
-    );
-    this.supplierApi
-      .getExpenses({
-        searchText: this.searchText.value || '',
-        ...this.page,
-      })
-      .subscribe({
-        next: (resp) => {
-          var response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
-          this.suppliers = response.records as Expense[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+  onFilterStatusChange(status: PaymentStatus | string) {
+    this.tableFilterStatus = status;
+    this.getExpenses();
   }
 
   pageEvent(e: PageEvent) {
@@ -120,7 +82,53 @@ export class ExpensesComponent {
   actionEvent(action: string) {
     switch (action) {
       case 'add':
-        this.openAddExpense();
+        this.onAddExpenseClick();
     }
+  }
+
+  openUpsertDialog(expenseToUpdate?: Expense) {
+    return this.dialog
+      .open(UpsertExpenseComponent, {
+        width: '50%',
+        disableClose: true,
+        data: {
+          expense: expenseToUpdate,
+          upsertDialongProps: this.dialogProps,
+        },
+      })
+      .afterClosed()
+      .pipe(filter((result) => result));
+  }
+
+  getExpenses() {
+    const status =
+      this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
+
+    this.snackbarService.openLoadingSnackbar(
+      EXPENSES_CONFIG.loadingExpenseTitle,
+      EXPENSES_CONFIG.loadingExpenseMsg
+    );
+    this.expenseApi
+      .getExpenses(
+        {
+          searchText: this.searchText.value || '',
+          ...this.page,
+        },
+        status
+      )
+      .subscribe({
+        next: (resp) => {
+          var response = resp as HttpGetResponse;
+          this.snackbarService.closeLoadingSnackbar();
+          this.expenses = response.records as Expense[];
+          this.page.length = response.total;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.snackbarService.openErrorSnackbar(
+            err.error.errorCode,
+            err.error.message
+          );
+        },
+      });
   }
 }

@@ -1,0 +1,67 @@
+<form [formGroup]="expenseForm" class="grid grid-cols-2">
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Payment Method</mat-label>
+    <mat-select type="text" formControlName="paymentMethod">
+      @for (method of paymentMethods; track $index) {
+      <mat-option [value]="method">
+        {{ method }}
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Bank</mat-label>
+    <input matInput type="text" formControlName="bank" />
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Ref. No.</mat-label>
+    <input matInput type="text" formControlName="refNo" />
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Check No.</mat-label>
+    <input matInput type="text" formControlName="checkNo" />
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2 mb-4">
+    <mat-label>Payment Date</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="paymentDate">
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Payee</mat-label>
+    <input matInput type="text" formControlName="payee" />
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Purpose</mat-label>
+    <textarea matInput rows="3" formControlName="purpose"></textarea>
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Description</mat-label>
+    <textarea matInput rows="3" formControlName="description"></textarea>
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Amount</mat-label>
+    <input matInput type="text" formControlName="amount" />
+  </mat-form-field>
+
+  <mat-form-field class="col-span-2">
+    <mat-label>Payment Status</mat-label>
+    <mat-select type="text" formControlName="status">
+      @for (status of paymentStatuses; track $index) {
+      <mat-option [value]="status">
+        {{ status }}
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</form>

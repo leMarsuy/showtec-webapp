@@ -9,21 +9,26 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UpsertExpenseComponent } from './upsert-expense/upsert-expense.component';
+import { ExpenseFormModule } from '@app/shared/forms/expense-form/expense-form.module';
+import { MatDialogModule } from '@angular/material/dialog';
 import { TableModule } from '@app/shared/components/table/table.module';
 
 @NgModule({
-  declarations: [ExpensesComponent],
+  declarations: [ExpensesComponent, UpsertExpenseComponent],
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     ExpensesRoutingModule,
+    ExpenseFormModule,
     ContentHeaderModule,
+    TableModule,
+    MatDialogModule,
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TableModule,
   ],
 })
 export class ExpensesModule {}

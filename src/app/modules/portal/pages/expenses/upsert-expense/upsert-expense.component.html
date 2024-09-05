@@ -1,0 +1,13 @@
+<p mat-dialog-title>{{ config.title }}</p>
+<mat-dialog-content>
+  <app-expense-form [expense]="expense" (formEmitter)="formEventHandler($event)"></app-expense-form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" mat-dialog-close="">Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!expenseForm.valid || !expenseForm.dirty"
+      (click)="onSubmit()">
+      {{ config.buttonConfirm }}
+    </button>
+  </div>
+</mat-dialog-actions>
