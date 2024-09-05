@@ -16,16 +16,22 @@ export class ExpenseApiService {
     return this.httpService.post(`${this.apiPrefix}`, expense);
   }
 
-  getExpenses(query?: QueryParams) {
+  getExpenses(query?: QueryParams, status?: string) {
+    status = status || '';
     var sanitizedQuery: QueryParams = {};
-    if (query)
+    if (query) {
       sanitizedQuery = {
-        pageIndex: query.pageIndex,
-        pageSize: query.pageSize,
-        sort: query.sort,
-        searchText: query.searchText,
+        pageIndex: query.pageIndex || 0,
+        pageSize: query.pageSize || 0,
+        sort: query.sort || '',
+        searchText: query.searchText || '',
       };
-    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
+    }
+
+    return this.httpService.get(`${this.apiPrefix}`, {
+      ...sanitizedQuery,
+      status,
+    });
   }
 
   getExpenseById(_id: string) {
