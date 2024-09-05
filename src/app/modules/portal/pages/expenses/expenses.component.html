@@ -1,42 +1,34 @@
 <div class="px-4 py-4">
-  <app-content-header
-    icon="attach_money"
-    label="SUPPLIERS"
-    [actions]="actions"
-    (actionEmitter)="actionEvent($event)"
-  ></app-content-header>
+  <app-content-header label="EXPENSES" icon="toll" [actions]="actions" (actionEmitter)="actionEvent($event)">
+  </app-content-header>
 </div>
 <div class="px-4">
-  <div class="grid rounded-xl bg-white p-4">
+  <div class="flex flex-col gap-4 rounded-xl bg-white p-4">
     <div class="flex">
       <div class="grow">
         <mat-form-field appearance="outline" class="w-[32rem]">
-          <input
-            matInput
-            placeholder="Search Supplier"
-            [formControl]="searchText"
-            (keyup.enter)="getExpenses()"
-          />
+          <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="getExpenses()" />
           <mat-icon matSuffix class="cursor-pointer" (click)="getExpenses()">
-            search
+            {{icon}}
           </mat-icon>
         </mat-form-field>
       </div>
       <div class="flex-none">
-        <button mat-icon-button>
-          <mat-icon class="mr-2"> refresh </mat-icon>
-        </button>
-        <button mat-icon-button>
-          <mat-icon class="mr-2"> download </mat-icon>
-        </button>
+        <div class="flex gap-2">
+          @for(status of tableFilterStatuses; track $index) {
+          <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" [ngClass]="{
+              'border-emerald-800 bg-emerald-100 text-emerald-800' : tableFilterStatus === status,
+              'border-gray-500' : tableFilterStatus !== status
+            }" (click)="onFilterStatusChange(status)">
+            {{ status }}
+          </div>
+          }
+        </div>
       </div>
     </div>
-    <app-table
-      [dataSource]="suppliers"
-      [columns]="columns"
-      [page]="page"
-      (rowEmitter)="openEditExpense($event._id)"
-      (pageEmitter)="pageEvent($event)"
-    ></app-table>
+    <app-table [dataSource]="expenses" [columns]="columns" [page]="page" (rowEmitter)="onSelectExpense($event)"
+      (pageEmitter)="pageEvent($event)">
+    </app-table>
   </div>
+
 </div>
