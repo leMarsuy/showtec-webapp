@@ -1,42 +1,14 @@
 <div class="flex gap-4">
-  <div class="rounded-xl bg-white p-4 w-[24rem] flex-none h-fit">
-    <form [formGroup]="searchForm">
-      <mat-form-field class="w-full">
-        <input
-          matInput
-          placeholder="Search DR No or Customer Name"
-          formControlName="searchText"
-          (keyup.enter)="getOutDeliverys()"
-        />
+  <div class="flex flex-col w-full gap-4 rounded-xl bg-white p-4">
+    <div class="flex grow">
+      <mat-form-field appearance="outline" class="w-[32rem]">
+        <input matInput placeholder="Search DR No or Customer Name" [formControl]="searchText"
+          (keyup.enter)="getOutDeliverys()" />
+        <mat-icon matSuffix class="cursor-pointer" (click)="getOutDeliverys()" fontIcon="search" />
       </mat-form-field>
-    </form>
-    <div class="flex justify-end gap-4">
-      <button
-        *ngIf="searchForm.dirty"
-        mat-button
-        color="warn"
-        (click)="searchForm.reset(); getOutDeliverys()"
-      >
-        Clear
-      </button>
-      <button
-        mat-raised-button
-        [disabled]="!searchForm.dirty"
-        color="primary"
-        (click)="getOutDeliverys()"
-      >
-        Apply Filter
-      </button>
     </div>
-  </div>
 
-  <div class="rounded-xl bg-white p-4 w-full">
-    <app-table
-      [dataSource]="outdeliveries"
-      [columns]="columns"
-      [page]="page"
-      (pageEmitter)="pageEvent($event)"
-      (actionEmitter)="actionEvent($event)"
-    ></app-table>
+    <app-table [dataSource]="outdeliveries" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
+      (actionEmitter)="actionEvent($event)"></app-table>
   </div>
 </div>
