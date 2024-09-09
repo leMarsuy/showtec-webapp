@@ -26,16 +26,16 @@ export const EXPENSES_CONFIG = {
       dotNotationPath: 'purpose',
       type: ColumnType.STRING,
     },
-    {
-      label: 'Ref. No.',
-      dotNotationPath: 'refNo',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Check No.',
-      dotNotationPath: 'checkNo',
-      type: ColumnType.STRING,
-    },
+    // {
+    //   label: 'Ref. No.',
+    //   dotNotationPath: 'refNo',
+    //   type: ColumnType.STRING,
+    // },
+    // {
+    //   label: 'Check No.',
+    //   dotNotationPath: 'checkNo',
+    //   type: ColumnType.STRING,
+    // },
     {
       label: 'Payee',
       dotNotationPath: 'payee',
