@@ -1,5 +1,4 @@
 <form [formGroup]="expenseForm" class="grid grid-cols-2">
-
   <mat-form-field class="col-span-2">
     <mat-label>Payment Method</mat-label>
     <mat-select type="text" formControlName="paymentMethod">
@@ -13,15 +12,22 @@
 
   <mat-form-field class="col-span-2">
     <mat-label>Bank</mat-label>
-    <input matInput type="text" formControlName="bank" />
+    <mat-select type="text" formControlName="bank">
+      @for (bank of registeredBanks; track $index) {
+      <mat-option [value]="bank">
+        {{ bank }}
+      </mat-option>
+      }
+    </mat-select>
   </mat-form-field>
 
-  <mat-form-field class="col-span-2">
+
+  <mat-form-field *ngIf="isPaymentBankTransfer" class="col-span-2">
     <mat-label>Ref. No.</mat-label>
     <input matInput type="text" formControlName="refNo" />
   </mat-form-field>
 
-  <mat-form-field class="col-span-2">
+  <mat-form-field *ngIf="isPaymentCheck" class="col-span-2">
     <mat-label>Check No.</mat-label>
     <input matInput type="text" formControlName="checkNo" />
   </mat-form-field>
