@@ -5,6 +5,8 @@ import { enviroment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { FileService } from '../../file/file.service';
 import { map } from 'rxjs';
+import { Status } from '@app/core/enums/status.enum';
+import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -51,7 +53,12 @@ export class OutDeliveryApiService {
   }
 
   updateOutDeliveryById(_id: string, updateBody: OutDelivery) {
-    console.log(updateBody);
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
+  }
+
+  patchOutDeliveryStatus(status: OutDeliveryStatus, _id: string) {
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, {
+      status,
+    });
   }
 }
