@@ -61,4 +61,18 @@ export class OutDeliveryApiService {
       status,
     });
   }
+
+  exportOutDeliveries(query?: QueryParams) {
+    var sanitizedQuery: QueryParams = {};
+    if (query) {
+      var sanitizedQuery: QueryParams = {};
+      if (query)
+        sanitizedQuery = {
+          pageIndex: 0,
+          pageSize: 0,
+          searchText: query.searchText || '',
+        };
+    }
+    return this.httpService.getBlob(`${this.apiPrefix}/export`, sanitizedQuery);
+  }
 }
