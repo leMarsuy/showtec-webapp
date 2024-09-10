@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [OutDeliveryListComponent],
@@ -22,6 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatInputModule,
     MatIconModule,
+    MatTooltipModule,
   ],
 })
 export class OutDeliveryListModule {}

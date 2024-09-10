@@ -14,6 +14,9 @@ import { OUT_DELIVER_CONFIG } from '../../out-delivery-config';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { filter, switchMap } from 'rxjs';
 import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { FileService } from '@app/shared/services/file/file.service';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -32,13 +35,15 @@ export class OutDeliveryListComponent {
   columns: TableColumn[] = OUT_DELIVER_CONFIG.tableColumns;
   outdeliveries!: OutDelivery[];
 
+  downloading = false;
   constructor(
     private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
-    private confirmationApi: ConfirmationService
+    private confirmationApi: ConfirmationService,
+    private fileApi: FileService
   ) {
     this.getOutDeliverys();
   }
@@ -103,6 +108,18 @@ export class OutDeliveryListComponent {
         width: '100%',
         disableClose: true,
         autoFocus: false,
+      });
+  }
+
+  exportTableExcel() {
+    const query: QueryParams = {
+      searchText: this.searchText.value || '',
+    };
+    this.outdeliveryApi
+      .exportOutDeliveries(query)
+      .subscribe((response: any) => {
+        const fileName = generateFileName('Out Deliveries', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
       });
   }
 
