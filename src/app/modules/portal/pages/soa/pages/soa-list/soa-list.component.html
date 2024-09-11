@@ -1,59 +1,40 @@
-<div class="flex gap-4">
-  <div
-    class="rounded-xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16 flex-none"
-  >
-    <form [formGroup]="searchForm">
-      <mat-form-field appearance="outline" class="w-full">
-        <input
-          matInput
-          placeholder="Search SOA"
-          formControlName="searchText"
-          (keyup.enter)="getSoas()"
-        />
+<div class="flex flex-col gap-4 rounded-xl bg-white p-4">
+  <div class="flex">
+    <div class="flex ">
+      <mat-form-field appearance="outline" class="w-[32rem]">
+        <input matInput placeholder="Search SOA" [formControl]="searchText" (keyup.enter)="getSoas()" />
+        <mat-icon matSuffix class="cursor-pointer" (click)="getSoas()">
+          search
+        </mat-icon>
       </mat-form-field>
-    </form>
 
-    <div class="flex justify-end gap-4">
-      <button
-        *ngIf="searchForm.dirty"
-        mat-button
-        color="warn"
-        (click)="clearForm()"
-      >
-        Clear
-      </button>
-      <button
-        mat-button
-        [disabled]="!searchForm.dirty"
-        color="primary"
-        (click)="getSoas()"
-      >
-        Apply Filter
-      </button>
     </div>
-  </div>
+    <div class="flex grow justify-between items-start ml-[24px]">
 
-  <div class="rounded-xl bg-white p-4 w-full">
-    <div class="flex gap-2">
-      @for(item of monitorStatuses; track $index) {
-      <div
-        class="py-2 px-4 border-2 border-{{
-          monitorStatus === item
-            ? 'emerald-800 bg-emerald-100 text-emerald-800'
-            : 'gray-500'
-        }}  cursor-pointer rounded-3xl"
-        (click)="monitorStatus = item; getSoas()"
-      >
-        {{ item }}
+
+      <div class="flex gap-2">
+        @for(status of tableFilterStatuses; track $index) {
+        <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" [ngClass]="{
+            'border-emerald-800 bg-emerald-100 text-emerald-800' : tableFilterStatus === status,
+            'border-gray-500' : tableFilterStatus !== status
+          }" (click)="onFilterStatusChange(status)">
+          {{ status }}
+        </div>
+        }
       </div>
-      }
+      <div>
+        <button mat-icon-button (click)="getSoas()" [disabled]="downloading" matTooltip="Refresh Table">
+          <mat-icon class="mr-2  disabled:text-gray-300"> refresh </mat-icon>
+        </button>
+        <button mat-icon-button (click)="exportTableExcel()" [disabled]="downloading" matTooltip="Download Table Excel">
+          <mat-icon class="mr-2 disabled:text-gray-300">
+            {{ downloading ? "downloading" : "download_for_offline" }}
+          </mat-icon>
+        </button>
+      </div>
     </div>
-    <app-table
-      [dataSource]="soas"
-      [columns]="columns"
-      [page]="page"
-      (pageEmitter)="pageEvent($event)"
-      (actionEmitter)="actionEvent($event)"
-    ></app-table>
   </div>
+  <app-table [dataSource]="soas" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
+    (actionEmitter)="actionEvent($event)">
+  </app-table>
 </div>
