@@ -125,7 +125,7 @@ export class OutDeliveryListComponent {
       next: (response: any) => {
         this.downloading = false;
         this.snackbarService.closeLoadingSnackbar();
-        const fileName = generateFileName('Out Deliveries', 'xlsx');
+        const fileName = generateFileName('OUT_DELIVERIES', 'xlsx');
         this.fileApi.downloadFile(response.body as Blob, fileName);
       },
       error: ({ error }: HttpErrorResponse) => {
