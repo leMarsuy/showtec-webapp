@@ -15,8 +15,8 @@
     </div>
 
     <mat-menu #menu="matMenu">
-      <button mat-menu-item>Account Settings</button>
-      <button mat-menu-item>Logout</button>
+      <button mat-menu-item (click)="onAccountSettings()">Account Settings</button>
+      <button mat-menu-item (click)="onLogout()">Logout</button>
     </mat-menu>
     }
   </div>
