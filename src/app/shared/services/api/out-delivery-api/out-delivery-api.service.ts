@@ -71,6 +71,9 @@ export class OutDeliveryApiService {
         searchText: query.searchText || '',
       };
     }
-    return this.httpService.getBlob(`${this.apiPrefix}/export`, sanitizedQuery);
+    return this.httpService.getBlob(
+      `${this.apiPrefix}/export/excel`,
+      sanitizedQuery
+    );
   }
 }
