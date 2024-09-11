@@ -42,9 +42,14 @@ export const NAV_ROUTES = [
       //   path: 'suppliers',
       //   icon: 'undo',
       // },
+      // {
+      //   name: 'Expenses',
+      //   path: 'expenses',
+      //   icon: 'toll',
+      // },
       {
-        name: 'Expenses',
-        path: 'expenses',
+        name: 'Vouchers',
+        path: 'vouchers',
         icon: 'toll',
       },
     ],
