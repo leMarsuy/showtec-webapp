@@ -34,8 +34,8 @@ export class OutDeliveryListComponent {
 
   columns: TableColumn[] = OUT_DELIVER_CONFIG.tableColumns;
   outdeliveries!: OutDelivery[];
-
   downloading = false;
+
   constructor(
     private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
@@ -112,15 +112,30 @@ export class OutDeliveryListComponent {
   }
 
   exportTableExcel() {
+    this.snackbarService.openLoadingSnackbar(
+      'Please Wait',
+      'Downloading Excel file...'
+    );
+    this.downloading = true;
     const query: QueryParams = {
       searchText: this.searchText.value || '',
     };
-    this.outdeliveryApi
-      .exportOutDeliveries(query)
-      .subscribe((response: any) => {
+
+    this.outdeliveryApi.exportOutDeliveries(query).subscribe({
+      next: (response: any) => {
+        this.downloading = false;
+        this.snackbarService.closeLoadingSnackbar();
         const fileName = generateFileName('Out Deliveries', 'xlsx');
         this.fileApi.downloadFile(response.body as Blob, fileName);
-      });
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        this.downloading = false;
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+      complete: () => {
+        this.downloading = false;
+      },
+    });
   }
 
   private _cancelItem(outDelivery: OutDelivery) {
