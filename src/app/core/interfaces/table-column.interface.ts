@@ -11,6 +11,7 @@ interface Action {
   name: string;
   icon: string;
   color: Color;
+  action?: string;
 }
 
 export interface TableColumn {

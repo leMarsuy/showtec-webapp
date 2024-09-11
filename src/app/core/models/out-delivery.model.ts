@@ -1,4 +1,4 @@
-import { Status } from '../enums/status.enum';
+import { OutDeliveryStatus } from '../enums/out-delivery-status.enum';
 
 export interface Signatory {
   _userId: string;
@@ -41,7 +41,7 @@ export class OutDelivery {
   remarks?: string;
   signatories: Signatory[];
   items: OutDeliveryItems[];
-  status?: Status;
+  status?: OutDeliveryStatus;
   createdAt?: string;
   updatedAt?: string;
 

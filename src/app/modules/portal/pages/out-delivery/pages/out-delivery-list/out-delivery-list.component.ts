@@ -4,15 +4,19 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Alignment } from '@app/core/enums/align.enum';
-import { Color } from '@app/core/enums/color.enum';
-import { ColumnType } from '@app/core/enums/column-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
+import { OUT_DELIVER_CONFIG } from '../../out-delivery-config';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { filter, switchMap } from 'rxjs';
+import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { FileService } from '@app/shared/services/file/file.service';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -20,9 +24,7 @@ import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api
   styleUrl: './out-delivery-list.component.scss',
 })
 export class OutDeliveryListComponent {
-  searchForm = new FormGroup({
-    searchText: new FormControl(''),
-  });
+  searchText = new FormControl('');
 
   page: PageEvent = {
     pageIndex: 0,
@@ -30,61 +32,18 @@ export class OutDeliveryListComponent {
     length: -1,
   };
 
-  columns: TableColumn[] = [
-    {
-      label: 'D/R No.',
-      dotNotationPath: 'code.value',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Customer',
-      dotNotationPath: '_customerId.name',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'No. of Items',
-      dotNotationPath: 'items.length',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Delivery Date',
-      dotNotationPath: 'deliveryDate',
-      type: ColumnType.DATE,
-    },
-    {
-      label: 'Due Date',
-      dotNotationPath: 'deliveryDate',
-      type: ColumnType.AGE_IN_DAYS,
-    },
-
-    {
-      label: 'Action',
-      dotNotationPath: '_id',
-      type: ColumnType.ACTION,
-      align: Alignment.CENTER,
-      actions: [
-        {
-          name: 'print',
-          icon: 'print',
-          color: Color.DEAD,
-        },
-        {
-          name: 'edit',
-          icon: 'edit',
-          color: Color.WARNING,
-        },
-      ],
-    },
-  ];
-
+  columns: TableColumn[] = OUT_DELIVER_CONFIG.tableColumns;
   outdeliveries!: OutDelivery[];
+  downloading = false;
 
   constructor(
     private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private confirmationApi: ConfirmationService,
+    private fileApi: FileService
   ) {
     this.getOutDeliverys();
   }
@@ -96,7 +55,7 @@ export class OutDeliveryListComponent {
     );
     this.outdeliveryApi
       .getOutDeliverys({
-        searchText: this.searchForm.get('searchText')?.value || '',
+        searchText: this.searchText.value || '',
         ...this.page,
       })
       .subscribe({
@@ -122,10 +81,19 @@ export class OutDeliveryListComponent {
   }
 
   actionEvent(e: any) {
-    if (e.action.name == 'print') {
-      this.print(e.element);
-    } else if (e.action.name == 'edit') {
-      this.router.navigate(['portal/out-delivery/edit/' + e.element._id]);
+    const { action } = e.action;
+    const outDelivery = e.element;
+
+    switch (action) {
+      case 'print':
+        this.print(outDelivery);
+        break;
+      case 'edit':
+        this.router.navigate(['portal/out-delivery/edit/' + outDelivery._id]);
+        break;
+      case 'change-status-cancel':
+        this._cancelItem(outDelivery);
+        break;
     }
   }
 
@@ -140,6 +108,67 @@ export class OutDeliveryListComponent {
         width: '100%',
         disableClose: true,
         autoFocus: false,
+      });
+  }
+
+  exportTableExcel() {
+    this.snackbarService.openLoadingSnackbar(
+      'Please Wait',
+      'Downloading Excel file...'
+    );
+    this.downloading = true;
+    const query: QueryParams = {
+      searchText: this.searchText.value || '',
+    };
+
+    this.outdeliveryApi.exportOutDeliveries(query).subscribe({
+      next: (response: any) => {
+        this.downloading = false;
+        this.snackbarService.closeLoadingSnackbar();
+        const fileName = generateFileName('Out Deliveries', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        this.downloading = false;
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+      complete: () => {
+        this.downloading = false;
+      },
+    });
+  }
+
+  private _cancelItem(outDelivery: OutDelivery) {
+    const { cancellationDialog } = OUT_DELIVER_CONFIG;
+    const outDeliveryId = outDelivery._id;
+
+    if (!outDeliveryId) {
+      throw new Error('Out Delivery Id not found');
+    }
+    this.confirmationApi
+      .open(cancellationDialog.title, cancellationDialog.message)
+      .afterClosed()
+      .pipe(
+        filter((result) => result),
+        switchMap(() => {
+          return this.outdeliveryApi.patchOutDeliveryStatus(
+            OutDeliveryStatus.CANCELLED,
+            outDeliveryId
+          );
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.snackbarService.closeLoadingSnackbar();
+        },
+        error: (err: HttpErrorResponse) => {
+          this.snackbarService.closeLoadingSnackbar().then(() => {
+            this.snackbarService.openErrorSnackbar(
+              err.error?.errorCode,
+              err.error?.message
+            );
+          });
+        },
       });
   }
 }
