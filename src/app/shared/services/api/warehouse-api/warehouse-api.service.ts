@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
-import { enviroment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { Warehouse } from '@core/models/warehouse.model';
 
@@ -8,7 +8,7 @@ import { Warehouse } from '@core/models/warehouse.model';
   providedIn: 'root',
 })
 export class WarehouseApiService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'warehouses';
   constructor(private httpService: HttpService) {}
 
