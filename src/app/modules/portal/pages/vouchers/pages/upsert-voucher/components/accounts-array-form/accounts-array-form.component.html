@@ -1,0 +1,58 @@
+<div class="bg-white rounded-lg p-4">
+  <div class="flex justify-between items-center px-4 rounded-md py-1 bg-blue-500 ">
+    <h1 class="font-medium text-white">{{title}}</h1>
+    <div class="flex gap-2">
+      <button mat-icon-button color="primary" (click)="addRow()">
+        <mat-icon fontIcon="add" class="text-white"></mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="show()">
+        <mat-icon fontIcon="user" class="text-white"></mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="min-h-[16rem] max-h-[24rem] overflow-y-scroll">
+    @for(accountFormGroup of fArray.controls ; track $index) {
+    <div class="even:bg-white odd:bg-gray-100 border-x border-t last-child:border-b border-gray-200 "
+      [formGroup]="$any(accountFormGroup)">
+
+      <mat-form-field>
+        <mat-label>Account Category</mat-label>
+        <mat-select formControlName="category">
+          @for(category of categories; track $index) {
+          <mat-option [value]="category.name">{{category.name}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Account Title</mat-label>
+        <mat-select formControlName="title">
+          @for(title of titles; track $index) {
+          <mat-option [value]="title">{{title}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Account Type</mat-label>
+        <mat-select formControlName="type">
+          @for(type of accountType; track $index) {
+          <mat-option [value]="type">{{type}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Amount</mat-label>
+        <input formControlName="amount" matInput type="text" placeholder="" />
+      </mat-form-field>
+
+      <button mat-icon-button color="primary" (click)="removeRow($index)">
+        <mat-icon fontIcon="close"></mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+
+</div>
