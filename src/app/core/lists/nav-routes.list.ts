@@ -50,7 +50,7 @@ export const NAV_ROUTES = [
       {
         name: 'Vouchers',
         path: 'vouchers',
-        icon: 'toll',
+        icon: 'newspaper',
       },
     ],
   },
