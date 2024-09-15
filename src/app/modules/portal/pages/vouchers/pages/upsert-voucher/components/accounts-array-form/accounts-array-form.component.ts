@@ -1,5 +1,12 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormControlDirective,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import {
   ACCOUNT_CATEGORIES,
@@ -36,7 +43,15 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.addRow();
+    if (
+      this.defaultValueArray &&
+      Array.isArray(this.defaultValueArray) &&
+      this.defaultValueArray.length !== 0
+    ) {
+      for (const row of this.defaultValueArray) {
+        this.addRow(row);
+      }
+    } else this.addRow();
   }
 
   ngOnDestroy(): void {
@@ -45,21 +60,7 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
   }
 
   addRow(row?: any) {
-    const formGroup: FormGroup = this.formBuilder.group({
-      category: [row?.category || '', Validators.required],
-      title: [row?.title || ''],
-      remarks: [row?.remarks || ''],
-      amount: [row?.amount || ''],
-      type: [row?.type || VoucherAccountType.DEBIT],
-    });
-
-    formGroup
-      .get('category')
-      ?.valueChanges.pipe(takeUntil(this._destroyed$))
-      .subscribe((selectedCategory) => {
-        if (!selectedCategory) this.titles = [];
-        this.titles = this.categoryTitleMap[selectedCategory];
-      });
+    const formGroup: FormGroup = this._buildFormGroup(row || null);
 
     this.fArray.push(formGroup, { emitEvent: false });
   }
@@ -70,6 +71,18 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
 
   show() {
     console.log(this.fArray);
+  }
+
+  private _buildFormGroup(row?: any): FormGroup {
+    const formGroup = this.formBuilder.group({
+      category: [row?.category || '', Validators.required],
+      title: [row?.title || '', Validators.required],
+      remarks: [row?.remarks || ''],
+      amount: [row?.amount || '', Validators.required],
+      type: [row?.type || VoucherAccountType.DEBIT, Validators.required],
+    });
+
+    return formGroup;
   }
 
   private _mapCategoryTitle(
@@ -88,7 +101,7 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
       },
       {}
     );
-
+    // Making array value alphabetically sorted
     for (const key in mapped) {
       mapped[key].sort();
     }
