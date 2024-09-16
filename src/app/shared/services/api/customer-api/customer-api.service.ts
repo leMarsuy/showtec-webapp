@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
 import { Customer } from '@core/models/customer.model';
-import { enviroment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CustomerApiService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'customers';
   constructor(private httpService: HttpService) {}
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
-import { enviroment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { Product } from '@core/models/product.model';
 import { Stock } from '@core/models/stock.model';
@@ -9,7 +9,7 @@ import { Stock } from '@core/models/stock.model';
   providedIn: 'root',
 })
 export class ProductApiService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'products';
   constructor(private httpService: HttpService) {}
 

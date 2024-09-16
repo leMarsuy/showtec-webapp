@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
 import { OutDelivery } from '@core/models/out-delivery.model';
-import { enviroment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { FileService } from '../../file/file.service';
 import { map } from 'rxjs';
@@ -10,7 +10,7 @@ import { map } from 'rxjs';
   providedIn: 'root',
 })
 export class OutDeliveryApiService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'out-deliveries';
   constructor(private httpService: HttpService, private file: FileService) {}
 
