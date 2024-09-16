@@ -1,21 +1,21 @@
 <div class="flex gap-4">
   <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
-    <div class="flex" [routerLink]="'../'">
+    <button class="flex" (click)="navigateBack()">
       <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
-    </div>
+    </button>
   </div>
   <div class="w-full bg-white rounded-xl p-4 grow gap-4 flex flex-col" [formGroup]="voucherForm">
 
     <div class="w-full bg-white rounder-lg grid grid-cols-2 grid-rows-2 pt-4">
-      <mat-form-field class="w-full col-span-2 px-4">
+      <mat-form-field floatLabel="always" class="w-full col-span-2 px-4">
         <mat-label>Payee</mat-label>
         <input formControlName="payee" matInput type="text" placeholder="" />
       </mat-form-field>
-      <mat-form-field class="w-full px-4">
-        <mat-label>Total Amount</mat-label>
-        <input formControlName="accountsTotal" matInput type="text" placeholder="" />
+      <mat-form-field floatLabel="always" class="w-full px-4">
+        <mat-label>Total Amount </mat-label>
+        <input formControlName="accountsTotal" matInput type="text" placeholder="" class="pointer-events-none" />
       </mat-form-field>
-      <mat-form-field class="w-full px-4">
+      <mat-form-field floatLabel="always" class="w-full px-4">
         <mat-label>Issuing Bank</mat-label>
         <mat-select formControlName="bank">
           @for(bank of banks; track bank) {

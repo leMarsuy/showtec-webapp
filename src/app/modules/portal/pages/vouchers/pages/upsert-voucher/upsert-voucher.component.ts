@@ -48,6 +48,10 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
+  navigateBack() {
+    this.router.navigate(['portal/vouchers']);
+  }
+
   ngOnDestroy(): void {
     this._destroyed$.next();
     this._destroyed$.complete();
