@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { enviroment } from '@env/environment';
 import { HttpService } from '../../http/http.service';
 import { Voucher } from '@app/core/models/voucher.model';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { Status } from '@app/core/enums/status.enum';
+import { environment } from '@env/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VoucherApiService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'vouchers';
 
   constructor(private httpService: HttpService) {}
