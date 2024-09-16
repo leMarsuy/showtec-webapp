@@ -26,6 +26,24 @@ export class AuthService {
       );
   }
 
+  logout() {
+    return this.http
+      .post(
+        this.apiUrl + '/auth/logout',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth')}`,
+          },
+        }
+      )
+      .pipe(
+        tap(() => {
+          localStorage.removeItem('auth');
+        })
+      );
+  }
+
   me() {
     return this.http.get<User & { token?: string }>(this.apiUrl + '/auth/me', {
       headers: {

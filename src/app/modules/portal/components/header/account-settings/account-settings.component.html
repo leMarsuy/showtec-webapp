@@ -1,0 +1,26 @@
+<div class="!flex justify-between items-center mx-7 mt-5">
+  <h1 class="font-medium text-xl object-left">Account Settings</h1>
+  <button mat-icon-button mat-dialog-close class="!flex justify-between flex-wrap ">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="flex m-4 p-2 h-full overflow-y-auto">
+  <form [formGroup]="userForm">
+    <mat-form-field class="">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field class="">
+      <mat-label>Designation</mat-label>
+      <input matInput type="text" formControlName="designation" />
+    </mat-form-field>
+
+    <mat-form-field class="">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+
+  </form>
+
+</div>

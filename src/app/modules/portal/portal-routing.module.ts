@@ -7,13 +7,13 @@ const routes: Routes = [
     path: '',
     component: PortalComponent,
     children: [
-      {
-        path: 'dashboard',
-        loadChildren: () =>
-          import('./pages/dashboard/dashboard.module').then(
-            (m) => m.DashboardModule
-          ),
-      },
+      // {
+      //   path: 'dashboard',
+      //   loadChildren: () =>
+      //     import('./pages/dashboard/dashboard.module').then(
+      //       (m) => m.DashboardModule
+      //     ),
+      // },
       {
         path: 'reports',
         loadChildren: () =>
@@ -80,7 +80,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'reports',
         pathMatch: 'full',
       },
     ],
