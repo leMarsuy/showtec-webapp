@@ -1,0 +1,27 @@
+  <div class="flex flex-col gap-4 rounded-xl bg-white p-4">
+    <div class="flex">
+      <div class="grow">
+        <mat-form-field appearance="outline" class="w-[32rem]">
+          <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="getVouchers()" />
+          <mat-icon matSuffix class="cursor-pointer" (click)="getVouchers()">
+            search
+          </mat-icon>
+        </mat-form-field>
+      </div>
+      <div class="flex-none">
+        <div class="flex gap-2">
+          @for(status of tableFilterStatuses; track $index) {
+          <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" [ngClass]="{
+                'border-emerald-800 bg-emerald-100 text-emerald-800' : tableFilterStatus === status,
+                'border-gray-500' : tableFilterStatus !== status
+              }" (click)="onFilterStatusChange(status)">
+            {{ status }}
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    <app-table [dataSource]="vouchers" [columns]="columns" [page]="page" (actionEmitter)="actionEvent($event)"
+      (pageEmitter)="pageEvent($event)">
+    </app-table>
+  </div>

@@ -1,0 +1,55 @@
+<div class="flex gap-4">
+  <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
+    <button class="flex" (click)="navigateBack()">
+      <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
+    </button>
+  </div>
+  <div class="w-full bg-white rounded-xl p-4 grow gap-4 flex flex-col" [formGroup]="voucherForm">
+
+    <div class="w-full bg-white rounder-lg grid grid-cols-2 grid-rows-2 pt-4">
+      <mat-form-field appearance="outline" floatLabel="always" class="w-full col-span-2 px-4">
+        <input formControlName="payee" matInput type="text" placeholder="Payee" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="w-full px-4">
+        <input formControlName="accountsTotal" matInput type="text" placeholder="Total Amount"
+          class="pointer-events-none" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="w-full px-4">
+        <mat-select formControlName="bank" placeholder="Issuing Bank">
+          @for(bank of banks; track bank) {
+          <mat-option [value]="bank">{{ bank }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <app-accounts-array-form title="DISTRIBUTION OF ACCOUNTS" [fArray]="accountsFormArray"
+      [defaultValueArray]="accountsValues">
+    </app-accounts-array-form>
+
+    <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-4 mx-4">
+      <p>SIGNATORIES</p>
+    </div>
+    <app-table class="mx-4" [hasPagination]="false" [columns]="listedSignatoriesColumns"
+      [dataSource]="listedSignatories" [page]="listedSignatoriesPage" (actionEmitter)="actionEventSignatories($event)"
+      (updateCellEmitter)="updateSignatories($event)"></app-table>
+    <div class="flex gap-4 mx-4">
+      <mat-form-field class="w-full">
+        <mat-label>Find System User</mat-label>
+        <input [formControl]="signatoryControl" matInput type="text" [matAutocomplete]="userAuto" />
+        <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete"
+          (optionSelected)="pushToListedSignatories($event.option.value)">
+          @for (option of filteredSignatories | async; track option) {
+          <mat-option [value]="option">{{ option.name }}</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div class="flex justify-end mt-4 mx-4 mb-2">
+      <button [disabled]="!isVoucherFormValid" mat-flat-button color="primary" (click)="onSubmit()">
+        {{isUpdate ? 'Update Voucher' : 'Create Voucher'}}
+      </button>
+    </div>
+  </div>
+</div>

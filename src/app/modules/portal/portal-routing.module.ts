@@ -59,17 +59,24 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/soa/soa.module').then((m) => m.SoaModule),
       },
-      {
-        path: 'expenses',
-        loadChildren: () =>
-          import('./pages/expenses/expenses.module').then(
-            (m) => m.ExpensesModule
-          ),
-      },
+      // {
+      //   path: 'expenses',
+      //   loadChildren: () =>
+      //     import('./pages/expenses/expenses.module').then(
+      //       (m) => m.ExpensesModule
+      //     ),
+      // },
       {
         path: 'users',
         loadChildren: () =>
           import('./pages/users/users.module').then((m) => m.UsersModule),
+      },
+      {
+        path: 'vouchers',
+        loadChildren: () =>
+          import('./pages/vouchers/vouchers.module').then(
+            (m) => m.VouchersModule
+          ),
       },
       {
         path: '',
