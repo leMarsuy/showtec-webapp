@@ -1,58 +1,51 @@
-<div class="bg-white rounded-lg m-4 border border-gray-200">
-  <div class="flex justify-between items-center px-4 rounded-tl-lg rounded-tr-lg py-1 bg-blue-500 ">
-    <h1 class="font-medium text-white">{{title}}</h1>
+<div class="bg-white m-4 ">
+  <div class="flex justify-between items-center px-4 border-l-4 border-sky-500 py-1">
+    <h1 class="text-sky-500">{{title}}</h1>
     <div class="flex gap-2">
       <button mat-icon-button color="primary" (click)="addRow()">
-        <mat-icon fontIcon="add" class="text-white"></mat-icon>
+        <mat-icon fontIcon="add" class="text-sky-500"></mat-icon>
       </button>
     </div>
   </div>
 
-  <div class="min-h-[77px] max-h-[20rem] overflow-y-scroll overflow-x-hidden">
+  <div class="min-h-[77px] max-h-[20rem] overflow-y-scroll overflow-x-hidden mt-4">
     @for(accountFormGroup of fArray.controls ; track $index) {
-    <div
-      class="even:bg-white odd:bg-gray-100 border-x border-t last-child:border-b border-gray-200 grid grid-cols-8 [&>[data-slot=form]]:mr-1"
-      [formGroup]="$any(accountFormGroup)">
+    <div class="grid grid-cols-8 [&>[data-slot=form]]:mr-1" [formGroup]="$any(accountFormGroup)">
 
-      <mat-form-field floatLabel="always" data-slot="form" class="col-span-2">
-        <mat-label>Account Category</mat-label>
-        <mat-select formControlName="category">
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-2">
+        <mat-select formControlName="category" placeholder="Account Category">
           @for(category of categories; track $index) {
           <mat-option [value]="category.name">{{category.name}}</mat-option>
           }
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field floatLabel="always" data-slot="form" class="col-span-2">
-        <mat-label>Account Title</mat-label>
-        <mat-select formControlName="title">
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-2">
+        <mat-select formControlName="title" placeholder="Account Title">
           @for(title of categoryTitleMap[$any(accountFormGroup).get('category')?.value]; track $index) {
           <mat-option [value]="title">{{title}}</mat-option>
           }
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field floatLabel="always" data-slot="form">
-        <mat-label>Account Type</mat-label>
-        <mat-select formControlName="type">
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
+        <mat-select formControlName="type" placeholder="Account Type">
           @for(type of accountType; track $index) {
           <mat-option [value]="type">{{type}}</mat-option>
           }
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field floatLabel="always" data-slot="form">
-        <mat-label>Amount</mat-label>
-        <input formControlName="amount" matInput type="text" placeholder="" />
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
+        <input formControlName="amount" matInput type="text" placeholder="Amount" />
       </mat-form-field>
 
-      <mat-form-field floatLabel="always" data-slot="form">
-        <mat-label>Remarks</mat-label>
-        <input formControlName="remarks" matInput type="text" placeholder="" />
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
+        <input formControlName="remarks" matInput type="text" placeholder="Remarks" />
       </mat-form-field>
 
       <button mat-icon-button color="primary" class="self-center justify-self-end" (click)="removeRow($index)">
-        <mat-icon fontIcon="close"></mat-icon>
+        <mat-icon fontIcon="remove" class="text-rose-500"></mat-icon>
       </button>
     </div>
     }
