@@ -10,16 +10,20 @@ import { MatInputModule } from '@angular/material/input';
 import { AccountsArrayFormComponent } from './components/accounts-array-form/accounts-array-form.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { TableModule } from '@app/shared/components/table/table.module';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [UpsertVoucherComponent, AccountsArrayFormComponent],
   imports: [
     CommonModule,
     UpsertVoucherRoutingModule,
+    TableModule,
     ReactiveFormsModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    MatAutocompleteModule,
     MatSelectModule,
     MatButtonModule,
     AsyncPipe,
