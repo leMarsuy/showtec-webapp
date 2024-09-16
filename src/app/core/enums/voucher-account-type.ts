@@ -1,6 +1,6 @@
 export enum VoucherAccountType {
-  DEBIT = 'Debit',
-  CREDIT = 'Credit',
+  DEBIT = 'DEBIT',
+  CREDIT = 'CREDIT',
   // special
 }
 
