@@ -18,7 +18,7 @@ export class VoucherApiService {
     return this.httpService.post(`${this.apiPrefix}`, voucher);
   }
 
-  getVouchers(query?: QueryParams) {
+  getVouchers(query?: QueryParams, status: string = '') {
     let sanitizedQuery: QueryParams = {};
     if (query) {
       sanitizedQuery = {
@@ -28,7 +28,10 @@ export class VoucherApiService {
         searchText: query.searchText,
       };
     }
-    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
+    return this.httpService.get(`${this.apiPrefix}`, {
+      ...sanitizedQuery,
+      status,
+    });
   }
 
   getVoucherById(_id: string) {
