@@ -14,6 +14,16 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: '',
+    redirectTo: 'sales',
+    pathMatch: 'full',
+  },
+  {
+    path: '**',
+    redirectTo: 'sales',
+    pathMatch: 'full',
+  },
 ];
 
 @NgModule({
