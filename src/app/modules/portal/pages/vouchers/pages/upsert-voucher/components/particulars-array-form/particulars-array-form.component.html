@@ -1,0 +1,30 @@
+<div class="bg-white m-4 ">
+  <div class="flex justify-between items-center px-4 border-l-4 border-sky-500 py-1">
+    <h1 class="text-sky-500">{{title}}</h1>
+    <div class="flex gap-2">
+      <button mat-icon-button color="primary" (click)="addRow()">
+        <mat-icon fontIcon="add" class="text-sky-500"></mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="min-h-[77px] max-h-[20rem] overflow-y-scroll overflow-x-hidden mt-4">
+    @for(fGroup of fArray.controls ; track fGroup) {
+    <div class="grid grid-cols-8 [&>[data-slot=form]]:mr-1" [formGroup]="$any(fGroup)">
+
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-4">
+        <input formControlName="description" matInput type="text" placeholder="Description" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-3">
+        <input formControlName="amount" matInput type="number" placeholder="Amount" />
+      </mat-form-field>
+
+      <button mat-icon-button color="primary" class="self-center justify-self-end" (click)="removeRow($index)">
+        <mat-icon fontIcon="remove" class="text-rose-500"></mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+
+</div>
