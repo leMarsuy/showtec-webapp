@@ -1,17 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-  debounceTime,
-  map,
-  Observable,
-  startWith,
-  Subject,
-  takeUntil,
-} from 'rxjs';
-import {
-  ACCOUNT_CATEGORIES,
-  AccountCategory,
-} from '../../account-categories.list';
+import { FormArray, FormBuilder, Validators } from '@angular/forms';
+import { debounceTime, startWith, Subject, takeUntil } from 'rxjs';
 import { ACCOUNT_TITLES, AccountTitle } from '../../account-title.list';
 import {
   VOUCHER_ACCOUNT_TYPES,
