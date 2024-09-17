@@ -31,7 +31,6 @@ export class ProductApiService {
         searchText: query.searchText || '',
       };
 
-    console.log(sanitizedQuery);
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 

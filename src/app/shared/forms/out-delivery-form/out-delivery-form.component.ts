@@ -231,7 +231,6 @@ export class OutDeliveryFormComponent implements OnInit {
     if (serialNumber)
       this.productApi.getInStockProductBySerialNumber(serialNumber).subscribe({
         next: (res: any) => {
-          console.log(res);
           this.pushToListedProducts(res);
           this.serialNumberControl.reset();
           this.errorMessage = '';
@@ -267,7 +266,6 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   removeFromListedProducts(i: number) {
-    console.log(i);
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;

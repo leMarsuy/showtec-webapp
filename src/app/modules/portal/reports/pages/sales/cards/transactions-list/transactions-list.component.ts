@@ -84,7 +84,6 @@ export class TransactionsListComponent implements OnInit {
   fetchTransactions() {
     this.saleAnalytics.getTransactions(this.dateFrom, this.dateTo).subscribe({
       next: (data: any) => {
-        console.log(data);
         this.transactions = data.records;
         this.page.length = data.total;
         this.pageEventHandler(this.page);

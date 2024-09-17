@@ -20,7 +20,6 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          console.log(response);
           localStorage.setItem('auth', response.token || '');
         })
       );

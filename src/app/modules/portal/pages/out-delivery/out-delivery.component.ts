@@ -22,7 +22,6 @@ export class OutDeliveryComponent {
   ];
 
   actionEvent(action: string) {
-    console.log(action);
     switch (action) {
       case 'add':
         this.router.navigate(['/portal/out-delivery/create']);

@@ -69,10 +69,6 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
     this.fArray.removeAt(index);
   }
 
-  show() {
-    console.log(this.fArray);
-  }
-
   private _buildFormGroup(row?: any): FormGroup {
     const formGroup = this.formBuilder.group({
       category: [row?.category || '', Validators.required],
