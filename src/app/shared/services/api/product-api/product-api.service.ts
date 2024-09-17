@@ -21,18 +21,16 @@ export class ProductApiService {
     return this.httpService.post(`${this.apiPrefix}/batch`, products);
   }
 
-  getProducts(query?: QueryParams & { searchField?: string }) {
-    var sanitizedQuery: QueryParams & { searchField?: string } = {};
+  getProducts(query?: QueryParams) {
+    var sanitizedQuery: QueryParams = {};
     if (query)
       sanitizedQuery = {
         pageIndex: query.pageIndex || 0,
         pageSize: query.pageSize || 0,
         sort: query.sort || '',
         searchText: query.searchText || '',
-        searchField: query.searchField || '',
       };
 
-    console.log(sanitizedQuery);
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 

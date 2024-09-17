@@ -41,7 +41,6 @@ export class SalesComponent implements OnInit {
     this.saleAnalytics.salesReports(this.dateFrom, this.dateTo).subscribe({
       next: (data: any) => {
         this.salesReport = data;
-        console.log(this.salesReport);
         this.sb.closeLoadingSnackbar();
       },
       error: (error: any) => {

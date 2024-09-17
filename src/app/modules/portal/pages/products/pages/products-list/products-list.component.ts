@@ -23,11 +23,7 @@ import { ExcelService } from '@app/shared/services/excel/excel.service';
   styleUrl: './products-list.component.scss',
 })
 export class ProductsListComponent {
-  searchForm = new FormGroup({
-    searchField: new FormControl(''),
-    searchText: new FormControl(''),
-    classification: new FormControl(''),
-  });
+  searchText = new FormControl('');
 
   CLASSIFICATIONS = PRODUCT_CLASSIFICATIONS;
 
@@ -108,8 +104,7 @@ export class ProductsListComponent {
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching products...');
     this.productApi
       .getProducts({
-        searchText: this.searchForm.get('searchText')?.value || '',
-        searchField: this.searchForm.get('searchField')?.value || '',
+        searchText: this.searchText?.value || '',
         ...this.page,
         sort: 'brand model',
       })
@@ -132,17 +127,6 @@ export class ProductsListComponent {
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getProducts();
-  }
-
-  clearForm() {
-    this.searchForm.patchValue({
-      searchText: '',
-      classification: '',
-      searchField: '',
-    });
-
-    this.searchForm.markAsUntouched();
     this.getProducts();
   }
 

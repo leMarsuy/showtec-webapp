@@ -9,12 +9,14 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { HeaderComponent } from './components/header/header.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HeaderModule } from './components/header/header.module';
 
 @NgModule({
-  declarations: [PortalComponent, SidenavComponent, HeaderComponent],
+  declarations: [PortalComponent, SidenavComponent],
   imports: [
     CommonModule,
     PortalRoutingModule,
+    HeaderModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,

@@ -1,0 +1,55 @@
+<div class="bg-white m-4">
+  <div class="flex justify-between items-center px-4 border-l-4 border-sky-500 py-1">
+    <h1 class="text-sky-500">{{title}}</h1>
+    <div class="flex gap-2">
+      <button mat-icon-button color="primary" (click)="addRow()">
+        <mat-icon fontIcon="add" class="text-sky-500"></mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="min-h-[77px] max-h-[20rem] overflow-y-scroll overflow-x-hidden mt-4">
+    @for(accountFormGroup of fArray.controls ; track accountFormGroup) {
+    <div class="grid grid-cols-8 [&>[data-slot=form]]:mr-1" [formGroup]="$any(accountFormGroup)">
+
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-2">
+        <input matInput aria-label="Account Title" [matAutocomplete]="auto" formControlName="search"
+          placeholder="Account Title">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          @for (title of $any(accountFormGroup).get('titleOptions').value; track $index;) {
+          <mat-option [value]="title">
+            <span>{{title.name}}</span>
+          </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-2">
+        <input readonly matAutocompleteOrigin [disabled]="true" formControlName="category" matInput type="text"
+          placeholder="Account Category" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
+        <mat-select formControlName="type" placeholder="Account Type">
+          @for(type of accountType; track $index) {
+          <mat-option [value]="type">{{type}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
+        <input formControlName="amount" matInput type="number" placeholder="Amount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
+        <input formControlName="remarks" matInput type="text" placeholder="Remarks" />
+      </mat-form-field>
+
+      <button mat-icon-button color="primary" class="self-center justify-self-end" (click)="removeRow($index)">
+        <mat-icon fontIcon="remove" class="text-rose-500"></mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+
+</div>

@@ -316,7 +316,6 @@ export class SoaFormComponent implements OnInit {
 
   actionEventHandler(e: any) {
     if (e.action.name == 'remove') {
-      console.log('removing');
       this.removeFromListedProducts(e.i);
     }
   }
@@ -446,7 +445,6 @@ export class SoaFormComponent implements OnInit {
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((val: any) => {
-        console.log(val);
         return this._filterProducts(val || '');
       })
     );
@@ -579,8 +577,6 @@ export class SoaFormComponent implements OnInit {
       });
     });
 
-    console.log(soa);
-
     this.soaApi.updateSoaById(this._id, soa).subscribe({
       next: (newSoa: any) => {
         this.snackbarService.openSuccessSnackbar(
@@ -667,7 +663,6 @@ export class SoaFormComponent implements OnInit {
   }
 
   displayCustomer(value: any) {
-    console.log(value);
     var displayStr = '';
     if (value.name) {
       displayStr = value.name;

@@ -20,8 +20,25 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          console.log(response);
           localStorage.setItem('auth', response.token || '');
+        })
+      );
+  }
+
+  logout() {
+    return this.http
+      .post(
+        this.apiUrl + '/auth/logout',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth')}`,
+          },
+        }
+      )
+      .pipe(
+        tap(() => {
+          localStorage.removeItem('auth');
         })
       );
   }

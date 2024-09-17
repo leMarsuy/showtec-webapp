@@ -65,7 +65,6 @@ export class SoaListComponent {
           var response = resp as HttpGetResponse;
           this.snackbarService.closeLoadingSnackbar();
           this.soas = response.records as SOA[];
-          console.log('SOAS', this.soas);
           this.page.length = response.total;
         },
         error: (err: HttpErrorResponse) => {

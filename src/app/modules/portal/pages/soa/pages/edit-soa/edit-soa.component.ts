@@ -10,7 +10,6 @@ export class EditSoaComponent {
   _id!: string;
   constructor(private aRoute: ActivatedRoute) {
     aRoute.params.subscribe((res: any) => {
-      console.log(res);
       this._id = res._id;
     });
   }

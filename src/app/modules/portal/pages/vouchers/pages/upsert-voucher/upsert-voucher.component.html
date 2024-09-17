@@ -1,0 +1,70 @@
+<div class="flex gap-4">
+  <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
+    <button class="flex" (click)="navigateBack()">
+      <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
+    </button>
+  </div>
+  <div class="w-full bg-white rounded-xl p-4 grow gap-4 flex flex-col">
+    @if(!loading) {
+    <form [formGroup]="voucherForm">
+      <div class="w-full bg-white rounder-lg grid grid-cols-2 grid-rows-2 pt-4">
+        <mat-form-field appearance="outline" floatLabel="always" class="w-full col-span-2 px-4">
+          <input formControlName="payee" matInput type="text" placeholder="Payee" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-4 pr-2">
+          <input formControlName="accountsTotal" matInput type="number" placeholder="Total Amount"
+            class="pointer-events-none" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-2 pr-4">
+          <mat-select formControlName="bank" placeholder="Issuing Bank">
+            @for(bank of banks; track bank) {
+            <mat-option [value]="bank">{{ bank }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- PARTICULARS -->
+      <app-particulars-array-form title="PARTICULARS" [fArray]="$any(voucherForm).get('particulars')"
+        [defaultValueArray]="voucher ? voucher.particulars : null">
+      </app-particulars-array-form>
+
+
+      <!-- DISTRIBUTION OF ACCOUNTS -->
+      <app-accounts-array-form title="DISTRIBUTION OF ACCOUNTS" [fArray]="$any(voucherForm).get('accounts')"
+        [defaultValueArray]="voucher ? voucher.accounts : null">
+      </app-accounts-array-form>
+
+      <!-- SIGNATORIES -->
+      <div class="mx-4">
+        <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-4 pt-2">
+          <p>SIGNATORIES</p>
+        </div>
+        <app-table [hasPagination]="false" [columns]="listedSignatoriesColumns" [dataSource]="listedSignatories"
+          [page]="listedSignatoriesPage" (actionEmitter)="actionEventSignatories($event)"
+          (updateCellEmitter)="updateSignatories($event)"></app-table>
+        <div class="mt-3">
+          <mat-form-field appearance="outline" floatLabel="always" class="w-full">
+            <input [formControl]="signatoryControl" placeholder="Find System User" matInput type="text"
+              [matAutocomplete]="userAuto" />
+            <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete"
+              (optionSelected)="pushToListedSignatories($event.option.value)">
+              @for (option of filteredSignatories | async; track option) {
+              <mat-option [value]="option">{{ option.name }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-4 mx-4 mb-2">
+        <button [disabled]="!isVoucherFormValid" mat-flat-button color="primary" (click)="onSubmit()">
+          {{isUpdate ? 'Update Voucher' : 'Create Voucher'}}
+        </button>
+      </div>
+    </form>
+    } @else {
+    <voucher-skeleton-form-loading></voucher-skeleton-form-loading>
+    }
+  </div>
+</div>
