@@ -1,4 +1,4 @@
-<div class="bg-white m-4 ">
+<div class="bg-white m-4">
   <div class="flex justify-between items-center px-4 border-l-4 border-sky-500 py-1">
     <h1 class="text-sky-500">{{title}}</h1>
     <div class="flex gap-2">
@@ -9,23 +9,24 @@
   </div>
 
   <div class="min-h-[77px] max-h-[20rem] overflow-y-scroll overflow-x-hidden mt-4">
-    @for(accountFormGroup of fArray.controls ; track $index) {
+    @for(accountFormGroup of fArray.controls ; track accountFormGroup) {
     <div class="grid grid-cols-8 [&>[data-slot=form]]:mr-1" [formGroup]="$any(accountFormGroup)">
 
       <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-2">
-        <mat-select formControlName="category" placeholder="Account Category">
-          @for(category of categories; track $index) {
-          <mat-option [value]="category.name">{{category.name}}</mat-option>
+        <input matInput aria-label="Account Title" [matAutocomplete]="auto" formControlName="search"
+          placeholder="Account Title">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          @for (title of $any(accountFormGroup).get('titleOptions').value; track $index;) {
+          <mat-option [value]="title">
+            <span>{{title.name}}</span>
+          </mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
 
       <mat-form-field appearance="outline" floatLabel="always" data-slot="form" class="col-span-2">
-        <mat-select formControlName="title" placeholder="Account Title">
-          @for(title of categoryTitleMap[$any(accountFormGroup).get('category')?.value]; track $index) {
-          <mat-option [value]="title">{{title}}</mat-option>
-          }
-        </mat-select>
+        <input readonly matAutocompleteOrigin [disabled]="true" formControlName="category" matInput type="text"
+          placeholder="Account Category" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
@@ -37,7 +38,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" floatLabel="always" data-slot="form">
-        <input formControlName="amount" matInput type="text" placeholder="Amount" />
+        <input formControlName="amount" matInput type="number" placeholder="Amount" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" floatLabel="always" data-slot="form">

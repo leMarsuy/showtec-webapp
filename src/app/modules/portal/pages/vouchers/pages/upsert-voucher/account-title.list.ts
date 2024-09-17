@@ -4,318 +4,174 @@ export interface AccountTitle {
 }
 
 export const ACCOUNT_TITLES: Array<AccountTitle> = [
-  { name: 'Rent', category: 'Housing Expenses' },
-  { name: 'Mortgage Payments', category: 'Housing Expenses' },
-  { name: 'Property Taxes', category: 'Housing Expenses' },
-  { name: 'Home Insurance', category: 'Housing Expenses' },
+  { name: 'FUEL', category: 'TRANSPORTATION EXPENSES' },
+  { name: 'VEHICLE MAINTENANCE', category: 'TRANSPORTATION EXPENSES' },
+  { name: 'CAR LOAN PAYMENTS', category: 'TRANSPORTATION EXPENSES' },
+  { name: 'PUBLIC TRANSPORTATION COSTS', category: 'TRANSPORTATION EXPENSES' },
+  { name: 'PARKING FEES', category: 'TRANSPORTATION EXPENSES' },
+  { name: 'GROCERIES', category: 'FOOD AND GROCERIES' },
+  { name: 'DINING OUT', category: 'FOOD AND GROCERIES' },
+  { name: 'SNACKS AND BEVERAGES', category: 'FOOD AND GROCERIES' },
   {
-    name: 'Utilities (Electricity, Gas, Water)',
-    category: 'Housing Expenses',
+    name: 'HEALTH INSURANCE PREMIUMS',
+    category: 'HEALTH AND MEDICAL EXPENSES',
   },
-
-  { name: 'Fuel', category: 'Transportation Expenses' },
+  { name: 'DOCTOR VISITS', category: 'HEALTH AND MEDICAL EXPENSES' },
+  { name: 'PRESCRIPTION MEDICATIONS', category: 'HEALTH AND MEDICAL EXPENSES' },
+  { name: 'DENTAL CARE', category: 'HEALTH AND MEDICAL EXPENSES' },
+  { name: 'VISION CARE', category: 'HEALTH AND MEDICAL EXPENSES' },
   {
-    name: 'Vehicle Maintenance',
-    category: 'Transportation Expenses',
+    name: 'MOVIES, CONCERTS, AND EVENTS',
+    category: 'ENTERTAINMENT AND RECREATION',
   },
   {
-    name: 'Car Loan Payments',
-    category: 'Transportation Expenses',
+    name: 'SUBSCRIPTIONS (STREAMING, MAGAZINES)',
+    category: 'ENTERTAINMENT AND RECREATION',
   },
+  { name: 'HOBBIES', category: 'ENTERTAINMENT AND RECREATION' },
+  { name: 'VACATIONS AND TRAVEL', category: 'ENTERTAINMENT AND RECREATION' },
+  { name: 'TUITION FEES', category: 'EDUCATION AND LEARNING' },
+  { name: 'BOOKS AND SUPPLIES', category: 'EDUCATION AND LEARNING' },
+  { name: 'ONLINE COURSES', category: 'EDUCATION AND LEARNING' },
+  { name: 'SEMINARS OR WORKSHOPS', category: 'EDUCATION AND LEARNING' },
+  { name: 'HEALTH INSURANCE', category: 'INSURANCE' },
+  { name: 'LIFE INSURANCE', category: 'INSURANCE' },
+  { name: 'VEHICLE INSURANCE', category: 'INSURANCE' },
+  { name: 'HOME INSURANCE', category: 'INSURANCE' },
+  { name: 'CREDIT CARD PAYMENTS', category: 'DEBT PAYMENTS' },
+  { name: 'PERSONAL LOANS', category: 'DEBT PAYMENTS' },
+  { name: 'STUDENT LOAN PAYMENTS', category: 'DEBT PAYMENTS' },
+  { name: 'CLOTHING PURCHASES', category: 'CLOTHING AND PERSONAL CARE' },
+  { name: 'LAUNDRY AND DRY CLEANING', category: 'CLOTHING AND PERSONAL CARE' },
+  { name: 'HAIRCUTS AND GROOMING', category: 'CLOTHING AND PERSONAL CARE' },
+  { name: 'SKINCARE PRODUCTS', category: 'CLOTHING AND PERSONAL CARE' },
+  { name: 'GIFTS', category: 'MISCELLANEOUS' },
+  { name: 'PET CARE', category: 'MISCELLANEOUS' },
+  { name: 'HOUSEHOLD SUPPLIES', category: 'MISCELLANEOUS' },
   {
-    name: 'Public Transportation Costs',
-    category: 'Transportation Expenses',
+    name: 'RENT (FOR OFFICE SPACE, WAREHOUSES, ETC.)',
+    category: 'OPERATING EXPENSES',
   },
-  { name: 'Parking Fees', category: 'Transportation Expenses' },
-
-  { name: 'Groceries', category: 'Food and Groceries' },
-  { name: 'Dining Out', category: 'Food and Groceries' },
+  { name: 'MORTGAGE PAYMENTS', category: 'OPERATING EXPENSES' },
   {
-    name: 'Snacks and Beverages',
-    category: 'Food and Groceries',
+    name: 'UTILITIES (ELECTRICITY, WATER, INTERNET)',
+    category: 'OPERATING EXPENSES',
   },
-
   {
-    name: 'Health Insurance Premiums',
-    category: 'Health and Medical Expenses',
+    name: 'OFFICE SUPPLIES (STATIONERY, PRINTING, ETC.)',
+    category: 'OPERATING EXPENSES',
   },
+  { name: 'TELEPHONE AND INTERNET EXPENSES', category: 'OPERATING EXPENSES' },
   {
-    name: 'Doctor Visits',
-    category: 'Health and Medical Expenses',
+    name: 'MAINTENANCE AND REPAIRS (BUILDING, EQUIPMENT)',
+    category: 'OPERATING EXPENSES',
   },
   {
-    name: 'Prescription Medications',
-    category: 'Health and Medical Expenses',
+    name: 'INSURANCE (BUSINESS INSURANCE, PROPERTY INSURANCE)',
+    category: 'OPERATING EXPENSES',
   },
+  { name: 'SALARIES AND WAGES', category: 'EMPLOYEE-RELATED EXPENSES' },
   {
-    name: 'Dental Care',
-    category: 'Health and Medical Expenses',
+    name: 'EMPLOYEE BENEFITS (HEALTH INSURANCE, RETIREMENT CONTRIBUTIONS)',
+    category: 'EMPLOYEE-RELATED EXPENSES',
   },
+  { name: 'PAYROLL TAXES', category: 'EMPLOYEE-RELATED EXPENSES' },
   {
-    name: 'Vision Care',
-    category: 'Health and Medical Expenses',
+    name: 'TRAINING AND DEVELOPMENT (SEMINARS, WORKSHOPS)',
+    category: 'EMPLOYEE-RELATED EXPENSES',
   },
-
   {
-    name: 'Movies, Concerts, and Events',
-    category: 'Entertainment and Recreation',
+    name: 'EMPLOYEE TRAVEL AND LODGING',
+    category: 'EMPLOYEE-RELATED EXPENSES',
   },
+  { name: 'EMPLOYEE MEALS', category: 'EMPLOYEE-RELATED EXPENSES' },
   {
-    name: 'Subscriptions (Streaming, Magazines)',
-    category: 'Entertainment and Recreation',
+    name: 'ADVERTISING EXPENSES (DIGITAL, PRINT, TV ADS)',
+    category: 'MARKETING AND ADVERTISING',
   },
-  { name: 'Hobbies', category: 'Entertainment and Recreation' },
   {
-    name: 'Vacations and Travel',
-    category: 'Entertainment and Recreation',
+    name: 'PROMOTIONAL EXPENSES (EVENTS, GIVEAWAYS, SPONSORSHIPS)',
+    category: 'MARKETING AND ADVERTISING',
   },
-
-  { name: 'Tuition Fees', category: 'Education and Learning' },
   {
-    name: 'Books and Supplies',
-    category: 'Education and Learning',
+    name: 'SOCIAL MEDIA AND ONLINE MARKETING (SEO, GOOGLE ADS, SOCIAL MEDIA ADS)',
+    category: 'MARKETING AND ADVERTISING',
   },
-  { name: 'Online Courses', category: 'Education and Learning' },
+  { name: 'WEBSITE MAINTENANCE', category: 'MARKETING AND ADVERTISING' },
+  { name: 'PUBLIC RELATIONS COSTS', category: 'MARKETING AND ADVERTISING' },
+  { name: 'LEGAL FEES', category: 'PROFESSIONAL SERVICES' },
+  { name: 'CONSULTING FEES', category: 'PROFESSIONAL SERVICES' },
   {
-    name: 'Seminars or Workshops',
-    category: 'Education and Learning',
+    name: 'ACCOUNTING AND BOOKKEEPING SERVICES',
+    category: 'PROFESSIONAL SERVICES',
   },
-
-  { name: 'Health Insurance', category: 'Insurance' },
-  { name: 'Life Insurance', category: 'Insurance' },
-  { name: 'Vehicle Insurance', category: 'Insurance' },
-
-  { name: 'Credit Card Payments', category: 'Debt Payments' },
-  { name: 'Personal Loans', category: 'Debt Payments' },
-  { name: 'Student Loan Payments', category: 'Debt Payments' },
-
+  { name: 'TAX PREPARATION FEES', category: 'PROFESSIONAL SERVICES' },
+  { name: 'AUDIT FEES', category: 'PROFESSIONAL SERVICES' },
   {
-    name: 'Clothing Purchases',
-    category: 'Clothing and Personal Care',
+    name: 'SOFTWARE SUBSCRIPTIONS (SAAS TOOLS, CRM, ERP SYSTEMS)',
+    category: 'TECHNOLOGY AND SOFTWARE',
   },
   {
-    name: 'Laundry and Dry Cleaning',
-    category: 'Clothing and Personal Care',
+    name: 'CLOUD SERVICES (AMAZON WEB SERVICES, MICROSOFT AZURE)',
+    category: 'TECHNOLOGY AND SOFTWARE',
   },
+  { name: 'IT SUPPORT AND MAINTENANCE', category: 'TECHNOLOGY AND SOFTWARE' },
   {
-    name: 'Haircuts and Grooming',
-    category: 'Clothing and Personal Care',
+    name: 'LICENSING FEES (SOFTWARE LICENSES)',
+    category: 'TECHNOLOGY AND SOFTWARE',
   },
+  { name: 'RAW MATERIALS', category: 'COST OF GOODS SOLD (COGS)' },
+  { name: 'DIRECT LABOR COSTS', category: 'COST OF GOODS SOLD (COGS)' },
+  { name: 'MANUFACTURING SUPPLIES', category: 'COST OF GOODS SOLD (COGS)' },
+  { name: 'FREIGHT AND SHIPPING', category: 'COST OF GOODS SOLD (COGS)' },
+  { name: 'PACKAGING COSTS', category: 'COST OF GOODS SOLD (COGS)' },
   {
-    name: 'Skincare Products',
-    category: 'Clothing and Personal Care',
+    name: 'DEPRECIATION EXPENSE (FOR EQUIPMENT, VEHICLES, BUILDINGS)',
+    category: 'DEPRECIATION AND AMORTIZATION',
   },
-
   {
-    name: 'Donations to Charities',
-    category: 'Charitable Contributions',
+    name: 'AMORTIZATION EXPENSE (FOR INTANGIBLE ASSETS LIKE PATENTS)',
+    category: 'DEPRECIATION AND AMORTIZATION',
   },
+  { name: 'INTEREST ON LOANS', category: 'INTEREST AND FINANCING EXPENSES' },
+  { name: 'BANK FEES', category: 'INTEREST AND FINANCING EXPENSES' },
   {
-    name: 'Church Tithes',
-    category: 'Charitable Contributions',
+    name: 'CREDIT CARD PROCESSING FEES',
+    category: 'INTEREST AND FINANCING EXPENSES',
   },
-
-  { name: 'Gifts', category: 'Miscellaneous' },
-  { name: 'Pet Care', category: 'Miscellaneous' },
-  { name: 'Household Supplies', category: 'Miscellaneous' },
-
   {
-    name: 'Rent (for office space, warehouses, etc.)',
-    category: 'Operating Expenses',
+    name: 'LOAN ORIGINATION FEES',
+    category: 'INTEREST AND FINANCING EXPENSES',
   },
+  { name: 'INCOME TAXES', category: 'TAXES' },
+  { name: 'SALES TAXES', category: 'TAXES' },
+  { name: 'PROPERTY TAXES', category: 'TAXES' },
+  { name: 'PAYROLL TAXES', category: 'TAXES' },
   {
-    name: 'Utilities (electricity, water, internet)',
-    category: 'Operating Expenses',
+    name: 'BUSINESS TRAVEL (AIRFARE, LODGING)',
+    category: 'TRAVEL AND ENTERTAINMENT',
   },
+  { name: 'BUSINESS MEALS', category: 'TRAVEL AND ENTERTAINMENT' },
+  { name: 'CONFERENCES AND EVENTS', category: 'TRAVEL AND ENTERTAINMENT' },
+  { name: 'CLIENT ENTERTAINMENT', category: 'TRAVEL AND ENTERTAINMENT' },
   {
-    name: 'Office Supplies (stationery, printing, etc.)',
-    category: 'Operating Expenses',
+    name: 'PRODUCT DEVELOPMENT COSTS',
+    category: 'RESEARCH AND DEVELOPMENT (R&D)',
   },
   {
-    name: 'Telephone and Internet Expenses',
-    category: 'Operating Expenses',
+    name: 'TESTING AND PROTOTYPING',
+    category: 'RESEARCH AND DEVELOPMENT (R&D)',
   },
   {
-    name: 'Maintenance and Repairs (building, equipment)',
-    category: 'Operating Expenses',
+    name: 'INNOVATION AND RESEARCH COSTS',
+    category: 'RESEARCH AND DEVELOPMENT (R&D)',
   },
+  { name: 'CHARITABLE CONTRIBUTIONS', category: 'MISCELLANEOUS EXPENSES' },
+  { name: 'DONATIONS', category: 'MISCELLANEOUS EXPENSES' },
+  { name: 'LICENSING AND PERMITS', category: 'MISCELLANEOUS EXPENSES' },
+  { name: 'FINES AND PENALTIES', category: 'MISCELLANEOUS EXPENSES' },
   {
-    name: 'Insurance (business insurance, property insurance)',
-    category: 'Operating Expenses',
-  },
-
-  {
-    name: 'Salaries and Wages',
-    category: 'Employee-Related Expenses',
-  },
-  {
-    name: 'Employee Benefits (health insurance, retirement contributions)',
-    category: 'Employee-Related Expenses',
-  },
-  {
-    name: 'Payroll Taxes',
-    category: 'Employee-Related Expenses',
-  },
-  {
-    name: 'Training and Development (seminars, workshops)',
-    category: 'Employee-Related Expenses',
-  },
-  {
-    name: 'Employee Travel and Lodging',
-    category: 'Employee-Related Expenses',
-  },
-  {
-    name: 'Employee Meals',
-    category: 'Employee-Related Expenses',
-  },
-
-  {
-    name: 'Advertising Expenses (digital, print, TV ads)',
-    category: 'Marketing and Advertising',
-  },
-  {
-    name: 'Promotional Expenses (events, giveaways, sponsorships)',
-    category: 'Marketing and Advertising',
-  },
-  {
-    name: 'Social Media and Online Marketing (SEO, Google Ads, social media ads)',
-    category: 'Marketing and Advertising',
-  },
-  {
-    name: 'Website Maintenance',
-    category: 'Marketing and Advertising',
-  },
-  {
-    name: 'Public Relations Costs',
-    category: 'Marketing and Advertising',
-  },
-
-  { name: 'Legal Fees', category: 'Professional Services' },
-  { name: 'Consulting Fees', category: 'Professional Services' },
-  {
-    name: 'Accounting and Bookkeeping Services',
-    category: 'Professional Services',
-  },
-  {
-    name: 'Tax Preparation Fees',
-    category: 'Professional Services',
-  },
-  { name: 'Audit Fees', category: 'Professional Services' },
-
-  {
-    name: 'Software Subscriptions (SaaS tools, CRM, ERP systems)',
-    category: 'Technology and Software',
-  },
-  {
-    name: 'Cloud Services (Amazon Web Services, Microsoft Azure)',
-    category: 'Technology and Software',
-  },
-  {
-    name: 'IT Support and Maintenance',
-    category: 'Technology and Software',
-  },
-  {
-    name: 'Licensing Fees (software licenses)',
-    category: 'Technology and Software',
-  },
-
-  {
-    name: 'Raw Materials',
-    category: 'Cost of Goods Sold (COGS)',
-  },
-  {
-    name: 'Direct Labor Costs',
-    category: 'Cost of Goods Sold (COGS)',
-  },
-  {
-    name: 'Manufacturing Supplies',
-    category: 'Cost of Goods Sold (COGS)',
-  },
-  {
-    name: 'Freight and Shipping',
-    category: 'Cost of Goods Sold (COGS)',
-  },
-  {
-    name: 'Packaging Costs',
-    category: 'Cost of Goods Sold (COGS)',
-  },
-
-  {
-    name: 'Depreciation Expense (for equipment, vehicles, buildings)',
-    category: 'Depreciation and Amortization',
-  },
-  {
-    name: 'Amortization Expense (for intangible assets like patents)',
-    category: 'Depreciation and Amortization',
-  },
-
-  {
-    name: 'Interest on Loans',
-    category: 'Interest and Financing Expenses',
-  },
-  {
-    name: 'Bank Fees',
-    category: 'Interest and Financing Expenses',
-  },
-  {
-    name: 'Credit Card Processing Fees',
-    category: 'Interest and Financing Expenses',
-  },
-  {
-    name: 'Loan Origination Fees',
-    category: 'Interest and Financing Expenses',
-  },
-
-  { name: 'Income Taxes', category: 'Taxes' },
-  { name: 'Sales Taxes', category: 'Taxes' },
-  { name: 'Property Taxes', category: 'Taxes' },
-  { name: 'Payroll Taxes', category: 'Taxes' },
-
-  {
-    name: 'Business Travel (airfare, lodging)',
-    category: 'Travel and Entertainment',
-  },
-  {
-    name: 'Business Meals',
-    category: 'Travel and Entertainment',
-  },
-  {
-    name: 'Conferences and Events',
-    category: 'Travel and Entertainment',
-  },
-  {
-    name: 'Client Entertainment',
-    category: 'Travel and Entertainment',
-  },
-
-  {
-    name: 'Product Development Costs',
-    category: 'Research and Development (R&D)',
-  },
-  {
-    name: 'Testing and Prototyping',
-    category: 'Research and Development (R&D)',
-  },
-  {
-    name: 'Innovation and Research Costs',
-    category: 'Research and Development (R&D)',
-  },
-
-  {
-    name: 'Charitable Contributions',
-    category: 'Miscellaneous Expenses',
-  },
-  { name: 'Donations', category: 'Miscellaneous Expenses' },
-  {
-    name: 'Licensing and Permits',
-    category: 'Miscellaneous Expenses',
-  },
-  {
-    name: 'Fines and Penalties',
-    category: 'Miscellaneous Expenses',
-  },
-  {
-    name: 'Office Furniture and Equipment',
-    category: 'Miscellaneous Expenses',
+    name: 'OFFICE FURNITURE AND EQUIPMENT',
+    category: 'MISCELLANEOUS EXPENSES',
   },
 ];
