@@ -119,7 +119,12 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   }
 
   get isVoucherFormValid(): boolean {
-    return this.voucherForm.valid && this.listedSignatories.length !== 0;
+    return (
+      this.voucherForm.valid &&
+      this.listedSignatories.length !== 0 &&
+      this.voucherForm.get('accounts')?.value.length !== 0 &&
+      this.voucherForm.get('particulars')?.value.length !== 0
+    );
   }
 
   ngOnInit() {
