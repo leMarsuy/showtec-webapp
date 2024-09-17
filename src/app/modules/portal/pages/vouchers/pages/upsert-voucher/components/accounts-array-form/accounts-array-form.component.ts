@@ -1,13 +1,13 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormControlDirective,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+  debounceTime,
+  map,
+  Observable,
+  startWith,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import {
   ACCOUNT_CATEGORIES,
   AccountCategory,
@@ -26,41 +26,72 @@ import {
 export class AccountsArrayFormComponent implements OnInit, OnDestroy {
   @Input() title!: string;
   @Input({ required: true }) fArray!: FormArray;
-  @Input() defaultValueArray!: Array<any>;
+  @Input() defaultValueArray!: Array<any> | null;
 
-  titles!: Array<string>;
-  categories: Array<AccountCategory>;
-  categoryTitleMap!: Record<string, Array<string>>;
   accountType = VOUCHER_ACCOUNT_TYPES;
 
   private _destroyed$ = new Subject<void>();
 
-  constructor(private formBuilder: FormBuilder) {
-    this.categories = ACCOUNT_CATEGORIES.map((category) => ({
-      name: category.name.toUpperCase(),
-    }));
-    this.categoryTitleMap = this._mapCategoryTitle(ACCOUNT_TITLES);
-  }
+  constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit(): void {
-    if (
-      this.defaultValueArray &&
-      Array.isArray(this.defaultValueArray) &&
-      this.defaultValueArray.length !== 0
-    ) {
+    if (this.defaultValueArray) {
       for (const row of this.defaultValueArray) {
         this.addRow(row);
       }
     } else this.addRow();
   }
 
-  ngOnDestroy(): void {
-    this._destroyed$.next();
-    this._destroyed$.complete();
-  }
-
   addRow(row?: any) {
-    const formGroup: FormGroup = this._buildFormGroup(row || null);
+    const formGroup = this.formBuilder.group({
+      category: [row?.category || '', Validators.required],
+      title: [row?.title || '', Validators.required],
+      remarks: [row?.remarks || ''],
+      amount: [row?.amount || '', Validators.required],
+      type: [row?.type || VoucherAccountType.DEBIT, Validators.required],
+      titleOptions: [ACCOUNT_TITLES],
+      search: [
+        row
+          ? {
+              name: row?.title || '',
+              category: row?.category || '',
+            }
+          : '',
+      ],
+    });
+
+    formGroup
+      .get('search')
+      ?.valueChanges.pipe(
+        takeUntil(this._destroyed$),
+        startWith(''),
+        debounceTime(300)
+      )
+      .subscribe((searchControl: any) => {
+        if (typeof searchControl === 'object') {
+          formGroup.get('category')?.setValue(searchControl.category);
+          formGroup.get('title')?.setValue(searchControl.name);
+        } else {
+          let titles: AccountTitle[];
+          if (!searchControl) {
+            titles = ACCOUNT_TITLES;
+          } else {
+            titles = this._filterTitles(searchControl);
+          }
+
+          formGroup.get('titleOptions')?.setValue(titles);
+        }
+      });
+
+    formGroup
+      .get('search')
+      ?.valueChanges.pipe(takeUntil(this._destroyed$))
+      .subscribe((value: any) => {
+        if (typeof value !== 'object') {
+          formGroup.get('category')?.reset();
+          formGroup.get('title')?.reset();
+        }
+      });
 
     this.fArray.push(formGroup, { emitEvent: false });
   }
@@ -69,39 +100,20 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
     this.fArray.removeAt(index);
   }
 
-  private _buildFormGroup(row?: any): FormGroup {
-    const formGroup = this.formBuilder.group({
-      category: [row?.category || '', Validators.required],
-      title: [row?.title || '', Validators.required],
-      remarks: [row?.remarks || ''],
-      amount: [row?.amount || '', Validators.required],
-      type: [row?.type || VoucherAccountType.DEBIT, Validators.required],
-    });
+  private _filterTitles(searchKey: string) {
+    const filterKey = searchKey.toLowerCase();
 
-    return formGroup;
+    return ACCOUNT_TITLES.filter((account: AccountTitle) => {
+      return account.name.toLowerCase().includes(filterKey);
+    });
   }
 
-  private _mapCategoryTitle(
-    titles: Array<AccountTitle>
-  ): Record<string, Array<string>> {
-    const mapped: any = titles.reduce(
-      (acc: any, accountTitle: AccountTitle) => {
-        const { category, name } = accountTitle;
+  displayFn(account: AccountTitle): string {
+    return account && account.name ? account.name : '';
+  }
 
-        if (acc && !acc[category.toUpperCase()]) {
-          acc[category.toUpperCase()] = [];
-        }
-
-        acc[category.toUpperCase()].push(name.toUpperCase());
-        return acc;
-      },
-      {}
-    );
-    // Making array value alphabetically sorted
-    for (const key in mapped) {
-      mapped[key].sort();
-    }
-
-    return mapped;
+  ngOnDestroy(): void {
+    this._destroyed$.next();
+    this._destroyed$.complete();
   }
 }
