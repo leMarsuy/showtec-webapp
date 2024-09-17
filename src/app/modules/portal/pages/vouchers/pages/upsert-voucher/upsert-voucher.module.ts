@@ -12,9 +12,17 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { TableModule } from '@app/shared/components/table/table.module';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { SkeletonFormLoadingComponent } from './components/skeleton-form-loading/skeleton-form-loading.component';
+import { ParticularsArrayFormComponent } from './components/particulars-array-form/particulars-array-form.component';
 
 @NgModule({
-  declarations: [UpsertVoucherComponent, AccountsArrayFormComponent],
+  declarations: [
+    UpsertVoucherComponent,
+    AccountsArrayFormComponent,
+    ParticularsArrayFormComponent,
+    SkeletonFormLoadingComponent,
+  ],
   imports: [
     CommonModule,
     UpsertVoucherRoutingModule,
@@ -26,6 +34,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatAutocompleteModule,
     MatSelectModule,
     MatButtonModule,
+    NgxSkeletonLoaderModule,
     AsyncPipe,
   ],
   exports: [UpsertVoucherComponent],
