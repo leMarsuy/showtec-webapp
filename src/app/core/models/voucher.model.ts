@@ -7,8 +7,13 @@ export interface VoucherAccount {
   title: string;
   category: string;
   remarks: string;
-  amount: string;
+  amount: number;
   type: VoucherAccountType;
+}
+
+export interface VoucherParticular {
+  description: string;
+  amount: number;
 }
 
 export class Voucher {
@@ -21,6 +26,7 @@ export class Voucher {
   };
   signatories: Signatory[];
   accounts: VoucherAccount[];
+  particulars: VoucherParticular[];
   bank: RegisteredBank;
   status: Status;
   payee: string;
@@ -35,5 +41,6 @@ export class Voucher {
     this.status = model.status;
     this.payee = model.payee;
     this.accountsTotal = model.accountsTotal;
+    this.particulars = model.particulars;
   }
 }
