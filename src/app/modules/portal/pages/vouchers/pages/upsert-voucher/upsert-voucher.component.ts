@@ -14,6 +14,7 @@ import {
   startWith,
   Subject,
   switchMap,
+  takeUntil,
 } from 'rxjs';
 import { REGISTERED_BANKS } from '@app/core/enums/registered-bank.enum';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -46,6 +47,8 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   voucher!: Voucher;
   voucherForm!: FormGroup;
   voucherId!: string;
+
+  loading = true;
 
   /**
    * * SIGNATORIES
@@ -97,38 +100,31 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     private confirmation: ConfirmationService,
     private snackbarService: SnackbarService
   ) {
-    this.banks = REGISTERED_BANKS.map((bank) => bank.toUpperCase());
+    this.banks = REGISTERED_BANKS;
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
       bank: ['', Validators.required],
       accountsTotal: ['', Validators.required],
       accounts: this.formBuilder.array([]),
+      particulars: this.formBuilder.array([]),
     });
     this.voucherId = this.route.snapshot.paramMap.get('_id') || '';
-  }
+    this.isUpdate = this.voucherId ? true : false;
 
-  get accountsFormArray(): FormArray<FormGroup> {
-    return this.voucherForm.get('accounts') as FormArray<FormGroup>;
+    if (this.voucherId) {
+      this._getVoucherById(this.voucherId);
+    } else {
+      this.loading = false;
+    }
   }
 
   get isVoucherFormValid(): boolean {
     return this.voucherForm.valid && this.listedSignatories.length !== 0;
   }
 
-  get accountsValues() {
-    if (!this.voucherId) return [];
-
-    return this.voucher.accounts;
-  }
-
   ngOnInit() {
-    this.isUpdate = this.voucherId ? true : false;
-
-    if (this.voucherId) {
-      this._getVoucherById(this.voucherId);
-    }
-
     this.filteredSignatories = this.signatoryControl.valueChanges.pipe(
+      takeUntil(this._destroyed$),
       startWith(''),
       debounceTime(400),
       distinctUntilChanged(),
@@ -175,7 +171,6 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       .subscribe((res) => {
         if (res) {
           const form = this._formatResponseBody();
-
           if (this.isUpdate && this.voucherId) {
             this._updateVoucher(this.voucherId, form);
             return;
@@ -188,7 +183,6 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
 
   private _patchFormValues() {
     this.voucherForm.patchValue(this.voucher);
-
     this.voucher.signatories.forEach((sig: any) => {
       this.listedSignatories.push({
         name: sig.STATIC.name,
@@ -224,7 +218,6 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     const rawVoucherForm = this.voucherForm.getRawValue() as any;
 
     rawVoucherForm.signatories = [];
-
     this.listedSignatories.forEach((signatory) => {
       rawVoucherForm.signatories.push({
         _userId: signatory._id,
@@ -236,12 +229,20 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       });
     });
 
+    //Cleanup Accounts Pseudo Controls
+    for (const account of rawVoucherForm.accounts) {
+      delete account.search;
+      delete account.titleOptions;
+    }
+    console.log(rawVoucherForm);
+
     return rawVoucherForm;
   }
 
   private _getVoucherById(id: string) {
     this.voucherApi.getVoucherById(id).subscribe((voucher) => {
       this.voucher = voucher as Voucher;
+      this.loading = false;
       this._patchFormValues();
     });
   }
