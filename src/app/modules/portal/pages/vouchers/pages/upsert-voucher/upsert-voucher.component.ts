@@ -259,7 +259,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
         // }, 1400);
       },
       error: (err: HttpErrorResponse) => {
-        console.log(err);
+        console.error(err);
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
           err.error.message
@@ -281,7 +281,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
         // }, 1400);
       },
       error: (err: HttpErrorResponse) => {
-        console.log(err);
+        console.error(err);
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
           err.error.message
