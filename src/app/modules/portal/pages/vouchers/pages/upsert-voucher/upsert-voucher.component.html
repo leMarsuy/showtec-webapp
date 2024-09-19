@@ -8,19 +8,37 @@
     @if(!loading) {
     <form [formGroup]="voucherForm">
       <div class="w-full bg-white rounder-lg grid grid-cols-2 grid-rows-2 pt-4">
+        <!-- PAYEE -->
         <mat-form-field appearance="outline" floatLabel="always" class="w-full col-span-2 px-4">
           <input formControlName="payee" matInput type="text" placeholder="Payee" />
         </mat-form-field>
+
+        <!-- TOTAL AMOUNT -->
         <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-4 pr-2">
           <input formControlName="accountsTotal" matInput type="number" placeholder="Total Amount"
             class="pointer-events-none" />
         </mat-form-field>
+
+        <!-- ISSUING BANK -->
         <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-2 pr-4">
           <mat-select formControlName="bank" placeholder="Issuing Bank">
             @for(bank of banks; track bank) {
             <mat-option [value]="bank">{{ bank }}</mat-option>
             }
           </mat-select>
+        </mat-form-field>
+
+        <!-- CHECK NO -->
+        <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-4 pr-2">
+          <input formControlName="checkNo" matInput type="text" placeholder="Check No" />
+        </mat-form-field>
+
+        <!-- CHECK DATE -->
+        <mat-form-field appearance="outline" class="w-full pl-2 pr-4">
+          <input matInput [matDatepicker]="picker" formControlName="checkDate" placeholder="Check Date">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconPrefix [for]="picker" class="ml-2"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
 

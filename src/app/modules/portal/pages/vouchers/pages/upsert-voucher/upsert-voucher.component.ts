@@ -34,10 +34,12 @@ import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-
 import { HttpErrorResponse } from '@angular/common/http';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { Voucher } from '@app/core/models/voucher.model';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 @Component({
   selector: 'app-upsert-voucher',
   templateUrl: './upsert-voucher.component.html',
+  providers: [provideNativeDateAdapter()],
   styleUrl: './upsert-voucher.component.scss',
 })
 export class UpsertVoucherComponent implements OnInit, OnDestroy {
@@ -104,9 +106,11 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
       bank: ['', Validators.required],
-      accountsTotal: ['', Validators.required],
+      accountsTotal: [0, Validators.required],
       accounts: this.formBuilder.array([]),
       particulars: this.formBuilder.array([]),
+      checkNo: ['', Validators.required],
+      checkDate: [null, Validators.required],
     });
     this.voucherId = this.route.snapshot.paramMap.get('_id') || '';
     this.isUpdate = this.voucherId ? true : false;
