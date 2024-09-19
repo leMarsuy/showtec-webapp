@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
 import { Voucher } from '@app/core/models/voucher.model';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { Status } from '@app/core/enums/status.enum';
 import { environment } from '@env/environment';
+import { map } from 'rxjs';
+import { FileService } from '../../file/file.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +14,8 @@ export class VoucherApiService {
   apiUrl = environment.API_URL;
   apiPrefix = 'vouchers';
 
-  constructor(private httpService: HttpService) {}
+  private httpService = inject(HttpService);
+  private file = inject(FileService);
 
   createVoucher(voucher: Voucher) {
     return this.httpService.post(`${this.apiPrefix}`, voucher);
@@ -48,5 +51,16 @@ export class VoucherApiService {
 
   deleteVoucherStatusById(_id: string, status: Status) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}/delete`, status);
+  }
+  getVoucherPdfReceipt(_id: string) {
+    return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
+      map((response: any) => {
+        const filename = this.file.getFileNameFromResponseHeader(response);
+        return {
+          blob: response.body,
+          filename,
+        };
+      })
+    );
   }
 }
