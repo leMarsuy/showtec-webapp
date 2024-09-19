@@ -15,6 +15,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { SkeletonFormLoadingComponent } from './components/skeleton-form-loading/skeleton-form-loading.component';
 import { ParticularsArrayFormComponent } from './components/particulars-array-form/particulars-array-form.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ParticularsArrayFormComponent } from './components/particulars-array-fo
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
+    MatDatepickerModule,
     MatSelectModule,
     MatButtonModule,
     NgxSkeletonLoaderModule,
