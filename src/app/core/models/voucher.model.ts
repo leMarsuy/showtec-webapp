@@ -31,6 +31,8 @@ export class Voucher {
   status: Status;
   payee: string;
   accountsTotal: number;
+  checkDate: string;
+  checkNo: string;
 
   constructor(model: Voucher) {
     this._id = model._id;
@@ -42,5 +44,7 @@ export class Voucher {
     this.payee = model.payee;
     this.accountsTotal = model.accountsTotal;
     this.particulars = model.particulars;
+    this.checkDate = model.checkDate;
+    this.checkNo = model.checkNo;
   }
 }
