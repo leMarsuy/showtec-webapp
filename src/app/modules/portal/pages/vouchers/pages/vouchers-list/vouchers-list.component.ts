@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Alignment } from '@app/core/enums/align.enum';
@@ -10,6 +11,7 @@ import { Status, STATUS_TYPES } from '@app/core/enums/status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Voucher } from '@app/core/models/voucher.model';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
 
@@ -73,6 +75,11 @@ export class VouchersListComponent {
       align: Alignment.CENTER,
       actions: [
         {
+          name: 'print',
+          icon: 'print',
+          color: Color.DEAD,
+        },
+        {
           name: 'edit',
           icon: 'edit',
           color: Color.WARNING,
@@ -90,7 +97,8 @@ export class VouchersListComponent {
   constructor(
     private voucherApi: VoucherApiService,
     private snackbarService: SnackbarService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {
     this.getVouchers();
   }
@@ -133,11 +141,14 @@ export class VouchersListComponent {
   }
 
   actionEvent(e: any) {
-    const { action } = e;
+    const { action, element } = e;
 
     switch (action.name) {
       case 'edit':
         this.router.navigate(['portal/vouchers/edit/' + e.element._id]);
+        break;
+      case 'print':
+        this._print(element);
         break;
     }
   }
@@ -146,5 +157,19 @@ export class VouchersListComponent {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
     this.getVouchers();
+  }
+
+  private _print(voucher: Voucher) {
+    if (!voucher._id) return;
+    this.dialog.open(PdfViewerComponent, {
+      data: {
+        apiCall: this.voucherApi.getVoucherPdfReceipt(voucher._id),
+        title: 'View Voucher Receipt',
+      },
+      maxWidth: '70rem',
+      width: '100%',
+      disableClose: true,
+      autoFocus: false,
+    });
   }
 }
