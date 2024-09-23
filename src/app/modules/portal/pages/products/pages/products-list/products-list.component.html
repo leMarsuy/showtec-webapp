@@ -26,5 +26,6 @@
 
 
     </div>
-    <app-table [dataSource]="products" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"></app-table>
+    <app-table [dataSource]="products" [columns]="columns" [page]="page" (rowEmitter)="rowEvent($event)"
+      (pageEmitter)="pageEvent($event)"></app-table>
   </div>
