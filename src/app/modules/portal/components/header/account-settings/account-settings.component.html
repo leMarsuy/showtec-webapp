@@ -4,23 +4,47 @@
     <mat-icon>close</mat-icon>
   </button>
 </div>
-<div class="flex m-4 p-2 h-full overflow-y-auto">
-  <form [formGroup]="userForm">
-    <mat-form-field class="">
-      <mat-label>Name</mat-label>
-      <input matInput type="text" formControlName="name" />
-    </mat-form-field>
+<div class="flex flex-col m-4 p-2 overflow-y-auto gap-6">
 
-    <mat-form-field class="">
-      <mat-label>Designation</mat-label>
-      <input matInput type="text" formControlName="designation" />
-    </mat-form-field>
+  <div [formGroup]="userForm"
+    class="grid grid-cols-2 gap-2 [&>[data-slot=form]]:h-[1rem] border-b-[1.5px] border-gray-200 pb-3">
 
-    <mat-form-field class="">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" />
-    </mat-form-field>
+    <div>
+      <p class="text-xs text-gray-500">Name</p>
+      <mat-form-field data-slot="form" appearance="outline">
+        <input matInput type="text" formControlName="name" (input)="onInputChange($any(userForm).get('name'))" />
+      </mat-form-field>
+    </div>
 
-  </form>
+    <div>
+      <p class="text-xs text-gray-500">Designation</p>
+      <mat-form-field data-slot="form" appearance="outline">
+        <input matInput type="text" formControlName="designation"
+          (input)="onInputChange($any(userForm).get('designation'))" />
+      </mat-form-field>
+    </div>
+
+    <div>
+      <p class="text-xs text-gray-500">Email</p>
+      <mat-form-field data-slot="form" appearance="outline">
+        <input matInput type="text" formControlName="email" />
+      </mat-form-field>
+    </div>
+
+
+    @if (userForm.dirty) {
+    <div class="flex justify-between col-span-2">
+      <button mat-button [disabled]="loading" color="warn" (click)="onResetForm()">Discard Changes</button>
+      <button mat-flat-button [disabled]="loading" (click)="onSave()">Save</button>
+    </div>
+    }
+
+  </div>
+
+
+  <div class="flex justify-between">
+    <h4 class="text-gray-500 text-small">Change Password</h4>
+    <button mat-stroked-button [disabled]="loading">Request</button>
+  </div>
 
 </div>
