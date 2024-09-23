@@ -106,7 +106,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
       bank: ['', Validators.required],
-      accountsTotal: [0, Validators.required],
+      accountsTotal: ['', Validators.required],
       accounts: this.formBuilder.array([]),
       particulars: this.formBuilder.array([]),
       checkNo: ['', Validators.required],
