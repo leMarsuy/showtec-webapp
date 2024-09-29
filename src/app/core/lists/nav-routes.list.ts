@@ -33,6 +33,11 @@ export const NAV_ROUTES = [
     group: 'Sales',
     items: [
       {
+        name: 'Purchase Order',
+        path: 'purchase-order',
+        icon: 'fact_check',
+      },
+      {
         name: 'SOA',
         path: 'soa',
         icon: 'article',
