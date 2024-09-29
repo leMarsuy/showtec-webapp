@@ -1,0 +1,47 @@
+<div class="gap-2x grid grid-cols-2 border-2 border-dashed border-gray-500 p-4 mb-4 text-sm">
+  <div class="col-span-1">
+    <p>Total</p>
+  </div>
+  <div class="col-span-1 text-right">
+    <p>PHP {{ $any(fGroup).get('total').value | number }}</p>
+  </div>
+
+  <div class="col-span-1">
+    <p>Product Disc.</p>
+  </div>
+  <div class="col-span-1 text-right">
+    <p>- PHP {{ $any(fGroup).get('productDiscount').value | number }}</p>
+  </div>
+  @for (discount of listedDiscounts; track discount) {
+  <div class="col-span-1">
+    <p>{{ discount.name }}</p>
+  </div>
+  <div class="col-span-1 text-right">
+    <p>PHP {{ discount.value | number }}</p>
+  </div>
+  }
+  <div class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"></div>
+  <div class="col-span-1">
+    <p>Sub-Total</p>
+  </div>
+  <div class="col-span-1 text-right">
+    <p class="font-bold">PHP {{ $any(fGroup).get('subtotal').value | number }}</p>
+  </div>
+  <!--  -->
+  @for (tax of listedTaxes; track tax) {
+  <div class="col-span-1">
+    <p>{{ tax.name }} {{ tax.value | percent }}</p>
+  </div>
+  <div class="col-span-1 text-right">
+    <p>PHP {{ $any(fGroup).get('subtotal').value * tax.value | number }}</p>
+  </div>
+  }
+
+  <div class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"></div>
+  <div class="col-span-1">
+    <p class="font-bold">GRAND TOTAL</p>
+  </div>
+  <div class="col-span-1 text-right">
+    <p class="font-bold">PHP {{ $any(fGroup).get('grandtotal').value | number }}</p>
+  </div>
+</div>
