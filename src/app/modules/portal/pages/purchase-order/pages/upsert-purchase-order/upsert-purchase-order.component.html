@@ -1,0 +1,52 @@
+<div class="flex gap-4">
+  <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
+    <div class="flex" (click)="navigateBack()">
+      <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
+    </div>
+  </div>
+  <!-- Form Arrays -->
+  <div class="flex flex-col gap-4 w-full rounded-xl bg-white text-gray-900 p-4 grow">
+    <!-- PRODUCTS LIST -->
+    <section>
+      <app-products-form [listedProducts]="listedProducts" (productsEmitter)="productsEmitHandler($event)" />
+    </section>
+
+    <!-- DISCOUNTS LIST -->
+    <section>
+      <app-discounts-form [listedDiscounts]="listedDiscounts" (discountsEmitter)="discountEmitHandler($event)" />
+    </section>
+
+
+    <!-- TAXES LIST -->
+    <section>
+      <app-taxes-form [listedTaxes]="listedTaxes" (taxesEmitter)="taxesEmitHandler($event)" />
+    </section>
+
+
+    <!-- SIGNATORIES LIST -->
+    <section>
+      <app-signatories-form [listedSignatories]="listedSignatories"
+        (signatoriesEmitter)="signatoriesEmitHandler($event)" />
+    </section>
+  </div>
+
+  <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
+    <!-- Customer Form -->
+    <app-customer-form [fGroup]="poForm" />
+
+    <!-- Total Summary -->
+    <app-total-summary-display [listedDiscounts]="listedDiscounts" [listedTaxes]="listedTaxes" [summary]="poSummary" />
+
+    <div class="flex justify-between">
+      <button *ngIf="isUpdate" mat-button color="warn" [disabled]="!isValid || !poForm.dirty"
+        (click)="confirmDiscard()">
+        Discard
+      </button>
+
+      <button mat-flat-button color="primary" [disabled]="!isValid || !poForm.dirty" (click)="confirmChanges()">
+        Save
+      </button>
+
+    </div>
+  </div>
+</div>
