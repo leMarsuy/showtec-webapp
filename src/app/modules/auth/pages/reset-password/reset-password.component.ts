@@ -94,7 +94,8 @@ export class ResetPasswordComponent {
         next: () => {
           this._setLoadingstate(false);
           this.snackbarService.openSuccessSnackbar(
-            'You have changed your password successfully. Please login.'
+            'Success',
+            'You have changed your password successfully.'
           );
           this.router.navigate(['auth', 'login']);
         },
