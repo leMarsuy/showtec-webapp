@@ -43,8 +43,8 @@
 
 
   <div class="flex justify-between">
-    <h4 class="text-gray-500 text-small">Change Password</h4>
-    <button mat-stroked-button [disabled]="loading">Request</button>
+    <h4 class="flex items-center text-gray-500 text-small">Change Password</h4>
+    <button mat-stroked-button [disabled]="loading" (click)="onPasswordResetRequest()">Request</button>
   </div>
 
 </div>
