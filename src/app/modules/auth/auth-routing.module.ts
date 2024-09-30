@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './auth.component';
+import { resetPasswordGuard } from './pages/reset-password/reset-password.guard';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
       },
       {
         path: 'reset-password/:token',
+        canActivate: [resetPasswordGuard],
         loadChildren: () =>
           import('./pages/reset-password/reset-password.module').then(
             (m) => m.ResetPasswordModule
