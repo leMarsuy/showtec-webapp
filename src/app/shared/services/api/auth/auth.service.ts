@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { User } from '@core/models/user.model';
@@ -49,5 +49,32 @@ export class AuthService {
         Authorization: `Bearer ${localStorage.getItem('auth')}`,
       },
     });
+  }
+
+  verifyResetPasswordToken(token: string) {
+    const queryParams = new HttpParams({
+      fromObject: {
+        token,
+      },
+    });
+    return this.http.get<{
+      found: boolean;
+    }>(environment.API_URL + `/auth/reset-password`, {
+      params: queryParams,
+    });
+  }
+
+  resetPassword(body: object) {
+    return this.http.post(environment.API_URL + `/auth/reset-password`, body);
+  }
+
+  forgotPassword(email: string) {
+    return this.http.post(environment.API_URL + `/auth/forgot-password`, {
+      email,
+    });
+  }
+
+  updatePassword(body: object) {
+    return this.http.put(environment.API_URL + '/auth/update-password', body);
   }
 }
