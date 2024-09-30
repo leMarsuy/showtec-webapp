@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [PasswordInputComponent],
@@ -12,8 +13,9 @@ import { MatButton } from '@angular/material/button';
     CommonModule,
     MatFormFieldModule,
     MatInputModule,
-    ReactiveFormsModule,
     MatButton,
+    MatIconModule,
+    ReactiveFormsModule,
   ],
   exports: [PasswordInputComponent],
 })

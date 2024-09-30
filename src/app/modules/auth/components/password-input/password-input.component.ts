@@ -8,7 +8,7 @@ import { FormControl } from '@angular/forms';
 })
 export class PasswordInputComponent {
   @Input() fc!: FormControl;
-  @Output() enterPressed!: EventEmitter<void>;
+  @Output() enterPressed: EventEmitter<void> = new EventEmitter<void>();
 
   isPasswordVisible = false;
 }
