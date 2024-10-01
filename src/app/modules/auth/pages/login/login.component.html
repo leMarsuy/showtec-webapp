@@ -5,24 +5,14 @@
   </mat-form-field>
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
-    <input
-      matInput
-      [type]="showPassword ? 'text' : 'password'"
-      formControlName="password"
-    />
+    <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" />
     <mat-icon matSuffix (click)="togglePasswordVisibility()">
       {{ showPassword ? "visibility_off" : "visibility" }}
     </mat-icon>
   </mat-form-field>
 
-  <button
-    mat-stroked-button
-    color="primary"
-    class="w-full"
-    (click)="login()"
-    [disabled]="!loginForm.valid"
-  >
+  <button mat-stroked-button color="primary" class="w-full" (click)="login()" [disabled]="!loginForm.valid">
     Sign in
   </button>
-  <button mat-button class="mt-5 w-full">Forgot Password?</button>
+  <button mat-button class="mt-5 w-full" (click)="onForgotPasswordNavigate()">Forgot Password?</button>
 </form>

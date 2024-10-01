@@ -7,7 +7,8 @@ import { FormControl } from '@angular/forms';
   styleUrl: './password-input.component.scss',
 })
 export class PasswordInputComponent {
-  @Input() fc!: FormControl;
+  @Input({ required: true }) fc!: FormControl;
+  @Input() label!: string;
   @Output() enterPressed: EventEmitter<void> = new EventEmitter<void>();
 
   isPasswordVisible = false;
