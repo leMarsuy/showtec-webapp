@@ -40,7 +40,7 @@ export class HttpService {
     });
   }
 
-  getBlob<T>(endpoint: string, query?: QueryParams) {
+  getBlob<T>(endpoint: string, query?: any) {
     var options: any = {
       headers: this.options.headers,
       responseType: 'blob',
