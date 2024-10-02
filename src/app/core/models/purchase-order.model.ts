@@ -1,6 +1,4 @@
-import { PaymentMethod } from '../enums/payment-method.enum';
 import { PurchaseOrderStatus } from '../enums/purchase-order.enum';
-import { Status } from '../enums/status.enum';
 import { Signatory } from './out-delivery.model';
 import { Discount, Tax, Transaction } from './soa.model';
 
