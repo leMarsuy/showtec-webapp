@@ -188,7 +188,7 @@ export class PurchaseOrdersListComponent {
         apiCall: this.purchaseOrderApi.getPurchaseOrderPdfReceipt(
           purchaseOrder._id
         ),
-        title: 'View Voucher Receipt',
+        title: 'View PO Receipt',
       },
       maxWidth: '70rem',
       width: '100%',
