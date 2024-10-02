@@ -35,6 +35,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { Voucher } from '@app/core/models/voucher.model';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { VoucherDataService } from './voucher-data.service';
 
 @Component({
   selector: 'app-upsert-voucher',
@@ -43,10 +44,11 @@ import { provideNativeDateAdapter } from '@angular/material/core';
   styleUrl: './upsert-voucher.component.scss',
 })
 export class UpsertVoucherComponent implements OnInit, OnDestroy {
-  banks: Array<String>;
+  banks = REGISTERED_BANKS;
   isUpdate!: boolean;
 
   voucher!: Voucher;
+  voucherClone!: any;
   voucherForm!: FormGroup;
   voucherId!: string;
 
@@ -99,10 +101,10 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     private router: Router,
     private userApi: UserApiService,
     private voucherApi: VoucherApiService,
+    private voucherData: VoucherDataService,
     private confirmation: ConfirmationService,
     private snackbarService: SnackbarService
   ) {
-    this.banks = REGISTERED_BANKS;
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
       bank: ['', Validators.required],
@@ -112,11 +114,17 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       checkNo: ['', Validators.required],
       checkDate: [null, Validators.required],
     });
+
     this.voucherId = this.route.snapshot.paramMap.get('_id') || '';
     this.isUpdate = this.voucherId ? true : false;
+    this.voucherClone = this.voucherData.Voucher;
 
-    if (this.voucherId) {
+    if (this.isUpdate && !this.voucherClone) {
       this._getVoucherById(this.voucherId);
+    } else if (this.voucherClone) {
+      this.voucher = this.voucherClone;
+      this._patchFormValues();
+      this.loading = false;
     } else {
       this.loading = false;
     }
@@ -202,6 +210,8 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     });
 
     this._copySignatoriesToSelf();
+
+    this.voucherForm.updateValueAndValidity();
   }
 
   private _filterSignatories(value: string) {
@@ -250,7 +260,6 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   private _getVoucherById(id: string) {
     this.voucherApi.getVoucherById(id).subscribe((voucher) => {
       this.voucher = voucher as Voucher;
-      this.loading = false;
       this._patchFormValues();
     });
   }
@@ -305,6 +314,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.voucherData.deleteVoucher();
     this._destroyed$.next();
     this._destroyed$.complete();
   }
