@@ -138,7 +138,7 @@ export class ProductsListComponent {
     this.router.navigate([product._id], { relativeTo: this.activatedRoute });
   }
 
-  downloadAllProductSNs() {
+  exportExcelProductSNs() {
     this.snackbarService.openLoadingSnackbar(
       'Please Wait',
       'Downloading Excel file...'
@@ -165,7 +165,7 @@ export class ProductsListComponent {
     });
   }
 
-  downloadAllProducts() {
+  exportExcelProducts() {
     this.snackbarService.openLoadingSnackbar(
       'Please Wait',
       'Downloading Excel file...'

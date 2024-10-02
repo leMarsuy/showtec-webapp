@@ -11,13 +11,13 @@
       </div>
 
       <div class="flex">
-        <button mat-icon-button (click)="downloadAllProductSNs()" [disabled]="downloading"
+        <button mat-icon-button (click)="exportExcelProductSNs()" [disabled]="downloading"
           matTooltip="Download Serial Numbers">
           <mat-icon class="mr-2">
             {{ downloading ? "downloading" : "download" }}
           </mat-icon>
         </button>
-        <button mat-icon-button (click)="downloadAllProducts()" [disabled]="downloading" matTooltip="Download Products">
+        <button mat-icon-button (click)="exportExcelProducts()" [disabled]="downloading" matTooltip="Download Products">
           <mat-icon class="mr-2">
             {{ downloading ? "downloading" : "download_for_offline" }}
           </mat-icon>
