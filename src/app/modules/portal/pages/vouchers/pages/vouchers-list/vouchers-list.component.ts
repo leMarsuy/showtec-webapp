@@ -14,6 +14,10 @@ import { Voucher } from '@app/core/models/voucher.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
+import { VoucherDataService } from '../upsert-voucher/voucher-data.service';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { FileService } from '@app/shared/services/file/file.service';
 
 @Component({
   selector: 'app-vouchers-list',
@@ -26,6 +30,7 @@ export class VouchersListComponent {
 
   tableFilterStatuses = ['All', ...STATUS_TYPES];
   tableFilterStatus = 'All';
+  downloading = false;
 
   vouchers!: Voucher[];
   columns: TableColumn[] = [
@@ -75,14 +80,22 @@ export class VouchersListComponent {
       align: Alignment.CENTER,
       actions: [
         {
-          name: 'print',
+          name: 'Print Voucher',
+          action: 'print',
           icon: 'print',
           color: Color.DEAD,
         },
         {
-          name: 'edit',
+          name: 'Edit Voucher',
+          action: 'edit',
           icon: 'edit',
           color: Color.WARNING,
+        },
+        {
+          name: 'Reuse Voucher',
+          action: 'clone',
+          icon: 'content_copy',
+          color: Color.INFO,
         },
       ],
     },
@@ -96,6 +109,8 @@ export class VouchersListComponent {
 
   constructor(
     private voucherApi: VoucherApiService,
+    private fileApi: FileService,
+    private voucherData: VoucherDataService,
     private snackbarService: SnackbarService,
     private router: Router,
     private dialog: MatDialog
@@ -141,14 +156,18 @@ export class VouchersListComponent {
   }
 
   actionEvent(e: any) {
-    const { action, element } = e;
+    const { action } = e.action;
 
-    switch (action.name) {
+    switch (action) {
       case 'edit':
-        this.router.navigate(['portal/vouchers/edit/' + e.element._id]);
+        this.router.navigate(['portal', 'vouchers', 'edit', e.element._id]);
         break;
       case 'print':
-        this._print(element);
+        this._print(e.element);
+        break;
+      case 'clone':
+        this.voucherData.setVoucher(e.element);
+        this.router.navigate(['portal', 'vouchers', 'create']);
         break;
     }
   }
@@ -157,6 +176,37 @@ export class VouchersListComponent {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
     this.getVouchers();
+  }
+
+  exportTableExcel() {
+    this.snackbarService.openLoadingSnackbar(
+      'Please Wait',
+      'Downloading Excel file...'
+    );
+    this.downloading = true;
+
+    const status =
+      this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
+
+    const query: QueryParams = {
+      searchText: this.searchText.value || '',
+    };
+
+    this.voucherApi.exportExcelVouchers(query, status).subscribe({
+      next: (response: any) => {
+        this.downloading = false;
+        this.snackbarService.closeLoadingSnackbar();
+        const fileName = generateFileName('VOUCHER', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        this.downloading = false;
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+      complete: () => {
+        this.downloading = false;
+      },
+    });
   }
 
   private _print(voucher: Voucher) {
