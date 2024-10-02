@@ -144,7 +144,6 @@ export class UpdateStockComponent implements AfterViewInit {
   get stocks(): Stock[] {
     var stocks: Stock[] = [];
     var stockDetails = this.stockDetailsForm.getRawValue();
-    console.log(stockDetails);
     this.scannedStocks.forEach((stock) => {
       stock.purchaseDate = stockDetails.purchaseDate || undefined;
       stock.purchaseCost = stockDetails.purchaseCost || 0;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { SOA, Transaction } from '@app/core/models/soa.model';
-import { enviroment } from '@env/environment';
+import { environment } from '@env/environment';
 import { HttpService } from '../../http/http.service';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
@@ -10,7 +10,7 @@ import { FileService } from '../../file/file.service';
   providedIn: 'root',
 })
 export class SoaApiService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'soa';
   constructor(private httpService: HttpService, private file: FileService) {}
 
@@ -76,5 +76,20 @@ export class SoaApiService {
 
   getMostRecentSoa() {
     return this.httpService.get(`${this.apiPrefix}/recent`);
+  }
+
+  exportExcelSoas(query?: QueryParams) {
+    let sanitizedQuery: QueryParams = {};
+    if (query) {
+      sanitizedQuery = {
+        pageIndex: 0,
+        pageSize: 0,
+        searchText: query.searchText || '',
+      };
+    }
+    return this.httpService.getBlob(
+      `${this.apiPrefix}/export/excel`,
+      sanitizedQuery
+    );
   }
 }

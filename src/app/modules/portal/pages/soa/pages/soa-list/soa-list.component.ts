@@ -1,13 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Alignment } from '@app/core/enums/align.enum';
-import { Color } from '@app/core/enums/color.enum';
-import { ColumnType } from '@app/core/enums/column-type.enum';
-import { SoaStatus } from '@app/core/enums/soa-status.enum';
+
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { SOA } from '@app/core/models/soa.model';
@@ -15,10 +12,11 @@ import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
 import { ViewSoaComponent } from '../view-soa/view-soa.component';
-import {
-  MONITOR_STATUSES,
-  MonitorStatus,
-} from '@app/core/enums/monitor-status.enum';
+import { SOA_CONFIG } from '../../soa-config';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { SoaStatus } from '@app/core/enums/soa-status.enum';
+import { FileService } from '@app/shared/services/file/file.service';
 
 @Component({
   selector: 'app-soa-list',
@@ -26,13 +24,14 @@ import {
   styleUrl: './soa-list.component.scss',
 })
 export class SoaListComponent {
-  monitorStatuses = MONITOR_STATUSES;
+  searchText = new FormControl('');
 
-  monitorStatus = 'All';
+  downloading = false;
 
-  searchForm = new FormGroup({
-    searchText: new FormControl(''),
-  });
+  soas!: SOA[];
+  columns: TableColumn[] = SOA_CONFIG.tableColumns;
+  tableFilterStatuses = SOA_CONFIG.tableFilters.statuses;
+  tableFilterStatus: SoaStatus | string = 'All';
 
   page: PageEvent = {
     pageIndex: 0,
@@ -40,96 +39,14 @@ export class SoaListComponent {
     length: -1,
   };
 
-  columns: TableColumn[] = [
-    {
-      label: 'SOA No.',
-      dotNotationPath: 'code.value',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Customer',
-      dotNotationPath: '_customerId.name',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Status',
-      dotNotationPath: 'status',
-      type: ColumnType.STATUS,
-      colorCodes: [
-        {
-          value: SoaStatus.PENDING,
-          color: Color.DEAD,
-        },
-        {
-          value: SoaStatus.PAID,
-          color: Color.SUCCESS,
-        },
-        {
-          value: SoaStatus.PARTIAL,
-          color: Color.WARNING,
-        },
-        {
-          value: SoaStatus.CANCELLED,
-          color: Color.ERROR,
-        },
-      ],
-    },
-    {
-      label: 'Total',
-      dotNotationPath: 'summary.grandtotal',
-      type: ColumnType.CURRENCY,
-    },
-    {
-      label: 'Paid',
-      dotNotationPath: 'payment.paid',
-      type: ColumnType.CURRENCY,
-    },
-    {
-      label: 'Date of SOA',
-      dotNotationPath: 'soaDate',
-      type: ColumnType.DATE,
-    },
-
-    {
-      label: 'Action',
-      dotNotationPath: '_id',
-      type: ColumnType.ACTION,
-      align: Alignment.CENTER,
-      actions: [
-        {
-          name: 'print',
-          icon: 'print',
-          color: Color.DEAD,
-        },
-        {
-          name: 'edit',
-          icon: 'edit',
-          color: Color.WARNING,
-        },
-        {
-          name: 'payments',
-          icon: 'money',
-          color: Color.SUCCESS,
-        },
-      ],
-    },
-  ];
-
-  soas!: SOA[];
-
   constructor(
     private soaApi: SoaApiService,
     private snackbarService: SnackbarService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private fileApi: FileService
   ) {
-    this.getSoas();
-  }
-
-  clearForm() {
-    this.searchForm.reset();
-    this.searchForm.markAsUntouched();
     this.getSoas();
   }
 
@@ -138,10 +55,10 @@ export class SoaListComponent {
     this.soaApi
       .getSoas(
         {
-          searchText: this.searchForm.get('searchText')?.value || '',
+          searchText: this.searchText.value || '',
           ...this.page,
         },
-        this.monitorStatus
+        this.tableFilterStatus
       )
       .subscribe({
         next: (resp) => {
@@ -166,24 +83,23 @@ export class SoaListComponent {
   }
 
   actionEvent(e: any) {
-    if (e.action.name == 'print') {
-      this.print(e.element);
-    } else if (e.action.name == 'edit') {
-      this.router.navigate(['portal/soa/edit/' + e.element._id]);
-    } else if (e.action.name == 'payments') {
-      this.dialog
-        .open(ViewSoaComponent, {
-          width: '100rem',
-          maxWidth: '100rem',
-          disableClose: true,
-          data: {
-            _id: e.element._id,
-          },
-        })
-        .afterClosed()
-        .subscribe((res) => {
-          if (res) this.getSoas();
-        });
+    // const action => contains table column action data
+    // const element => contains table row data
+
+    const { action, element } = e;
+
+    switch (action.action) {
+      case 'print':
+        this.print(element);
+        break;
+
+      case 'edit':
+        this.router.navigate(['portal/soa/edit/' + element._id]);
+        break;
+
+      case 'payments':
+        this._onClickPayment(element);
+        break;
     }
   }
 
@@ -201,11 +117,51 @@ export class SoaListComponent {
     });
   }
 
-  // _selectedCss(status: MonitorStatus) {
-  //   var color = Color.DEAD
+  onFilterStatusChange(status: SoaStatus | string) {
+    this.tableFilterStatus = status;
+    this.getSoas();
+  }
 
-  //   return "py-2 px-4 border-2 border-{{
-  //         monitorStatus === item ? 'emerald' : 'gray'
-  //       }}-400  cursor-pointer rounded-3xl"
-  // }
+  exportTableExcel() {
+    this.snackbarService.openLoadingSnackbar(
+      'Please Wait',
+      'Downloading Excel file...'
+    );
+    this.downloading = true;
+    const query: QueryParams = {
+      searchText: this.searchText.value || '',
+    };
+
+    this.soaApi.exportExcelSoas(query).subscribe({
+      next: (response: any) => {
+        this.downloading = false;
+        this.snackbarService.closeLoadingSnackbar();
+        const fileName = generateFileName('SOA', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        this.downloading = false;
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+      complete: () => {
+        this.downloading = false;
+      },
+    });
+  }
+
+  private _onClickPayment(soa: SOA) {
+    this.dialog
+      .open(ViewSoaComponent, {
+        width: '100rem',
+        maxWidth: '100rem',
+        disableClose: true,
+        data: {
+          _id: soa._id,
+        },
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) this.getSoas();
+      });
+  }
 }

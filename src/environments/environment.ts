@@ -6,7 +6,7 @@ const env = {
   API_URL: 'http://localhost:3500/api/v1',
 };
 
-export const enviroment = {
+export const environment = {
   ...commonEnv,
   ...env,
 };

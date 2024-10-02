@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SalesAnalyticsService } from '@app/shared/services/analytics/sales-analytics/sales-analytics.service';
 import { getDateDiffInDays, getPastDate } from '@app/shared/utils/dateUtil';
-import { enviroment } from '@env/environment';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-sales',
@@ -12,7 +12,7 @@ import { enviroment } from '@env/environment';
 export class SalesComponent implements OnInit {
   pastDays = 25;
   diffDaysFromProjectStart = getDateDiffInDays(
-    enviroment.projectStart,
+    environment.projectStart,
     new Date()
   );
   dateFrom = getPastDate(new Date(), this.pastDays);
@@ -41,7 +41,6 @@ export class SalesComponent implements OnInit {
     this.saleAnalytics.salesReports(this.dateFrom, this.dateTo).subscribe({
       next: (data: any) => {
         this.salesReport = data;
-        console.log(this.salesReport);
         this.sb.closeLoadingSnackbar();
       },
       error: (error: any) => {

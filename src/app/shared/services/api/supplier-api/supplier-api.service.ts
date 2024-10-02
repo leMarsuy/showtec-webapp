@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
-import { enviroment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { Supplier } from '@core/models/supplier.model';
 
@@ -8,7 +8,7 @@ import { Supplier } from '@core/models/supplier.model';
   providedIn: 'root',
 })
 export class SupplierApiService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'suppliers';
   constructor(private httpService: HttpService) {}
 

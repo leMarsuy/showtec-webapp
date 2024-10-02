@@ -8,6 +8,11 @@ const routes: Routes = [
     component: ReportsComponent,
     children: [
       {
+        path: '',
+        redirectTo: 'sales',
+        pathMatch: 'full',
+      },
+      {
         path: 'sales',
         loadChildren: () =>
           import('./pages/sales/sales.module').then((m) => m.SalesModule),

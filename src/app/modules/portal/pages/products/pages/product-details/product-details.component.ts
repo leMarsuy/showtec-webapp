@@ -107,7 +107,6 @@ export class ProductDetailsComponent implements OnInit {
   getProductById() {
     this.productApi.getProductById(this._id).subscribe({
       next: (res) => {
-        console.log(res);
         this.product = res as Product;
         this.product.stocks =
           this.product.stocks.sort((a, b) => {
@@ -136,8 +135,6 @@ export class ProductDetailsComponent implements OnInit {
     this.filteredStocks = [
       ...this.product.stocks.slice(skip, skip + this.page.pageSize),
     ];
-
-    console.log(skip, e);
   }
 
   filterStocks(status: string) {

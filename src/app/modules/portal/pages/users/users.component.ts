@@ -23,7 +23,6 @@ export class UsersComponent {
   ];
 
   actionEvent(action: string) {
-    console.log(action);
     switch (action) {
       case 'add':
         this.dialog

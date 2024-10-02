@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
-import { enviroment } from '@env/environment';
+import { environment } from '@env/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SalesAnalyticsService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   apiPrefix = 'analytics';
 
   constructor(private httpService: HttpService) {}

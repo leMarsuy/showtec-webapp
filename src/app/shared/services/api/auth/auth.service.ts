@@ -2,14 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { User } from '@core/models/user.model';
-import { enviroment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  apiUrl = enviroment.API_URL;
+  apiUrl = environment.API_URL;
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string) {
@@ -20,8 +20,25 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          console.log(response);
           localStorage.setItem('auth', response.token || '');
+        })
+      );
+  }
+
+  logout() {
+    return this.http
+      .post(
+        this.apiUrl + '/auth/logout',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth')}`,
+          },
+        }
+      )
+      .pipe(
+        tap(() => {
+          localStorage.removeItem('auth');
         })
       );
   }

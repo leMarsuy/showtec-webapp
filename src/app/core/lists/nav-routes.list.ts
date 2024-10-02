@@ -2,10 +2,15 @@ export const NAV_ROUTES = [
   {
     group: 'Home',
     items: [
+      // {
+      //   name: 'Dashboard',
+      //   path: 'dashboard',
+      //   icon: 'dashboard',
+      // },
       {
-        name: 'Dashboard',
-        path: 'dashboard',
-        icon: 'dashboard',
+        name: 'Reports',
+        path: 'reports/sales',
+        icon: 'summarize',
       },
     ],
   },
@@ -32,20 +37,25 @@ export const NAV_ROUTES = [
         path: 'soa',
         icon: 'article',
       },
-      {
-        name: 'Reports',
-        path: 'reports/sales',
-        icon: 'summarize',
-      },
+      // {
+      //   name: 'Reports',
+      //   path: 'reports/sales',
+      //   icon: 'summarize',
+      // },
       // {
       //   name: 'Returns',
       //   path: 'suppliers',
       //   icon: 'undo',
       // },
+      // {
+      //   name: 'Expenses',
+      //   path: 'expenses',
+      //   icon: 'toll',
+      // },
       {
-        name: 'Expenses',
-        path: 'expenses',
-        icon: 'toll',
+        name: 'Vouchers',
+        path: 'vouchers',
+        icon: 'newspaper',
       },
     ],
   },
