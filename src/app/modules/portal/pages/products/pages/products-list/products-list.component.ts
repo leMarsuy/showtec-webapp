@@ -16,6 +16,9 @@ import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications
 import { Alignment } from '@app/core/enums/align.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { ExcelService } from '@app/shared/services/excel/excel.service';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { FileService } from '@app/shared/services/file/file.service';
 
 @Component({
   selector: 'app-products-list',
@@ -39,6 +42,7 @@ export class ProductsListComponent {
     pageSize: 50,
     length: -1,
   };
+
   sort = '';
   columns: TableColumn[] = [
     {
@@ -88,14 +92,14 @@ export class ProductsListComponent {
     },
   ];
   products!: Product[];
+  downloading = false;
 
   constructor(
     private productApi: ProductApiService,
     private snackbarService: SnackbarService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
-    private confirmation: ConfirmationService,
-    private excel: ExcelService
+    private fileApi: FileService
   ) {
     this.getProducts();
   }
@@ -134,143 +138,57 @@ export class ProductsListComponent {
     this.router.navigate([product._id], { relativeTo: this.activatedRoute });
   }
 
-  downloadAllStocks() {
-    this.confirmation
-      .open(
-        'Confirmation',
-        'You will be downloading all the products serial numbers. <span class="text-rose-500">Would you like to proceed?</span>'
-      )
-      .afterClosed()
-      .subscribe((res) => {
-        if (res) {
-          this.allStocks = [];
-          this.totalDownload = 0;
-          this.snackbarService.openLoadingSnackbar(
-            'Downloading',
-            'Downloading All Stocks. Please Wait...'
-          );
-          this._batchDownload(0, this.batchSize);
-        }
-      });
-  }
-
-  allStocks: any = [];
-  allProducts: any = [];
-  downloading = false;
-  batchSize = 20;
-  totalDownload = 0;
-  progressPercentage = 0;
-
-  private _batchDownload(pageIndex: number, pageSize: number) {
+  downloadAllProductSNs() {
+    this.snackbarService.openLoadingSnackbar(
+      'Please Wait',
+      'Downloading Excel file...'
+    );
     this.downloading = true;
-    this.productApi.getAllStocks({ pageSize, pageIndex }).subscribe({
-      next: (response: any) => {
-        var products = response.records as Product[];
+    const query: QueryParams = {
+      searchText: this.searchText.value || '',
+    };
 
-        for (let product of products) {
-          const { brand, model, description } = product;
-          product.stocks = product.stocks.sort((a, b) => {
-            if (a.serialNumber > b.serialNumber) return 1;
-            return -1;
-          });
-          for (let stock of product.stocks) {
-            const { serialNumber, type } = stock;
-            this.allStocks.push({
-              brand,
-              model,
-              description,
-              serialNumber,
-              type,
-            });
-          }
-        }
-        this.totalDownload += products.length;
-        this.progressPercentage = (this.totalDownload / response.total) * 100;
-        if (products.length < pageSize) {
-          this._downloadExcel(this.allStocks, 'ALL STOCKS');
-          return;
-        }
-        this._batchDownload(pageIndex + 1, pageSize);
+    this.productApi.exportExcelProductSerialNos(query).subscribe({
+      next: (response: any) => {
+        this.downloading = false;
+        this.snackbarService.closeLoadingSnackbar();
+        const fileName = generateFileName('PRODUCT_SERIAL_NO', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
       },
-      error: (err) => {
-        this.snackbarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
+      error: ({ error }: HttpErrorResponse) => {
+        this.downloading = false;
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+      complete: () => {
+        this.downloading = false;
       },
     });
   }
 
-  private _downloadExcel(json: Array<any>, filename: string) {
-    this.downloading = false;
-    setTimeout(() => {
-      this.snackbarService.openSuccessSnackbar(
-        'DownloadSuccess',
-        filename + ' successfully downloaded'
-      );
-      this.excel.download(filename, json);
-      this.allProducts = [];
-      this.totalDownload = 0;
-      this.allStocks = [];
-    }, 500);
-  }
-
   downloadAllProducts() {
-    this.confirmation
-      .open(
-        'Confirmation',
-        'You will be downloading all the products. <span class="text-rose-500">Would you like to proceed?</span>'
-      )
-      .afterClosed()
-      .subscribe((res) => {
-        if (res) {
-          this.allProducts = [];
-          this.totalDownload = 0;
-          this.snackbarService.openLoadingSnackbar(
-            'Downloading',
-            'Downloading All Products. Please Wait...'
-          );
-          this._batchDownloadProducts(0, this.batchSize);
-        }
-      });
-  }
-
-  private _batchDownloadProducts(pageIndex: number, pageSize: number) {
+    this.snackbarService.openLoadingSnackbar(
+      'Please Wait',
+      'Downloading Excel file...'
+    );
     this.downloading = true;
-    this.productApi
-      .getProducts({
-        pageSize,
-        pageIndex,
-        sort: 'brand model',
-      })
-      .subscribe({
-        next: (response: any) => {
-          var products = response.records as Product[];
-          for (let product of products) {
-            const { brand, model, description } = product;
-            this.allProducts.push({
-              brand,
-              model,
-              description,
-              stocks: product?._$stockSummary?.['In Stock'] || 0,
-              withDR: product?._$stockSummary?.['For Delivery'] || 0,
-            });
-          }
+    const query: QueryParams = {
+      searchText: this.searchText.value || '',
+    };
 
-          this.totalDownload += products.length;
-          this.progressPercentage = (this.totalDownload / response.total) * 100;
-          if (products.length < pageSize) {
-            this._downloadExcel(this.allProducts, 'ALL PRODUCTS');
-            return;
-          }
-          this._batchDownloadProducts(pageIndex + 1, pageSize);
-        },
-        error: (err) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+    this.productApi.exportExcelProducts(query).subscribe({
+      next: (response: any) => {
+        this.downloading = false;
+        this.snackbarService.closeLoadingSnackbar();
+        const fileName = generateFileName('PRODUCT_STOCKS', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        this.downloading = false;
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+      complete: () => {
+        this.downloading = false;
+      },
+    });
   }
 }
