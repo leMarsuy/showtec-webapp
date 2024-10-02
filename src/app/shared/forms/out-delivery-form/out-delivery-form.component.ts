@@ -276,7 +276,7 @@ export class OutDeliveryFormComponent implements OnInit {
   pushToListedSignatories(user: User) {
     this.listedSignatories.push({
       ...user,
-      action: SignatoryAction.APPROVED,
+      action: SignatoryAction.REQUESTED,
     });
 
     this._copySignatoriesToSelf();
