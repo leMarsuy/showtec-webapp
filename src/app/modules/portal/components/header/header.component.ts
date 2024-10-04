@@ -32,19 +32,17 @@ export class HeaderComponent implements OnInit {
   }
 
   onAccountSettings() {
-    // const dialogRef = this.dialog.open(AccountSettingsComponent, {
-    //   data: {
-    //     user: this.me,
-    //   },
-    //   height: '56%',
-    //   width: 'calc(100% - 144px)',
-    //   maxWidth: '100%',
-    //   disableClose: true,
-    //   autoFocus: false,
-    // });
-    // dialogRef.afterClosed().subscribe(() => {
-    //   //do something
-    // });
+    const dialogRef = this.dialog.open(AccountSettingsComponent, {
+      data: {
+        user: this.me,
+      },
+      maxWidth: '100%',
+      disableClose: true,
+      autoFocus: false,
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      //do something
+    });
   }
 
   onLogout() {

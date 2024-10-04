@@ -68,4 +68,34 @@ export class ProductApiService {
   updateStockById(_id: string, updateBody: Stock) {
     return this.httpService.patch(`${this.apiPrefix}/stock/${_id}`, updateBody);
   }
+
+  exportExcelProducts(query?: QueryParams) {
+    let sanitizedQuery: QueryParams = {};
+    if (query) {
+      sanitizedQuery = {
+        pageIndex: 0,
+        pageSize: 0,
+        searchText: query.searchText || '',
+      };
+    }
+    return this.httpService.getBlob(
+      `${this.apiPrefix}/export/excel`,
+      sanitizedQuery
+    );
+  }
+
+  exportExcelProductSerialNos(query?: QueryParams) {
+    let sanitizedQuery: QueryParams = {};
+    if (query) {
+      sanitizedQuery = {
+        pageIndex: 0,
+        pageSize: 0,
+        searchText: query.searchText || '',
+      };
+    }
+    return this.httpService.getBlob(
+      `${this.apiPrefix}/export/excel/serial-number`,
+      sanitizedQuery
+    );
+  }
 }

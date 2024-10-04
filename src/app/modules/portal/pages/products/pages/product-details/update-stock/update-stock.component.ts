@@ -18,7 +18,7 @@ import { HttpGetResponse } from '@core/interfaces/http-get-response.interface';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { StockType } from '@app/core/enums/stock-type.enum';
+import { STOCK_TYPES, StockType } from '@app/core/enums/stock-type.enum';
 
 @Component({
   selector: 'app-update-stock',
@@ -35,6 +35,23 @@ export class UpdateStockComponent implements AfterViewInit {
 
   filteredWarehouses!: Observable<Warehouse[]>;
   filteredSuppliers!: Observable<Supplier[]>;
+
+  stockForm = this.fb.group({
+    serialNumber: this.fb.control('', [Validators.required]),
+    scanDate: this.fb.control(new Date()),
+  });
+
+  stockDetailsForm = this.fb.group({
+    purchaseDate: this.fb.control(null),
+    purchaseCost: this.fb.control(null),
+    _warehouseId: this.fb.control(null),
+    _supplierId: this.fb.control(null),
+    remarks: this.fb.control(null),
+  });
+
+  scannedStocks: Stock[] = [];
+  isStockTypeEditing: any = {};
+  STOCK_TYPE_OPTIONS = STOCK_TYPES;
 
   @ViewChild('serialNumber') serialNumber!: ElementRef;
 
@@ -63,6 +80,14 @@ export class UpdateStockComponent implements AfterViewInit {
     return this.stockDetailsForm.get('_supplierId') as FormControl;
   }
 
+  get isFormValid() {
+    const hasStockOpenedChecker = Object.values(this.isStockTypeEditing).every(
+      (result) => result === false
+    );
+
+    return !this.scannedStocks.length || this.loading || !hasStockOpenedChecker;
+  }
+
   private _filter(value: any, arr: Array<Warehouse | Supplier>): any {
     const filterValue = (value.name || value || '').toUpperCase();
     return arr.filter((item) => item.name.includes(filterValue));
@@ -77,21 +102,6 @@ export class UpdateStockComponent implements AfterViewInit {
     private dialogRef: MatDialogRef<UpdateStockComponent>,
     private snackBarService: SnackbarService
   ) {}
-
-  stockForm = this.fb.group({
-    serialNumber: this.fb.control('', [Validators.required]),
-    scanDate: this.fb.control(new Date()),
-  });
-
-  stockDetailsForm = this.fb.group({
-    purchaseDate: this.fb.control(null),
-    purchaseCost: this.fb.control(null),
-    _warehouseId: this.fb.control(null),
-    _supplierId: this.fb.control(null),
-    remarks: this.fb.control(null),
-  });
-
-  scannedStocks: Stock[] = [];
 
   addStock() {
     this.stockForm.get('scanDate')?.setValue(new Date());
@@ -121,6 +131,7 @@ export class UpdateStockComponent implements AfterViewInit {
 
   stockToProduct() {
     this.loading = true;
+
     this.productApi
       .stockToProduct(this.data._id, this.stocks, this.allowDuplicates)
       .subscribe({
@@ -139,6 +150,24 @@ export class UpdateStockComponent implements AfterViewInit {
           );
         },
       });
+  }
+
+  openTypeSelection(stock: Stock, index: number) {
+    const stockTypeKey = `${stock.serialNumber}_${index}`;
+    if (!this.isStockTypeEditing[stockTypeKey]) {
+      this.isStockTypeEditing[stockTypeKey] = false;
+    }
+
+    this.isStockTypeEditing[stockTypeKey] =
+      !this.isStockTypeEditing[stockTypeKey];
+  }
+
+  onStockTypeChange(stock: Stock, index: number, selectEl: HTMLSelectElement) {
+    const selectedType = selectEl.value;
+    const stockTypeKey = `${stock.serialNumber}_${index}`;
+
+    stock.type = selectedType as StockType;
+    this.isStockTypeEditing[stockTypeKey] = false;
   }
 
   get stocks(): Stock[] {

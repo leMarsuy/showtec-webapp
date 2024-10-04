@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PortalComponent } from './portal.component';
+import { portalGuard } from './portal.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: PortalComponent,
+    canActivate: [portalGuard],
     children: [
       // {
       //   path: 'dashboard',
