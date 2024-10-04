@@ -34,6 +34,10 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  onForgotPasswordNavigate() {
+    this.router.navigate(['auth', 'forgot-password']);
+  }
+
   login() {
     this.loginForm.disable();
     this.snackbarService.openLoadingSnackbar(

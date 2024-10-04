@@ -33,6 +33,6 @@ export class UserApiService {
   }
 
   updateUserById(_id: string, updateBody: User) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
+    return this.httpService.put(`${this.apiPrefix}/${_id}`, updateBody);
   }
 }

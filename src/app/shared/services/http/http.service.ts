@@ -58,4 +58,8 @@ export class HttpService {
   patch<T>(endpoint: string, body: any) {
     return this.http.patch<T>(`${this.apiUrl}/${endpoint}`, body, this.options);
   }
+
+  put<T>(endpoint: string, body: any) {
+    return this.http.put<T>(`${this.apiUrl}/${endpoint}`, body, this.options);
+  }
 }
