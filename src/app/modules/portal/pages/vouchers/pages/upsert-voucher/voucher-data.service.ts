@@ -42,7 +42,8 @@ export class VoucherDataService {
         title: account.title,
         category: account.category,
         remarks: account.remarks,
-        amoount: undefined,
+        type: account.type,
+        amount: undefined,
       };
     });
 
@@ -50,7 +51,7 @@ export class VoucherDataService {
       (particular: VoucherParticular) => {
         return {
           description: particular.description,
-          amoount: undefined,
+          amount: undefined,
         };
       }
     );
