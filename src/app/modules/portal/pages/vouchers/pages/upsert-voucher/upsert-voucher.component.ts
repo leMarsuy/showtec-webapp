@@ -261,6 +261,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     this.voucherApi.getVoucherById(id).subscribe((voucher) => {
       this.voucher = voucher as Voucher;
       this._patchFormValues();
+      this.loading = false;
     });
   }
 
