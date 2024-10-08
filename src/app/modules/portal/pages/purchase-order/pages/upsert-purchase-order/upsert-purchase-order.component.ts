@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { Signatory } from '@app/core/models/out-delivery.model';
 import { Product } from '@app/core/models/product.model';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
@@ -30,6 +31,8 @@ export class UpsertPurchaseOrderComponent implements OnInit {
   listedDiscounts: Discount[] = [];
   listedTaxes: Tax[] = [];
   listedSignatories: any[] = [];
+
+  navIcon = NavIcon;
 
   isUpdate = false;
   loading = true;
@@ -93,7 +96,7 @@ export class UpsertPurchaseOrderComponent implements OnInit {
     this._calculateSummary();
   }
 
-  discountEmitHandler(discounts: Discount[]) {
+  discountsEmitHandler(discounts: Discount[]) {
     this.listedDiscounts = discounts;
     this.poForm.markAsDirty();
     this._calculateSummary();

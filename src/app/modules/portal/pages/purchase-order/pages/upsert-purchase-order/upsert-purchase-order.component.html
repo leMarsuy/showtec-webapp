@@ -1,32 +1,57 @@
 <div class="flex gap-4">
-  <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
-    <div class="flex" (click)="navigateBack()">
-      <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
-    </div>
+  <div class="flex flex-col h-fit w-fit gap-y-4 sticky top-16">
+    <button
+      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer "
+      (click)="navigateBack()" matTooltip="Back to Table" matTooltipPosition="right">
+      <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
+    </button>
+
+    @if(isUpdate) {
+    <button
+      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center  cursor-pointer "
+      matTooltip="Use PO to..." matTooltipPosition="right" [cdkMenuTriggerFor]="menu">
+      <mat-icon class="text-cyan-500 inline-block" fontIcon="content_copy" />
+    </button>
+
+    <ng-template #menu>
+      <div
+        class="bg-white flex flex-col gap-y-1 py-2 mt-1 overflow-hidden rounded-lg  shadow-md [&>button]:flex [&>button]:items-center [&>button]:px-3 [&>button]:py-2 [&>button]:text-gray-900"
+        cdkMenu>
+        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem>
+          <mat-icon>{{ navIcon.DELIVERY_RECEIPT }}</mat-icon>
+          <span>Create Delivery Receipt</span>
+        </button>
+        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem>
+          <mat-icon>{{ navIcon.SOA }}</mat-icon>
+          <span>Create SOA</span>
+        </button>
+      </div>
+    </ng-template>
+    }
+
   </div>
   <!-- Form Arrays -->
   <div class="flex flex-col gap-4 w-full rounded-xl bg-white text-gray-900 p-4 grow">
     <!-- PRODUCTS LIST -->
     <section>
-      <app-products-form [listedProducts]="listedProducts" (productsEmitter)="productsEmitHandler($event)" />
+      <app-products-form [products]="listedProducts" (productsEmitter)="productsEmitHandler($event)" />
     </section>
 
     <!-- DISCOUNTS LIST -->
     <section>
-      <app-discounts-form [listedDiscounts]="listedDiscounts" (discountsEmitter)="discountEmitHandler($event)" />
+      <app-discounts-form [discounts]="listedDiscounts" (discountsEmitter)="discountsEmitHandler($event)" />
     </section>
 
 
     <!-- TAXES LIST -->
     <section>
-      <app-taxes-form [listedTaxes]="listedTaxes" (taxesEmitter)="taxesEmitHandler($event)" />
+      <app-taxes-form [taxes]="listedTaxes" (taxesEmitter)="taxesEmitHandler($event)" />
     </section>
 
 
     <!-- SIGNATORIES LIST -->
     <section>
-      <app-signatories-form [listedSignatories]="listedSignatories"
-        (signatoriesEmitter)="signatoriesEmitHandler($event)" />
+      <app-signatories-form [signatories]="listedSignatories" (signatoriesEmitter)="signatoriesEmitHandler($event)" />
     </section>
   </div>
 
@@ -35,7 +60,7 @@
     <app-customer-form [fGroup]="poForm" />
 
     <!-- Total Summary -->
-    <app-total-summary-display [listedDiscounts]="listedDiscounts" [listedTaxes]="listedTaxes" [summary]="poSummary" />
+    <app-total-summary-display [discounts]="listedDiscounts" [taxes]="listedTaxes" [summary]="poSummary" />
 
     <div class="flex justify-between">
       <button *ngIf="isUpdate" mat-button color="warn" [disabled]="!isValid || !poForm.dirty"

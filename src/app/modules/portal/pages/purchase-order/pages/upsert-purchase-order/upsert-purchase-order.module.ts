@@ -5,40 +5,29 @@ import { UpsertPurchaseOrderRoutingModule } from './upsert-purchase-order-routin
 import { UpsertPurchaseOrderComponent } from './upsert-purchase-order.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { TableModule } from '@app/shared/components/table/table.module';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { ReactiveFormsModule } from '@angular/forms';
-import { ProductsFormComponent } from './components/products-form/products-form.component';
-import { TaxesFormComponent } from './components/taxes-form/taxes-form.component';
-import { DiscountsFormComponent } from './components/discounts-form/discounts-form.component';
-import { SignatoriesFormComponent } from './components/signatories-form/signatories-form.component';
-import { CustomerFormComponent } from './components/customer-form/customer-form.component';
-import { TotalSummaryDisplayComponent } from './components/total-summary-display/total-summary-display.component';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { CustomerFormModule } from '@app/shared/forms/attach-customer-form/customer-form.module';
+import { TaxesFormModule } from '@app/shared/forms/taxes-form/taxes-form.module';
+import { DiscountsFormModule } from '@app/shared/forms/discounts-form/discounts-form.module';
+import { SignatoriesFormModule } from '@app/shared/forms/signatories-form/signatories-form.module';
+import { ProductsFormModule } from '@app/shared/forms/products-form/products-form.module';
+import { TotalSummaryDisplayModule } from '@app/shared/components/total-summary-display/total-summary-display.module';
+import { CdkMenuModule } from '@angular/cdk/menu';
 @NgModule({
-  declarations: [
-    UpsertPurchaseOrderComponent,
-    ProductsFormComponent,
-    TaxesFormComponent,
-    DiscountsFormComponent,
-    SignatoriesFormComponent,
-    CustomerFormComponent,
-    TotalSummaryDisplayComponent,
-  ],
+  declarations: [UpsertPurchaseOrderComponent],
   imports: [
     CommonModule,
     UpsertPurchaseOrderRoutingModule,
     MatIconModule,
     MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatAutocompleteModule,
-    MatDatepickerModule,
-    TableModule,
-    ReactiveFormsModule,
+    CdkMenuModule,
+    MatTooltipModule,
+    TotalSummaryDisplayModule,
+    CustomerFormModule,
+    TaxesFormModule,
+    DiscountsFormModule,
+    SignatoriesFormModule,
+    ProductsFormModule,
   ],
   exports: [UpsertPurchaseOrderComponent],
 })
