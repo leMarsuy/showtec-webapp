@@ -4,3 +4,13 @@ export function isEmpty(object: any) {
   }
   return true;
 }
+
+export function isError(object: any) {
+  return (
+    object &&
+    object.stack &&
+    object.message &&
+    typeof object.stack === 'string' &&
+    typeof object.message === 'string'
+  );
+}
