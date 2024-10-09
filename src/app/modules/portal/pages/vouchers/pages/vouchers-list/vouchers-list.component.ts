@@ -135,7 +135,7 @@ export class VouchersListComponent {
       .getVouchers(
         {
           searchText: this.searchText.value || '',
-          sort: 'code.value',
+          sort: '-code.value',
           ...this.page,
         },
         status
