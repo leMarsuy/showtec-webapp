@@ -36,6 +36,8 @@ import { SnackbarService } from '@app/shared/components/snackbar/snackbar.servic
 import { Voucher } from '@app/core/models/voucher.model';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { VoucherDataService } from './voucher-data.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 
 @Component({
   selector: 'app-upsert-voucher',
@@ -103,7 +105,8 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     private voucherApi: VoucherApiService,
     private voucherData: VoucherDataService,
     private confirmation: ConfirmationService,
-    private snackbarService: SnackbarService
+    private snackbar: SnackbarService,
+    private dialog: MatDialog
   ) {
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
@@ -268,21 +271,16 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   private _createVoucher(voucher: Voucher) {
     this.voucherApi.createVoucher(voucher).subscribe({
       next: (res: any) => {
-        this.snackbarService.openSuccessSnackbar(
+        this.snackbar.openSuccessSnackbar(
           'Success',
           'Voucher Successfully Created.'
         );
+        this._displayPDF(res);
         this.navigateBack();
-        // setTimeout(() => {
-        //   this.displayPDF(res);
-        // }, 1400);
       },
       error: (err: HttpErrorResponse) => {
         console.error(err);
-        this.snackbarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
+        this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
       },
     });
   }
@@ -290,24 +288,33 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   private _updateVoucher(id: string, body: Voucher) {
     this.voucherApi.updateVoucherById(id, body).subscribe({
       next: (res: any) => {
-        this.snackbarService.openSuccessSnackbar(
+        this.snackbar.openSuccessSnackbar(
           'Success',
           'Voucher Successfully Updated.'
         );
+        this._displayPDF(res);
         this.navigateBack();
-        // setTimeout(() => {
-        //   this.displayPDF(res);
-        // }, 1400);
       },
       error: (err: HttpErrorResponse) => {
         console.error(err);
-        this.snackbarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
+        this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
         this.navigateBack();
       },
     });
+  }
+
+  private _displayPDF(voucher: Voucher) {
+    if (voucher._id)
+      this.dialog.open(PdfViewerComponent, {
+        data: {
+          apiCall: this.voucherApi.getVoucherPdfReceipt(voucher._id),
+          title: 'View Delivery Receipt',
+        },
+        maxWidth: '70rem',
+        width: '100%',
+        disableClose: true,
+        autoFocus: false,
+      });
   }
 
   navigateBack() {
