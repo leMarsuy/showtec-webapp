@@ -25,8 +25,10 @@ import { FileService } from '@app/shared/services/file/file.service';
   styleUrl: './vouchers-list.component.scss',
 })
 export class VouchersListComponent {
-  placeholder = 'Search for Voucher No.';
+  placeholder = 'Search Voucher No | Payee';
   searchText: FormControl = new FormControl('');
+
+  private sortBy = '-code.value'; //Voucher No, descending
 
   tableFilterStatuses = ['All', ...STATUS_TYPES];
   tableFilterStatus = 'All';
@@ -135,7 +137,7 @@ export class VouchersListComponent {
       .getVouchers(
         {
           searchText: this.searchText.value || '',
-          sort: '-code.value',
+          sort: this.sortBy,
           ...this.page,
         },
         status
