@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { SoaFormModule } from '@app/shared/forms/soa-form/soa-form.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [CreateSoaComponent],
@@ -16,6 +17,7 @@ import { SoaFormModule } from '@app/shared/forms/soa-form/soa-form.module';
     MatFormFieldModule,
     MatIconModule,
     MatButtonModule,
+    MatTooltipModule,
     SoaFormModule,
   ],
 })

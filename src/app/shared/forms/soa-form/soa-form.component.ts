@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Color } from '@app/core/enums/color.enum';
@@ -25,6 +25,12 @@ import {
   distinctUntilChanged,
   switchMap,
   map,
+  firstValueFrom,
+  takeUntil,
+  Subject,
+  catchError,
+  of,
+  lastValueFrom,
 } from 'rxjs';
 import { SnackbarService } from '../../components/snackbar/snackbar.service';
 import { Router } from '@angular/router';
@@ -33,6 +39,12 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { Alignment } from '@app/core/enums/align.enum';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { MatDialog } from '@angular/material/dialog';
+import {
+  TransformDataService,
+  TransformReference,
+} from '@app/shared/services/data/transform-data/transform-data.service';
+import { PurchaseOrder } from '@app/core/models/purchase-order.model';
+import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 
 interface Pricing {
   STATIC: {
@@ -49,7 +61,10 @@ interface Pricing {
   providers: [provideNativeDateAdapter()],
   styleUrl: './soa-form.component.scss',
 })
-export class SoaFormComponent implements OnInit {
+export class SoaFormComponent implements OnInit, OnDestroy {
+  @Input() _id!: string;
+  private transformServiceId: TransformReference = 'soa';
+
   signatoryActions = SIGNATORY_ACTIONS;
   productNameControl = this.fb.control('');
   signatoryControl = this.fb.control('');
@@ -64,87 +79,21 @@ export class SoaFormComponent implements OnInit {
   });
 
   soa!: SOA;
-  @Input() _id!: string;
 
-  searchId() {
-    this.soaApi.getSoaById(this._id).subscribe({
-      next: (res) => {
-        this.soa = res as SOA;
-        this.autoFillForm();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
-      },
-    });
-  }
-
-  autoFillForm() {
-    var soa = this.soa;
-    this.soaForm.patchValue({
-      _customerId: soa._customerId,
-      mobile: soa.STATIC.mobile,
-      address: soa.STATIC.address,
-      tin: soa.STATIC.tin,
-      soaDate: soa.soaDate,
-      remarks: soa.remarks,
-    });
-
-    for (let item of soa.items) {
-      this.listedItems.push({
-        sku: item.STATIC.sku,
-        _id: item._productId,
-        brand: item.STATIC.brand,
-        model: item.STATIC.model,
-        classification: item.STATIC.classification,
-        price: {
-          amount: item.STATIC.unit_price,
-          currency: 'PHP',
-        },
-        STATIC: {
-          unit_price: item.STATIC.unit_price,
-          quantity: item.STATIC.quantity,
-          disc: item.STATIC.disc,
-          total: item.STATIC.total,
-        },
-      } as unknown as Product & Pricing);
-    }
-
-    soa.signatories.forEach((sig: any) => {
-      this.listedSignatories.push({
-        name: sig.STATIC.name,
-        designation: sig.STATIC.designation,
-        action: sig.action,
-        _id: sig._userId,
-      });
-    });
-
-    this.listedDiscounts =
-      soa.discounts?.map((a) => ({ name: a.name, value: a.value })) || [];
-    this.listedTaxes =
-      soa.taxes?.map((a) => ({ name: a.name, value: a.value })) || [];
-
-    this._copySignatoriesToSelf();
-
-    this.listedDiscountsPage.length = this.listedDiscounts.length;
-    this.listedTaxesPage.length = this.listedSignatories.length;
-
-    this.listedItems = [...this.listedItems];
-    this.listedItemsPage.length = this.listedItems.length;
-    // this.soaForm.get('_customerId')?.disable();
-    this._calculateSummary();
-  }
-
+  usePurchaseOrder = false;
+  searchPoControl = new FormControl();
   errorMessage = '';
 
   filteredCustomers!: Observable<Customer[]>;
   filteredUsers!: Observable<User[]>;
   filteredProducts!: Observable<Product[]>;
+  filteredPos!: Observable<PurchaseOrder[]>;
+
+  destroyed$ = new Subject<void>();
 
   soaForm = this.fb.group({
     _customerId: this.fb.control('', [Validators.required]),
+    _purchaseOrderId: this.fb.control(''),
     mobile: this.fb.control('', [Validators.required]),
     address: this.fb.control('', [Validators.required]),
     tin: this.fb.control(''),
@@ -152,17 +101,6 @@ export class SoaFormComponent implements OnInit {
     dueDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
   });
-  constructor(
-    private fb: FormBuilder,
-    private productApi: ProductApiService,
-    private customerApi: CustomerApiService,
-    private userApi: UserApiService,
-    private soaApi: SoaApiService,
-    private snackbarService: SnackbarService,
-    private router: Router,
-    private confirmation: ConfirmationService,
-    private dialog: MatDialog
-  ) {}
 
   listedDiscounts: Array<Discount> = [];
   listedDiscountsColumns: TableColumn[] = [
@@ -314,6 +252,92 @@ export class SoaFormComponent implements OnInit {
     length: 0,
   };
 
+  constructor(
+    private fb: FormBuilder,
+    private productApi: ProductApiService,
+    private customerApi: CustomerApiService,
+    private poApi: PurchaseOrderApiService,
+    private userApi: UserApiService,
+    private soaApi: SoaApiService,
+    private snackbarService: SnackbarService,
+    private router: Router,
+    private confirmation: ConfirmationService,
+    private dialog: MatDialog,
+    private transformData: TransformDataService
+  ) {}
+
+  ngOnInit(): void {
+    this._componentInit();
+
+    this.filteredCustomers = this._customerId.valueChanges.pipe(
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterCustomers(val || '');
+      })
+    );
+
+    this.filteredUsers = this.signatoryControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterUsers(val || '');
+      })
+    );
+
+    this.filteredProducts = this.productNameControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterProducts(val || '');
+      })
+    );
+
+    this.filteredPos = this.searchPoControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterPos(val || '');
+      })
+    );
+  }
+
+  get _customerId() {
+    return this.soaForm.get('_customerId') as FormControl;
+  }
+
+  async searchId() {
+    let createdSoa: any = {};
+
+    const getSoaById$ = this.soaApi.getSoaById(this._id).pipe(
+      takeUntil(this.destroyed$),
+      catchError((error) => {
+        console.error(error);
+        return of(false);
+      })
+    );
+    const soaFromResponse = (await firstValueFrom(getSoaById$)) as any;
+
+    if (!soaFromResponse) return;
+
+    createdSoa = soaFromResponse;
+    this.soa = createdSoa;
+
+    if (soaFromResponse._purchaseOrderId) {
+      const purchaseOrder = await this._getPoById(
+        soaFromResponse._purchaseOrderId
+      );
+      this.searchPoControl.patchValue(purchaseOrder);
+      this.usePoCheckChange();
+    }
+
+    this._autoFillForm(createdSoa);
+  }
+
   actionEventHandler(e: any) {
     if (e.action.name == 'remove') {
       this.removeFromListedProducts(e.i);
@@ -376,10 +400,6 @@ export class SoaFormComponent implements OnInit {
     this._copySignatoriesToSelf();
   }
 
-  get _customerId() {
-    return this.soaForm.get('_customerId') as FormControl;
-  }
-
   pushToListedProducts(product: Product & Pricing) {
     var li = this.listedItems;
     if (!li.find((o) => o._id === product._id))
@@ -418,96 +438,20 @@ export class SoaFormComponent implements OnInit {
     }, 20);
   }
 
-  ngOnInit(): void {
-    if (this._id) this.searchId();
-    else this.getLastSOA();
-
-    this.filteredCustomers = this._customerId.valueChanges.pipe(
-      startWith(''),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap((val: any) => {
-        return this._filterCustomers(val || '');
-      })
-    );
-
-    this.filteredUsers = this.signatoryControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap((val: any) => {
-        return this._filterUsers(val || '');
-      })
-    );
-
-    this.filteredProducts = this.productNameControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap((val: any) => {
-        return this._filterProducts(val || '');
-      })
-    );
-  }
-
   createSOA() {
-    var rawSoaForm = this.soaForm.getRawValue() as any;
-    var soa: SOA = {
-      _customerId: rawSoaForm._customerId._id,
-      STATIC: {
-        name: rawSoaForm._customerId.name,
-        mobile: rawSoaForm.mobile,
-        address: rawSoaForm.address,
-        tin: rawSoaForm.tin,
-      },
-      soaDate: rawSoaForm.soaDate,
-      dueDate: rawSoaForm.dueDate,
-      signatories: [],
-      items: [],
-      discounts: this.listedDiscounts,
-      taxes: this.listedTaxes,
-      remarks: rawSoaForm.remarks,
-    };
-
-    this.listedItems.forEach((item) => {
-      soa.items.push({
-        _productId: item._id,
-        STATIC: {
-          sku: item.sku,
-          brand: item.brand,
-          model: item.model,
-          classification: item.classification || '-',
-          unit_price: item.STATIC.unit_price,
-          quantity: item.STATIC.quantity,
-          disc: item.STATIC.disc || 0,
-          total: item.STATIC.total,
-        },
-      });
-    });
-
-    this.listedSignatories.forEach((signatory) => {
-      soa.signatories.push({
-        _userId: signatory._id,
-        STATIC: {
-          name: signatory.name,
-          designation: signatory.designation,
-        },
-        action: signatory.action,
-      });
-    });
-
+    const soa = this._formatBodyRequest();
     this.soaApi.createSoa(soa).subscribe({
       next: (res: any) => {
         this.snackbarService.openSuccessSnackbar(
           'Success',
           'SOA Successfully Created.'
         );
-        setTimeout(() => {
-          this.displayPDF(res);
-        }, 1400);
+        // setTimeout(() => {
+        //   this.displayPDF(res);
+        // }, 1400);
       },
       error: (err: HttpErrorResponse) => {
-        console.log(err);
+        console.error(err);
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
           err.error.message
@@ -531,52 +475,7 @@ export class SoaFormComponent implements OnInit {
   }
 
   updateSOA() {
-    var rawSoaForm = this.soaForm.getRawValue() as any;
-
-    var soa: any = {
-      _customerId: rawSoaForm._customerId._id,
-      STATIC: {
-        name: rawSoaForm._customerId.name,
-        address: rawSoaForm.address,
-        mobile: rawSoaForm.mobile,
-        tin: rawSoaForm.tin,
-      },
-      soaDate: rawSoaForm.soaDate,
-      dueDate: rawSoaForm.dueDate,
-      signatories: [],
-      items: [],
-      discounts: this.listedDiscounts,
-      taxes: this.listedTaxes,
-      remarks: rawSoaForm.remarks,
-    };
-
-    this.listedItems.forEach((item) => {
-      soa.items.push({
-        _productId: item._id,
-        STATIC: {
-          sku: item.sku,
-          brand: item.brand,
-          model: item.model,
-          classification: item.classification || '-',
-          unit_price: item.STATIC.unit_price,
-          quantity: item.STATIC.quantity,
-          disc: item.STATIC.disc || 0,
-          total: item.STATIC.total,
-        },
-      });
-    });
-
-    this.listedSignatories.forEach((signatory) => {
-      soa.signatories.push({
-        _userId: signatory._id,
-        STATIC: {
-          name: signatory.name,
-          designation: signatory.designation,
-        },
-        action: signatory.action,
-      });
-    });
-
+    const soa = this._formatBodyRequest();
     this.soaApi.updateSoaById(this._id, soa).subscribe({
       next: (newSoa: any) => {
         this.snackbarService.openSuccessSnackbar(
@@ -662,17 +561,27 @@ export class SoaFormComponent implements OnInit {
       .pipe(map((response: any) => response.records));
   }
 
+  private _filterPos(value: string) {
+    return this.poApi
+      .getPurchaseOrders({ searchText: value, pageSize: 30 })
+      .pipe(map((response: any) => response.records));
+  }
+
   displayCustomer(value: any) {
-    var displayStr = '';
-    if (value.name) {
+    let displayStr = '';
+    if (value?.name) {
       displayStr = value.name;
       if (value.name != value.contactPerson) {
         displayStr += ` (${value.contactPerson})`;
       }
     } else {
-      displayStr = value || '';
+      displayStr = value ?? '';
     }
     return displayStr;
+  }
+
+  displayPo(value: any) {
+    return value?.code?.value ?? '';
   }
 
   displayUser(value: any) {
@@ -722,11 +631,43 @@ export class SoaFormComponent implements OnInit {
   }
 
   autofillCustomerDetails(selectedCustomer: Customer) {
-    var { mobile, addressBilling, tin } = selectedCustomer;
+    const { mobile, addressBilling, tin } = selectedCustomer;
     this.soaForm.patchValue({
       mobile,
       address: addressBilling,
       tin,
+    });
+  }
+
+  usePoCheckChange() {
+    this.usePurchaseOrder = !this.usePurchaseOrder;
+
+    if (!this.usePurchaseOrder) {
+      this.soaForm.patchValue({
+        mobile: '',
+        address: '',
+        tin: '',
+        _customerId: null,
+        soaDate: null,
+        dueDate: null,
+        remarks: '',
+        _purchaseOrderId: '',
+      });
+
+      this.searchPoControl.reset();
+    }
+  }
+
+  autofillCustomerDetailsFromPo(po: PurchaseOrder) {
+    const { mobile, addressBilling, tin, _id } =
+      po._customerId as unknown as Customer;
+
+    this.soaForm.patchValue({
+      mobile,
+      address: addressBilling,
+      tin,
+      _customerId: po._customerId,
+      _purchaseOrderId: po._id,
     });
   }
 
@@ -763,5 +704,187 @@ export class SoaFormComponent implements OnInit {
     for (var tax of this.listedTaxes) {
       this.soaSummary.grandtotal += this.soaSummary.subtotal * tax.value;
     }
+  }
+
+  private async _componentInit() {
+    /**
+     * If SOA Update
+     */
+    if (this._id) {
+      this.searchId();
+    } else {
+      /**
+       * If hasTransformData is true, get transformed data and get recent soa signatories to createSoa.
+       * Else it is a plain soa create with recent soa signatories
+       */
+      let createSoa: any = {};
+      const hasTransformData =
+        this.transformData.verifyTransactionDataFootprint(
+          this.transformServiceId
+        );
+
+      if (hasTransformData) {
+        createSoa = this.transformData.formatDataToRecipient(
+          this.transformServiceId
+        );
+
+        //Checks if has purchaseOrderId;
+        if (createSoa._purchaseOrderId) {
+          const purchaseOrder = await this._getPoById(
+            createSoa._purchaseOrderId
+          );
+          this.searchPoControl.patchValue(purchaseOrder);
+          this.usePoCheckChange();
+        }
+      }
+
+      const getRecentSoa$ = this.soaApi.getMostRecentSoa().pipe(
+        takeUntil(this.destroyed$),
+        catchError((error) => {
+          console.error(error);
+          return error;
+        })
+      );
+
+      const recentSOA = (await firstValueFrom(getRecentSoa$)) as SOA;
+
+      if (!recentSOA) {
+        return;
+      }
+      createSoa['signatories'] = recentSOA.signatories;
+      this._autoFillForm(createSoa);
+    }
+  }
+
+  private async _getPoById(poId: string) {
+    const getPoById$ = this.poApi
+      .getPurchaseOrderById(poId)
+      .pipe(takeUntil(this.destroyed$));
+
+    const po = await lastValueFrom(getPoById$);
+    return po;
+  }
+
+  private _formatBodyRequest() {
+    const rawSoaForm = this.soaForm.getRawValue() as any;
+    let soa: SOA = {
+      _customerId: rawSoaForm._customerId._id,
+      _purchaseOrderId: rawSoaForm._purchaseOrderId,
+      STATIC: {
+        name: rawSoaForm._customerId.name,
+        mobile: rawSoaForm.mobile,
+        address: rawSoaForm.address,
+        tin: rawSoaForm.tin,
+      },
+      soaDate: rawSoaForm.soaDate,
+      dueDate: rawSoaForm.dueDate,
+      signatories: [],
+      items: [],
+      discounts: this.listedDiscounts,
+      taxes: this.listedTaxes,
+      remarks: rawSoaForm.remarks,
+    };
+
+    this.listedItems.forEach((item) => {
+      soa.items.push({
+        _productId: item._id,
+        STATIC: {
+          sku: item.sku,
+          brand: item.brand,
+          model: item.model,
+          classification: item.classification || '-',
+          unit_price: item.STATIC.unit_price,
+          quantity: item.STATIC.quantity,
+          disc: item.STATIC.disc || 0,
+          total: item.STATIC.total,
+        },
+      });
+    });
+
+    this.listedSignatories.forEach((signatory) => {
+      soa.signatories.push({
+        _userId: signatory._id,
+        STATIC: {
+          name: signatory.name,
+          designation: signatory.designation,
+        },
+        action: signatory.action,
+      });
+    });
+
+    return soa;
+  }
+
+  private _autoFillForm(soa: any) {
+    this.soaForm.patchValue({
+      _customerId: soa?._customerId ?? '',
+      _purchaseOrderId: soa?._purchaseOrderId ?? '',
+      mobile: soa.STATIC?.mobile ?? '',
+      address: soa.STATIC?.address ?? '',
+      tin: soa.STATIC?.tin ?? '',
+      soaDate: soa?.soaDate ?? '',
+      remarks: soa?.remarks ?? '',
+    });
+
+    if (Array.isArray(soa.items) && soa.items.length > 0) {
+      for (let item of soa.items) {
+        this.listedItems.push({
+          sku: item.STATIC.sku,
+          _id: item._productId,
+          brand: item.STATIC.brand,
+          model: item.STATIC.model,
+          classification: item.STATIC.classification,
+          price: {
+            amount: item.STATIC.unit_price,
+            currency: 'PHP',
+          },
+          STATIC: {
+            unit_price: item.STATIC.unit_price,
+            quantity: item.STATIC.quantity,
+            disc: item.STATIC.disc,
+            total: item.STATIC.total,
+          },
+        } as unknown as Product & Pricing);
+      }
+    }
+
+    if (Array.isArray(soa.signatories) && soa.signatories.length > 0) {
+      for (let signatory of soa.signatories) {
+        this.listedSignatories.push({
+          name: signatory.STATIC.name,
+          designation: signatory.STATIC.designation,
+          action: signatory.action,
+          _id: signatory._userId,
+        });
+      }
+    }
+
+    this.listedDiscounts =
+      soa.discounts?.map((a: Discount) => ({ name: a.name, value: a.value })) ||
+      [];
+
+    this.listedTaxes =
+      soa.taxes?.map((a: Tax) => ({ name: a.name, value: a.value })) || [];
+
+    this._copySignatoriesToSelf();
+
+    this.listedDiscountsPage.length = this.listedDiscounts.length;
+    this.listedTaxesPage.length = this.listedSignatories.length;
+
+    this.listedItems = [...this.listedItems];
+    this.listedItemsPage.length = this.listedItems.length;
+    // this.soaForm.get('_customerId')?.disable();
+    this._calculateSummary();
+  }
+
+  ngOnDestroy(): void {
+    if (
+      this.transformData.getTransformData()?.from !== this.transformServiceId
+    ) {
+      this.transformData.deleteTransformData();
+    }
+
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 }
