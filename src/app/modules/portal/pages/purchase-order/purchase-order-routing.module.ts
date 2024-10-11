@@ -8,9 +8,8 @@ const routes: Routes = [
     path: '',
     component: PurchaseOrderComponent,
     children: [
-      { path: '', redirectTo: 'list', pathMatch: 'full' },
       {
-        path: 'list',
+        path: '',
         loadChildren: () =>
           import(
             './pages/purchase-orders-list/purchase-orders-list.module'
