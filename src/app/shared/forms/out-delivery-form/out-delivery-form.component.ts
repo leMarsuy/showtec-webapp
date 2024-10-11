@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators, FormBuilder } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
@@ -25,6 +25,11 @@ import {
   distinctUntilChanged,
   switchMap,
   map,
+  firstValueFrom,
+  Subject,
+  takeUntil,
+  catchError,
+  of,
 } from 'rxjs';
 import { ConfirmationService } from '../../components/confirmation/confirmation.service';
 import { SnackbarService } from '../../components/snackbar/snackbar.service';
@@ -34,6 +39,12 @@ import { deepInsert } from '@app/shared/utils/deepInsert';
 import { MatDialog } from '@angular/material/dialog';
 import { PdfViewerComponent } from '../../components/pdf-viewer/pdf-viewer.component';
 import { CustomerType } from '@app/core/enums/customer-type.enum';
+import {
+  TransformDataService,
+  TransformReference,
+} from '@app/shared/services/data/transform-data/transform-data.service';
+import { PurchaseOrder } from '@app/core/models/purchase-order.model';
+import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -41,94 +52,34 @@ import { CustomerType } from '@app/core/enums/customer-type.enum';
   providers: [provideNativeDateAdapter()],
   styleUrl: './out-delivery-form.component.scss',
 })
-export class OutDeliveryFormComponent implements OnInit {
+export class OutDeliveryFormComponent implements OnInit, OnDestroy {
+  @Input() _id!: string;
+  private transformServiceId: TransformReference = 'delivery-receipt';
+
   signatoryActions = SIGNATORY_ACTIONS;
   serialNumberControl = new FormControl('');
   signatoryControl = new FormControl('');
   errorMessage = '';
   outDelivery!: OutDelivery;
-  @Input() _id!: string;
-
-  searchId() {
-    this.outdeliveryApi.getOutDeliveryById(this._id).subscribe({
-      next: (res) => {
-        this.outDelivery = res as OutDelivery;
-        this.autoFillForm();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
-      },
-    });
-  }
-
-  autoFillForm() {
-    var outDelivery = this.outDelivery;
-    this.deliveryForm.patchValue({
-      _customerId: outDelivery._customerId,
-      mobile: outDelivery.STATIC.mobile,
-      address: outDelivery.STATIC.address,
-      tin: outDelivery.STATIC.tin,
-      deliveryDate: outDelivery.deliveryDate,
-      remarks: outDelivery.remarks,
-    });
-
-    outDelivery.items.forEach((item) => {
-      var listedItem = {
-        sku: item.STATIC.sku,
-        _id: item._productId,
-        brand: item.STATIC.brand,
-        model: item.STATIC.model,
-        classification: item.STATIC.classification,
-        stocks: [
-          {
-            serialNumber: item.STATIC.serialNumber,
-            _id: item.STATIC._stockId,
-            status: StockStatus.FOR_DELIVERY,
-          },
-        ],
-      };
-      this.listedItems.push(listedItem as Product);
-    });
-
-    outDelivery.signatories.forEach((sig: any) => {
-      this.listedSignatories.push({
-        name: sig.STATIC.name,
-        designation: sig.STATIC.designation,
-        action: sig.action,
-        _id: sig._userId,
-      });
-    });
-
-    this._copySignatoriesToSelf();
-
-    this.listedItems = [...this.listedItems];
-    this.listedItemsPage.length = this.listedItems.length;
-    // this.deliveryForm.get('_customerId')?.disable();
-  }
 
   deliveryForm = this.fb.group({
     _customerId: this.fb.control('', [Validators.required]),
+    _purchaseOrderId: this.fb.control(''),
+    remarks: this.fb.control(''),
     mobile: this.fb.control('', [Validators.required]),
     address: this.fb.control('', [Validators.required]),
     tin: this.fb.control(''),
     deliveryDate: this.fb.control(new Date(), [Validators.required]),
-    remarks: this.fb.control(''),
   });
 
-  constructor(
-    private productApi: ProductApiService,
-    private customerApi: CustomerApiService,
-    private userApi: UserApiService,
-    private outdeliveryApi: OutDeliveryApiService,
-    private fb: FormBuilder,
-    private router: Router,
-    private snackbarService: SnackbarService,
-    private confirmation: ConfirmationService,
-    private dialog: MatDialog
-  ) {}
+  usePurchaseOrder = false;
+  searchPoControl = new FormControl();
+
+  destroyed$ = new Subject<void>();
+
+  filteredCustomers!: Observable<Customer[]>;
+  filteredUsers!: Observable<User[]>;
+  filteredPos!: Observable<PurchaseOrder[]>;
 
   listedSignatories: Array<any> = [];
   listedSignatoriesColumns: TableColumn[] = [
@@ -197,6 +148,148 @@ export class OutDeliveryFormComponent implements OnInit {
     pageSize: 100,
     length: 0,
   };
+
+  constructor(
+    private productApi: ProductApiService,
+    private customerApi: CustomerApiService,
+    private poApi: PurchaseOrderApiService,
+    private userApi: UserApiService,
+    private outdeliveryApi: OutDeliveryApiService,
+    private transformData: TransformDataService,
+    private fb: FormBuilder,
+    private router: Router,
+    private snackbarService: SnackbarService,
+    private confirmation: ConfirmationService,
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit() {
+    this._componentInit();
+
+    this.filteredCustomers = this._customerId.valueChanges.pipe(
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterCustomers(val || '');
+      }),
+      takeUntil(this.destroyed$)
+    );
+
+    this.filteredUsers = this.signatoryControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterUsers(val || '');
+      }),
+      takeUntil(this.destroyed$)
+    );
+
+    this.filteredPos = this.searchPoControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterPos(val || '');
+      }),
+      takeUntil(this.destroyed$)
+    );
+  }
+
+  usePoCheckChange() {
+    this.usePurchaseOrder = !this.usePurchaseOrder;
+
+    if (!this.usePurchaseOrder) {
+      this.deliveryForm.patchValue({
+        mobile: '',
+        address: '',
+        tin: '',
+        _customerId: null,
+        deliveryDate: null,
+        remarks: '',
+        _purchaseOrderId: '',
+      });
+
+      this.searchPoControl.reset();
+    }
+  }
+
+  async searchId() {
+    const getOutDeliveryById$ = this.outdeliveryApi
+      .getOutDeliveryById(this._id)
+      .pipe(
+        takeUntil(this.destroyed$),
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
+    const response = (await firstValueFrom(getOutDeliveryById$)) as any;
+
+    if (!response) return;
+
+    if (response._purchaseOrderId) {
+      const purchaseOrder = await this._getPoById(response._purchaseOrderId);
+      this.searchPoControl.patchValue(purchaseOrder);
+      this.usePoCheckChange();
+    }
+
+    this.outDelivery = response;
+    this._autoFillForm(this.outDelivery);
+  }
+
+  private _autoFillForm(outDelivery: any) {
+    this.deliveryForm.patchValue({
+      _customerId: outDelivery?._customerId ?? '',
+      _purchaseOrderId: outDelivery?._purchaseOrderId ?? '',
+      mobile: outDelivery?.STATIC?.mobile ?? '',
+      address: outDelivery?.STATIC?.address ?? '',
+      tin: outDelivery?.STATIC?.tin ?? '',
+      deliveryDate: outDelivery?.deliveryDate ?? '',
+      remarks: outDelivery?.remarks ?? '',
+    });
+
+    if (Array.isArray(outDelivery.items) && outDelivery.items.length > 0) {
+      for (let item of outDelivery.items) {
+        var listedItem = {
+          sku: item.STATIC.sku,
+          _id: item._productId,
+          brand: item.STATIC.brand,
+          model: item.STATIC.model,
+          classification: item.STATIC.classification,
+          stocks: [
+            {
+              serialNumber: item.STATIC.serialNumber,
+              _id: item.STATIC._stockId,
+              status: StockStatus.FOR_DELIVERY,
+            },
+          ],
+        };
+        this.listedItems.push(listedItem as Product);
+      }
+    }
+
+    if (
+      Array.isArray(outDelivery.signatories) &&
+      outDelivery.signatories.length > 0
+    ) {
+      for (let signatory of outDelivery.signatories) {
+        this.listedSignatories.push({
+          name: signatory.STATIC.name,
+          designation: signatory.STATIC.designation,
+          action: signatory.action,
+          _id: signatory._userId,
+        });
+      }
+    }
+
+    this._copySignatoriesToSelf();
+
+    this.listedItems = [...this.listedItems];
+    this.listedItemsPage.length = this.listedItems.length;
+    // this.deliveryForm.get('_customerId')?.disable();
+  }
 
   actionEventItems(e: any) {
     if (e.action.name == 'remove') {
@@ -295,32 +388,6 @@ export class OutDeliveryFormComponent implements OnInit {
       .name;
   }
 
-  filteredCustomers!: Observable<Customer[]>;
-  filteredUsers!: Observable<User[]>;
-
-  ngOnInit() {
-    if (this._id) this.searchId();
-    else this.getLastOutDelivery();
-
-    this.filteredCustomers = this._customerId.valueChanges.pipe(
-      startWith(''),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap((val: any) => {
-        return this._filterCustomers(val || '');
-      })
-    );
-
-    this.filteredUsers = this.signatoryControl.valueChanges.pipe(
-      startWith(''),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap((val: any) => {
-        return this._filterUsers(val || '');
-      })
-    );
-  }
-
   private _filterCustomers(value: string) {
     return this.customerApi
       .getCustomers({ searchText: value, pageSize: 5 })
@@ -333,12 +400,31 @@ export class OutDeliveryFormComponent implements OnInit {
       .pipe(map((response: any) => response.records));
   }
 
+  private _filterPos(value: string) {
+    return this.poApi
+      .getPurchaseOrders({ searchText: value, pageSize: 30 })
+      .pipe(map((response: any) => response.records));
+  }
+
   autofillCustomerDetails(selectedCustomer: Customer) {
     var { mobile, addressDelivery, tin } = selectedCustomer;
     this.deliveryForm.patchValue({
       mobile,
       tin,
       address: addressDelivery,
+    });
+  }
+
+  autofillCustomerDetailsFromPo(po: PurchaseOrder) {
+    const { mobile, addressBilling, tin, _id } =
+      po._customerId as unknown as Customer;
+
+    this.deliveryForm.patchValue({
+      mobile,
+      address: addressBilling,
+      tin,
+      _customerId: po._customerId,
+      _purchaseOrderId: po._id,
     });
   }
 
@@ -362,7 +448,7 @@ export class OutDeliveryFormComponent implements OnInit {
 
   displayCustomer(value: any) {
     var displayStr = '';
-    if (value.name) {
+    if (value?.name) {
       displayStr = value.name;
       if (value.type === CustomerType.COMPANY) {
         displayStr += ` (${value.contactPerson})`;
@@ -370,7 +456,11 @@ export class OutDeliveryFormComponent implements OnInit {
     } else {
       displayStr = value || '';
     }
-    return value.name || value || '';
+    return value?.name || value || '';
+  }
+
+  displayPo(value: any) {
+    return value?.code?.value ?? '';
   }
 
   displayUser(value: any) {
@@ -418,45 +508,7 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   updateOutDelivery() {
-    var rawOutdelivery = this.deliveryForm.getRawValue() as any;
-    var outdelivery: any = {
-      _customerId: rawOutdelivery._customerId._id,
-      deliveryDate: rawOutdelivery.deliveryDate,
-      remarks: rawOutdelivery.remarks,
-      STATIC: {
-        name: rawOutdelivery._customerId.name,
-        mobile: rawOutdelivery.mobile,
-        address: rawOutdelivery.address,
-        tin: rawOutdelivery.tin,
-      },
-      signatories: [],
-      items: [],
-    };
-
-    this.listedItems.forEach((item) => {
-      outdelivery.items.push({
-        _productId: item._id,
-        STATIC: {
-          _stockId: item.stocks[0]._id,
-          sku: item.sku,
-          brand: item.brand,
-          model: item.model,
-          serialNumber: item.stocks[0].serialNumber,
-          classification: item.classification || '-',
-        },
-      });
-    });
-
-    this.listedSignatories.forEach((signatory) => {
-      outdelivery.signatories.push({
-        _userId: signatory._id,
-        STATIC: {
-          name: signatory.name,
-          designation: signatory.designation,
-        },
-        action: signatory.action,
-      });
-    });
+    const outdelivery = this._formatBodyRequest();
 
     this.outdeliveryApi.updateOutDeliveryById(this._id, outdelivery).subscribe({
       next: (res: any) => {
@@ -470,6 +522,7 @@ export class OutDeliveryFormComponent implements OnInit {
             '.'
         );
         this.displayPDF(od);
+        this.router.navigate(['portal', 'out-delivery']);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
@@ -495,9 +548,78 @@ export class OutDeliveryFormComponent implements OnInit {
   }
 
   createOutDelivery() {
-    var rawOutdelivery = this.deliveryForm.getRawValue() as any;
-    var outdelivery: OutDelivery = {
+    const outdelivery = this._formatBodyRequest();
+
+    this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
+      next: (res: any) => {
+        this.displayPDF(res);
+        this.router.navigate(['portal', 'out-delivery']);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
+  }
+
+  private async _getPoById(poId: string) {
+    const getPoById$ = this.poApi
+      .getPurchaseOrderById(poId)
+      .pipe(takeUntil(this.destroyed$));
+    const po = (await firstValueFrom(getPoById$)) as PurchaseOrder;
+    return po;
+  }
+
+  private async _componentInit() {
+    //If DR Update
+    if (this._id) {
+      this.searchId();
+    } else {
+      /**
+       * If hasTransformData is true, get transformed data and get recent dr signatories to createDR.
+       * Else it is a plain dr create with recent dr signatories
+       */
+      const hasTransformData =
+        this.transformData.verifyTransactionDataFootprint(
+          this.transformServiceId
+        );
+
+      let createDR: any = {};
+
+      if (hasTransformData) {
+        createDR = this.transformData.formatDataToRecipient(
+          this.transformServiceId
+        );
+
+        //Checks if has purchaseOrderId;
+        if (createDR._purchaseOrderId) {
+          const purchaseOrder = await this._getPoById(
+            createDR._purchaseOrderId
+          );
+          this.searchPoControl.patchValue(purchaseOrder);
+          this.usePoCheckChange();
+        }
+      }
+
+      const recentDR = (await firstValueFrom(
+        this.outdeliveryApi.getMostRecentOutDelivery()
+      )) as OutDelivery;
+
+      if (!recentDR) {
+        return;
+      }
+      createDR['signatories'] = recentDR.signatories;
+      this._autoFillForm(createDR);
+    }
+  }
+
+  private _formatBodyRequest() {
+    const rawOutdelivery = this.deliveryForm.getRawValue() as any;
+    let outdelivery: OutDelivery = {
       _customerId: rawOutdelivery._customerId._id,
+      _purchaseOrderId: rawOutdelivery._purchaseOrderId,
       deliveryDate: rawOutdelivery.deliveryDate,
       remarks: rawOutdelivery.remarks,
       STATIC: {
@@ -535,16 +657,17 @@ export class OutDeliveryFormComponent implements OnInit {
       });
     });
 
-    this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
-      next: (res: any) => {
-        this.displayPDF(res);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.snackbarService.openErrorSnackbar(
-          err.error.errorCode,
-          err.error.message
-        );
-      },
-    });
+    return outdelivery;
+  }
+
+  ngOnDestroy(): void {
+    if (
+      this.transformData.getTransformData()?.from !== this.transformServiceId
+    ) {
+      this.transformData.deleteTransformData();
+    }
+
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 }
