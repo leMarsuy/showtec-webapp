@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
@@ -10,7 +10,13 @@ import { Discount, Tax } from '@app/core/models/soa.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
+import {
+  TransformDataService,
+  TransformDataType,
+  TransformReference,
+} from '@app/shared/services/data/transform-data/transform-data.service';
 import { isEmpty } from '@app/shared/utils/objectUtil';
+import { firstValueFrom } from 'rxjs';
 
 interface Pricing {
   STATIC: {
@@ -26,13 +32,16 @@ interface Pricing {
   templateUrl: './upsert-purchase-order.component.html',
   styleUrl: './upsert-purchase-order.component.scss',
 })
-export class UpsertPurchaseOrderComponent implements OnInit {
+export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
+  private transformServiceId: TransformReference = 'purchase-order';
+
   listedProducts: Array<Product & Pricing> = [];
   listedDiscounts: Discount[] = [];
   listedTaxes: Tax[] = [];
   listedSignatories: any[] = [];
 
-  navIcon = NavIcon;
+  soaIcon = NavIcon.SOA;
+  drIcon = NavIcon.DELIVERY_RECEIPT;
 
   isUpdate = false;
   loading = true;
@@ -62,24 +71,53 @@ export class UpsertPurchaseOrderComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private confirmation: ConfirmationService,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
+    private transformData: TransformDataService
   ) {}
 
-  ngOnInit() {
-    this.activatedRoute.data.subscribe((data) => {
-      /**
-       * ? Checking if PurchaseOrderResolver returns PO Data
-       */
-      if (isEmpty(data)) {
+  async ngOnInit() {
+    const resolverResponse = await firstValueFrom(this.activatedRoute.data);
+
+    //Upsert Create
+    if (isEmpty(resolverResponse)) {
+      const hasTransformData =
+        this.transformData.verifyTransactionDataFootprint(
+          this.transformServiceId
+        );
+
+      let createPurchaseOrder: any = {};
+      let fromTransformData = false;
+
+      //TransformData Service has found value
+      if (hasTransformData) {
+        createPurchaseOrder = this.transformData.formatDataToRecipient(
+          this.transformServiceId
+        );
+      }
+
+      //Get Most Recent PO for signatories
+      const recentPo = (await firstValueFrom(
+        this.poApi.getMostRecentPurchaseOrder()
+      )) as PurchaseOrder;
+
+      if (!recentPo) {
         this.loading = false;
         return;
       }
 
-      this.isUpdate = true;
-      this.purchaseOrder = data['purchaseOrder'];
+      createPurchaseOrder['signatories'] = recentPo.signatories;
+
+      this._fillForms(createPurchaseOrder, fromTransformData);
       this.loading = false;
+    }
+
+    //Upsert Update
+    else {
+      this.isUpdate = true;
+      this.purchaseOrder = resolverResponse['purchaseOrder'];
       this._fillForms(this.purchaseOrder);
-    });
+      this.loading = false;
+    }
   }
 
   get isValid() {
@@ -116,6 +154,23 @@ export class UpsertPurchaseOrderComponent implements OnInit {
 
   navigateBack() {
     this.router.navigate(['portal/purchase-order']);
+  }
+
+  onTransformData(recipient: TransformReference) {
+    const packet: TransformDataType = {
+      from: this.transformServiceId,
+      to: recipient,
+      data: this.purchaseOrder,
+    };
+    this.transformData.setTransformData(packet);
+
+    if (recipient === 'delivery-receipt') {
+      this.router.navigate(['portal', 'out-delivery', 'create']);
+    }
+
+    if (recipient === 'soa') {
+      this.router.navigate(['portal', 'soa', 'create']);
+    }
   }
 
   confirmDiscard() {
@@ -269,44 +324,51 @@ export class UpsertPurchaseOrderComponent implements OnInit {
     return purchaseOrder;
   }
 
-  private _fillForms(purchaseOrder: any) {
+  private _fillForms(purchaseOrder: any, fromTransformService = false) {
     this.poForm.patchValue({
-      _customerId: purchaseOrder._customerId,
-      mobile: purchaseOrder.STATIC.mobile,
-      address: purchaseOrder.STATIC.address,
-      tin: purchaseOrder.STATIC.tin,
-      purchaseOrderDate: purchaseOrder.purchaseOrderDate,
-      remarks: purchaseOrder.remarks,
+      _customerId: purchaseOrder?._customerId ?? '',
+      mobile: purchaseOrder?.STATIC?.mobile ?? '',
+      address: purchaseOrder?.STATIC?.address ?? '',
+      tin: purchaseOrder?.STATIC?.tin ?? '',
+      purchaseOrderDate: purchaseOrder?.purchaseOrderDate ?? '',
+      remarks: purchaseOrder?.remarks ?? '',
     });
 
-    for (let item of purchaseOrder.items) {
-      this.listedProducts.push({
-        sku: item.STATIC.sku,
-        _id: item._productId,
-        brand: item.STATIC.brand,
-        model: item.STATIC.model,
-        classification: item.STATIC.classification,
-        price: {
-          amount: item.STATIC.unit_price,
-          currency: 'PHP',
-        },
-        STATIC: {
-          unit_price: item.STATIC.unit_price,
-          quantity: item.STATIC.quantity,
-          disc: item.STATIC.disc,
-          total: item.STATIC.total,
-        },
-      } as unknown as Product & Pricing);
+    if (Array.isArray(purchaseOrder.items) && purchaseOrder.items.length > 0) {
+      for (let item of purchaseOrder.items) {
+        this.listedProducts.push({
+          sku: item.STATIC.sku,
+          _id: item._productId,
+          brand: item.STATIC.brand,
+          model: item.STATIC.model,
+          classification: item.STATIC.classification,
+          price: {
+            amount: item.STATIC.unit_price,
+            currency: 'PHP',
+          },
+          STATIC: {
+            unit_price: item.STATIC.unit_price,
+            quantity: item.STATIC.quantity,
+            disc: item.STATIC.disc,
+            total: item.STATIC.total,
+          },
+        } as unknown as Product & Pricing);
+      }
     }
 
-    purchaseOrder.signatories.forEach((sig: any) => {
-      this.listedSignatories.push({
-        name: sig.STATIC.name,
-        designation: sig.STATIC.designation,
-        action: sig.action,
-        _id: sig._userId,
-      });
-    });
+    if (
+      Array.isArray(purchaseOrder.signatories) &&
+      purchaseOrder.signatories.length > 0
+    ) {
+      for (let signatory of purchaseOrder.signatories) {
+        this.listedSignatories.push({
+          name: signatory.STATIC.name,
+          designation: signatory.STATIC.designation,
+          action: signatory.action,
+          _id: signatory._userId,
+        });
+      }
+    }
 
     this.listedDiscounts =
       purchaseOrder.discounts?.map((a: any) => ({
@@ -321,5 +383,17 @@ export class UpsertPurchaseOrderComponent implements OnInit {
       })) || [];
 
     this._calculateSummary();
+
+    if (fromTransformService) {
+      this.poForm.markAsDirty();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (
+      this.transformData.getTransformData()?.from !== this.transformServiceId
+    ) {
+      this.transformData.deleteTransformData();
+    }
   }
 }

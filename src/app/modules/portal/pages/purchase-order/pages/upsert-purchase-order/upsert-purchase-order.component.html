@@ -17,21 +17,21 @@
       <div
         class="bg-white flex flex-col gap-y-1 py-2 mt-1 overflow-hidden rounded-lg  shadow-md [&>button]:flex [&>button]:items-center [&>button]:px-3 [&>button]:py-2 [&>button]:text-gray-900"
         cdkMenu>
-        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem>
-          <mat-icon>{{ navIcon.DELIVERY_RECEIPT }}</mat-icon>
+        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem (click)="onTransformData('delivery-receipt')">
+          <mat-icon>{{ drIcon }}</mat-icon>
           <span>Create Delivery Receipt</span>
         </button>
-        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem>
-          <mat-icon>{{ navIcon.SOA }}</mat-icon>
+        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem (click)="onTransformData('soa')">
+          <mat-icon>{{ soaIcon }}</mat-icon>
           <span>Create SOA</span>
         </button>
       </div>
     </ng-template>
     }
-
   </div>
   <!-- Form Arrays -->
   <div class="flex flex-col gap-4 w-full rounded-xl bg-white text-gray-900 p-4 grow">
+    @if(!loading) {
     <!-- PRODUCTS LIST -->
     <section>
       <app-products-form [products]="listedProducts" (productsEmitter)="productsEmitHandler($event)" />
@@ -53,22 +53,26 @@
     <section>
       <app-signatories-form [signatories]="listedSignatories" (signatoriesEmitter)="signatoriesEmitHandler($event)" />
     </section>
+    }
   </div>
 
   <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
+    @if(!loading) {
     <!-- Customer Form -->
-    <app-customer-form [fGroup]="poForm" />
+    <app-attach-customer-form [fGroup]="poForm" />
 
     <!-- Total Summary -->
     <app-total-summary-display [discounts]="listedDiscounts" [taxes]="listedTaxes" [summary]="poSummary" />
+    }
 
     <div class="flex justify-between">
-      <button *ngIf="isUpdate" mat-button color="warn" [disabled]="!isValid || !poForm.dirty"
+      <button *ngIf="isUpdate" mat-button color="warn" [disabled]="!isValid || !poForm.dirty || loading"
         (click)="confirmDiscard()">
         Discard
       </button>
 
-      <button mat-flat-button color="primary" [disabled]="!isValid || !poForm.dirty" (click)="confirmChanges()">
+      <button mat-flat-button color="primary" [disabled]="!isValid || !poForm.dirty || loading"
+        (click)="confirmChanges()">
         Save
       </button>
 
