@@ -71,6 +71,9 @@ export class SOA {
   updatedAt?: string;
   discounts?: Array<Discount>;
   taxes?: Array<Tax>;
+
+  _purchaseOrderId?: string;
+
   constructor(model: SOA) {
     this._id = model._id;
     this.code = model.code;
@@ -84,5 +87,6 @@ export class SOA {
     this.status = model.status;
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;
+    this._purchaseOrderId = model._purchaseOrderId;
   }
 }
