@@ -446,9 +446,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
           'Success',
           'SOA Successfully Created.'
         );
-        // setTimeout(() => {
-        //   this.displayPDF(res);
-        // }, 1400);
+        this.router.navigate(['portal', 'soa']);
+        this.displayPDF(res);
       },
       error: (err: HttpErrorResponse) => {
         console.error(err);
@@ -482,9 +481,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
           'Update Success',
           `SOA ${newSoa.code?.value} successfully updated.`
         );
-        setTimeout(() => {
-          this.displayPDF(newSoa);
-        }, 1400);
+        this.router.navigate(['portal', 'soa']);
+        this.displayPDF(newSoa);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
@@ -644,13 +642,6 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
     if (!this.usePurchaseOrder) {
       this.soaForm.patchValue({
-        mobile: '',
-        address: '',
-        tin: '',
-        _customerId: null,
-        soaDate: null,
-        dueDate: null,
-        remarks: '',
         _purchaseOrderId: '',
       });
 
@@ -769,7 +760,6 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     const rawSoaForm = this.soaForm.getRawValue() as any;
     let soa: SOA = {
       _customerId: rawSoaForm._customerId._id,
-      _purchaseOrderId: rawSoaForm._purchaseOrderId,
       STATIC: {
         name: rawSoaForm._customerId.name,
         mobile: rawSoaForm.mobile,
@@ -812,6 +802,10 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       });
     });
 
+    //Purchase Order Id Property Check
+    if (rawSoaForm._purchaseOrderId) {
+      soa['_purchaseOrderId'] = rawSoaForm._purchaseOrderId;
+    }
     return soa;
   }
 

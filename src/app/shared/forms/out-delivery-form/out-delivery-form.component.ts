@@ -202,12 +202,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
     if (!this.usePurchaseOrder) {
       this.deliveryForm.patchValue({
-        mobile: '',
-        address: '',
-        tin: '',
-        _customerId: null,
-        deliveryDate: null,
-        remarks: '',
         _purchaseOrderId: '',
       });
 
@@ -619,7 +613,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     const rawOutdelivery = this.deliveryForm.getRawValue() as any;
     let outdelivery: OutDelivery = {
       _customerId: rawOutdelivery._customerId._id,
-      _purchaseOrderId: rawOutdelivery._purchaseOrderId,
       deliveryDate: rawOutdelivery.deliveryDate,
       remarks: rawOutdelivery.remarks,
       STATIC: {
@@ -656,6 +649,11 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
         action: signatory.action,
       });
     });
+
+    //Purchase Order Id Property Check
+    if (rawOutdelivery._purchaseOrderId) {
+      outdelivery['_purchaseOrderId'] = rawOutdelivery._purchaseOrderId;
+    }
 
     return outdelivery;
   }
