@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { Signatory } from '@app/core/models/out-delivery.model';
@@ -8,6 +9,7 @@ import { Product } from '@app/core/models/product.model';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { Discount, Tax } from '@app/core/models/soa.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 import {
@@ -70,9 +72,10 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    private transformData: TransformDataService,
     private confirmation: ConfirmationService,
     private snackbar: SnackbarService,
-    private transformData: TransformDataService
+    private dialog: MatDialog
   ) {}
 
   async ngOnInit() {
@@ -210,9 +213,10 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.snackbar.openLoadingSnackbar('Loading', 'Updating PO');
     this.poApi.updatePurchaseOrderById(id, purchaseOrder).subscribe({
-      next: () => {
+      next: (response: unknown) => {
         this.snackbar.closeLoadingSnackbar();
         this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully updated.');
+        this._displayPdf(response as PurchaseOrder);
         this.navigateBack();
       },
       error: (err: HttpErrorResponse) => {
@@ -229,10 +233,11 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.snackbar.openLoadingSnackbar('Loading', 'Creating PO');
     this.poApi.createPurchaseOrder(purchaseOrder).subscribe({
-      next: () => {
+      next: (response: unknown) => {
         this.loading = false;
         this.snackbar.closeLoadingSnackbar();
         this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully created.');
+        this._displayPdf(response as PurchaseOrder);
         this.navigateBack();
       },
       error: (err: HttpErrorResponse) => {
@@ -242,6 +247,21 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
         this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
         this.navigateBack();
       },
+    });
+  }
+
+  private _displayPdf(purchaseOrder: PurchaseOrder) {
+    if (!purchaseOrder._id) return;
+
+    this.dialog.open(PdfViewerComponent, {
+      data: {
+        apiCall: this.poApi.getPurchaseOrderById(purchaseOrder._id),
+        title: 'View Purchase Order',
+      },
+      maxWidth: '70rem',
+      width: '100%',
+      disableClose: true,
+      autoFocus: false,
     });
   }
 

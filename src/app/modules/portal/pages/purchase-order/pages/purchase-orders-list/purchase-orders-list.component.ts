@@ -49,16 +49,16 @@ export class PurchaseOrdersListComponent {
       type: ColumnType.STATUS,
       colorCodes: [
         {
+          value: PurchaseOrderStatus.ACTIVE,
+          color: Color.SUCCESS,
+        },
+        {
           value: PurchaseOrderStatus.PENDING,
           color: Color.DEAD,
         },
         {
           value: PurchaseOrderStatus.PAID,
           color: Color.SUCCESS,
-        },
-        {
-          value: PurchaseOrderStatus.PARTIAL,
-          color: Color.WARNING,
         },
         {
           value: PurchaseOrderStatus.CANCELLED,
@@ -188,7 +188,7 @@ export class PurchaseOrdersListComponent {
         apiCall: this.purchaseOrderApi.getPurchaseOrderPdfReceipt(
           purchaseOrder._id
         ),
-        title: 'View PO Receipt',
+        title: 'View Purchase Order',
       },
       maxWidth: '70rem',
       width: '100%',
