@@ -81,6 +81,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'purchase-order',
+        loadChildren: () =>
+          import('./pages/purchase-order/purchase-order.module').then(
+            (m) => m.PurchaseOrderModule
+          ),
+      },
+      {
         path: '',
         redirectTo: 'reports',
         pathMatch: 'full',

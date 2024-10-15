@@ -1,8 +1,32 @@
 <div class="flex gap-4">
-  <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
-    <div class="flex" [routerLink]="'../../'">
-      <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
-    </div>
+  <div class="flex flex-col h-fit w-fit gap-y-4 sticky top-16">
+    <button
+      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer "
+      (click)="navigateBack()" matTooltip="Back to Table" matTooltipPosition="right">
+      <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
+    </button>
+
+
+    <button
+      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center  cursor-pointer "
+      matTooltip="Use SOA to..." matTooltipPosition="right" [cdkMenuTriggerFor]="menu">
+      <mat-icon class="text-cyan-500 inline-block" fontIcon="content_copy" />
+    </button>
+
+    <ng-template #menu>
+      <div
+        class="bg-white flex flex-col gap-y-1 py-2 mt-1 overflow-hidden rounded-lg  shadow-md [&>button]:flex [&>button]:items-center [&>button]:px-3 [&>button]:py-2 [&>button]:text-gray-900"
+        cdkMenu>
+        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem (click)="onTransformData('purchase-order')">
+          <mat-icon>{{ navIcon.PURCHASE_ORDER }}</mat-icon>
+          <span>Create Purchase Order</span>
+        </button>
+        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem (click)="onTransformData('delivery-receipt')">
+          <mat-icon>{{ navIcon.DELIVERY_RECEIPT }}</mat-icon>
+          <span>Create Delivery Receipt</span>
+        </button>
+      </div>
+    </ng-template>
   </div>
   <div class="w-full">
     <app-soa-form [_id]="_id"></app-soa-form>

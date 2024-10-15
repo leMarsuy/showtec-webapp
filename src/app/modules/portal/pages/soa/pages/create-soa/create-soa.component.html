@@ -1,8 +1,11 @@
 <div class="flex gap-4">
-  <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
-    <div class="flex" [routerLink]="'../'">
-      <mat-icon class="text-rose-500 cursor-pointer"> arrow_back </mat-icon>
-    </div>
+  <div class="flex flex-col h-fit w-fit gap-y-4 sticky top-16">
+    <button
+      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer "
+      (click)="navigateBack()" matTooltip="Back to Table" matTooltipPosition="right">
+      <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
+    </button>
+
   </div>
   <div class="w-full">
     <app-soa-form></app-soa-form>
