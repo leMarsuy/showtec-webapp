@@ -44,6 +44,7 @@ export class OutDelivery {
   status?: OutDeliveryStatus;
   createdAt?: string;
   updatedAt?: string;
+  _purchaseOrderId?: string;
 
   // billing address
   // delivery address
@@ -65,5 +66,6 @@ export class OutDelivery {
     this.status = model.status;
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;
+    this._purchaseOrderId = model._purchaseOrderId;
   }
 }

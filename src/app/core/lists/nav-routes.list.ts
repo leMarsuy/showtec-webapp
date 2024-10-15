@@ -1,3 +1,5 @@
+import { NavIcon } from '../enums/nav-icons.enum';
+
 export const NAV_ROUTES = [
   {
     group: 'Home',
@@ -10,7 +12,7 @@ export const NAV_ROUTES = [
       {
         name: 'Reports',
         path: 'reports/sales',
-        icon: 'summarize',
+        icon: NavIcon.REPORTS,
       },
     ],
   },
@@ -20,12 +22,12 @@ export const NAV_ROUTES = [
       {
         name: 'Products',
         path: 'products',
-        icon: 'inventory_2',
+        icon: NavIcon.PRODUCTS,
       },
       {
         name: 'Delivery Receipt',
         path: 'out-delivery',
-        icon: 'local_shipping',
+        icon: NavIcon.DELIVERY_RECEIPT,
       },
     ],
   },
@@ -33,9 +35,14 @@ export const NAV_ROUTES = [
     group: 'Sales',
     items: [
       {
+        name: 'Purchase Order',
+        path: 'purchase-order',
+        icon: NavIcon.PURCHASE_ORDER,
+      },
+      {
         name: 'SOA',
         path: 'soa',
-        icon: 'article',
+        icon: NavIcon.SOA,
       },
       // {
       //   name: 'Reports',
@@ -55,7 +62,7 @@ export const NAV_ROUTES = [
       {
         name: 'Vouchers',
         path: 'vouchers',
-        icon: 'newspaper',
+        icon: NavIcon.VOUCHERS,
       },
     ],
   },
@@ -65,17 +72,17 @@ export const NAV_ROUTES = [
       {
         name: 'Customers',
         path: 'customers',
-        icon: 'group',
+        icon: NavIcon.CUSTOMERS,
       },
       {
         name: 'Warehouses',
         path: 'warehouses',
-        icon: 'warehouses',
+        icon: NavIcon.WAREHOUSES,
       },
       {
         name: 'Suppliers',
         path: 'suppliers',
-        icon: 'conveyor_belt',
+        icon: NavIcon.SUPPLIERS,
       },
     ],
   },
@@ -85,7 +92,7 @@ export const NAV_ROUTES = [
       {
         name: 'Users',
         path: 'users',
-        icon: 'person',
+        icon: NavIcon.USERS,
       },
     ],
   },

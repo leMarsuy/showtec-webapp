@@ -1,35 +1,20 @@
 <div class="flex text-gray-900 gap-4">
-  <div class="bg-white rounded-xl p-4 grow gap-4 flex flex-col">
+  <div class="bg-white rounded-xl p-4 grow gap-4 flex flex-col h-fit">
     <section>
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>PRODUCTS</p>
       </div>
-      <app-table
-        [hasPagination]="false"
-        [columns]="listedItemsColumns"
-        [dataSource]="listedItems"
-        [page]="listedItemsPage"
-        (actionEmitter)="actionEventItems($event)"
-      ></app-table>
+      <app-table [hasPagination]="false" [columns]="listedItemsColumns" [dataSource]="listedItems"
+        [page]="listedItemsPage" (actionEmitter)="actionEventItems($event)"></app-table>
       <div class="flex gap-4">
         <mat-form-field class="w-full">
-          <input
-            id="serialNumber"
-            [formControl]="serialNumberControl"
-            matInput
-            type="text"
-            placeholder="Scan or Encode Item Barcode Here..."
-            (keyup.enter)="searchSerialNumber()"
-          />
+          <input id="serialNumber" [formControl]="serialNumberControl" matInput type="text"
+            placeholder="Scan or Encode Item Barcode Here..." (keyup.enter)="searchSerialNumber()" />
           <mat-hint class="text-rose-400" *ngIf="errorMessage">
             {{ errorMessage }}
           </mat-hint>
         </mat-form-field>
-        <button
-          mat-flat-button
-          class="mat-button-lg"
-          (click)="searchSerialNumber()"
-        >
+        <button mat-flat-button class="mat-button-lg" (click)="searchSerialNumber()">
           Search
         </button>
       </div>
@@ -39,28 +24,15 @@
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>SIGNATORIES</p>
       </div>
-      <app-table
-        [hasPagination]="false"
-        [columns]="listedSignatoriesColumns"
-        [dataSource]="listedSignatories"
-        [page]="listedSignatoriesPage"
-        (actionEmitter)="actionEventSignatories($event)"
-        (updateCellEmitter)="updateSignatories($event)"
-      ></app-table>
+      <app-table [hasPagination]="false" [columns]="listedSignatoriesColumns" [dataSource]="listedSignatories"
+        [page]="listedSignatoriesPage" (actionEmitter)="actionEventSignatories($event)"
+        (updateCellEmitter)="updateSignatories($event)"></app-table>
       <div class="flex gap-4">
         <mat-form-field class="w-full">
           <mat-label>Find System User</mat-label>
-          <input
-            [formControl]="signatoryControl"
-            matInput
-            type="text"
-            [matAutocomplete]="userAuto"
-          />
-          <mat-autocomplete
-            autoActiveFirstOption
-            #userAuto="matAutocomplete"
-            (optionSelected)="pushToListedSignatories($event.option.value)"
-          >
+          <input [formControl]="signatoryControl" matInput type="text" [matAutocomplete]="userAuto" />
+          <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete"
+            (optionSelected)="pushToListedSignatories($event.option.value)">
             @for (option of filteredUsers | async; track option) {
             <mat-option [value]="option">{{ option.name }}</mat-option>
             }
@@ -71,22 +43,36 @@
   </div>
 
   <div class="bg-white rounded-xl p-4 w-[25rem] sticky top-16 h-fit">
+    <div class="col-span-2">
+      <mat-checkbox class="example-margin" [ngModel]="usePurchaseOrder" (change)="usePoCheckChange()">
+        Use Purchase Order
+      </mat-checkbox>
+    </div>
+
+    @if(usePurchaseOrder) {
+    <div class="col-span-2">
+      <mat-form-field class="w-full">
+        <mat-label>PO No.</mat-label>
+        <input matInput placeholder="Type PO No..." [matAutocomplete]="poAuto" [formControl]="searchPoControl" />
+        <mat-autocomplete autoActiveFirstOption #poAuto="matAutocomplete"
+          (optionSelected)="autofillCustomerDetailsFromPo($event.option.value)" [displayWith]="displayPo">
+          @for (po of filteredPos | async; track po) {
+          <mat-option [value]="po">
+            <p>PO: {{ po?.code?.value }}</p>
+          </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    }
     <form class="grid grid-cols-2 gap-2" [formGroup]="deliveryForm">
       <div class="col-span-2">
         <mat-form-field class="w-full">
           <mat-label>Customer's Name</mat-label>
-          <input
-            matInput
-            placeholder="Type Customer Name..."
-            [matAutocomplete]="customerAuto"
-            formControlName="_customerId"
-          />
-          <mat-autocomplete
-            autoActiveFirstOption
-            #customerAuto="matAutocomplete"
-            (optionSelected)="autofillCustomerDetails($event.option.value)"
-            [displayWith]="displayCustomer"
-          >
+          <input matInput placeholder="Type Customer Name..." [matAutocomplete]="customerAuto"
+            formControlName="_customerId" />
+          <mat-autocomplete autoActiveFirstOption #customerAuto="matAutocomplete"
+            (optionSelected)="autofillCustomerDetails($event.option.value)" [displayWith]="displayCustomer">
             @for (option of filteredCustomers | async; track option) {
             <mat-option [value]="option">
               <p>{{ option.name }}</p>
@@ -116,16 +102,8 @@
       <div class="col-span-1">
         <mat-form-field class="w-full">
           <mat-label>Date of Delivery</mat-label>
-          <input
-            matInput
-            placeholder="MM/DD/YYYY"
-            formControlName="deliveryDate"
-            [matDatepicker]="picker"
-          />
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
+          <input matInput placeholder="MM/DD/YYYY" formControlName="deliveryDate" [matDatepicker]="picker" />
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
@@ -160,12 +138,7 @@
       </button>
       } @else {
       <button mat-stroked-button color="warn">Cancel Transaction</button>
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="confirm()"
-        [disabled]="!deliveryForm.valid"
-      >
+      <button mat-flat-button color="primary" (click)="confirm()" [disabled]="!deliveryForm.valid">
         Create Delivery Receipt
       </button>
       }

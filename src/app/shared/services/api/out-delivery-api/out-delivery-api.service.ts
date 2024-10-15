@@ -36,6 +36,10 @@ export class OutDeliveryApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}`);
   }
 
+  getOutDeliveryByIdWithItemPrices(_id: string) {
+    return this.httpService.get(`${this.apiPrefix}/${_id}/prices`);
+  }
+
   getPdfOutDelivery(_id: string) {
     return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
       map((response: any) => {

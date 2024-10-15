@@ -1,0 +1,87 @@
+<p mat-dialog-title>ADD PAYMENT</p>
+<mat-dialog-content>
+  <form class="w-full gap-2" [formGroup]="transactionForm">
+    <mat-form-field class="w-full">
+      <mat-label>Payment Method</mat-label>
+      <mat-select formControlName="paymentMethod">
+        @for (item of paymentMethods; track $index) {
+        <mat-option [value]="item"> {{ item }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="w-full">
+      <mat-label>Amount</mat-label>
+      <input matInput type="number" formControlName="amount" />
+    </mat-form-field>
+
+    @if(transactionForm.value.paymentMethod === 'Bank Transfer') {
+
+    <mat-form-field class="w-full">
+      <mat-label>Reference No.</mat-label>
+      <input matInput type="text" formControlName="referenceNo" />
+    </mat-form-field>
+
+    } @else if (transactionForm.value.paymentMethod === 'Check') {
+
+    <mat-form-field class="w-full">
+      <mat-label>Issuing Bank</mat-label>
+      <input matInput type="text" formControlName="issuingBank" />
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label> Check No.</mat-label>
+      <input matInput type="text" formControlName="checkNo" />
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label> Account Name</mat-label>
+      <input matInput type="text" formControlName="accountName" />
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label> Account No.</mat-label>
+      <input matInput type="text" formControlName="accountNo" />
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Deposited Date</mat-label>
+      <input matInput placeholder="MM/DD/YYYY" formControlName="depositedDate" [matDatepicker]="depositPicker" />
+      <mat-datepicker-toggle matIconSuffix [for]="depositPicker"></mat-datepicker-toggle>
+      <mat-datepicker #depositPicker></mat-datepicker>
+    </mat-form-field>
+    }
+
+    <mat-form-field class="w-full">
+      <mat-label>Payment Effectivity Date</mat-label>
+      <input matInput placeholder="MM/DD/YYYY" formControlName="paymentDate" [matDatepicker]="picker" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    @if (transactionForm.value.paymentMethod != 'Cash'){
+
+    <mat-form-field class="w-full">
+      <mat-label>Receiving Bank</mat-label>
+      <mat-select formControlName="bank">
+        @for (item of registeredBanks; track $index) {
+        <mat-option [value]="item"> {{ item }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    }
+
+    <mat-form-field class="w-full">
+      <mat-label>Remarks</mat-label>
+      <input matInput type="text" formControlName="remarks" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" mat-dialog-close>Discard</button>
+    <button mat-flat-button color="primary" (click)="submit()" [disabled]="!transactionForm.valid || submitting">
+      Confirm Payment
+    </button>
+  </div>
+</mat-dialog-actions>
