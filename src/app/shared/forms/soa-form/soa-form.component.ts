@@ -322,11 +322,19 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     );
     const soaFromResponse = (await firstValueFrom(getSoaById$)) as any;
 
-    if (!soaFromResponse) return;
+    if (!soaFromResponse) {
+      this.snackbarService.openErrorSnackbar(
+        'Error',
+        `No SOA was found for the provided ID.`
+      );
+      this.router.navigate(['portal', 'soa']);
+      return;
+    }
 
     createdSoa = soaFromResponse;
     this.soa = createdSoa;
 
+    //If SOA has PO, get its PO
     if (soaFromResponse._purchaseOrderId) {
       const purchaseOrder = await this._getPoById(
         soaFromResponse._purchaseOrderId
@@ -729,6 +737,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
         }
       }
 
+      //Get recent SOA for signatories
       const getRecentSoa$ = this.soaApi.getMostRecentSoa().pipe(
         takeUntil(this.destroyed$),
         catchError((error) => {
@@ -742,6 +751,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       if (!recentSOA) {
         return;
       }
+
       createSoa['signatories'] = recentSOA.signatories;
       this._autoFillForm(createSoa);
     }
