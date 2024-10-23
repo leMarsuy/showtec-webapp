@@ -99,10 +99,15 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       }
 
       //Get Most Recent PO for signatories
+      const getMostRecentPO$ = this.poApi.getMostRecentPurchaseOrder().pipe(
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
+
       const recentPo = (await firstValueFrom(
-        this.poApi
-          .getMostRecentPurchaseOrder()
-          .pipe(catchError(() => of(false)))
+        getMostRecentPO$
       )) as unknown as PurchaseOrder;
 
       if (!recentPo) {
