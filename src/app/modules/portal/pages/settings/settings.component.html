@@ -1,0 +1,27 @@
+<div class="px-4 py-4">
+  <app-content-header icon="settings" label="SETTINGS">
+  </app-content-header>
+</div>
+<div class="flex flex-col rounded-xl bg-white mx-4">
+  <div class="p-4">
+
+    <div class="flex items-center gap-2">
+
+      @for(config of settingComponents; track config) {
+      <button
+        class="px-3 py-2 border rounded transition-colors duration-175 ease-in-out hover:bg-gray-600 hover:text-white hover:border-transparent"
+        [ngClass]="{
+        'bg-gray-700 text-white border-transparent': selectedPortal.label === config.label, 
+        'bg-transparent text-black border-gray-300': selectedPortal.label !== config.label}"
+        (click)="selectedPortal = config">
+        {{config.label}}
+      </button>
+      }
+    </div>
+
+    <div class="mt-4">
+      <ng-container *ngIf="selectedPortal" [ngComponentOutlet]="selectedPortal.component"></ng-container>
+    </div>
+
+  </div>
+</div>

@@ -88,6 +88,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'settings',
+        loadChildren: () =>
+          import('./pages/settings/settings.module').then(
+            (m) => m.SettingsModule
+          ),
+      },
+      {
         path: '',
         redirectTo: 'reports',
         pathMatch: 'full',
