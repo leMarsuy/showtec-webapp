@@ -262,7 +262,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
 
     this.dialog.open(PdfViewerComponent, {
       data: {
-        apiCall: this.poApi.getPurchaseOrderById(purchaseOrder._id),
+        apiCall: this.poApi.getPurchaseOrderPdfReceipt(purchaseOrder._id),
         title: 'View Purchase Order',
       },
       maxWidth: '70rem',
