@@ -18,7 +18,7 @@ import {
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
 import { isEmpty } from '@app/shared/utils/objectUtil';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, of } from 'rxjs';
 
 interface Pricing {
   STATIC: {
@@ -99,9 +99,16 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       }
 
       //Get Most Recent PO for signatories
+      const getMostRecentPO$ = this.poApi.getMostRecentPurchaseOrder().pipe(
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
+
       const recentPo = (await firstValueFrom(
-        this.poApi.getMostRecentPurchaseOrder()
-      )) as PurchaseOrder;
+        getMostRecentPO$
+      )) as unknown as PurchaseOrder;
 
       if (!recentPo) {
         this.loading = false;

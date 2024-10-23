@@ -221,8 +221,16 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       );
     const response = (await firstValueFrom(getOutDeliveryById$)) as any;
 
-    if (!response) return;
+    if (!response) {
+      this.snackbarService.openErrorSnackbar(
+        'Error',
+        'No Out Delivery was found for the provided ID.'
+      );
+      this.router.navigate(['portal', 'out-delivery']);
+      return;
+    }
 
+    //If DR has PO, get its PO
     if (response._purchaseOrderId) {
       const purchaseOrder = await this._getPoById(response._purchaseOrderId);
       this.searchPoControl.patchValue(purchaseOrder);
@@ -597,9 +605,15 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
         }
       }
 
-      const recentDR = (await firstValueFrom(
-        this.outdeliveryApi.getMostRecentOutDelivery()
-      )) as OutDelivery;
+      //Get Recent DR for signatories
+      const getRecentDR$ = this.outdeliveryApi.getMostRecentOutDelivery().pipe(
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
+
+      const recentDR = (await firstValueFrom(getRecentDR$)) as OutDelivery;
 
       if (!recentDR) {
         return;
