@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @NgModule({
   declarations: [SignatoriesFormComponent],
@@ -16,6 +17,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
+    NgxSkeletonLoaderModule,
   ],
   exports: [SignatoriesFormComponent],
 })
