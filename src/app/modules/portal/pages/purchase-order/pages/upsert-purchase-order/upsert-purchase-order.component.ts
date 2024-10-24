@@ -46,7 +46,8 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   drIcon = NavIcon.DELIVERY_RECEIPT;
 
   isUpdate = false;
-  loading = true;
+  isLoading = true;
+  isSubmitting = false;
 
   poSummary = this.fb.group({
     total: this.fb.control(0),
@@ -111,14 +112,14 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       )) as unknown as PurchaseOrder;
 
       if (!recentPo) {
-        this.loading = false;
+        this.isLoading = false;
         return;
       }
 
       createPurchaseOrder['signatories'] = recentPo.signatories;
 
       this._fillForms(createPurchaseOrder, fromTransformData);
-      this.loading = false;
+      this.isLoading = false;
     }
 
     //Upsert Update
@@ -126,7 +127,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       this.isUpdate = true;
       this.purchaseOrder = resolverResponse['purchaseOrder'];
       this._fillForms(this.purchaseOrder);
-      this.loading = false;
+      this.isLoading = false;
     }
   }
 
@@ -216,45 +217,50 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _updatePurchaseOrder(purchaseOrder: PurchaseOrder, id: string) {
-    this.loading = true;
-    this.snackbar.openLoadingSnackbar('Loading', 'Updating PO');
-    this.poApi.updatePurchaseOrderById(id, purchaseOrder).subscribe({
+  private _createPurchaseOrder(purchaseOrder: PurchaseOrder) {
+    this._setSubmittingState(true);
+    this.poApi.createPurchaseOrder(purchaseOrder).subscribe({
       next: (response: unknown) => {
-        this.snackbar.closeLoadingSnackbar();
-        this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully updated.');
+        this._setSubmittingState(false);
+        this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully created.');
         this._displayPdf(response as PurchaseOrder);
         this.navigateBack();
       },
       error: (err: HttpErrorResponse) => {
-        console.error(err);
-        this.loading = false;
-        this.snackbar.closeLoadingSnackbar();
+        console.error(err.error);
+        this._setSubmittingState(false);
         this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
         // this.navigateBack();
       },
     });
   }
 
-  private _createPurchaseOrder(purchaseOrder: PurchaseOrder) {
-    this.loading = true;
-    this.snackbar.openLoadingSnackbar('Loading', 'Creating PO');
-    this.poApi.createPurchaseOrder(purchaseOrder).subscribe({
+  private _updatePurchaseOrder(purchaseOrder: PurchaseOrder, id: string) {
+    this._setSubmittingState(true);
+    this.poApi.updatePurchaseOrderById(id, purchaseOrder).subscribe({
       next: (response: unknown) => {
-        this.loading = false;
-        this.snackbar.closeLoadingSnackbar();
-        this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully created.');
+        this._setSubmittingState(false);
         this._displayPdf(response as PurchaseOrder);
         this.navigateBack();
       },
       error: (err: HttpErrorResponse) => {
+        this._setSubmittingState(false);
         console.error(err);
-        this.loading = false;
-        this.snackbar.closeLoadingSnackbar();
         this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
-        this.navigateBack();
+        // this.navigateBack();
       },
     });
+  }
+
+  private _setSubmittingState(isSubmitting: boolean) {
+    this.isSubmitting = isSubmitting;
+    const loadingMessage = this.isUpdate ? 'Updating PO' : 'Creating PO';
+
+    if (isSubmitting) {
+      this.snackbar.openLoadingSnackbar('Loading', loadingMessage);
+    } else {
+      this.snackbar.closeLoadingSnackbar();
+    }
   }
 
   private _displayPdf(purchaseOrder: PurchaseOrder) {
