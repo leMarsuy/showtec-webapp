@@ -25,7 +25,7 @@ import { ViewPurchaseOrderComponent } from '../view-purchase-order/view-purchase
   styleUrl: './purchase-orders-list.component.scss',
 })
 export class PurchaseOrdersListComponent {
-  placeholder = 'Search for Voucher No.';
+  placeholder = 'Search for Purchase No. | Contact Person';
   searchText: FormControl = new FormControl('');
 
   tableFilterStatuses = ['All', ...PURCHASE_ORDER_STATUSES];
@@ -41,6 +41,11 @@ export class PurchaseOrdersListComponent {
     {
       label: 'Customer',
       dotNotationPath: '_customerId.name',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Contact Person',
+      dotNotationPath: '_customerId.contactPerson',
       type: ColumnType.STRING,
     },
     {
