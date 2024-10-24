@@ -8,9 +8,11 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AttachCustomerFormComponent } from './attach-customer-form.component';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { SkeletonLoadingComponent } from './skeleton-loading/skeleton-loading.component';
 
 @NgModule({
-  declarations: [AttachCustomerFormComponent],
+  declarations: [AttachCustomerFormComponent, SkeletonLoadingComponent],
   imports: [
     CommonModule,
     TableModule,
@@ -20,6 +22,7 @@ import { AttachCustomerFormComponent } from './attach-customer-form.component';
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatDatepickerModule,
+    NgxSkeletonLoaderModule,
   ],
   exports: [AttachCustomerFormComponent],
 })
