@@ -42,6 +42,8 @@ interface Pricing {
 })
 export class ProductsFormComponent implements OnInit, OnDestroy {
   @Input() products: Array<Product & Pricing> = [];
+  @Input({ alias: 'loading' }) isLoading = false;
+
   @Output() productsEmitter = new EventEmitter<Array<Product & Pricing>>();
 
   page: PageEvent = {
