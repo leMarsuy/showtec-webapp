@@ -11,12 +11,13 @@
       </div>
 
       <div class="flex">
-        <button mat-icon-button (click)="getOutDeliverys()" [disabled]="downloading" matTooltip="Refresh Table">
+        <button mat-icon-button (click)="getOutDeliverys()" [disabled]="isLoading === true" matTooltip="Refresh Table">
           <mat-icon class="mr-2  disabled:text-gray-300"> refresh </mat-icon>
         </button>
-        <button mat-icon-button (click)="exportTableExcel()" [disabled]="downloading" matTooltip="Download Table Excel">
+        <button mat-icon-button (click)="exportTableExcel()" [disabled]="isLoading === true"
+          matTooltip="Download Table Excel">
           <mat-icon class="mr-2 disabled:text-gray-300">
-            {{ downloading ? "downloading" : "download_for_offline" }}
+            {{ isLoading ? "downloading" : "download_for_offline" }}
           </mat-icon>
         </button>
       </div>

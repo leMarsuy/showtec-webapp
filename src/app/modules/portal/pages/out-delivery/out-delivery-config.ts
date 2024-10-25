@@ -1,6 +1,7 @@
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
+import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 
 export const OUT_DELIVER_CONFIG = {
   tableColumns: [
@@ -12,6 +13,11 @@ export const OUT_DELIVER_CONFIG = {
     {
       label: 'Customer',
       dotNotationPath: '_customerId.name',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Contact Person',
+      dotNotationPath: '_customerId.contactPerson',
       type: ColumnType.STRING,
     },
     {
@@ -29,7 +35,25 @@ export const OUT_DELIVER_CONFIG = {
       dotNotationPath: 'deliveryDate',
       type: ColumnType.AGE_IN_DAYS,
     },
-
+    {
+      label: 'Status',
+      dotNotationPath: 'status',
+      type: ColumnType.STATUS,
+      colorCodes: [
+        {
+          value: OutDeliveryStatus.ACTIVE,
+          color: Color.SUCCESS,
+        },
+        {
+          value: OutDeliveryStatus.PENDING,
+          color: Color.INFO,
+        },
+        {
+          value: OutDeliveryStatus.CANCELLED,
+          color: Color.ERROR,
+        },
+      ],
+    },
     {
       label: 'Action',
       dotNotationPath: '_id',
@@ -57,8 +81,4 @@ export const OUT_DELIVER_CONFIG = {
       ],
     },
   ],
-  cancellationDialog: {
-    title: 'Delivery Cancellation',
-    message: 'Do you want to cancel this delivery?',
-  },
 };
