@@ -80,4 +80,11 @@ export class OutDeliveryApiService {
       sanitizedQuery
     );
   }
+
+  cancelOutDeliveryById(_id: string) {
+    const status = OutDeliveryStatus.CANCELLED;
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/cancel`, {
+      status,
+    });
+  }
 }

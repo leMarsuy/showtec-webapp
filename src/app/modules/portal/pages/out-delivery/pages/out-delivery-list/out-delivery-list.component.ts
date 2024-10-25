@@ -151,7 +151,7 @@ export class OutDeliveryListComponent {
         filter((result) => result),
         switchMap(() => {
           this._setLoadingState(true, 'Cancelling Delivery');
-          return this.outdeliveryApi.cancelOutDelivery(outDeliveryId);
+          return this.outdeliveryApi.cancelOutDeliveryById(outDeliveryId);
         })
       )
       .subscribe({
