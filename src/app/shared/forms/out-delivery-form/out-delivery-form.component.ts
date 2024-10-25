@@ -425,7 +425,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       mobile,
       address: addressBilling,
       tin,
-      _customerId: po._customerId,
+      _customerId: po._customerId as string,
       _purchaseOrderId: po._id,
     });
   }
