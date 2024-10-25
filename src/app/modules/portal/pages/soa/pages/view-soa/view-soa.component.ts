@@ -86,24 +86,7 @@ export class ViewSoaComponent {
     this.soaApi.getSoaById(this.data._id).subscribe({
       next: (response) => {
         this.soa = response as SOA;
-        for (let item of this.soa.items) {
-          this.productTotal += item.STATIC.unit_price * item.STATIC.quantity;
-
-          this.productDiscount +=
-            item.STATIC.disc * item.STATIC.unit_price * item.STATIC.quantity;
-
-          switch (this.soa.status) {
-            case SoaStatus.PAID:
-              this.codeStatus = Color.SUCCESS;
-              break;
-            case SoaStatus.CANCELLED:
-              this.codeStatus = Color.ERROR;
-              break;
-            case SoaStatus.PENDING:
-              this.codeStatus = Color.WARNING;
-              break;
-          }
-        }
+        this._calculateTotals();
       },
       error: (err: HttpErrorResponse) => {
         this.sb.openErrorSnackbar(err.error.errorCode, err.error.message);
@@ -117,11 +100,41 @@ export class ViewSoaComponent {
         width: '40rem',
         data: {
           _id: this.data._id,
+          balance: this.soa.payment?.balance,
         },
       })
       .afterClosed()
       .subscribe((res) => {
         if (res) this.getProductById();
       });
+  }
+
+  private _calculateTotals() {
+    this.productTotal = 0;
+    this.productDiscount = 0;
+
+    for (let item of this.soa.items) {
+      this.productTotal += item.STATIC.unit_price * item.STATIC.quantity;
+      this.productDiscount +=
+        item.STATIC.disc * item.STATIC.unit_price * item.STATIC.quantity;
+      switch (this.soa.status) {
+        case SoaStatus.PAID:
+          this.codeStatus = Color.SUCCESS;
+          break;
+        case SoaStatus.CANCELLED:
+          this.codeStatus = Color.ERROR;
+          break;
+        case SoaStatus.PENDING:
+          this.codeStatus = Color.WARNING;
+          break;
+      }
+    }
+
+    if (!this.soa?.payment) {
+      this.soa.payment = {
+        paid: 0,
+        balance: this.soa.summary?.grandtotal || 0,
+      };
+    }
   }
 }
