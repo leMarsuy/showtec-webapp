@@ -16,7 +16,10 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { REGISTERED_BANKS } from '@app/core/enums/registered-bank.enum';
+import {
+  REGISTERED_BANKS,
+  RegisteredBank,
+} from '@app/core/enums/registered-bank.enum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
@@ -47,14 +50,14 @@ import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer
 })
 export class UpsertVoucherComponent implements OnInit, OnDestroy {
   banks = REGISTERED_BANKS;
-  isUpdate!: boolean;
 
   voucher!: Voucher;
   voucherClone!: any;
   voucherForm!: FormGroup;
   voucherId!: string;
 
-  loading = true;
+  isUpdate!: boolean;
+  isLoading = true;
 
   /**
    * * SIGNATORIES
@@ -110,14 +113,14 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   ) {
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
-      bank: ['', Validators.required],
+      bank: [RegisteredBank.CHINABANK, Validators.required],
       accountsTotal: ['', Validators.required],
       accounts: this.formBuilder.array([]),
       particulars: this.formBuilder.array([]),
       checkNo: ['', Validators.required],
       checkDate: [null, Validators.required],
     });
-
+    //Get
     this.voucherId = this.route.snapshot.paramMap.get('_id') || '';
     this.isUpdate = this.voucherId ? true : false;
     this.voucherClone = this.voucherData.Voucher;
@@ -127,9 +130,9 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     } else if (this.voucherClone) {
       this.voucher = this.voucherClone;
       this._patchFormValues();
-      this.loading = false;
+      this.isLoading = false;
     } else {
-      this.loading = false;
+      this.isLoading = false;
     }
   }
 
@@ -264,7 +267,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     this.voucherApi.getVoucherById(id).subscribe((voucher) => {
       this.voucher = voucher as Voucher;
       this._patchFormValues();
-      this.loading = false;
+      this.isLoading = false;
     });
   }
 

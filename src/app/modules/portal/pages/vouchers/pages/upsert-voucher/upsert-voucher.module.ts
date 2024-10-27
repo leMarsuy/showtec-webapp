@@ -16,6 +16,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { SkeletonFormLoadingComponent } from './components/skeleton-form-loading/skeleton-form-loading.component';
 import { ParticularsArrayFormComponent } from './components/particulars-array-form/particulars-array-form.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatDatepickerModule,
     MatSelectModule,
     MatButtonModule,
+    MatTooltipModule,
     NgxSkeletonLoaderModule,
     AsyncPipe,
   ],
