@@ -47,9 +47,19 @@ export class VouchersListComponent {
       type: ColumnType.STRING,
     },
     {
+      label: 'Check No',
+      dotNotationPath: 'checkNo',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Check Date',
+      dotNotationPath: 'checkDate',
+      type: ColumnType.DATE,
+    },
+    {
       label: 'Account Total',
       dotNotationPath: 'accountsTotal',
-      type: ColumnType.STRING,
+      type: ColumnType.CURRENCY,
     },
     {
       label: 'Bank',
