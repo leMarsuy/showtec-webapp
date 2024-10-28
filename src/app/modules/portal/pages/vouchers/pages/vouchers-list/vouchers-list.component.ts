@@ -1,13 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
-import { Status, STATUS_TYPES } from '@app/core/enums/status.enum';
+import { Status } from '@app/core/enums/status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Voucher } from '@app/core/models/voucher.model';
@@ -18,6 +18,11 @@ import { VoucherDataService } from '../upsert-voucher/voucher-data.service';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
+import { ChangeStatusModalComponent } from './components/change-status-modal/change-status-modal.component';
+import {
+  VOUCHER_STATUSES,
+  VoucherStatus,
+} from '@app/core/enums/voucher-status.enum';
 
 @Component({
   selector: 'app-vouchers-list',
@@ -30,7 +35,7 @@ export class VouchersListComponent {
 
   private sortBy = '-code.value'; //Voucher No, descending
 
-  tableFilterStatuses = ['All', ...STATUS_TYPES];
+  tableFilterStatuses = ['All', ...VOUCHER_STATUSES];
   tableFilterStatus = 'All';
   downloading = false;
 
@@ -73,15 +78,11 @@ export class VouchersListComponent {
       colorCodes: [
         {
           color: Color.SUCCESS,
-          value: Status.ACTIVE,
-        },
-        {
-          color: Color.DEAD,
-          value: Status.INACTIVE,
+          value: VoucherStatus.ACTIVE,
         },
         {
           color: Color.ERROR,
-          value: Status.DELETED,
+          value: VoucherStatus.DELETED,
         },
       ],
     },
@@ -101,6 +102,12 @@ export class VouchersListComponent {
           name: 'Edit Voucher',
           action: 'edit',
           icon: 'edit',
+          color: Color.WARNING,
+        },
+        {
+          name: 'Change Voucher Status',
+          action: 'change_status',
+          icon: 'autorenew',
           color: Color.WARNING,
         },
         {
@@ -170,17 +177,21 @@ export class VouchersListComponent {
 
   actionEvent(e: any) {
     const { action } = e.action;
+    const voucher = e.element;
 
     switch (action) {
       case 'edit':
-        this.router.navigate(['portal', 'vouchers', 'edit', e.element._id]);
+        this.router.navigate(['portal', 'vouchers', 'edit', voucher._id]);
         break;
       case 'print':
-        this._print(e.element);
+        this._print(voucher);
         break;
       case 'clone':
-        this.voucherData.setVoucher(e.element);
+        this.voucherData.setVoucher(voucher);
         this.router.navigate(['portal', 'vouchers', 'create']);
+        break;
+      case 'change_status':
+        this._openChangeStatusModal(voucher);
         break;
     }
   }
@@ -234,5 +245,25 @@ export class VouchersListComponent {
       disableClose: true,
       autoFocus: false,
     });
+  }
+
+  private _openChangeStatusModal(voucher: Voucher) {
+    const config: MatDialogConfig = {
+      data: voucher,
+      autoFocus: false,
+      disableClose: true,
+      width: '45%',
+    };
+
+    this.dialog
+      .open(ChangeStatusModalComponent, config)
+      .afterClosed()
+      .subscribe({
+        next: (hasUpdate: boolean) => {
+          if (hasUpdate) {
+            this.getVouchers();
+          }
+        },
+      });
   }
 }

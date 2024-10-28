@@ -6,6 +6,7 @@ import { Status } from '@app/core/enums/status.enum';
 import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
+import { VoucherStatus } from '@app/core/enums/voucher-status.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -45,12 +46,17 @@ export class VoucherApiService {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }
 
-  patchVoucherStatusById(_id: string, status: Status) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, status);
+  patchVoucherStatusById(_id: string, status: VoucherStatus) {
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, {
+      status,
+    });
   }
 
-  deleteVoucherStatusById(_id: string, status: Status) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/delete`, status);
+  deleteVoucherStatusById(_id: string) {
+    const status = VoucherStatus.DELETED;
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/delete`, {
+      status,
+    });
   }
   getVoucherPdfReceipt(_id: string) {
     return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
