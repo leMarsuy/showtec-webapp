@@ -176,6 +176,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       bank: voucher?.bank ?? RegisteredBank.CHINABANK,
       accountsTotal: voucher?.accountsTotal ?? '',
       checkNo: voucher?.checkNo ?? '',
+      checkDate: voucher?.checkDate ?? null,
       accounts: voucher?.accoutns ?? [],
       particulars: voucher?.particulars ?? [],
     });
