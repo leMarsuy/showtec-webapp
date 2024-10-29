@@ -37,7 +37,7 @@ export class VouchersListComponent {
 
   tableFilterStatuses = ['All', ...VOUCHER_STATUSES];
   tableFilterStatus = 'All';
-  downloading = false;
+  isLoading = false;
 
   vouchers!: Voucher[];
   columns: TableColumn[] = [
@@ -143,13 +143,12 @@ export class VouchersListComponent {
   }
 
   getVouchers() {
+    const loadingMsg = 'Fetching expenses...';
     const status =
       this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
 
-    this.snackbarService.openLoadingSnackbar(
-      'Please Wait',
-      'Fetching expenses...'
-    );
+    this._setLoadingState(true, loadingMsg);
+
     this.voucherApi
       .getVouchers(
         {
@@ -161,12 +160,13 @@ export class VouchersListComponent {
       )
       .subscribe({
         next: (resp) => {
-          var response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
+          this._setLoadingState(false);
+          const response = resp as HttpGetResponse;
           this.vouchers = response.records as Voucher[];
           this.page.length = response.total;
         },
         error: (err: HttpErrorResponse) => {
+          this._setLoadingState(false);
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
             err.error.message
@@ -203,11 +203,8 @@ export class VouchersListComponent {
   }
 
   exportTableExcel() {
-    this.snackbarService.openLoadingSnackbar(
-      'Please Wait',
-      'Downloading Excel file...'
-    );
-    this.downloading = true;
+    const loadingMsg = 'Downloading Excel File...';
+    this._setLoadingState(true, loadingMsg);
 
     const status =
       this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
@@ -218,17 +215,14 @@ export class VouchersListComponent {
 
     this.voucherApi.exportExcelVouchers(query, status).subscribe({
       next: (response: any) => {
-        this.downloading = false;
-        this.snackbarService.closeLoadingSnackbar();
+        this._setLoadingState(false);
         const fileName = generateFileName('VOUCHER', 'xlsx');
         this.fileApi.downloadFile(response.body as Blob, fileName);
       },
       error: ({ error }: HttpErrorResponse) => {
-        this.downloading = false;
+        this._setLoadingState(false);
+        console.error(error);
         this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
-      },
-      complete: () => {
-        this.downloading = false;
       },
     });
   }
@@ -265,5 +259,15 @@ export class VouchersListComponent {
           }
         },
       });
+  }
+
+  private _setLoadingState(isLoading: boolean, loadingMsg = '') {
+    this.isLoading = isLoading;
+
+    if (isLoading) {
+      this.snackbarService.openLoadingSnackbar('Please Wait', loadingMsg);
+    } else {
+      this.snackbarService.closeLoadingSnackbar();
+    }
   }
 }
