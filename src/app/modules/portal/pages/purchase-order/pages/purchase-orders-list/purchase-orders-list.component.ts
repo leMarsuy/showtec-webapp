@@ -105,12 +105,6 @@ export class PurchaseOrdersListComponent {
           icon: 'edit',
           color: Color.WARNING,
         },
-        {
-          name: 'View Payment',
-          action: 'payments',
-          icon: 'money',
-          color: Color.SUCCESS,
-        },
       ],
     },
   ];
@@ -174,9 +168,6 @@ export class PurchaseOrdersListComponent {
       case 'print':
         this._print(e.element);
         break;
-      case 'payments':
-        this._viewPayments(e.element._id);
-        break;
     }
   }
 
@@ -200,22 +191,5 @@ export class PurchaseOrdersListComponent {
       disableClose: true,
       autoFocus: false,
     });
-  }
-
-  private _viewPayments(id: string) {
-    this.dialog
-      .open(ViewPurchaseOrderComponent, {
-        data: id,
-        width: '100rem',
-        maxWidth: '100rem',
-        disableClose: true,
-        autoFocus: false,
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res) {
-          this.getPurchaseOrders();
-        }
-      });
   }
 }
