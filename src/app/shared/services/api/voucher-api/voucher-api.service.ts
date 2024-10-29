@@ -42,6 +42,10 @@ export class VoucherApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}`);
   }
 
+  getRecentVoucher() {
+    return this.httpService.get(`${this.apiPrefix}/recent`);
+  }
+
   updateVoucherById(_id: string, updateBody: Voucher) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }
