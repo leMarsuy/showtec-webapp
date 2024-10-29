@@ -37,6 +37,7 @@ import {
 })
 export class SignatoriesFormComponent implements OnInit, OnDestroy {
   @Input() signatories: Array<any> = [];
+  @Input({ alias: 'loading' }) isLoading = false;
   @Input() signatoryDefaultAction = SignatoryAction.APPROVED;
   @Output() signatoriesEmitter = new EventEmitter<Array<any>>();
 

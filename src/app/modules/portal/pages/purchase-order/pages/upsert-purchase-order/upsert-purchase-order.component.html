@@ -1,14 +1,14 @@
 <div class="flex gap-4">
   <div class="flex flex-col h-fit w-fit gap-y-4 sticky top-16">
     <button
-      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer "
+      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer"
       (click)="navigateBack()" matTooltip="Back to Table" matTooltipPosition="right">
       <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
     </button>
 
     @if(isUpdate) {
     <button
-      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center  cursor-pointer "
+      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center  cursor-pointer"
       matTooltip="Use PO to..." matTooltipPosition="right" [cdkMenuTriggerFor]="menu">
       <mat-icon class="text-cyan-500 inline-block" fontIcon="content_copy" />
     </button>
@@ -31,51 +31,51 @@
   </div>
   <!-- Form Arrays -->
   <div class="flex flex-col gap-4 w-full rounded-xl bg-white text-gray-900 p-4 grow">
-    @if(!loading) {
     <!-- PRODUCTS LIST -->
     <section>
-      <app-products-form [products]="listedProducts" (productsEmitter)="productsEmitHandler($event)" />
+      <app-products-form [products]="listedProducts" [loading]="isLoading"
+        (productsEmitter)="productsEmitHandler($event)" />
     </section>
-
     <!-- DISCOUNTS LIST -->
     <section>
-      <app-discounts-form [discounts]="listedDiscounts" (discountsEmitter)="discountsEmitHandler($event)" />
+      <app-discounts-form [discounts]="listedDiscounts" [loading]="isLoading"
+        (discountsEmitter)="discountsEmitHandler($event)" />
     </section>
 
 
     <!-- TAXES LIST -->
     <section>
-      <app-taxes-form [taxes]="listedTaxes" (taxesEmitter)="taxesEmitHandler($event)" />
+      <app-taxes-form [taxes]="listedTaxes" [loading]="isLoading" (taxesEmitter)="taxesEmitHandler($event)" />
     </section>
 
 
     <!-- SIGNATORIES LIST -->
     <section>
-      <app-signatories-form [signatories]="listedSignatories" (signatoriesEmitter)="signatoriesEmitHandler($event)" />
+      <app-signatories-form [signatories]="listedSignatories" [loading]="isLoading"
+        (signatoriesEmitter)="signatoriesEmitHandler($event)" />
     </section>
-    }
   </div>
 
   <div class="bg-white rounded-xl p-4 h-fit w-fit flex-none sticky top-16">
-    @if(!loading) {
     <!-- Customer Form -->
-    <app-attach-customer-form [fGroup]="poForm" />
+    <app-attach-customer-form [fGroup]="poForm" [loading]="isLoading" />
 
+    @if(isLoading === false) {
     <!-- Total Summary -->
     <app-total-summary-display [discounts]="listedDiscounts" [taxes]="listedTaxes" [summary]="poSummary" />
     }
 
     <div class="flex justify-between">
-      <button *ngIf="isUpdate" mat-button color="warn" [disabled]="!isValid || !poForm.dirty || loading"
+      <button *ngIf="isUpdate" mat-button color="warn" [disabled]="!isValid || !poForm.dirty || isSubmitting"
         (click)="confirmDiscard()">
         Discard
       </button>
 
-      <button mat-flat-button color="primary" [disabled]="!isValid || !poForm.dirty || loading"
+      <button mat-flat-button color="primary" [disabled]="!isValid || !poForm.dirty || isSubmitting"
         (click)="confirmChanges()">
         Save
       </button>
-
     </div>
   </div>
+
 </div>

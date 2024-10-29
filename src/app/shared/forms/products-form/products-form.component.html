@@ -1,10 +1,16 @@
 <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
   <p>PRODUCTS</p>
 </div>
+@if(isLoading === false) {
 <app-table [hasPagination]="false" [columns]="columns" [dataSource]="products" [page]="page"
   (actionEmitter)="actionEventHandler($event)" (updateCellEmitter)="updateCellEventHandler($event)">
 </app-table>
+} @else {
+<ngx-skeleton-loader [theme]="{height: '48px'}" />
+<ngx-skeleton-loader [theme]="{height: '48px'}" />
+}
 <div class="flex gap-4">
+  @if(isLoading === false) {
   <mat-form-field class="w-full" appearance="outline">
     <input [formControl]="searchControl" matInput type="text" placeholder="Search Product Here..."
       [matAutocomplete]="matAuto" />
@@ -17,4 +23,8 @@
       }
     </mat-autocomplete>
   </mat-form-field>
+  } @else {
+  <ngx-skeleton-loader [theme]="{height: '48px'}" />
+  }
+
 </div>

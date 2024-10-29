@@ -13,6 +13,7 @@ import { Tax } from '@app/core/models/soa.model';
 })
 export class TaxesFormComponent implements OnInit {
   @Input() taxes: Tax[] = [];
+  @Input({ alias: 'loading' }) isLoading = false;
   @Output() taxesEmitter = new EventEmitter<Tax[]>();
 
   columns: TableColumn[] = [

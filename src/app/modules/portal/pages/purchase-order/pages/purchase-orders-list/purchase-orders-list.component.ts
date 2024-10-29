@@ -25,7 +25,7 @@ import { ViewPurchaseOrderComponent } from '../view-purchase-order/view-purchase
   styleUrl: './purchase-orders-list.component.scss',
 })
 export class PurchaseOrdersListComponent {
-  placeholder = 'Search for Voucher No.';
+  placeholder = 'Search for Purchase No. | Contact Person';
   searchText: FormControl = new FormControl('');
 
   tableFilterStatuses = ['All', ...PURCHASE_ORDER_STATUSES];
@@ -41,6 +41,11 @@ export class PurchaseOrdersListComponent {
     {
       label: 'Customer',
       dotNotationPath: '_customerId.name',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Contact Person',
+      dotNotationPath: '_customerId.contactPerson',
       type: ColumnType.STRING,
     },
     {
@@ -72,11 +77,6 @@ export class PurchaseOrdersListComponent {
       type: ColumnType.CURRENCY,
     },
     {
-      label: 'Paid',
-      dotNotationPath: 'payment.paid',
-      type: ColumnType.CURRENCY,
-    },
-    {
       label: 'Date of PO',
       dotNotationPath: 'purchaseOrderDate',
       type: ColumnType.DATE,
@@ -99,12 +99,6 @@ export class PurchaseOrdersListComponent {
           action: 'edit',
           icon: 'edit',
           color: Color.WARNING,
-        },
-        {
-          name: 'View Payment',
-          action: 'payments',
-          icon: 'money',
-          color: Color.SUCCESS,
         },
       ],
     },
@@ -169,9 +163,6 @@ export class PurchaseOrdersListComponent {
       case 'print':
         this._print(e.element);
         break;
-      case 'payments':
-        this._viewPayments(e.element._id);
-        break;
     }
   }
 
@@ -195,22 +186,5 @@ export class PurchaseOrdersListComponent {
       disableClose: true,
       autoFocus: false,
     });
-  }
-
-  private _viewPayments(id: string) {
-    this.dialog
-      .open(ViewPurchaseOrderComponent, {
-        data: id,
-        width: '100rem',
-        maxWidth: '100rem',
-        disableClose: true,
-        autoFocus: false,
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res) {
-          this.getPurchaseOrders();
-        }
-      });
   }
 }
