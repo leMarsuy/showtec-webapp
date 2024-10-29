@@ -26,7 +26,7 @@ import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-del
 })
 export class OutDeliveryListComponent {
   searchText = new FormControl('');
-
+  placeholder = 'Search DR No | Customer Name | Contact Person';
   page: PageEvent = {
     pageIndex: 0,
     pageSize: 10,

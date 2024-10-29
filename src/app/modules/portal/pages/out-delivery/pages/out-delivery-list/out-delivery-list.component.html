@@ -3,8 +3,7 @@
     <div class="flex">
       <div class="flex grow">
         <mat-form-field appearance="outline" class="w-[32rem]">
-          <input matInput placeholder="Search DR No or Customer Name" [formControl]="searchText"
-            (keyup.enter)="getOutDeliverys()" />
+          <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="getOutDeliverys()" />
           <mat-icon matSuffix class="cursor-pointer" (click)="getOutDeliverys()" fontIcon="search" />
         </mat-form-field>
 
