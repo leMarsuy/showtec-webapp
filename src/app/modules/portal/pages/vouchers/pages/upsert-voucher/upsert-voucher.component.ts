@@ -182,7 +182,6 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     });
 
     if (Array.isArray(voucher.signatories) && voucher.signatories.length > 0) {
-      console.log('passed voucher signatories');
       for (let signatory of voucher.signatories) {
         this.listedSignatories.push({
           name: signatory.STATIC.name,

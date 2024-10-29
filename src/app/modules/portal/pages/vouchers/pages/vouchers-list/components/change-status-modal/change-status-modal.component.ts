@@ -79,7 +79,7 @@ export class ChangeStatusModalComponent {
         },
         error: ({ error }: HttpErrorResponse) => {
           this._setSubmittingState(false);
-          console.log(error);
+          console.error(error);
           this.snackbar.openErrorSnackbar(error.errorCode, error.message);
         },
       });
