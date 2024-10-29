@@ -24,18 +24,19 @@ export class AddPaymentComponent {
   registeredBanks = REGISTERED_BANKS;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { _id: string },
+    @Inject(MAT_DIALOG_DATA) public data: { _id: string; balance: number },
     private soaApi: SoaApiService,
     private sb: SnackbarService,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AddPaymentComponent>
   ) {
     this.onTransactionFormChange();
+    console.log(this.data);
   }
 
   transactionForm = this.fb.group({
     paymentMethod: [PaymentMethod.CASH, Validators.required],
-    amount: [0, [Validators.required, Validators.min(0)]],
+    amount: [this.data.balance ?? 0, [Validators.required, Validators.min(0)]],
     paymentDate: [new Date(), Validators.required],
     remarks: [''],
     // both

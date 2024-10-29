@@ -21,6 +21,11 @@ export const SOA_CONFIG = {
       type: ColumnType.STRING,
     },
     {
+      label: 'Contact Person',
+      dotNotationPath: '_customerId.contactPerson',
+      type: ColumnType.STRING,
+    },
+    {
       label: 'Status',
       dotNotationPath: 'status',
       type: ColumnType.STATUS,
@@ -82,6 +87,12 @@ export const SOA_CONFIG = {
           action: 'payments',
           icon: 'money',
           color: Color.SUCCESS,
+        },
+        {
+          name: 'Reuse SOA',
+          action: 'clone',
+          icon: 'content_copy',
+          color: Color.INFO,
         },
       ],
     },
