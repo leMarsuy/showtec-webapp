@@ -1,9 +1,19 @@
 <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
   <p>SIGNATORIES</p>
 </div>
+
+@if(isLoading === false) {
 <app-table [hasPagination]="false" [columns]="columns" [dataSource]="signatories" [page]="page"
-  (actionEmitter)="actionEventHandler($event)" (updateCellEmitter)="updateSignatories($event)"></app-table>
+  (actionEmitter)="actionEventHandler($event)" (updateCellEmitter)="updateSignatories($event)">
+</app-table>
+} @else {
+<ngx-skeleton-loader [theme]="{height: '48px'}" />
+<ngx-skeleton-loader [theme]="{height: '48px'}" />
+}
+
+
 <div class="flex gap-4">
+  @if(isLoading === false) {
   <mat-form-field class="w-full" appearance="outline">
     <input [formControl]="searchUserControl" matInput type="text" [matAutocomplete]="userAuto"
       placeholder="Find System User" />
@@ -13,4 +23,7 @@
       }
     </mat-autocomplete>
   </mat-form-field>
+  } @else {
+  <ngx-skeleton-loader [theme]="{height: '48px'}" />
+  }
 </div>

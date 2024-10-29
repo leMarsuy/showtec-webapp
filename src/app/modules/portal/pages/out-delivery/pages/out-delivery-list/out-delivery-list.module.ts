@@ -10,9 +10,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
+import { DeepFindPipe } from '@app/shared/pipes/deep-find/deep-find.pipe';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [OutDeliveryListComponent],
+  declarations: [OutDeliveryListComponent, CancelOutDeliveryComponent],
   imports: [
     CommonModule,
     OutDeliveryListRoutingModule,
@@ -24,6 +27,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatInputModule,
     MatIconModule,
     MatTooltipModule,
+    MatDialogModule,
+    DeepFindPipe,
   ],
 })
 export class OutDeliveryListModule {}

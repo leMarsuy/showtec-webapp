@@ -13,7 +13,7 @@ import {
   styleUrl: './accounts-array-form.component.scss',
 })
 export class AccountsArrayFormComponent implements OnInit, OnDestroy {
-  @Input() title!: string;
+  @Input() title = 'DISTRIBUTION OF ACCOUNTS';
   @Input({ required: true }) fArray!: FormArray;
   @Input() defaultValueArray!: Array<any> | null;
 

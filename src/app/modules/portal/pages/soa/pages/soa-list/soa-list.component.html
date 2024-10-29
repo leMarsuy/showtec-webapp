@@ -2,7 +2,7 @@
   <div class="flex">
     <div class="flex ">
       <mat-form-field appearance="outline" class="w-[32rem]">
-        <input matInput placeholder="Search SOA" [formControl]="searchText" (keyup.enter)="getSoas()" />
+        <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="getSoas()" />
         <mat-icon matSuffix class="cursor-pointer" (click)="getSoas()">
           search
         </mat-icon>

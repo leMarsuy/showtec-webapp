@@ -23,6 +23,7 @@ import {
 })
 export class AttachCustomerFormComponent implements OnInit, OnDestroy {
   @Input({ required: true }) fGroup!: FormGroup;
+  @Input({ alias: 'loading' }) isLoading = false;
 
   filteredCustomers!: Observable<Customer[]>;
 

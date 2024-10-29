@@ -29,6 +29,7 @@ import {
 })
 export class DiscountsFormComponent implements OnInit, OnDestroy {
   @Input() discounts: Discount[] = [];
+  @Input({ alias: 'loading' }) isLoading = false;
   @Output() discountsEmitter = new EventEmitter<Discount[]>();
 
   columns: TableColumn[] = [
