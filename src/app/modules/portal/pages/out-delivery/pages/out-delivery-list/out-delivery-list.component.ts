@@ -60,7 +60,7 @@ export class OutDeliveryListComponent {
       })
       .subscribe({
         next: (resp) => {
-          var response = resp as HttpGetResponse;
+          const response = resp as HttpGetResponse;
           console.log(response.records);
           this.snackbarService.closeLoadingSnackbar();
           this.outdeliveries = response.records as OutDelivery[];
@@ -84,15 +84,32 @@ export class OutDeliveryListComponent {
   actionEvent(e: any) {
     const { action } = e.action;
     const outDelivery = e.element;
+    const outDeliveryStatus = outDelivery.status;
 
     switch (action) {
       case 'print':
         this.print(outDelivery);
         break;
       case 'edit':
+        if (
+          this._isActionEventRestricted(
+            outDeliveryStatus,
+            'Cancelled/Deleted Out Delivery is uneditable'
+          ) === true
+        ) {
+          return;
+        }
         this.router.navigate(['portal/out-delivery/edit/' + outDelivery._id]);
         break;
       case 'change-status-cancel':
+        if (
+          this._isActionEventRestricted(
+            outDeliveryStatus,
+            'Out Delivery status is already cancelled'
+          ) === true
+        ) {
+          return;
+        }
         this._cancelItem(outDelivery);
         break;
     }
@@ -114,7 +131,7 @@ export class OutDeliveryListComponent {
 
   exportTableExcel() {
     const query: QueryParams = {
-      searchText: this.searchText.value || '',
+      searchText: this.searchText.value ?? '',
     };
     this._setLoadingState(true, 'Downloading Excel');
 
@@ -161,8 +178,12 @@ export class OutDeliveryListComponent {
             'Success',
             'Delivery has been cancelled.'
           );
+          setTimeout(() => {
+            this.getOutDeliverys();
+          }, 800);
         },
         error: ({ error }: HttpErrorResponse) => {
+          this._setLoadingState(false);
           console.error(error);
           this.snackbarService.openErrorSnackbar(
             error.errorCode,
@@ -179,6 +200,23 @@ export class OutDeliveryListComponent {
       this.snackbarService.openLoadingSnackbar('Please Wait', loadingMessage);
     } else {
       this.snackbarService.closeLoadingSnackbar();
+    }
+  }
+
+  private _isActionEventRestricted(
+    outDeliveryStatus: OutDeliveryStatus,
+    errorMessage = ''
+  ) {
+    const restrictedStatus = [
+      OutDeliveryStatus.CANCELLED,
+      OutDeliveryStatus.DELETED,
+    ];
+
+    if (restrictedStatus.includes(outDeliveryStatus)) {
+      this.snackbarService.openErrorSnackbar('Restricted Action', errorMessage);
+      return true;
+    } else {
+      return false;
     }
   }
 }
