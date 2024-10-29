@@ -77,11 +77,6 @@ export class PurchaseOrdersListComponent {
       type: ColumnType.CURRENCY,
     },
     {
-      label: 'Paid',
-      dotNotationPath: 'payment.paid',
-      type: ColumnType.CURRENCY,
-    },
-    {
       label: 'Date of PO',
       dotNotationPath: 'purchaseOrderDate',
       type: ColumnType.DATE,
