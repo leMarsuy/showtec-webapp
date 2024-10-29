@@ -17,6 +17,7 @@ import { SkeletonFormLoadingComponent } from './components/skeleton-form-loading
 import { ParticularsArrayFormComponent } from './components/particulars-array-form/particulars-array-form.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { SignatoriesFormModule } from '@app/shared/forms/signatories-form/signatories-form.module';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
     NgxSkeletonLoaderModule,
     AsyncPipe,
+    SignatoriesFormModule,
   ],
   exports: [UpsertVoucherComponent],
 })

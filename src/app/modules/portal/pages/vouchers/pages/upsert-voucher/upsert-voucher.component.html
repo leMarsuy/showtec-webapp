@@ -45,36 +45,20 @@
       </div>
 
       <!-- PARTICULARS -->
-      <app-particulars-array-form title="PARTICULARS" [fArray]="$any(voucherForm).get('particulars')"
+      <app-particulars-array-form [fArray]="$any(voucherForm).get('particulars')"
         [defaultValueArray]="voucher ? voucher.particulars : null">
       </app-particulars-array-form>
 
 
       <!-- DISTRIBUTION OF ACCOUNTS -->
-      <app-accounts-array-form title="DISTRIBUTION OF ACCOUNTS" [fArray]="$any(voucherForm).get('accounts')"
+      <app-accounts-array-form [fArray]="$any(voucherForm).get('accounts')"
         [defaultValueArray]="voucher ? voucher.accounts : null">
       </app-accounts-array-form>
 
       <!-- SIGNATORIES -->
-      <div class="mx-4">
-        <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-4 pt-2">
-          <p>SIGNATORIES</p>
-        </div>
-        <app-table [hasPagination]="false" [columns]="listedSignatoriesColumns" [dataSource]="listedSignatories"
-          [page]="listedSignatoriesPage" (actionEmitter)="actionEventSignatories($event)"
-          (updateCellEmitter)="updateSignatories($event)"></app-table>
-        <div class="mt-3">
-          <mat-form-field appearance="outline" floatLabel="always" class="w-full">
-            <input [formControl]="signatoryControl" placeholder="Find System User" matInput type="text"
-              [matAutocomplete]="userAuto" />
-            <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete"
-              (optionSelected)="pushToListedSignatories($event.option.value)">
-              @for (option of filteredSignatories | async; track option) {
-              <mat-option [value]="option">{{ option.name }}</mat-option>
-              }
-            </mat-autocomplete>
-          </mat-form-field>
-        </div>
+      <div class="bg-white m-4">
+        <app-signatories-form [signatories]="listedSignatories" [signatoryDefaultAction]="signatoryAction"
+          (signatoriesEmitter)="signatoriesEmitHandler($event)" />
       </div>
 
       <div class="flex justify-end mt-4 mx-4 mb-2">
@@ -82,9 +66,11 @@
           {{isUpdate ? 'Update Voucher' : 'Create Voucher'}}
         </button>
       </div>
+
     </form>
     } @else {
     <voucher-skeleton-form-loading></voucher-skeleton-form-loading>
     }
+
   </div>
 </div>

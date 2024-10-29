@@ -1,19 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
-  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
 import {
-  debounceTime,
-  distinctUntilChanged,
-  map,
+  catchError,
+  firstValueFrom,
   Observable,
-  startWith,
+  of,
   Subject,
-  switchMap,
   takeUntil,
 } from 'rxjs';
 import {
@@ -30,7 +27,6 @@ import {
   SIGNATORY_ACTIONS,
   SignatoryAction,
 } from '@app/core/enums/signatory-action.enum';
-import { deepInsert } from '@app/shared/utils/deepInsert';
 import { User } from '@app/core/models/user.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
@@ -41,6 +37,8 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { VoucherDataService } from './voucher-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
+import { isEmpty } from '@app/shared/utils/objectUtil';
+import { Signatory } from '@app/core/models/out-delivery.model';
 
 @Component({
   selector: 'app-upsert-voucher',
@@ -52,88 +50,36 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   banks = REGISTERED_BANKS;
 
   voucher!: Voucher;
-  voucherClone!: any;
   voucherForm!: FormGroup;
   voucherId!: string;
 
-  isUpdate!: boolean;
+  isUpdate = false;
   isLoading = true;
 
-  /**
-   * * SIGNATORIES
-   */
-  signatoryControl = new FormControl('');
-  filteredSignatories!: Observable<User[]>;
+  signatoryAction = SignatoryAction.APPROVED;
   listedSignatories: Array<any> = [];
-  listedSignatoriesColumns: TableColumn[] = [
-    {
-      label: 'Name',
-      dotNotationPath: 'name',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Designation',
-      dotNotationPath: 'designation',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Action',
-      dotNotationPath: 'action',
-      type: ColumnType.STRING,
-      editable: true,
-      options: SIGNATORY_ACTIONS,
-      width: '[20rem]',
-    },
-    {
-      label: 'Remove',
-      dotNotationPath: '_id',
-      type: ColumnType.ACTION,
-      width: '[2rem]',
-      actions: [{ icon: 'remove', name: 'remove', color: Color.ERROR }],
-    },
-  ];
-  listedSignatoriesPage: PageEvent = {
-    pageIndex: 0,
-    pageSize: 100,
-    length: 0,
-  };
 
-  private _destroyed$ = new Subject<void>();
+  private readonly _destroyed$ = new Subject<void>();
 
   constructor(
-    private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private userApi: UserApiService,
-    private voucherApi: VoucherApiService,
-    private voucherData: VoucherDataService,
-    private confirmation: ConfirmationService,
-    private snackbar: SnackbarService,
-    private dialog: MatDialog
+    private readonly formBuilder: FormBuilder,
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly voucherApi: VoucherApiService,
+    private readonly voucherData: VoucherDataService,
+    private readonly confirmation: ConfirmationService,
+    private readonly snackbar: SnackbarService,
+    private readonly dialog: MatDialog
   ) {
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
-      bank: [RegisteredBank.CHINABANK, Validators.required],
+      bank: ['', Validators.required],
       accountsTotal: ['', Validators.required],
       accounts: this.formBuilder.array([]),
       particulars: this.formBuilder.array([]),
       checkNo: ['', Validators.required],
       checkDate: [null, Validators.required],
     });
-    //Get
-    this.voucherId = this.route.snapshot.paramMap.get('_id') || '';
-    this.isUpdate = this.voucherId ? true : false;
-    this.voucherClone = this.voucherData.Voucher;
-
-    if (this.isUpdate && !this.voucherClone) {
-      this._getVoucherById(this.voucherId);
-    } else if (this.voucherClone) {
-      this.voucher = this.voucherClone;
-      this._patchFormValues();
-      this.isLoading = false;
-    } else {
-      this.isLoading = false;
-    }
   }
 
   get isVoucherFormValid(): boolean {
@@ -145,41 +91,53 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnInit() {
-    this.filteredSignatories = this.signatoryControl.valueChanges.pipe(
-      takeUntil(this._destroyed$),
-      startWith(''),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap((val: any) => {
-        return this._filterSignatories(val || '');
-      })
+  async ngOnInit() {
+    const activateRouteData$ = this.activatedRoute.data.pipe(
+      takeUntil(this._destroyed$)
     );
-  }
+    const resolverResponse = await firstValueFrom(activateRouteData$);
+    //Upsert Create
+    if (isEmpty(resolverResponse)) {
+      const createVoucher: any = {};
 
-  actionEventSignatories(e: any) {
-    if (e.action.name == 'remove') {
-      this.removeFromListedSignatories(e.i);
+      //Get Latest Voucher
+      const getRecentVoucher$ = this.voucherApi.getRecentVoucher().pipe(
+        takeUntil(this._destroyed$),
+        catchError(() => of(false))
+      );
+      const recentVoucher = (await firstValueFrom(
+        getRecentVoucher$
+      )) as Voucher;
+
+      if (recentVoucher) {
+        const checkNo = Number(recentVoucher.checkNo);
+
+        createVoucher['signatories'] = recentVoucher.signatories;
+
+        if (Number.isInteger(checkNo)) {
+          createVoucher['checkNo'] = checkNo + 1;
+        }
+      }
+
+      //Check if upsert create initiated by reuse voucher
+      const voucherClone = this.voucherData.Voucher as Voucher;
+      if (voucherClone) {
+        Object.assign(createVoucher, voucherClone);
+      }
+
+      this.voucher = createVoucher;
+      this._patchFormValues(createVoucher);
+      this.isLoading = false;
     }
-  }
 
-  removeFromListedSignatories(i: number) {
-    this.listedSignatories.splice(i, 1);
-    this._copySignatoriesToSelf();
-  }
-
-  updateSignatories(e: any) {
-    deepInsert(e.newValue, e.column.dotNotationPath, e.element);
-    this._copySignatoriesToSelf();
-  }
-
-  pushToListedSignatories(user: User) {
-    this.listedSignatories.push({
-      ...user,
-      action: SignatoryAction.APPROVED,
-    });
-    this._copySignatoriesToSelf();
-    this.signatoryControl.reset();
+    //Upsert Update
+    else {
+      this.isUpdate = true;
+      this.voucher = resolverResponse['voucher'];
+      this.voucherId = this.voucher._id as string;
+      this._patchFormValues(this.voucher);
+      this.isLoading = false;
+    }
   }
 
   onSubmit() {
@@ -194,53 +152,49 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       .subscribe((res) => {
         if (res) {
           const form = this._formatResponseBody();
+
+          //Update Api Call
           if (this.isUpdate && this.voucherId) {
             this._updateVoucher(this.voucherId, form);
-            return;
           }
-
-          this._createVoucher(form);
+          //Create Api Call
+          else {
+            this._createVoucher(form);
+          }
         }
       });
   }
 
-  private _patchFormValues() {
-    this.voucherForm.patchValue(this.voucher);
-    this.voucher.signatories.forEach((sig: any) => {
-      this.listedSignatories.push({
-        name: sig.STATIC.name,
-        designation: sig.STATIC.designation,
-        action: sig.action,
-        _id: sig._userId,
-      });
-    });
-
-    this._copySignatoriesToSelf();
-
-    this.voucherForm.updateValueAndValidity();
+  signatoriesEmitHandler(signatories: Signatory[]) {
+    this.listedSignatories = signatories;
+    this.voucherForm.markAsDirty();
   }
 
-  private _filterSignatories(value: string) {
-    return this.userApi
-      .getUsers({ searchText: value, pageSize: 5 })
-      .pipe(map((response: any) => response.records));
-  }
-
-  private _copySignatoriesToSelf() {
-    this.listedSignatories.sort((a, b) => {
-      var aIndex = SIGNATORY_ACTIONS.findIndex((action) => action === a.action);
-      var bIndex = SIGNATORY_ACTIONS.findIndex((action) => action === b.action);
-      return aIndex - bIndex;
+  private _patchFormValues(voucher: any) {
+    this.voucherForm.patchValue({
+      payee: voucher?.payee ?? '',
+      bank: voucher?.bank ?? RegisteredBank.CHINABANK,
+      accountsTotal: voucher?.accountsTotal ?? '',
+      checkNo: voucher?.checkNo ?? '',
+      accounts: voucher?.accoutns ?? [],
+      particulars: voucher?.particulars ?? [],
     });
-    this.listedSignatories = [...this.listedSignatories];
-    this.listedSignatoriesPage.length = -1;
-    setTimeout(() => {
-      this.listedSignatoriesPage.length = this.listedSignatories.length;
-    }, 20);
+
+    if (Array.isArray(voucher.signatories) && voucher.signatories.length > 0) {
+      console.log('passed voucher signatories');
+      for (let signatory of voucher.signatories) {
+        this.listedSignatories.push({
+          name: signatory.STATIC.name,
+          designation: signatory.STATIC.designation,
+          action: signatory.action,
+          _id: signatory._userId,
+        });
+      }
+    }
   }
 
   private _formatResponseBody() {
-    const rawVoucherForm = this.voucherForm.getRawValue() as any;
+    const rawVoucherForm = this.voucherForm.getRawValue();
 
     rawVoucherForm.signatories = [];
     this.listedSignatories.forEach((signatory) => {
@@ -263,14 +217,6 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     return rawVoucherForm;
   }
 
-  private _getVoucherById(id: string) {
-    this.voucherApi.getVoucherById(id).subscribe((voucher) => {
-      this.voucher = voucher as Voucher;
-      this._patchFormValues();
-      this.isLoading = false;
-    });
-  }
-
   private _createVoucher(voucher: Voucher) {
     this.voucherApi.createVoucher(voucher).subscribe({
       next: (res: any) => {
@@ -281,9 +227,9 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
         this._displayPDF(res);
         this.navigateBack();
       },
-      error: (err: HttpErrorResponse) => {
-        console.error(err);
-        this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
+      error: ({ error }: HttpErrorResponse) => {
+        console.error(error);
+        this.snackbar.openErrorSnackbar(error.errorCode, error.message);
       },
     });
   }
@@ -298,30 +244,34 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
         this._displayPDF(res);
         this.navigateBack();
       },
-      error: (err: HttpErrorResponse) => {
-        console.error(err);
-        this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
+      error: ({ error }: HttpErrorResponse) => {
+        console.error(error);
+        this.snackbar.openErrorSnackbar(error.errorCode, error.message);
         this.navigateBack();
       },
     });
   }
 
   private _displayPDF(voucher: Voucher) {
-    if (voucher._id)
-      this.dialog.open(PdfViewerComponent, {
-        data: {
-          apiCall: this.voucherApi.getVoucherPdfReceipt(voucher._id),
-          title: 'View Delivery Receipt',
-        },
-        maxWidth: '70rem',
-        width: '100%',
-        disableClose: true,
-        autoFocus: false,
-      });
+    if (!voucher._id) {
+      this.snackbar.openErrorSnackbar('Error 404', 'Voucher ID is missing');
+      return;
+    }
+
+    this.dialog.open(PdfViewerComponent, {
+      data: {
+        apiCall: this.voucherApi.getVoucherPdfReceipt(voucher._id),
+        title: 'View Delivery Receipt',
+      },
+      maxWidth: '70rem',
+      width: '100%',
+      disableClose: true,
+      autoFocus: false,
+    });
   }
 
   navigateBack() {
-    this.router.navigate(['portal/vouchers'], { skipLocationChange: true });
+    this.router.navigate(['portal', 'vouchers']);
   }
 
   ngOnDestroy(): void {
