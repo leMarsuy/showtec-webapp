@@ -1,0 +1,28 @@
+<h1 mat-dialog-title>Change Voucher Status</h1>
+<mat-dialog-content>
+
+  <div class="flex flex-col gap-1 mb-6 [&>p]:font-medium [&>p]:text-base">
+    <p>Voucher:<span class="ml-1 font-normal">#{{ data.code?.value }}</span></p>
+    <p>Payee:<span class="ml-1 font-normal">{{ data.payee }}</span></p>
+    <p>Account Total:<span class="ml-1 font-normal">{{ data.accountsTotal | currency:'PHP' }}</span></p>
+  </div>
+
+  <div>
+    <p>Change status to:</p>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-select [formControl]="statusControl">
+        @for(option of voucherStatuses; track option) {
+        <mat-option [value]="option">{{ option }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="flex justify-between items-center w-full">
+    <button mat-button color="warn" (click)="onClose()" [disabled]="isSubmitting === true">Close</button>
+    <button mat-flat-button (click)="onSubmit()"
+      [disabled]="isSubmitting === true || statusControl.dirty === false || statusControl.errors">Update</button>
+  </div>
+</mat-dialog-actions>

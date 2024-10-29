@@ -9,7 +9,7 @@
       <div class="flex grow justify-between items-start ml-[24px]">
         <div class="flex gap-2">
           @for(status of tableFilterStatuses; track $index) {
-          <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" [ngClass]="{
+          <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" aria-hidden="true" [ngClass]="{
                 'border-emerald-800 bg-emerald-100 text-emerald-800' : tableFilterStatus === status,
                 'border-gray-500' : tableFilterStatus !== status
               }" (click)="onFilterStatusChange(status)">
@@ -17,14 +17,15 @@
           </div>
           }
         </div>
+
         <div>
-          <button mat-icon-button (click)="getVouchers()" [disabled]="downloading" matTooltip="Refresh Table">
+          <button mat-icon-button (click)="getVouchers()" [disabled]="isLoading === true" matTooltip="Refresh Table">
             <mat-icon class="mr-2  disabled:text-gray-300"> refresh </mat-icon>
           </button>
-          <button mat-icon-button (click)="exportTableExcel()" [disabled]="downloading"
+          <button mat-icon-button (click)="exportTableExcel()" [disabled]="isLoading === true"
             matTooltip="Download Table Excel">
             <mat-icon class="mr-2 disabled:text-gray-300">
-              {{ downloading ? "downloading" : "download_for_offline" }}
+              {{ isLoading ? "downloading" : "download_for_offline" }}
             </mat-icon>
           </button>
         </div>

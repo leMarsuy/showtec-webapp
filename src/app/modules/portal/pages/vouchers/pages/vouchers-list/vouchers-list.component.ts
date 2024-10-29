@@ -1,13 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
-import { Status, STATUS_TYPES } from '@app/core/enums/status.enum';
+import { Status } from '@app/core/enums/status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Voucher } from '@app/core/models/voucher.model';
@@ -18,6 +18,11 @@ import { VoucherDataService } from '../upsert-voucher/voucher-data.service';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
+import { ChangeStatusModalComponent } from './components/change-status-modal/change-status-modal.component';
+import {
+  VOUCHER_STATUSES,
+  VoucherStatus,
+} from '@app/core/enums/voucher-status.enum';
 
 @Component({
   selector: 'app-vouchers-list',
@@ -30,9 +35,9 @@ export class VouchersListComponent {
 
   private sortBy = '-code.value'; //Voucher No, descending
 
-  tableFilterStatuses = ['All', ...STATUS_TYPES];
+  tableFilterStatuses = ['All', ...VOUCHER_STATUSES];
   tableFilterStatus = 'All';
-  downloading = false;
+  isLoading = false;
 
   vouchers!: Voucher[];
   columns: TableColumn[] = [
@@ -47,9 +52,19 @@ export class VouchersListComponent {
       type: ColumnType.STRING,
     },
     {
+      label: 'Check No',
+      dotNotationPath: 'checkNo',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Check Date',
+      dotNotationPath: 'checkDate',
+      type: ColumnType.DATE,
+    },
+    {
       label: 'Account Total',
       dotNotationPath: 'accountsTotal',
-      type: ColumnType.STRING,
+      type: ColumnType.CURRENCY,
     },
     {
       label: 'Bank',
@@ -63,15 +78,11 @@ export class VouchersListComponent {
       colorCodes: [
         {
           color: Color.SUCCESS,
-          value: Status.ACTIVE,
-        },
-        {
-          color: Color.DEAD,
-          value: Status.INACTIVE,
+          value: VoucherStatus.ACTIVE,
         },
         {
           color: Color.ERROR,
-          value: Status.DELETED,
+          value: VoucherStatus.DELETED,
         },
       ],
     },
@@ -91,6 +102,12 @@ export class VouchersListComponent {
           name: 'Edit Voucher',
           action: 'edit',
           icon: 'edit',
+          color: Color.WARNING,
+        },
+        {
+          name: 'Change Voucher Status',
+          action: 'change_status',
+          icon: 'autorenew',
           color: Color.WARNING,
         },
         {
@@ -126,13 +143,12 @@ export class VouchersListComponent {
   }
 
   getVouchers() {
+    const loadingMsg = 'Fetching expenses...';
     const status =
       this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
 
-    this.snackbarService.openLoadingSnackbar(
-      'Please Wait',
-      'Fetching expenses...'
-    );
+    this._setLoadingState(true, loadingMsg);
+
     this.voucherApi
       .getVouchers(
         {
@@ -144,12 +160,13 @@ export class VouchersListComponent {
       )
       .subscribe({
         next: (resp) => {
-          var response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
+          this._setLoadingState(false);
+          const response = resp as HttpGetResponse;
           this.vouchers = response.records as Voucher[];
           this.page.length = response.total;
         },
         error: (err: HttpErrorResponse) => {
+          this._setLoadingState(false);
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
             err.error.message
@@ -160,17 +177,21 @@ export class VouchersListComponent {
 
   actionEvent(e: any) {
     const { action } = e.action;
+    const voucher = e.element;
 
     switch (action) {
       case 'edit':
-        this.router.navigate(['portal', 'vouchers', 'edit', e.element._id]);
+        this.router.navigate(['portal', 'vouchers', 'edit', voucher._id]);
         break;
       case 'print':
-        this._print(e.element);
+        this._print(voucher);
         break;
       case 'clone':
-        this.voucherData.setVoucher(e.element);
+        this.voucherData.setVoucher(voucher);
         this.router.navigate(['portal', 'vouchers', 'create']);
+        break;
+      case 'change_status':
+        this._openChangeStatusModal(voucher);
         break;
     }
   }
@@ -182,11 +203,8 @@ export class VouchersListComponent {
   }
 
   exportTableExcel() {
-    this.snackbarService.openLoadingSnackbar(
-      'Please Wait',
-      'Downloading Excel file...'
-    );
-    this.downloading = true;
+    const loadingMsg = 'Downloading Excel File...';
+    this._setLoadingState(true, loadingMsg);
 
     const status =
       this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
@@ -197,17 +215,14 @@ export class VouchersListComponent {
 
     this.voucherApi.exportExcelVouchers(query, status).subscribe({
       next: (response: any) => {
-        this.downloading = false;
-        this.snackbarService.closeLoadingSnackbar();
+        this._setLoadingState(false);
         const fileName = generateFileName('VOUCHER', 'xlsx');
         this.fileApi.downloadFile(response.body as Blob, fileName);
       },
       error: ({ error }: HttpErrorResponse) => {
-        this.downloading = false;
+        this._setLoadingState(false);
+        console.error(error);
         this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
-      },
-      complete: () => {
-        this.downloading = false;
       },
     });
   }
@@ -224,5 +239,35 @@ export class VouchersListComponent {
       disableClose: true,
       autoFocus: false,
     });
+  }
+
+  private _openChangeStatusModal(voucher: Voucher) {
+    const config: MatDialogConfig = {
+      data: voucher,
+      autoFocus: false,
+      disableClose: true,
+      width: '45%',
+    };
+
+    this.dialog
+      .open(ChangeStatusModalComponent, config)
+      .afterClosed()
+      .subscribe({
+        next: (hasUpdate: boolean) => {
+          if (hasUpdate) {
+            this.getVouchers();
+          }
+        },
+      });
+  }
+
+  private _setLoadingState(isLoading: boolean, loadingMsg = '') {
+    this.isLoading = isLoading;
+
+    if (isLoading) {
+      this.snackbarService.openLoadingSnackbar('Please Wait', loadingMsg);
+    } else {
+      this.snackbarService.closeLoadingSnackbar();
+    }
   }
 }

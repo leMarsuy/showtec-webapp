@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChangeStatusModalModule } from './components/change-status-modal/change-status-modal.module';
 
 @NgModule({
   declarations: [VouchersListComponent],
@@ -23,6 +24,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
     FormsModule,
     ReactiveFormsModule,
+    ChangeStatusModalModule,
   ],
   exports: [VouchersListComponent],
 })

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { VouchersComponent } from './vouchers.component';
+import { vouchersResolver } from './vouchers.resolver';
 
 const routes: Routes = [
   {
@@ -22,7 +23,8 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'edit/:_id',
+        path: 'edit/:id',
+        resolve: { voucher: vouchersResolver },
         loadChildren: () =>
           import('./pages/upsert-voucher/upsert-voucher.module').then(
             (m) => m.UpsertVoucherModule
