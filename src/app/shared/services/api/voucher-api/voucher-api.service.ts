@@ -6,6 +6,7 @@ import { Status } from '@app/core/enums/status.enum';
 import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
+import { VoucherStatus } from '@app/core/enums/voucher-status.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -25,8 +26,8 @@ export class VoucherApiService {
     let sanitizedQuery: QueryParams = {};
     if (query) {
       sanitizedQuery = {
-        pageIndex: query.pageIndex || 0,
-        pageSize: query.pageSize || 0,
+        pageIndex: query.pageIndex ?? 0,
+        pageSize: query.pageSize ?? 0,
         sort: query.sort,
         searchText: query.searchText,
       };
@@ -41,16 +42,25 @@ export class VoucherApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}`);
   }
 
+  getRecentVoucher() {
+    return this.httpService.get(`${this.apiPrefix}/recent`);
+  }
+
   updateVoucherById(_id: string, updateBody: Voucher) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }
 
-  patchVoucherStatusById(_id: string, status: Status) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, status);
+  patchVoucherStatusById(_id: string, status: VoucherStatus) {
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, {
+      status,
+    });
   }
 
-  deleteVoucherStatusById(_id: string, status: Status) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/delete`, status);
+  deleteVoucherStatusById(_id: string) {
+    const status = VoucherStatus.DELETED;
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/delete`, {
+      status,
+    });
   }
   getVoucherPdfReceipt(_id: string) {
     return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(

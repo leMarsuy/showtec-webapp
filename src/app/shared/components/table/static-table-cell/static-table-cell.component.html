@@ -16,7 +16,7 @@
 
 } @else if (column.type == 'currency') {
 
-{{ "₱" }}{{ column.dotNotationPath | deepFind : element | number }}
+{{ "₱" }}{{ (column.dotNotationPath | deepFind : element | number) || 0 }}
 
 } @else if (column.type == 'age-in-days') {
 

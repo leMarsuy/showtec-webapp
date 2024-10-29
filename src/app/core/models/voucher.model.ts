@@ -1,6 +1,6 @@
 import { RegisteredBank } from '../enums/registered-bank.enum';
-import { Status } from '../enums/status.enum';
 import { VoucherAccountType } from '../enums/voucher-account-type';
+import { VoucherStatus } from '../enums/voucher-status.enum';
 import { Signatory } from './out-delivery.model';
 
 export interface VoucherAccount {
@@ -28,7 +28,7 @@ export class Voucher {
   accounts: VoucherAccount[];
   particulars: VoucherParticular[];
   bank: RegisteredBank;
-  status: Status;
+  status: VoucherStatus;
   payee: string;
   accountsTotal: number;
   checkDate: string;
