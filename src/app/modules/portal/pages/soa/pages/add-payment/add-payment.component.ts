@@ -31,7 +31,6 @@ export class AddPaymentComponent {
     private dialogRef: MatDialogRef<AddPaymentComponent>
   ) {
     this.onTransactionFormChange();
-    console.log(this.data);
   }
 
   transactionForm = this.fb.group({

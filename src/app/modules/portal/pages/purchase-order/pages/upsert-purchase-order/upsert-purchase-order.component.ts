@@ -18,7 +18,7 @@ import {
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
 import { isEmpty } from '@app/shared/utils/objectUtil';
-import { catchError, firstValueFrom, of } from 'rxjs';
+import { catchError, firstValueFrom, of, Subject, takeUntil } from 'rxjs';
 
 interface Pricing {
   STATIC: {
@@ -68,6 +68,8 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
 
   purchaseOrder!: PurchaseOrder;
 
+  private readonly _destroyed$ = new Subject<void>();
+
   constructor(
     private poApi: PurchaseOrderApiService,
     private fb: FormBuilder,
@@ -80,7 +82,10 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    const resolverResponse = await firstValueFrom(this.activatedRoute.data);
+    const activateRouteData$ = this.activatedRoute.data.pipe(
+      takeUntil(this._destroyed$)
+    );
+    const resolverResponse = await firstValueFrom(activateRouteData$);
 
     //Upsert Create
     if (isEmpty(resolverResponse)) {
@@ -97,6 +102,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
         createPurchaseOrder = this.transformData.formatDataToRecipient(
           this.transformServiceId
         );
+        fromTransformData = true;
       }
 
       //Get Most Recent PO for signatories
@@ -109,14 +115,11 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
 
       const recentPo = (await firstValueFrom(
         getMostRecentPO$
-      )) as unknown as PurchaseOrder;
+      )) as PurchaseOrder;
 
-      if (!recentPo) {
-        this.isLoading = false;
-        return;
+      if (recentPo) {
+        createPurchaseOrder['signatories'] = recentPo.signatories;
       }
-
-      createPurchaseOrder['signatories'] = recentPo.signatories;
 
       this._fillForms(createPurchaseOrder, fromTransformData);
       this.isLoading = false;
@@ -308,7 +311,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   }
 
   private _formatRequestBody() {
-    const rawValue = this.poForm.getRawValue() as any;
+    const rawValue = this.poForm.getRawValue();
 
     const purchaseOrder: any = {
       _customerId: rawValue._customerId._id,
@@ -428,5 +431,8 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     ) {
       this.transformData.deleteTransformData();
     }
+
+    this._destroyed$.next();
+    this._destroyed$.complete();
   }
 }

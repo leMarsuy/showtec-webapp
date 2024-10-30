@@ -80,7 +80,6 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   });
 
   soa!: SOA;
-  soaClone!: any;
 
   usePurchaseOrder = false;
   searchPoControl = new FormControl();
@@ -267,9 +266,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private transformData: TransformDataService,
     private soaData: SoaDataService
-  ) {
-    this.soaClone = this.soaData.Soa;
-  }
+  ) {}
 
   ngOnInit(): void {
     this._componentInit();
@@ -327,6 +324,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     );
     const soaFromResponse = (await firstValueFrom(getSoaById$)) as any;
 
+    //Return to Soa List if ID not found
     if (!soaFromResponse) {
       this.snackbarService.openErrorSnackbar(
         'Error',
@@ -341,11 +339,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
     //If SOA has PO, get its PO
     if (soaFromResponse._purchaseOrderId) {
-      const purchaseOrder = await this._getPoById(
-        soaFromResponse._purchaseOrderId
-      );
-      this.searchPoControl.patchValue(purchaseOrder);
-      this.usePoCheckChange();
+      await this._patchSoaPo(soaFromResponse._purchaseOrderId);
     }
 
     this._autoFillForm(createdSoa);
@@ -398,7 +392,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     if (typeof e.column.dotNotationPath == 'string')
       deepInsert(e.newValue, e.column.dotNotationPath, e.element);
 
-    var total = e.element.STATIC.quantity * e.element.STATIC.unit_price;
+    const total = e.element.STATIC.quantity * e.element.STATIC.unit_price;
     e.element.STATIC.total = total - (e.element.STATIC.disc || 0) * total;
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = -1;
@@ -414,7 +408,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   }
 
   pushToListedProducts(product: Product & Pricing) {
-    var li = this.listedItems;
+    const li = this.listedItems;
     if (!li.find((o) => o._id === product._id))
       this.listedItems.push({
         ...product,
@@ -440,8 +434,12 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
   private _copySignatoriesToSelf() {
     this.listedSignatories.sort((a, b) => {
-      var aIndex = SIGNATORY_ACTIONS.findIndex((action) => action === a.action);
-      var bIndex = SIGNATORY_ACTIONS.findIndex((action) => action === b.action);
+      const aIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === a.action
+      );
+      const bIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === b.action
+      );
       return aIndex - bIndex;
     });
     this.listedSignatories = [...this.listedSignatories];
@@ -600,8 +598,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   }
 
   displayPoOption(po: any) {
-    const companyName = po._customerId.name || '';
-    const contactPerson = po._customerId.contactPerson || '';
+    const companyName = po._customerId.name ?? '';
+    const contactPerson = po._customerId.contactPerson ?? '';
 
     const cleanString = (str: string) => {
       return str.trim().toLowerCase();
@@ -705,22 +703,22 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       grandtotal: 0,
     };
 
-    for (var item of this.listedItems) {
+    for (const item of this.listedItems) {
       this.soaSummary.total += item.STATIC.unit_price * item.STATIC.quantity;
       this.soaSummary.productDiscount +=
-        item.STATIC.unit_price * item.STATIC.quantity * (item.STATIC.disc || 0);
+        item.STATIC.unit_price * item.STATIC.quantity * (item.STATIC.disc ?? 0);
     }
 
     this.soaSummary.subtotal =
       this.soaSummary.total - this.soaSummary.productDiscount;
 
-    for (var disc of this.listedDiscounts) {
+    for (const disc of this.listedDiscounts) {
       this.soaSummary.subtotal -= disc.value;
     }
 
     this.soaSummary.grandtotal = this.soaSummary.subtotal;
 
-    for (var tax of this.listedTaxes) {
+    for (const tax of this.listedTaxes) {
       this.soaSummary.grandtotal += this.soaSummary.subtotal * tax.value;
     }
   }
@@ -737,6 +735,22 @@ export class SoaFormComponent implements OnInit, OnDestroy {
        * Else it is a plain soa create with recent soa signatories
        */
       let createSoa: any = {};
+
+      //Get recent SOA for signatories
+      const getRecentSoa$ = this.soaApi.getMostRecentSoa().pipe(
+        takeUntil(this.destroyed$),
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
+      const recentSOA = (await firstValueFrom(getRecentSoa$)) as SOA;
+
+      if (recentSOA) {
+        createSoa['signatories'] = recentSOA.signatories;
+      }
+
+      //Check transform data service
       const hasTransformData =
         this.transformData.verifyTransactionDataFootprint(
           this.transformServiceId
@@ -749,26 +763,14 @@ export class SoaFormComponent implements OnInit, OnDestroy {
         await this._patchSoaPo(createSoa._purchaseOrderId);
       }
 
-      if (this.soaClone) {
-        createSoa = this.soaClone;
+      //Check Soa Data Service for Reuse/Clone Soa
+      const soaClone = this.soaData.Soa;
+      if (soaClone) {
+        createSoa = soaClone;
         await this._patchSoaPo(createSoa._purchaseOrderId);
       }
 
-      //Get recent SOA for signatories
-      const getRecentSoa$ = this.soaApi.getMostRecentSoa().pipe(
-        takeUntil(this.destroyed$),
-        catchError((error) => {
-          console.error(error);
-          return of(false);
-        })
-      );
-
-      const recentSOA = (await firstValueFrom(getRecentSoa$)) as SOA;
-
-      if (recentSOA) {
-        createSoa['signatories'] = recentSOA.signatories;
-        this._autoFillForm(createSoa);
-      }
+      this._autoFillForm(createSoa);
     }
   }
 
@@ -823,10 +825,10 @@ export class SoaFormComponent implements OnInit, OnDestroy {
           sku: item.sku,
           brand: item.brand,
           model: item.model,
-          classification: item.classification || '-',
+          classification: item.classification ?? '-',
           unit_price: item.STATIC.unit_price,
           quantity: item.STATIC.quantity,
-          disc: item.STATIC.disc || 0,
+          disc: item.STATIC.disc ?? 0,
           total: item.STATIC.total,
         },
       });

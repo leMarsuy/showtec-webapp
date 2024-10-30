@@ -2,9 +2,11 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
@@ -40,8 +42,8 @@ interface Pricing {
   templateUrl: './products-form.component.html',
   styleUrl: './products-form.component.scss',
 })
-export class ProductsFormComponent implements OnInit, OnDestroy {
-  @Input() products: Array<Product & Pricing> = [];
+export class ProductsFormComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() products!: Array<Product & Pricing>;
   @Input({ alias: 'loading' }) isLoading = false;
 
   @Output() productsEmitter = new EventEmitter<Array<Product & Pricing>>();
@@ -117,17 +119,13 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
   constructor(private productApi: ProductApiService) {}
 
   ngOnInit(): void {
-    this.page.length = this.products.length;
+    this._initOptions();
+  }
 
-    this.filteredOptions = this.searchControl.valueChanges.pipe(
-      startWith(''),
-      takeUntil(this.destroyed$),
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap((val: any) => {
-        return this._filterOptions(val || '');
-      })
-    );
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['products']?.isFirstChange()) {
+      this.page.length = this.products.length;
+    }
   }
 
   actionEventHandler(e: any) {
@@ -186,6 +184,18 @@ export class ProductsFormComponent implements OnInit, OnDestroy {
     this.products.splice(i, 1);
     this.products = [...this.products];
     this.page.length--;
+  }
+
+  private _initOptions() {
+    this.filteredOptions = this.searchControl.valueChanges.pipe(
+      startWith(''),
+      takeUntil(this.destroyed$),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((val: any) => {
+        return this._filterOptions(val || '');
+      })
+    );
   }
 
   private _filterOptions(value: string) {
