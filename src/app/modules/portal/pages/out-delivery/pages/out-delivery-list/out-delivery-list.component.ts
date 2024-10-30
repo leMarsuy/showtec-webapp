@@ -61,7 +61,6 @@ export class OutDeliveryListComponent {
       .subscribe({
         next: (resp) => {
           const response = resp as HttpGetResponse;
-          console.log(response.records);
           this.snackbarService.closeLoadingSnackbar();
           this.outdeliveries = response.records as OutDelivery[];
           this.page.length = response.total;
