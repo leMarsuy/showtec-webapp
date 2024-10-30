@@ -16,7 +16,7 @@
       [matAutocomplete]="matAuto" />
     <mat-autocomplete autoActiveFirstOption #matAuto="matAutocomplete"
       (optionSelected)="pushToList($event.option.value)">
-      @for (option of filteredOptions | async; track option) {
+      @for (option of filteredOptions | async; track option.sku) {
       <mat-option [value]="option">
         {{ option.brand }} {{ option.model }}
       </mat-option>

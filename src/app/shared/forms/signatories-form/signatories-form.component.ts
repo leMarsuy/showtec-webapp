@@ -2,9 +2,11 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
@@ -35,7 +37,7 @@ import {
   templateUrl: './signatories-form.component.html',
   styleUrl: './signatories-form.component.scss',
 })
-export class SignatoriesFormComponent implements OnInit, OnDestroy {
+export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
   @Input() signatories: Array<any> = [];
   @Input({ alias: 'loading' }) isLoading = false;
   @Input() signatoryDefaultAction = SignatoryAction.APPROVED;
@@ -101,6 +103,12 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.destroyed$)
     );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['signatories']?.isFirstChange()) {
+      this.page.length = this.signatories.length;
+    }
   }
 
   actionEventHandler(e: any) {
