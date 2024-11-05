@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<div mat-dialog-content [formGroup]="payeeForm">
+  <mat-form-field>
+    <mat-label>Payee Name</mat-label>
+    <input type="text" matInput formControlName="name">
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button color="warn" mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary">{{ submitLabel}}</button>
+</div>

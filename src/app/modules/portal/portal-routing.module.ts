@@ -88,6 +88,11 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'payees',
+        loadChildren: () =>
+          import('./pages/payees/payees.module').then((m) => m.PayeesModule),
+      },
+      {
         path: '',
         redirectTo: 'reports',
         pathMatch: 'full',

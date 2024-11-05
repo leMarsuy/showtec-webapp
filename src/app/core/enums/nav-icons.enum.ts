@@ -9,4 +9,5 @@ export enum NavIcon {
   WAREHOUSES = 'warehouses',
   SUPPLIERS = 'conveyor_belt',
   USERS = 'person',
+  PAYEES = 'contact_mail',
 }

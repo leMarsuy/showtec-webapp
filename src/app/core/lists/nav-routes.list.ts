@@ -75,6 +75,11 @@ export const NAV_ROUTES = [
         icon: NavIcon.CUSTOMERS,
       },
       {
+        name: 'Payees',
+        path: 'payees',
+        icon: NavIcon.PAYEES,
+      },
+      {
         name: 'Warehouses',
         path: 'warehouses',
         icon: NavIcon.WAREHOUSES,
