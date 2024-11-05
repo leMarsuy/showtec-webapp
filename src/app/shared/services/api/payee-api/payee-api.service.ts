@@ -22,7 +22,7 @@ export class PayeeApiService {
     return this.httpService.post(`${this.apiPrefix}`, payee);
   }
 
-  getPayees(query?: QueryParams) {
+  getPayees(query?: QueryParams, status = Status.ACTIVE) {
     let sanitizedQuery: QueryParams = {};
     if (query) {
       sanitizedQuery = {
@@ -34,6 +34,7 @@ export class PayeeApiService {
     }
     return this.httpService.get(`${this.apiPrefix}`, {
       ...sanitizedQuery,
+      status,
     });
   }
 

@@ -15,6 +15,9 @@ import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Payee } from '@app/core/models/payee.model';
 import { PayeeApiService } from '@app/shared/services/api/payee-api/payee-api.service';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
+import { Status, STATUS_TYPES } from '@app/core/enums/status.enum';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { filter, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-payees',
@@ -34,6 +37,8 @@ export class PayeesComponent {
     },
   ];
 
+  tableFilterStatuses = [Status.ACTIVE, Status.DELETED];
+  selectedFilterStatus = Status.ACTIVE;
   // Content Table
   private readonly sortBy = 'name';
 
@@ -66,6 +71,27 @@ export class PayeesComponent {
           action: 'edit',
           icon: 'edit',
           color: Color.WARNING,
+          showIfCondition: {
+            status: Status.ACTIVE,
+          },
+        },
+        {
+          name: 'Delete Payee',
+          action: 'delete',
+          icon: 'delete',
+          color: Color.ERROR,
+          showIfCondition: {
+            status: Status.ACTIVE,
+          },
+        },
+        {
+          name: 'Reactivate Payee',
+          action: 'reactivate',
+          icon: 'autorenew',
+          color: Color.WARNING,
+          showIfCondition: {
+            status: Status.DELETED,
+          },
         },
       ],
     },
@@ -73,24 +99,28 @@ export class PayeesComponent {
 
   constructor(
     private readonly payeeApi: PayeeApiService,
-    private readonly snackbar: SnackbarService,
     private readonly router: Router,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly snackbar: SnackbarService,
+    private readonly confirmation: ConfirmationService
   ) {
     this.getPayees();
   }
 
   getPayees() {
-    const loadingMsg = 'Fetching expenses...';
-
+    const status = this.selectedFilterStatus;
+    const loadingMsg = 'Fetching payees...';
     this._setLoadingState(true, loadingMsg);
 
     this.payeeApi
-      .getPayees({
-        searchText: this.searchText.value ?? '',
-        sort: this.sortBy,
-        ...this.page,
-      })
+      .getPayees(
+        {
+          searchText: this.searchText.value ?? '',
+          sort: this.sortBy,
+          ...this.page,
+        },
+        status
+      )
       .subscribe({
         next: (resp: any) => {
           this._setLoadingState(false);
@@ -106,12 +136,23 @@ export class PayeesComponent {
       });
   }
 
+  /**
+   *  @param status {"Active" || "Deleted"}
+   */
+  onFilterStatusChange(status: Status) {
+    this.selectedFilterStatus = status as Status;
+    this.getPayees();
+  }
+
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
     this.getPayees();
   }
 
+  /**
+   * @param action {Action.action}
+   */
   headerActionEvent(action: string) {
     switch (action) {
       case 'add':
@@ -120,6 +161,9 @@ export class PayeesComponent {
     }
   }
 
+  /**
+   * @param e {action: Action, element: Payee}
+   */
   tableActionEvent(e: any) {
     const { action } = e.action;
     const payee = e.element;
@@ -128,7 +172,49 @@ export class PayeesComponent {
       case 'edit':
         this._openUpsertPayeeDialog(payee);
         break;
+      case 'delete':
+        this._onChangePayeeStatus(payee._id, Status.DELETED, 'delete');
+        break;
+      case 'reactivate':
+        this._onChangePayeeStatus(payee._id, Status.ACTIVE, 'activate');
+        break;
     }
+  }
+
+  /**
+   * @param payee {Payee}
+   * @param status {"Active" || "Deleted"}
+   */
+  private _onChangePayeeStatus(
+    payeeId: string,
+    status: Status.ACTIVE | Status.DELETED,
+    action: string
+  ) {
+    const confirmMsg = `Do you want to ${action} this payee?`;
+
+    this.confirmation
+      .open('Action Confirmation', confirmMsg)
+      .afterClosed()
+      .pipe(
+        filter((result) => result),
+        switchMap(() => {
+          this._setLoadingState(true, 'Updating Payee Status');
+          return this.payeeApi.patchPayeeStatusById(payeeId, status);
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          this._setLoadingState(false);
+          if (response) {
+            this.getPayees();
+          }
+        },
+        error: ({ error }: HttpErrorResponse) => {
+          this._setLoadingState(false);
+          console.error(error);
+          this.snackbar.openErrorSnackbar(error.errorCode, error.message);
+        },
+      });
   }
 
   private _openUpsertPayeeDialog(payee = undefined) {

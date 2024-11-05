@@ -79,9 +79,9 @@ export class UpsertPayeeComponent {
   }
 
   private _patchFormValues(payee: Payee) {
-    console.log(payee);
     this.payeeForm.patchValue(payee);
   }
+
   private _setLoadingState(isLoading: boolean, message = '') {
     this.isLoading = isLoading;
 
