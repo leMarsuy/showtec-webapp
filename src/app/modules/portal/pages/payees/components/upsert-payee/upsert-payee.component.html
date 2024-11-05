@@ -1,12 +1,13 @@
 <h1 mat-dialog-title>{{ title }}</h1>
 <div mat-dialog-content [formGroup]="payeeForm">
-  <mat-form-field>
+  <mat-form-field class="w-full">
     <mat-label>Payee Name</mat-label>
     <input type="text" matInput formControlName="name">
   </mat-form-field>
 </div>
 
-<div mat-dialog-actions>
+<div mat-dialog-actions class="flex items-center !justify-between w-full">
   <button mat-button color="warn" mat-dialog-close>Cancel</button>
-  <button mat-flat-button color="primary">{{ submitLabel}}</button>
+  <button mat-flat-button color="primary" [disabled]="payeeForm.invalid || !payeeForm.dirty"
+    (click)="onSubmit()">{{ submitLabel}}</button>
 </div>

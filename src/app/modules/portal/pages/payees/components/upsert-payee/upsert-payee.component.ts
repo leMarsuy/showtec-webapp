@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Payee } from '@app/core/models/payee.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PayeeApiService } from '@app/shared/services/api/payee-api/payee-api.service';
@@ -13,8 +14,8 @@ import { filter, switchMap } from 'rxjs';
   styleUrl: './upsert-payee.component.scss',
 })
 export class UpsertPayeeComponent {
-  title = 'Add Payee';
-  submitLabel = 'Add';
+  title: string;
+  submitLabel: string;
 
   payeeForm!: FormGroup;
   isLoading = false;
@@ -31,6 +32,14 @@ export class UpsertPayeeComponent {
     this.payeeForm = this.formBuilder.group({
       name: ['', Validators.required],
     });
+
+    if (this.data) {
+      this._patchFormValues(this.data);
+    }
+
+    this.isUpdate = !!this.data;
+    this.title = this.isUpdate ? 'Update Payee' : 'Add Payee';
+    this.submitLabel = this.isUpdate ? 'Update Payee' : 'Add Payee';
   }
 
   onSubmit() {
@@ -69,6 +78,10 @@ export class UpsertPayeeComponent {
       });
   }
 
+  private _patchFormValues(payee: Payee) {
+    console.log(payee);
+    this.payeeForm.patchValue(payee);
+  }
   private _setLoadingState(isLoading: boolean, message = '') {
     this.isLoading = isLoading;
 

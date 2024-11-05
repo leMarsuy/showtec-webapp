@@ -14,6 +14,7 @@ import { ColumnType } from '@app/core/enums/column-type.enum';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Payee } from '@app/core/models/payee.model';
 import { PayeeApiService } from '@app/shared/services/api/payee-api/payee-api.service';
+import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 
 @Component({
   selector: 'app-payees',
@@ -80,8 +81,29 @@ export class PayeesComponent {
   }
 
   getPayees() {
-    console.log('get payees api');
-    this.page.length = 0;
+    const loadingMsg = 'Fetching expenses...';
+
+    this._setLoadingState(true, loadingMsg);
+
+    this.payeeApi
+      .getPayees({
+        searchText: this.searchText.value ?? '',
+        sort: this.sortBy,
+        ...this.page,
+      })
+      .subscribe({
+        next: (resp: any) => {
+          this._setLoadingState(false);
+          const response = resp as HttpGetResponse;
+          this.payees = response.records as Payee[];
+          this.page.length = response.total;
+        },
+        error: ({ error }: HttpErrorResponse) => {
+          this._setLoadingState(false);
+          console.error(error);
+          this.snackbar.openErrorSnackbar(error.errorCode, error.message);
+        },
+      });
   }
 
   pageEvent(e: PageEvent) {
@@ -115,6 +137,7 @@ export class PayeesComponent {
         data: payee,
         autoFocus: false,
         disableClose: true,
+        width: '55vw',
       })
       .afterClosed()
       .subscribe({
@@ -128,5 +151,15 @@ export class PayeesComponent {
           this.snackbar.openErrorSnackbar(error.errorCode, error.message);
         },
       });
+  }
+
+  private _setLoadingState(isLoading: boolean, loadingMsg = '') {
+    this.isLoading = isLoading;
+
+    if (isLoading) {
+      this.snackbar.openLoadingSnackbar('Please Wait', loadingMsg);
+    } else {
+      this.snackbar.closeLoadingSnackbar();
+    }
   }
 }
