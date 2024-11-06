@@ -18,6 +18,7 @@ import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
 import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
+import { OutDeliveryDataService } from '../../out-delivery-data.service';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -43,7 +44,8 @@ export class OutDeliveryListComponent {
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
-    private fileApi: FileService
+    private fileApi: FileService,
+    private outDeliveryDataService: OutDeliveryDataService
   ) {
     this.getOutDeliverys();
   }
@@ -98,7 +100,12 @@ export class OutDeliveryListComponent {
         ) {
           return;
         }
-        this.router.navigate(['portal/out-delivery/edit/' + outDelivery._id]);
+        this.router.navigate([
+          'portal',
+          'out-delivery',
+          'edit',
+          outDelivery._id,
+        ]);
         break;
       case 'change-status-cancel':
         if (
@@ -110,6 +117,10 @@ export class OutDeliveryListComponent {
           return;
         }
         this._cancelItem(outDelivery);
+        break;
+      case 'clone':
+        this.outDeliveryDataService.setOutDelivery(outDelivery);
+        this.router.navigate(['portal', 'out-delivery', 'create']);
         break;
     }
   }

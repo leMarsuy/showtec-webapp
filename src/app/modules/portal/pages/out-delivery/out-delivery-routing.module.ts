@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { OutDeliveryComponent } from './out-delivery.component';
+import { editOutDeliveryGuard } from './out-delivery.guard';
 
 const routes: Routes = [
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
       },
       {
         path: 'edit/:_id',
+        canActivate: [editOutDeliveryGuard],
         loadChildren: () =>
           import('./pages/edit-out-delivery/edit-out-delivery.module').then(
             (m) => m.EditOutDeliveryModule
