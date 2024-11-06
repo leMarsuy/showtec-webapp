@@ -1,0 +1,24 @@
+<p mat-dialog-title>Update User</p>
+<mat-dialog-content>
+  <form [formGroup]="userForm" class="grid grid-cols-2">
+    <mat-form-field class="col-span-2">
+      <mat-label>Name</mat-label>
+      <input matInput type="text" formControlName="name" />
+    </mat-form-field>
+    <mat-form-field class="col-span-2">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+    </mat-form-field>
+    <mat-form-field class="col-span-2">
+      <mat-label>Designation</mat-label>
+      <input matInput type="text" formControlName="designation" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions class="flex w-full items-center !justify-between">
+  <button mat-button color="warn" mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="userForm.invalid || !userForm.dirty" cdkFocusInitial
+    (click)="onSubmit()">
+    Update
+  </button>
+</mat-dialog-actions>
