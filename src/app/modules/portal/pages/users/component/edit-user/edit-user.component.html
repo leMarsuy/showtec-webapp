@@ -17,8 +17,7 @@
 </mat-dialog-content>
 <mat-dialog-actions class="flex w-full items-center !justify-between">
   <button mat-button color="warn" mat-dialog-close>Cancel</button>
-  <button mat-flat-button color="primary" [disabled]="userForm.invalid || !userForm.dirty" cdkFocusInitial
-    (click)="onSubmit()">
+  <button mat-flat-button color="primary" [disabled]="userForm.invalid || !userForm.dirty" (click)="onSubmit()">
     Update
   </button>
 </mat-dialog-actions>
