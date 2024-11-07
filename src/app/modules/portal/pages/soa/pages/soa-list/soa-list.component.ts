@@ -17,6 +17,7 @@ import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { generateFileName } from '@app/shared/utils/stringUtil';
 import { SoaStatus } from '@app/core/enums/soa-status.enum';
 import { FileService } from '@app/shared/services/file/file.service';
+import { SoaDataService } from '../../soa-data.service';
 
 @Component({
   selector: 'app-soa-list',
@@ -25,7 +26,7 @@ import { FileService } from '@app/shared/services/file/file.service';
 })
 export class SoaListComponent {
   searchText = new FormControl('');
-
+  placeholder = 'Search SOA No. | Contact Person';
   downloading = false;
 
   soas!: SOA[];
@@ -45,7 +46,8 @@ export class SoaListComponent {
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
-    private fileApi: FileService
+    private fileApi: FileService,
+    private soaData: SoaDataService
   ) {
     this.getSoas();
   }
@@ -62,7 +64,7 @@ export class SoaListComponent {
       )
       .subscribe({
         next: (resp) => {
-          var response = resp as HttpGetResponse;
+          const response = resp as HttpGetResponse;
           this.snackbarService.closeLoadingSnackbar();
           this.soas = response.records as SOA[];
           this.page.length = response.total;
@@ -99,6 +101,11 @@ export class SoaListComponent {
 
       case 'payments':
         this._onClickPayment(element);
+        break;
+
+      case 'clone':
+        this.soaData.setSoa(e.element);
+        this.router.navigate(['portal', 'soa', 'create']);
         break;
     }
   }

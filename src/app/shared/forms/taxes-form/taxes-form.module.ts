@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TableModule } from '@app/shared/components/table/table.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @NgModule({
   declarations: [TaxesFormComponent],
@@ -16,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
     TableModule,
     ReactiveFormsModule,
+    NgxSkeletonLoaderModule,
   ],
   exports: [TaxesFormComponent],
 })

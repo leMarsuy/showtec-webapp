@@ -209,7 +209,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  async searchId() {
+  private async _updateOutDeliveryInit() {
     const getOutDeliveryById$ = this.outdeliveryApi
       .getOutDeliveryById(this._id)
       .pipe(
@@ -221,12 +221,19 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       );
     const response = (await firstValueFrom(getOutDeliveryById$)) as any;
 
-    if (!response) return;
+    //Return to DR List if ID not found
+    if (!response) {
+      this.snackbarService.openErrorSnackbar(
+        'Error',
+        'No Out Delivery was found for the provided ID.'
+      );
+      this.router.navigate(['portal', 'out-delivery']);
+      return;
+    }
 
+    //If DR has PO, get its PO
     if (response._purchaseOrderId) {
-      const purchaseOrder = await this._getPoById(response._purchaseOrderId);
-      this.searchPoControl.patchValue(purchaseOrder);
-      this.usePoCheckChange();
+      await this._patchDrPo(response._purchaseOrderId);
     }
 
     this.outDelivery = response;
@@ -246,7 +253,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
     if (Array.isArray(outDelivery.items) && outDelivery.items.length > 0) {
       for (let item of outDelivery.items) {
-        var listedItem = {
+        const listedItem = {
           sku: item.STATIC.sku,
           _id: item._productId,
           brand: item.STATIC.brand,
@@ -417,7 +424,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       mobile,
       address: addressBilling,
       tin,
-      _customerId: po._customerId,
+      _customerId: po._customerId as string,
       _purchaseOrderId: po._id,
     });
   }
@@ -441,16 +448,19 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   }
 
   displayCustomer(value: any) {
-    var displayStr = '';
+    let displayStr = '';
     if (value?.name) {
       displayStr = value.name;
-      if (value.type === CustomerType.COMPANY) {
+      if (
+        value.type === CustomerType.COMPANY ||
+        value.name != value.contactPerson
+      ) {
         displayStr += ` (${value.contactPerson})`;
       }
     } else {
-      displayStr = value || '';
+      displayStr = value ?? '';
     }
-    return value?.name || value || '';
+    return displayStr;
   }
 
   displayPo(value: any) {
@@ -459,6 +469,21 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
   displayUser(value: any) {
     return value.name || value || '';
+  }
+
+  displayPoOption(po: any) {
+    const companyName = po._customerId.name ?? '';
+    const contactPerson = po._customerId.contactPerson ?? '';
+
+    const cleanString = (str: string) => {
+      return str.trim().toLowerCase();
+    };
+
+    if (cleanString(companyName) === cleanString(contactPerson)) {
+      return companyName;
+    } else {
+      return `${companyName} (${contactPerson})`;
+    }
   }
 
   confirm() {
@@ -559,9 +584,10 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   }
 
   private async _getPoById(poId: string) {
-    const getPoById$ = this.poApi
-      .getPurchaseOrderById(poId)
-      .pipe(takeUntil(this.destroyed$));
+    const getPoById$ = this.poApi.getPurchaseOrderById(poId).pipe(
+      takeUntil(this.destroyed$),
+      catchError(() => of(false))
+    );
     const po = (await firstValueFrom(getPoById$)) as PurchaseOrder;
     return po;
   }
@@ -569,7 +595,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   private async _componentInit() {
     //If DR Update
     if (this._id) {
-      this.searchId();
+      this._updateOutDeliveryInit();
     } else {
       /**
        * If hasTransformData is true, get transformed data and get recent dr signatories to createDR.
@@ -589,24 +615,37 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
         //Checks if has purchaseOrderId;
         if (createDR._purchaseOrderId) {
-          const purchaseOrder = await this._getPoById(
-            createDR._purchaseOrderId
-          );
-          this.searchPoControl.patchValue(purchaseOrder);
-          this.usePoCheckChange();
+          this._patchDrPo(createDR._purchaseOrderId);
         }
       }
 
-      const recentDR = (await firstValueFrom(
-        this.outdeliveryApi.getMostRecentOutDelivery()
-      )) as OutDelivery;
+      //Get Recent DR for signatories
+      const getRecentDR$ = this.outdeliveryApi.getMostRecentOutDelivery().pipe(
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
 
-      if (!recentDR) {
-        return;
+      const recentDR = (await firstValueFrom(getRecentDR$)) as OutDelivery;
+      if (recentDR) {
+        createDR['signatories'] = recentDR.signatories;
       }
-      createDR['signatories'] = recentDR.signatories;
+
       this._autoFillForm(createDR);
     }
+  }
+
+  private async _patchDrPo(purchaseOrderId: string) {
+    //Checks if has purchaseOrderId;
+    if (!purchaseOrderId) return;
+    const purchaseOrder = await this._getPoById(purchaseOrderId);
+
+    //If has no error
+    if (!purchaseOrder) return;
+
+    this.searchPoControl.patchValue(purchaseOrder);
+    this.usePoCheckChange();
   }
 
   private _formatBodyRequest() {

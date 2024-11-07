@@ -18,7 +18,7 @@ import {
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
 import { isEmpty } from '@app/shared/utils/objectUtil';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, of, Subject, takeUntil } from 'rxjs';
 
 interface Pricing {
   STATIC: {
@@ -46,7 +46,8 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   drIcon = NavIcon.DELIVERY_RECEIPT;
 
   isUpdate = false;
-  loading = true;
+  isLoading = true;
+  isSubmitting = false;
 
   poSummary = this.fb.group({
     total: this.fb.control(0),
@@ -67,6 +68,8 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
 
   purchaseOrder!: PurchaseOrder;
 
+  private readonly _destroyed$ = new Subject<void>();
+
   constructor(
     private poApi: PurchaseOrderApiService,
     private fb: FormBuilder,
@@ -79,7 +82,10 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    const resolverResponse = await firstValueFrom(this.activatedRoute.data);
+    const activateRouteData$ = this.activatedRoute.data.pipe(
+      takeUntil(this._destroyed$)
+    );
+    const resolverResponse = await firstValueFrom(activateRouteData$);
 
     //Upsert Create
     if (isEmpty(resolverResponse)) {
@@ -96,22 +102,27 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
         createPurchaseOrder = this.transformData.formatDataToRecipient(
           this.transformServiceId
         );
+        fromTransformData = true;
       }
 
       //Get Most Recent PO for signatories
+      const getMostRecentPO$ = this.poApi.getMostRecentPurchaseOrder().pipe(
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
+
       const recentPo = (await firstValueFrom(
-        this.poApi.getMostRecentPurchaseOrder()
+        getMostRecentPO$
       )) as PurchaseOrder;
 
-      if (!recentPo) {
-        this.loading = false;
-        return;
+      if (recentPo) {
+        createPurchaseOrder['signatories'] = recentPo.signatories;
       }
 
-      createPurchaseOrder['signatories'] = recentPo.signatories;
-
       this._fillForms(createPurchaseOrder, fromTransformData);
-      this.loading = false;
+      this.isLoading = false;
     }
 
     //Upsert Update
@@ -119,7 +130,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       this.isUpdate = true;
       this.purchaseOrder = resolverResponse['purchaseOrder'];
       this._fillForms(this.purchaseOrder);
-      this.loading = false;
+      this.isLoading = false;
     }
   }
 
@@ -209,45 +220,50 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _updatePurchaseOrder(purchaseOrder: PurchaseOrder, id: string) {
-    this.loading = true;
-    this.snackbar.openLoadingSnackbar('Loading', 'Updating PO');
-    this.poApi.updatePurchaseOrderById(id, purchaseOrder).subscribe({
+  private _createPurchaseOrder(purchaseOrder: PurchaseOrder) {
+    this._setSubmittingState(true);
+    this.poApi.createPurchaseOrder(purchaseOrder).subscribe({
       next: (response: unknown) => {
-        this.snackbar.closeLoadingSnackbar();
-        this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully updated.');
+        this._setSubmittingState(false);
+        this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully created.');
         this._displayPdf(response as PurchaseOrder);
         this.navigateBack();
       },
       error: (err: HttpErrorResponse) => {
-        console.error(err);
-        this.loading = false;
-        this.snackbar.closeLoadingSnackbar();
+        console.error(err.error);
+        this._setSubmittingState(false);
         this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
         // this.navigateBack();
       },
     });
   }
 
-  private _createPurchaseOrder(purchaseOrder: PurchaseOrder) {
-    this.loading = true;
-    this.snackbar.openLoadingSnackbar('Loading', 'Creating PO');
-    this.poApi.createPurchaseOrder(purchaseOrder).subscribe({
+  private _updatePurchaseOrder(purchaseOrder: PurchaseOrder, id: string) {
+    this._setSubmittingState(true);
+    this.poApi.updatePurchaseOrderById(id, purchaseOrder).subscribe({
       next: (response: unknown) => {
-        this.loading = false;
-        this.snackbar.closeLoadingSnackbar();
-        this.snackbar.openSuccessSnackbar('Success', 'PO sucessfully created.');
+        this._setSubmittingState(false);
         this._displayPdf(response as PurchaseOrder);
         this.navigateBack();
       },
       error: (err: HttpErrorResponse) => {
+        this._setSubmittingState(false);
         console.error(err);
-        this.loading = false;
-        this.snackbar.closeLoadingSnackbar();
         this.snackbar.openErrorSnackbar(err.error.errorCode, err.error.message);
-        this.navigateBack();
+        // this.navigateBack();
       },
     });
+  }
+
+  private _setSubmittingState(isSubmitting: boolean) {
+    this.isSubmitting = isSubmitting;
+    const loadingMessage = this.isUpdate ? 'Updating PO' : 'Creating PO';
+
+    if (isSubmitting) {
+      this.snackbar.openLoadingSnackbar('Loading', loadingMessage);
+    } else {
+      this.snackbar.closeLoadingSnackbar();
+    }
   }
 
   private _displayPdf(purchaseOrder: PurchaseOrder) {
@@ -255,7 +271,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
 
     this.dialog.open(PdfViewerComponent, {
       data: {
-        apiCall: this.poApi.getPurchaseOrderById(purchaseOrder._id),
+        apiCall: this.poApi.getPurchaseOrderPdfReceipt(purchaseOrder._id),
         title: 'View Purchase Order',
       },
       maxWidth: '70rem',
@@ -295,7 +311,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   }
 
   private _formatRequestBody() {
-    const rawValue = this.poForm.getRawValue() as any;
+    const rawValue = this.poForm.getRawValue();
 
     const purchaseOrder: any = {
       _customerId: rawValue._customerId._id,
@@ -415,5 +431,8 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     ) {
       this.transformData.deleteTransformData();
     }
+
+    this._destroyed$.next();
+    this._destroyed$.complete();
   }
 }

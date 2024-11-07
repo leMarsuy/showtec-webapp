@@ -105,7 +105,8 @@
           (optionSelected)="autofillCustomerDetailsFromPo($event.option.value)" [displayWith]="displayPo">
           @for (po of filteredPos | async; track po) {
           <mat-option [value]="po">
-            <p>PO: {{ po?.code?.value }}</p>
+            <p>PO# {{ po?.code?.value }}</p>
+            <p class="text-xs text-gray-600 mt-1">{{ displayPoOption(po)}}</p>
           </mat-option>
           }
         </mat-autocomplete>

@@ -1,4 +1,5 @@
 import { PurchaseOrderStatus } from '../enums/purchase-order.enum';
+import { Customer } from './customer.model';
 import { Signatory } from './out-delivery.model';
 import { Discount, Tax, Transaction } from './soa.model';
 
@@ -24,7 +25,7 @@ export class PurchaseOrder {
     month: number;
     value: string;
   };
-  _customerId: string;
+  _customerId: Customer | string;
   STATIC: {
     name: string;
     mobile: string;

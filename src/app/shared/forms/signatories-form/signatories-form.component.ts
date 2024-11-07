@@ -2,9 +2,11 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
@@ -35,8 +37,10 @@ import {
   templateUrl: './signatories-form.component.html',
   styleUrl: './signatories-form.component.scss',
 })
-export class SignatoriesFormComponent implements OnInit, OnDestroy {
+export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
   @Input() signatories: Array<any> = [];
+  @Input({ alias: 'loading' }) isLoading = false;
+  @Input() signatoryDefaultAction = SignatoryAction.APPROVED;
   @Output() signatoriesEmitter = new EventEmitter<Array<any>>();
 
   columns: TableColumn[] = [
@@ -92,13 +96,19 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy {
 
     this.filteredUsers = this.searchUserControl.valueChanges.pipe(
       startWith(''),
-      takeUntil(this.destroyed$),
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((val: any) => {
         return this._filterUsers(val || '');
-      })
+      }),
+      takeUntil(this.destroyed$)
     );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['signatories']?.isFirstChange()) {
+      this.page.length = this.signatories.length;
+    }
   }
 
   actionEventHandler(e: any) {
@@ -128,7 +138,7 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy {
         name: user.name,
         designation: user.designation,
       },
-      action: SignatoryAction.APPROVED,
+      action: this.signatoryDefaultAction,
     });
     this._copySignatoriesToSelf();
     this.searchUserControl.reset();
@@ -136,8 +146,12 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy {
 
   private _copySignatoriesToSelf() {
     this.signatories.sort((a, b) => {
-      var aIndex = SIGNATORY_ACTIONS.findIndex((action) => action === a.action);
-      var bIndex = SIGNATORY_ACTIONS.findIndex((action) => action === b.action);
+      const aIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === a.action
+      );
+      const bIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === b.action
+      );
       return aIndex - bIndex;
     });
     this.signatories = [...this.signatories];

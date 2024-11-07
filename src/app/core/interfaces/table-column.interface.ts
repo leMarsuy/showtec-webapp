@@ -12,6 +12,7 @@ interface Action {
   icon: string;
   color: Color;
   action?: string;
+  showIfCondition?: any;
 }
 
 export interface TableColumn {

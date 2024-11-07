@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Color } from '@app/core/enums/color.enum';
@@ -11,8 +19,9 @@ import { Tax } from '@app/core/models/soa.model';
   templateUrl: './taxes-form.component.html',
   styleUrl: './taxes-form.component.scss',
 })
-export class TaxesFormComponent implements OnInit {
+export class TaxesFormComponent implements OnChanges {
   @Input() taxes: Tax[] = [];
+  @Input({ alias: 'loading' }) isLoading = false;
   @Output() taxesEmitter = new EventEmitter<Tax[]>();
 
   columns: TableColumn[] = [
@@ -55,8 +64,10 @@ export class TaxesFormComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {
-    this.page.length = this.taxes.length;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['taxes']?.isFirstChange()) {
+      this.page.length = this.taxes.length;
+    }
   }
 
   actionEventHandler(e: any) {

@@ -45,6 +45,7 @@ import {
 } from '@app/shared/services/data/transform-data/transform-data.service';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
+import { SoaDataService } from '@app/modules/portal/pages/soa/soa-data.service';
 
 interface Pricing {
   STATIC: {
@@ -263,7 +264,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private confirmation: ConfirmationService,
     private dialog: MatDialog,
-    private transformData: TransformDataService
+    private transformData: TransformDataService,
+    private soaData: SoaDataService
   ) {}
 
   ngOnInit(): void {
@@ -310,7 +312,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     return this.soaForm.get('_customerId') as FormControl;
   }
 
-  async searchId() {
+  private async _soaUpdateInit() {
     let createdSoa: any = {};
 
     const getSoaById$ = this.soaApi.getSoaById(this._id).pipe(
@@ -322,17 +324,22 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     );
     const soaFromResponse = (await firstValueFrom(getSoaById$)) as any;
 
-    if (!soaFromResponse) return;
+    //Return to Soa List if ID not found
+    if (!soaFromResponse) {
+      this.snackbarService.openErrorSnackbar(
+        'Error',
+        `No SOA was found for the provided ID.`
+      );
+      this.router.navigate(['portal', 'soa']);
+      return;
+    }
 
     createdSoa = soaFromResponse;
     this.soa = createdSoa;
 
+    //If SOA has PO, get its PO
     if (soaFromResponse._purchaseOrderId) {
-      const purchaseOrder = await this._getPoById(
-        soaFromResponse._purchaseOrderId
-      );
-      this.searchPoControl.patchValue(purchaseOrder);
-      this.usePoCheckChange();
+      await this._patchSoaPo(soaFromResponse._purchaseOrderId);
     }
 
     this._autoFillForm(createdSoa);
@@ -385,7 +392,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     if (typeof e.column.dotNotationPath == 'string')
       deepInsert(e.newValue, e.column.dotNotationPath, e.element);
 
-    var total = e.element.STATIC.quantity * e.element.STATIC.unit_price;
+    const total = e.element.STATIC.quantity * e.element.STATIC.unit_price;
     e.element.STATIC.total = total - (e.element.STATIC.disc || 0) * total;
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = -1;
@@ -401,7 +408,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   }
 
   pushToListedProducts(product: Product & Pricing) {
-    var li = this.listedItems;
+    const li = this.listedItems;
     if (!li.find((o) => o._id === product._id))
       this.listedItems.push({
         ...product,
@@ -427,8 +434,12 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
   private _copySignatoriesToSelf() {
     this.listedSignatories.sort((a, b) => {
-      var aIndex = SIGNATORY_ACTIONS.findIndex((action) => action === a.action);
-      var bIndex = SIGNATORY_ACTIONS.findIndex((action) => action === b.action);
+      const aIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === a.action
+      );
+      const bIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === b.action
+      );
       return aIndex - bIndex;
     });
     this.listedSignatories = [...this.listedSignatories];
@@ -586,6 +597,21 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     return value.name || value || '';
   }
 
+  displayPoOption(po: any) {
+    const companyName = po._customerId.name ?? '';
+    const contactPerson = po._customerId.contactPerson ?? '';
+
+    const cleanString = (str: string) => {
+      return str.trim().toLowerCase();
+    };
+
+    if (cleanString(companyName) === cleanString(contactPerson)) {
+      return companyName;
+    } else {
+      return `${companyName} (${contactPerson})`;
+    }
+  }
+
   confirm() {
     this.confirmation
       .open(
@@ -657,7 +683,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       mobile,
       address: addressBilling,
       tin,
-      _customerId: po._customerId,
+      _customerId: po._customerId as string,
       _purchaseOrderId: po._id,
     });
   }
@@ -677,22 +703,22 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       grandtotal: 0,
     };
 
-    for (var item of this.listedItems) {
+    for (const item of this.listedItems) {
       this.soaSummary.total += item.STATIC.unit_price * item.STATIC.quantity;
       this.soaSummary.productDiscount +=
-        item.STATIC.unit_price * item.STATIC.quantity * (item.STATIC.disc || 0);
+        item.STATIC.unit_price * item.STATIC.quantity * (item.STATIC.disc ?? 0);
     }
 
     this.soaSummary.subtotal =
       this.soaSummary.total - this.soaSummary.productDiscount;
 
-    for (var disc of this.listedDiscounts) {
+    for (const disc of this.listedDiscounts) {
       this.soaSummary.subtotal -= disc.value;
     }
 
     this.soaSummary.grandtotal = this.soaSummary.subtotal;
 
-    for (var tax of this.listedTaxes) {
+    for (const tax of this.listedTaxes) {
       this.soaSummary.grandtotal += this.soaSummary.subtotal * tax.value;
     }
   }
@@ -702,13 +728,29 @@ export class SoaFormComponent implements OnInit, OnDestroy {
      * If SOA Update
      */
     if (this._id) {
-      this.searchId();
+      this._soaUpdateInit();
     } else {
       /**
        * If hasTransformData is true, get transformed data and get recent soa signatories to createSoa.
        * Else it is a plain soa create with recent soa signatories
        */
       let createSoa: any = {};
+
+      //Get recent SOA for signatories
+      const getRecentSoa$ = this.soaApi.getMostRecentSoa().pipe(
+        takeUntil(this.destroyed$),
+        catchError((error) => {
+          console.error(error);
+          return of(false);
+        })
+      );
+      const recentSOA = (await firstValueFrom(getRecentSoa$)) as SOA;
+
+      if (recentSOA) {
+        createSoa['signatories'] = recentSOA.signatories;
+      }
+
+      //Check transform data service
       const hasTransformData =
         this.transformData.verifyTransactionDataFootprint(
           this.transformServiceId
@@ -718,42 +760,43 @@ export class SoaFormComponent implements OnInit, OnDestroy {
         createSoa = this.transformData.formatDataToRecipient(
           this.transformServiceId
         );
-
-        //Checks if has purchaseOrderId;
-        if (createSoa._purchaseOrderId) {
-          const purchaseOrder = await this._getPoById(
-            createSoa._purchaseOrderId
-          );
-          this.searchPoControl.patchValue(purchaseOrder);
-          this.usePoCheckChange();
-        }
+        await this._patchSoaPo(createSoa._purchaseOrderId);
       }
 
-      const getRecentSoa$ = this.soaApi.getMostRecentSoa().pipe(
-        takeUntil(this.destroyed$),
-        catchError((error) => {
-          console.error(error);
-          return error;
-        })
-      );
-
-      const recentSOA = (await firstValueFrom(getRecentSoa$)) as SOA;
-
-      if (!recentSOA) {
-        return;
+      //Check Soa Data Service for Reuse/Clone Soa
+      const soaClone = this.soaData.Soa;
+      if (soaClone) {
+        createSoa = soaClone;
+        await this._patchSoaPo(createSoa._purchaseOrderId);
       }
-      createSoa['signatories'] = recentSOA.signatories;
+
       this._autoFillForm(createSoa);
     }
   }
 
   private async _getPoById(poId: string) {
-    const getPoById$ = this.poApi
-      .getPurchaseOrderById(poId)
-      .pipe(takeUntil(this.destroyed$));
+    const getPoById$ = this.poApi.getPurchaseOrderById(poId).pipe(
+      takeUntil(this.destroyed$),
+      catchError((error: HttpErrorResponse) => {
+        console.error(error.error);
+        return of(false);
+      })
+    );
 
     const po = await lastValueFrom(getPoById$);
     return po;
+  }
+
+  private async _patchSoaPo(purchaseOrderId: string) {
+    //Checks if has purchaseOrderId;
+    if (!purchaseOrderId) return;
+    const purchaseOrder = await this._getPoById(purchaseOrderId);
+
+    //If has no error
+    if (!purchaseOrder) return;
+
+    this.searchPoControl.patchValue(purchaseOrder);
+    this.usePoCheckChange();
   }
 
   private _formatBodyRequest() {
@@ -782,10 +825,10 @@ export class SoaFormComponent implements OnInit, OnDestroy {
           sku: item.sku,
           brand: item.brand,
           model: item.model,
-          classification: item.classification || '-',
+          classification: item.classification ?? '-',
           unit_price: item.STATIC.unit_price,
           quantity: item.STATIC.quantity,
-          disc: item.STATIC.disc || 0,
+          disc: item.STATIC.disc ?? 0,
           total: item.STATIC.total,
         },
       });
@@ -872,13 +915,14 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
+    this.soaData.deleteSoa();
+
     if (
       this.transformData.getTransformData()?.from !== this.transformServiceId
     ) {
       this.transformData.deleteTransformData();
     }
-
-    this.destroyed$.next();
-    this.destroyed$.complete();
   }
 }

@@ -17,6 +17,7 @@ import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
+import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -25,7 +26,7 @@ import { FileService } from '@app/shared/services/file/file.service';
 })
 export class OutDeliveryListComponent {
   searchText = new FormControl('');
-
+  placeholder = 'Search DR No | Customer Name | Contact Person';
   page: PageEvent = {
     pageIndex: 0,
     pageSize: 10,
@@ -34,7 +35,7 @@ export class OutDeliveryListComponent {
 
   columns: TableColumn[] = OUT_DELIVER_CONFIG.tableColumns;
   outdeliveries!: OutDelivery[];
-  downloading = false;
+  isLoading = false;
 
   constructor(
     private outdeliveryApi: OutDeliveryApiService,
@@ -42,7 +43,6 @@ export class OutDeliveryListComponent {
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
-    private confirmationApi: ConfirmationService,
     private fileApi: FileService
   ) {
     this.getOutDeliverys();
@@ -60,7 +60,7 @@ export class OutDeliveryListComponent {
       })
       .subscribe({
         next: (resp) => {
-          var response = resp as HttpGetResponse;
+          const response = resp as HttpGetResponse;
           this.snackbarService.closeLoadingSnackbar();
           this.outdeliveries = response.records as OutDelivery[];
           this.page.length = response.total;
@@ -83,15 +83,32 @@ export class OutDeliveryListComponent {
   actionEvent(e: any) {
     const { action } = e.action;
     const outDelivery = e.element;
+    const outDeliveryStatus = outDelivery.status;
 
     switch (action) {
       case 'print':
         this.print(outDelivery);
         break;
       case 'edit':
+        if (
+          this._isActionEventRestricted(
+            outDeliveryStatus,
+            'Cancelled/Deleted Out Delivery is uneditable'
+          ) === true
+        ) {
+          return;
+        }
         this.router.navigate(['portal/out-delivery/edit/' + outDelivery._id]);
         break;
       case 'change-status-cancel':
+        if (
+          this._isActionEventRestricted(
+            outDeliveryStatus,
+            'Out Delivery status is already cancelled'
+          ) === true
+        ) {
+          return;
+        }
         this._cancelItem(outDelivery);
         break;
     }
@@ -112,63 +129,93 @@ export class OutDeliveryListComponent {
   }
 
   exportTableExcel() {
-    this.snackbarService.openLoadingSnackbar(
-      'Please Wait',
-      'Downloading Excel file...'
-    );
-    this.downloading = true;
     const query: QueryParams = {
-      searchText: this.searchText.value || '',
+      searchText: this.searchText.value ?? '',
     };
+    this._setLoadingState(true, 'Downloading Excel');
 
     this.outdeliveryApi.exportOutDeliveries(query).subscribe({
       next: (response: any) => {
-        this.downloading = false;
-        this.snackbarService.closeLoadingSnackbar();
+        this._setLoadingState(false);
         const fileName = generateFileName('OUT_DELIVERIES', 'xlsx');
         this.fileApi.downloadFile(response.body as Blob, fileName);
       },
       error: ({ error }: HttpErrorResponse) => {
-        this.downloading = false;
+        this._setLoadingState(false);
         this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
-      },
-      complete: () => {
-        this.downloading = false;
       },
     });
   }
 
   private _cancelItem(outDelivery: OutDelivery) {
-    const { cancellationDialog } = OUT_DELIVER_CONFIG;
     const outDeliveryId = outDelivery._id;
 
     if (!outDeliveryId) {
-      throw new Error('Out Delivery Id not found');
+      console.error('Out Delivery Item has no ID');
+      return;
     }
-    this.confirmationApi
-      .open(cancellationDialog.title, cancellationDialog.message)
+
+    this.dialog
+      .open(CancelOutDeliveryComponent, {
+        data: outDelivery,
+        disableClose: true,
+        autoFocus: false,
+        width: '55%',
+      })
       .afterClosed()
       .pipe(
         filter((result) => result),
         switchMap(() => {
-          return this.outdeliveryApi.patchOutDeliveryStatus(
-            OutDeliveryStatus.CANCELLED,
-            outDeliveryId
-          );
+          this._setLoadingState(true, 'Cancelling Delivery');
+          return this.outdeliveryApi.cancelOutDeliveryById(outDeliveryId);
         })
       )
       .subscribe({
         next: () => {
-          this.snackbarService.closeLoadingSnackbar();
+          this._setLoadingState(false);
+          this.snackbarService.openSuccessSnackbar(
+            'Success',
+            'Delivery has been cancelled.'
+          );
+          setTimeout(() => {
+            this.getOutDeliverys();
+          }, 800);
         },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.closeLoadingSnackbar().then(() => {
-            this.snackbarService.openErrorSnackbar(
-              err.error?.errorCode,
-              err.error?.message
-            );
-          });
+        error: ({ error }: HttpErrorResponse) => {
+          this._setLoadingState(false);
+          console.error(error);
+          this.snackbarService.openErrorSnackbar(
+            error.errorCode,
+            error.message
+          );
         },
       });
+  }
+
+  private _setLoadingState(isLoading: boolean, loadingMessage = '') {
+    this.isLoading = isLoading;
+
+    if (isLoading) {
+      this.snackbarService.openLoadingSnackbar('Please Wait', loadingMessage);
+    } else {
+      this.snackbarService.closeLoadingSnackbar();
+    }
+  }
+
+  private _isActionEventRestricted(
+    outDeliveryStatus: OutDeliveryStatus,
+    errorMessage = ''
+  ) {
+    const restrictedStatus = [
+      OutDeliveryStatus.CANCELLED,
+      OutDeliveryStatus.DELETED,
+    ];
+
+    if (restrictedStatus.includes(outDeliveryStatus)) {
+      this.snackbarService.openErrorSnackbar('Restricted Action', errorMessage);
+      return true;
+    } else {
+      return false;
+    }
   }
 }

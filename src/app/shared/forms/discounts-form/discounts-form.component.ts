@@ -2,9 +2,11 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
@@ -27,8 +29,9 @@ import {
   styleUrl: './discounts-form.component.scss',
   templateUrl: './discounts-form.component.html',
 })
-export class DiscountsFormComponent implements OnInit, OnDestroy {
+export class DiscountsFormComponent implements OnChanges {
   @Input() discounts: Discount[] = [];
+  @Input({ alias: 'loading' }) isLoading = false;
   @Output() discountsEmitter = new EventEmitter<Discount[]>();
 
   columns: TableColumn[] = [
@@ -71,14 +74,11 @@ export class DiscountsFormComponent implements OnInit, OnDestroy {
 
   filteredOptions!: Observable<Discount[]>;
 
-  private destroyed$ = new Subject<void>();
-
-  constructor() {}
-
-  ngOnInit(): void {
-    this.page.length = this.discounts.length;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['discounts']?.isFirstChange()) {
+      this.page.length = this.discounts.length;
+    }
   }
-
   actionEventHandler(e: any) {
     const { action } = e.action;
 
@@ -111,10 +111,5 @@ export class DiscountsFormComponent implements OnInit, OnDestroy {
     this.discounts.splice(i, 1);
     this.discounts = [...this.discounts];
     this.page.length--;
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed$.next();
-    this.destroyed$.complete();
   }
 }

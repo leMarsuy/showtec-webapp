@@ -7,7 +7,7 @@ import { FormArray, FormBuilder, Validators } from '@angular/forms';
   styleUrl: './particulars-array-form.component.scss',
 })
 export class ParticularsArrayFormComponent implements OnInit {
-  @Input() title!: string;
+  @Input() title = 'PARTICULARS';
   @Input({ required: true }) fArray!: FormArray;
   @Input() defaultValueArray!: Array<any> | null;
 

@@ -58,7 +58,8 @@
           (optionSelected)="autofillCustomerDetailsFromPo($event.option.value)" [displayWith]="displayPo">
           @for (po of filteredPos | async; track po) {
           <mat-option [value]="po">
-            <p>PO: {{ po?.code?.value }}</p>
+            <p>PO# {{ po?.code?.value }}</p>
+            <p class="text-xs text-gray-600 mt-1">{{ displayPoOption(po)}}</p>
           </mat-option>
           }
         </mat-autocomplete>
@@ -70,7 +71,7 @@
         <mat-form-field class="w-full">
           <mat-label>Customer's Name</mat-label>
           <input matInput placeholder="Type Customer Name..." [matAutocomplete]="customerAuto"
-            formControlName="_customerId" />
+            formControlName="_customerId" [readonly]="usePurchaseOrder" />
           <mat-autocomplete autoActiveFirstOption #customerAuto="matAutocomplete"
             (optionSelected)="autofillCustomerDetails($event.option.value)" [displayWith]="displayCustomer">
             @for (option of filteredCustomers | async; track option) {

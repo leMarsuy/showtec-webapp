@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Signatory } from '@app/core/models/out-delivery.model';
 import {
   Voucher,
   VoucherAccount,
@@ -11,7 +10,6 @@ interface ReuseVoucher {
   bank: string;
   accounts: Partial<VoucherAccount>[];
   particulars: Partial<VoucherParticular>[];
-  signatories: Signatory[];
 }
 
 @Injectable({
@@ -21,9 +19,7 @@ export class VoucherDataService {
   private voucher: ReuseVoucher | null = null;
 
   get Voucher() {
-    const clone = this.voucher;
-    this.deleteVoucher();
-    return clone;
+    return this.voucher;
   }
 
   constructor() {}
@@ -59,7 +55,6 @@ export class VoucherDataService {
     return {
       payee: voucher.payee,
       bank: voucher.bank,
-      signatories: voucher.signatories,
       particulars,
       accounts,
     };

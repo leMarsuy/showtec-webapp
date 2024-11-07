@@ -130,6 +130,7 @@ export class ViewPurchaseOrderComponent {
         autoFocus: false,
         data: {
           _id: this.data,
+          balance: this.purchaseOrder.payment?.balance,
         },
       })
       .afterClosed()

@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Color } from '@app/core/enums/color.enum';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
+import { UtilService } from '@app/shared/services/util/util.service';
 import { deepFind } from '@app/shared/utils/deepfind';
 
 @Component({
@@ -16,16 +17,20 @@ export class TableCellComponent {
   @Output() actionEmitter: EventEmitter<any> = new EventEmitter();
   @Output() updateCellEmitter: EventEmitter<any> = new EventEmitter();
 
+  utilService = inject(UtilService);
+
   _cssStatus(element: any, column: TableColumn) {
-    var color: Color = Color.DEAD;
-    var value: any;
+    let value: any;
 
-    if (typeof column.dotNotationPath == 'string')
+    if (typeof column.dotNotationPath === 'string') {
       value = deepFind(element, column.dotNotationPath);
+    }
 
-    color = column.colorCodes
-      ? column.colorCodes.find((cc) => cc.value == value)?.color || Color.DEAD
-      : Color.DEAD;
+    const colorCodes = column?.colorCodes?.find(
+      (cc) => cc.value == value
+    )?.color;
+
+    const color = colorCodes ?? Color.DEAD;
 
     return `w-fit px-4 border-2 border-${color}-500 text-${color}-500 bg-${color}-100 text-center rounded-xl`;
   }
