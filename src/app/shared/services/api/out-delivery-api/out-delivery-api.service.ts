@@ -20,16 +20,22 @@ export class OutDeliveryApiService {
     return this.httpService.post(`${this.apiPrefix}`, outdelivery);
   }
 
-  getOutDeliverys(query?: QueryParams) {
-    var sanitizedQuery: QueryParams = {};
-    if (query)
+  getOutDeliverys(query?: QueryParams, status?: string) {
+    let sanitizedQuery: QueryParams = {};
+    status = status ?? '';
+
+    if (query) {
       sanitizedQuery = {
         pageIndex: query.pageIndex || 0,
         pageSize: query.pageSize || 0,
         sort: query.sort || '',
         searchText: query.searchText || '',
       };
-    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
+    }
+    return this.httpService.get(`${this.apiPrefix}`, {
+      ...sanitizedQuery,
+      status,
+    });
   }
 
   getOutDeliveryById(_id: string) {

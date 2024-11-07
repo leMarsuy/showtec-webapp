@@ -147,7 +147,6 @@ export class ObjectService {
       }
       return true;
     } else {
-      console.log(actualValue, conditionValue);
       return actualValue === conditionValue;
     }
   }

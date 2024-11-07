@@ -16,7 +16,6 @@ export const editOutDeliveryGuard: CanActivateFn = (
 ) => {
   const outDeliveryApi = inject(OutDeliveryApiService);
   const outDeliveryId = route.paramMap.get('_id');
-  console.log(outDeliveryId);
   const router = inject(Router);
 
   const allowedStatus: any = [

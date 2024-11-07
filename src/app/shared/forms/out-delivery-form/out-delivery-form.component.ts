@@ -611,6 +611,27 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
        */
       let createOutDelivery: any = {};
 
+      //Check transform data service
+      const hasTransformData =
+        this.transformDataService.verifyTransactionDataFootprint(
+          this.transformServiceId
+        );
+
+      if (hasTransformData) {
+        createOutDelivery = this.transformDataService.formatDataToRecipient(
+          this.transformServiceId
+        );
+
+        this._patchDrPo(createOutDelivery._purchaseOrderId);
+      }
+
+      //Check Out Delivery Data Service for Reuse/Clone Out Delivery
+      const drClone = this.outDeliveryDataService.OutDelivery;
+      if (drClone) {
+        Object.assign(createOutDelivery, drClone);
+        await this._patchDrPo(createOutDelivery._purchaseOrderId);
+      }
+
       //Get Recent DR for signatories
       const getRecentOutDelivery$ = this.outdeliveryApi
         .getMostRecentOutDelivery()
@@ -630,30 +651,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
         createOutDelivery['signatories'] = recentOutDelivery.signatories;
       }
 
-      //Check transform data service
-      const hasTransformData =
-        this.transformDataService.verifyTransactionDataFootprint(
-          this.transformServiceId
-        );
-
-      if (hasTransformData) {
-        createOutDelivery = this.transformDataService.formatDataToRecipient(
-          this.transformServiceId
-        );
-
-        //Checks if has purchaseOrderId;
-        if (createOutDelivery._purchaseOrderId) {
-          this._patchDrPo(createOutDelivery._purchaseOrderId);
-        }
-      }
-
-      //Check Out Delivery Data Service for Reuse/Clone Out Delivery
-      const drClone = this.outDeliveryDataService.OutDelivery;
-      if (drClone) {
-        Object.assign(createOutDelivery, drClone);
-        await this._patchDrPo(createOutDelivery._purchaseOrderId);
-      }
-
       this._autoFillForm(createOutDelivery);
     }
   }
@@ -661,9 +658,8 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   private async _patchDrPo(purchaseOrderId: string) {
     //Checks if has purchaseOrderId;
     if (!purchaseOrderId) return;
-    const purchaseOrder = await this._getPoById(purchaseOrderId);
 
-    //If has no error
+    const purchaseOrder = await this._getPoById(purchaseOrderId);
     if (!purchaseOrder) return;
 
     this.searchPoControl.patchValue(purchaseOrder);

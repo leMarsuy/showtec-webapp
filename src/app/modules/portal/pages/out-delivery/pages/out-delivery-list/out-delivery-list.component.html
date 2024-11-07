@@ -1,7 +1,7 @@
 <div class="flex gap-4">
   <div class="flex flex-col w-full gap-4 rounded-xl bg-white p-4">
     <div class="flex">
-      <div class="flex grow">
+      <div class="flex">
         <mat-form-field appearance="outline" class="w-[32rem]">
           <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="getOutDeliverys()" />
           <mat-icon matSuffix class="cursor-pointer" (click)="getOutDeliverys()" fontIcon="search" />
@@ -9,19 +9,30 @@
 
       </div>
 
-      <div class="flex">
-        <button mat-icon-button (click)="getOutDeliverys()" [disabled]="isLoading === true" matTooltip="Refresh Table">
-          <mat-icon class="mr-2  disabled:text-gray-300"> refresh </mat-icon>
-        </button>
-        <button mat-icon-button (click)="exportTableExcel()" [disabled]="isLoading === true"
-          matTooltip="Download Table Excel">
-          <mat-icon class="mr-2 disabled:text-gray-300">
-            {{ isLoading ? "downloading" : "download_for_offline" }}
-          </mat-icon>
-        </button>
+      <div class="flex grow justify-between items-start ml-[24px]">
+
+
+        <div class="flex gap-2">
+          @for(status of tableFilterStatuses; track $index) {
+          <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" [ngClass]="{
+              'border-emerald-800 bg-emerald-100 text-emerald-800' : selectedFilterStatus === status,
+              'border-gray-500' : selectedFilterStatus !== status
+            }" (click)="onFilterStatusChange(status)">
+            {{ status }}
+          </div>
+          }
+        </div>
+        <div>
+          <button mat-icon-button (click)="getOutDeliverys()" [disabled]="isLoading" matTooltip="Refresh Table">
+            <mat-icon class="mr-2  disabled:text-gray-300"> refresh </mat-icon>
+          </button>
+          <button mat-icon-button (click)="exportTableExcel()" [disabled]="isLoading" matTooltip="Download Table Excel">
+            <mat-icon class="mr-2 disabled:text-gray-300">
+              {{ isLoading ? "downloading" : "download_for_offline" }}
+            </mat-icon>
+          </button>
+        </div>
       </div>
-
-
     </div>
     <app-table [dataSource]="outdeliveries" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
       (actionEmitter)="actionEvent($event)"></app-table>

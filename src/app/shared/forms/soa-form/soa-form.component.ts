@@ -264,8 +264,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private confirmation: ConfirmationService,
     private dialog: MatDialog,
-    private transformData: TransformDataService,
-    private soaData: SoaDataService
+    private transformDataService: TransformDataService,
+    private soaDataService: SoaDataService
   ) {}
 
   ngOnInit(): void {
@@ -736,6 +736,26 @@ export class SoaFormComponent implements OnInit, OnDestroy {
        */
       let createSoa: any = {};
 
+      //Check transform data service
+      const hasTransformData =
+        this.transformDataService.verifyTransactionDataFootprint(
+          this.transformServiceId
+        );
+
+      if (hasTransformData) {
+        createSoa = this.transformDataService.formatDataToRecipient(
+          this.transformServiceId
+        );
+        await this._patchSoaPo(createSoa._purchaseOrderId);
+      }
+
+      //Check Soa Data Service for Reuse/Clone Soa
+      const soaClone = this.soaDataService.Soa;
+      if (soaClone) {
+        createSoa = soaClone;
+        await this._patchSoaPo(createSoa._purchaseOrderId);
+      }
+
       //Get recent SOA for signatories
       const getRecentSoa$ = this.soaApi.getMostRecentSoa().pipe(
         takeUntil(this.destroyed$),
@@ -748,26 +768,6 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
       if (recentSOA) {
         createSoa['signatories'] = recentSOA.signatories;
-      }
-
-      //Check transform data service
-      const hasTransformData =
-        this.transformData.verifyTransactionDataFootprint(
-          this.transformServiceId
-        );
-
-      if (hasTransformData) {
-        createSoa = this.transformData.formatDataToRecipient(
-          this.transformServiceId
-        );
-        await this._patchSoaPo(createSoa._purchaseOrderId);
-      }
-
-      //Check Soa Data Service for Reuse/Clone Soa
-      const soaClone = this.soaData.Soa;
-      if (soaClone) {
-        createSoa = soaClone;
-        await this._patchSoaPo(createSoa._purchaseOrderId);
       }
 
       this._autoFillForm(createSoa);
@@ -790,9 +790,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   private async _patchSoaPo(purchaseOrderId: string) {
     //Checks if has purchaseOrderId;
     if (!purchaseOrderId) return;
-    const purchaseOrder = await this._getPoById(purchaseOrderId);
 
-    //If has no error
+    const purchaseOrder = await this._getPoById(purchaseOrderId);
     if (!purchaseOrder) return;
 
     this.searchPoControl.patchValue(purchaseOrder);
@@ -917,12 +916,13 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
-    this.soaData.deleteSoa();
+    this.soaDataService.deleteSoa();
 
     if (
-      this.transformData.getTransformData()?.from !== this.transformServiceId
+      this.transformDataService.getTransformData()?.from !==
+      this.transformServiceId
     ) {
-      this.transformData.deleteTransformData();
+      this.transformDataService.deleteTransformData();
     }
   }
 }
