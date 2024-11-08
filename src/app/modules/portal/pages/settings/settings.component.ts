@@ -1,6 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ProductSettingsComponent } from './pages/product-settings/product-settings.component';
 import { AccountSettingsComponent } from './pages/account-settings/account-settings.component';
+import { VoucherSettingsComponent } from './pages/voucher-settings/voucher-settings.component';
+import { Router } from '@angular/router';
+
+interface SettingRouteConfig {
+  label: string;
+  route: string;
+}
 
 @Component({
   selector: 'app-settings',
@@ -8,16 +15,27 @@ import { AccountSettingsComponent } from './pages/account-settings/account-setti
   styleUrl: './settings.component.scss',
 })
 export class SettingsComponent {
-  settingComponents = [
+  private readonly router = inject(Router);
+  private readonly baseUrl = '/portal/settings';
+
+  routeConfigs: SettingRouteConfig[] = [
     {
-      label: 'Account Settings',
-      component: AccountSettingsComponent,
+      label: 'Your Account',
+      route: this.baseUrl + '/account',
     },
+    // {
+    //   label: 'Products',
+    //   route: this.baseUrl + '/product',
+    // },
     {
-      label: 'Product Settings',
-      component: ProductSettingsComponent,
+      label: 'Vouchers',
+      route: this.baseUrl + '/voucher',
     },
   ];
+  selectedRoute = this.routeConfigs[0];
 
-  selectedPortal = this.settingComponents[0];
+  navigateTo(config: SettingRouteConfig) {
+    this.selectedRoute = config;
+    this.router.navigate([config.route]);
+  }
 }
