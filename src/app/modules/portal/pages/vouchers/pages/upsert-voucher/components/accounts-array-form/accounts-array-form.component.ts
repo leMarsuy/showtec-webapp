@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, Validators } from '@angular/forms';
 import { debounceTime, startWith, Subject, takeUntil } from 'rxjs';
-import { ACCOUNT_TITLES, AccountTitle } from '../../account-title.list';
+import { AccountTitle } from '../../account-title.list';
 import {
   VOUCHER_ACCOUNT_TYPES,
   VoucherAccountType,
@@ -16,6 +16,7 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
   @Input() title = 'DISTRIBUTION OF ACCOUNTS';
   @Input({ required: true }) fArray!: FormArray;
   @Input() defaultValueArray!: Array<any> | null;
+  @Input() accountTitles!: any;
 
   accountType = VOUCHER_ACCOUNT_TYPES;
 
@@ -38,7 +39,7 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
       remarks: [row?.remarks || ''],
       amount: [row?.amount || '', Validators.required],
       type: [row?.type || VoucherAccountType.DEBIT, Validators.required],
-      titleOptions: [ACCOUNT_TITLES],
+      titleOptions: [this.accountTitles],
       search: [
         row
           ? {
@@ -63,7 +64,7 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
         } else {
           let titles: AccountTitle[];
           if (!searchControl) {
-            titles = ACCOUNT_TITLES;
+            titles = this.accountTitles;
           } else {
             titles = this._filterTitles(searchControl);
           }
@@ -91,14 +92,15 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
 
   private _filterTitles(searchKey: string) {
     const filterKey = searchKey.toLowerCase();
+    console.log(this.accountTitles);
 
-    return ACCOUNT_TITLES.filter((account: AccountTitle) => {
+    return this.accountTitles.filter((account: AccountTitle) => {
       return account.name.toLowerCase().includes(filterKey);
     });
   }
 
   displayFn(account: AccountTitle): string {
-    return account && account.name ? account.name : '';
+    return account?.name ?? '';
   }
 
   ngOnDestroy(): void {
