@@ -7,7 +7,6 @@ import { ObjectService } from '@app/shared/services/util/object/object.service';
   providedIn: 'root',
 })
 export class DistributionOfAccountDataService {
-  private readonly objectService = inject(ObjectService);
   private categoriesSubject = new BehaviorSubject<string[]>([]);
   private titlesSubject = new BehaviorSubject<AccountTitle[]>([]);
 
