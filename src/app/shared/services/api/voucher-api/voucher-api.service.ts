@@ -22,7 +22,7 @@ export class VoucherApiService {
     return this.httpService.post(`${this.apiPrefix}`, voucher);
   }
 
-  getVouchers(query?: QueryParams, status: string = '') {
+  getVouchers(query?: QueryParams, dateFilter?: any, status: string = '') {
     let sanitizedQuery: QueryParams = {};
     if (query) {
       sanitizedQuery = {
@@ -32,10 +32,18 @@ export class VoucherApiService {
         searchText: query.searchText,
       };
     }
-    return this.httpService.get(`${this.apiPrefix}`, {
-      ...sanitizedQuery,
-      status,
-    });
+
+    let params: any = { ...sanitizedQuery, status };
+    if (dateFilter) {
+      if (typeof dateFilter === 'object') {
+        const filterObj = JSON.stringify(dateFilter);
+        params = { ...params, dateFilter: filterObj };
+      } else {
+        params = { ...params, dateFilter };
+      }
+    }
+
+    return this.httpService.get(`${this.apiPrefix}`, params);
   }
 
   getVoucherById(_id: string) {

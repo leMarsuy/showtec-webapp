@@ -7,15 +7,43 @@
         </mat-icon>
       </mat-form-field>
       <div class="flex grow justify-between items-start ml-[24px]">
-        <div class="flex gap-2">
-          @for(status of tableFilterStatuses; track $index) {
-          <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" aria-hidden="true" [ngClass]="{
-                'border-emerald-800 bg-emerald-100 text-emerald-800' : tableFilterStatus === status,
-                'border-gray-500' : tableFilterStatus !== status
-              }" (click)="onFilterStatusChange(status)">
-            {{ status }}
-          </div>
-          }
+
+        <div class="flex gap-5">
+          <mat-form-field appearance="outline">
+            <mat-select [formControl]="statusControl" (selectionChange)="onFilterStatusChange($event)">
+              @for(status of tableFilterStatuses; track status) {
+              <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <button
+            class="box-border h-[56px] min-w-[164px] rounded ring-1 ring-inset ring-gray-500 hover:ring-black pl-4 pr-2 active:ring-blue-800"
+            [matMenuTriggerFor]="dateFilterMenu">
+            <p class="text-gray-700 inline-flex justify-between items-center truncate">Date: {{filterDateDisplay}}<span
+                class="inline-flex justify-between items-center ml-2">
+                <mat-icon>arrow_drop_down</mat-icon>
+              </span></p>
+          </button>
+          <mat-menu #dateFilterMenu="matMenu">
+            <div class="min-w-[144px]">
+              <button mat-menu-item (click)="onFilterDateChange($any('all-time'))">
+                <span>All-Time</span>
+              </button>
+              <button mat-menu-item (click)="onFilterDateChange($any('this-week'))">
+                <span>This Week</span>
+              </button>
+              <button mat-menu-item (click)="onFilterDateChange($any('this-month'))">
+                <span>This Month</span>
+              </button>
+              <button mat-menu-item (click)="onFilterDateChange($any('this-year'))">
+                <span>This Year</span>
+              </button>
+              <button mat-menu-item (click)="onFilterDateChange($any('date-range'))">
+                <span>Date Range</span>
+              </button>
+            </div>
+          </mat-menu>
         </div>
 
         <div>
