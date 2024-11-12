@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
-import { Status } from '@app/core/enums/status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Voucher } from '@app/core/models/voucher.model';
@@ -23,11 +22,18 @@ import {
   VOUCHER_STATUSES,
   VoucherStatus,
 } from '@app/core/enums/voucher-status.enum';
+import { MatSelectChange } from '@angular/material/select';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { filter, map } from 'rxjs';
+import { DateRangeFilterComponent } from './components/date-range-filter/date-range-filter.component';
+import { formatDate } from '@app/shared/utils/dateUtil';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
 
 @Component({
   selector: 'app-vouchers-list',
   templateUrl: './vouchers-list.component.html',
   styleUrl: './vouchers-list.component.scss',
+  providers: [provideNativeDateAdapter()],
 })
 export class VouchersListComponent {
   placeholder = 'Search Voucher No | Payee';
@@ -35,9 +41,15 @@ export class VouchersListComponent {
 
   private sortBy = '-code.value'; //Voucher No, descending
 
+  statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...VOUCHER_STATUSES];
-  tableFilterStatus = 'All';
+  selectedFilterStatus = 'All';
+
+  filterDateDisplay = 'All Time';
+  selectedFilterDate: any = DateFilterType.ALL_TIME;
+
   isLoading = false;
+  isDateRange = false;
 
   vouchers!: Voucher[];
   columns: TableColumn[] = [
@@ -137,15 +149,15 @@ export class VouchersListComponent {
     this.getVouchers();
   }
 
-  onFilterStatusChange(status: Status | string) {
-    this.tableFilterStatus = status;
-    this.getVouchers();
-  }
-
   getVouchers() {
     const loadingMsg = 'Fetching expenses...';
     const status =
-      this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
+
+    const dateFilter =
+      this.selectedFilterDate === DateFilterType.ALL_TIME
+        ? ''
+        : this.selectedFilterDate;
 
     this._setLoadingState(true, loadingMsg);
 
@@ -156,6 +168,7 @@ export class VouchersListComponent {
           sort: this.sortBy,
           ...this.page,
         },
+        dateFilter,
         status
       )
       .subscribe({
@@ -207,7 +220,7 @@ export class VouchersListComponent {
     this._setLoadingState(true, loadingMsg);
 
     const status =
-      this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
 
     const query: QueryParams = {
       searchText: this.searchText.value || '',
@@ -225,6 +238,72 @@ export class VouchersListComponent {
         this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
       },
     });
+  }
+
+  onFilterStatusChange(event: MatSelectChange) {
+    this.selectedFilterStatus = event.value;
+    this.getVouchers();
+  }
+
+  /**
+   *
+   * @param action {"this-week" | "this-month" | "this-year" | "" - All Time | "custom" - open modal}
+   */
+  onFilterDateChange(dateFilterType: DateFilterType) {
+    if (dateFilterType !== 'date-range') {
+      this.filterDateDisplay = this._updateFilterDateDisplay(dateFilterType);
+      this.selectedFilterDate = dateFilterType;
+      this.getVouchers();
+      return;
+    }
+
+    this.dialog
+      .open(DateRangeFilterComponent)
+      .afterClosed()
+      .pipe(
+        filter((result) => result),
+        map((result) => result)
+      )
+      .subscribe({
+        next: (dateRangeResult) => {
+          this.filterDateDisplay = this._updateFilterDateDisplay(
+            dateFilterType,
+            dateRangeResult
+          );
+          this.selectedFilterDate = {
+            filter: dateFilterType,
+            dateRange: dateRangeResult,
+          };
+          this.getVouchers();
+        },
+      });
+  }
+
+  private _updateFilterDateDisplay(
+    dateFilterType: DateFilterType,
+    dateRange?: any
+  ): string {
+    let display = 'All Time';
+    switch (dateFilterType) {
+      case DateFilterType.THIS_WEEK:
+        display = 'This Week';
+        break;
+      case DateFilterType.THIS_MONTH:
+        display = 'This Month';
+        break;
+      case DateFilterType.THIS_YEAR:
+        display = 'This Year';
+        break;
+      case DateFilterType.DATE_RANGE:
+        const startFormat = formatDate(new Date(dateRange?.startDate));
+        const endFormat = formatDate(new Date(dateRange?.endDate));
+        display = `${startFormat} - ${endFormat}`;
+        break;
+      default:
+        break;
+    }
+
+    return display;
   }
 
   private _print(voucher: Voucher) {
