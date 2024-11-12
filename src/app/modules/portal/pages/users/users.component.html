@@ -1,11 +1,7 @@
 <div class="px-4 py-4">
-  <app-content-header
-    icon="badge"
-    label="USERS"
-    [actions]="actions"
-    (actionEmitter)="actionEvent($event)"
-  ></app-content-header>
+  <app-content-header icon="badge" label="USERS" [actions]="actions" (actionEmitter)="actionEvent($event)">
+  </app-content-header>
 </div>
 <div class="px-4">
-  <router-outlet> </router-outlet>
+  <router-outlet (activate)="getUserListComponentFromRouterOutlet($event)"></router-outlet>
 </div>

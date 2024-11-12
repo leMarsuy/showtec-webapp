@@ -11,9 +11,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { EditUserComponent } from './component/edit-user/edit-user.component';
 
 @NgModule({
-  declarations: [UsersComponent, AddUserComponent],
+  declarations: [UsersComponent, AddUserComponent, EditUserComponent],
   imports: [
     CommonModule,
     UsersRoutingModule,

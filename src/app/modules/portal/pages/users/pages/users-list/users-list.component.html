@@ -2,12 +2,7 @@
   <div class="flex">
     <div class="grow">
       <mat-form-field appearance="outline" class="w-[32rem]">
-        <input
-          matInput
-          placeholder="Search User"
-          [formControl]="searchText"
-          (keyup.enter)="getUsers()"
-        />
+        <input matInput placeholder="Search User" [formControl]="searchText" (keyup.enter)="getUsers()" />
         <mat-icon matSuffix class="cursor-pointer" (click)="getUsers()">
           search
         </mat-icon>
@@ -22,11 +17,6 @@
       </button>
     </div>
   </div>
-  <app-table
-    [dataSource]="users"
-    [columns]="columns"
-    [page]="page"
-    (rowEmitter)="openEditUser($event._id)"
-    (pageEmitter)="pageEvent($event)"
-  ></app-table>
+  <app-table [dataSource]="users" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
+    (actionEmitter)="actionEvent($event)"></app-table>
 </div>
