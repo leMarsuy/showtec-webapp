@@ -39,6 +39,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { isEmpty } from '@app/shared/utils/objectUtil';
 import { Signatory } from '@app/core/models/out-delivery.model';
+import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
+import { AccountTitle } from './account-title.list';
+import { VoucherConfig } from '../../../settings/pages/voucher-settings/voucher-settings.component';
 
 @Component({
   selector: 'app-upsert-voucher',
@@ -47,7 +50,10 @@ import { Signatory } from '@app/core/models/out-delivery.model';
   styleUrl: './upsert-voucher.component.scss',
 })
 export class UpsertVoucherComponent implements OnInit, OnDestroy {
+  private readonly configName = 'voucher';
   banks = REGISTERED_BANKS;
+
+  accountTitles!: AccountTitle[];
 
   voucher!: Voucher;
   voucherForm!: FormGroup;
@@ -66,6 +72,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly voucherApi: VoucherApiService,
+    private readonly configApi: ConfigApiService,
     private readonly voucherData: VoucherDataService,
     private readonly confirmation: ConfirmationService,
     private readonly snackbar: SnackbarService,
@@ -79,6 +86,17 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       particulars: this.formBuilder.array([]),
       checkNo: ['', Validators.required],
       checkDate: [null, Validators.required],
+    });
+
+    this.configApi.getConfigByName(this.configName).subscribe({
+      next: (response) => {
+        const config = response as VoucherConfig;
+        this.accountTitles = config.data.distributionOfAccounts.accountTitles;
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        console.error(error);
+        this.snackbar.openErrorSnackbar(error.errorCode, error.message);
+      },
     });
   }
 

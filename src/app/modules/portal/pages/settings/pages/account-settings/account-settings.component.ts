@@ -1,14 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from '@app/core/models/user.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { AuthService } from '@app/shared/services/api';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
-import { filter, map, Subject, switchMap, takeUntil } from 'rxjs';
+import { Subject, filter, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-account-settings',
@@ -25,19 +24,21 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   loading = false;
 
   private destroyed$ = new Subject<void>();
-  private user!: User;
+  private user!: any;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private _dialogRef: MatDialogRef<AccountSettingsComponent>,
     private confirmation: ConfirmationService,
     private snackbar: SnackbarService,
     private userApi: UserApiService,
     private authApi: AuthService,
     private router: Router
   ) {
-    if (!data.user) throw new Error('User not found');
-    this.user = data.user;
+    this.user = {
+      _id: '2312837',
+      name: 'nice',
+      email: 'nice@email.com',
+      designation: 'nice',
+    };
     this.onResetForm();
   }
 
@@ -102,7 +103,6 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
         next: () => {
           this.loading = false;
           this.snackbar.closeLoadingSnackbar();
-          this._dialogRef.close();
           this.authApi.logout().subscribe({
             error: ({ error }: HttpErrorResponse) => {
               this.snackbar.openErrorSnackbar(error.errorCode, error.message);

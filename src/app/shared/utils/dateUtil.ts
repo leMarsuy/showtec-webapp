@@ -26,6 +26,16 @@ export function getDateCeil(date: Date) {
   return date;
 }
 
+export function formatDate(date: Date, options?: Intl.DateTimeFormatOptions) {
+  const format = options ?? {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  };
+
+  return date.toLocaleDateString('en-US', format);
+}
+
 function getDiff(firstDate: Date, secondDate: Date) {
   return new Date(secondDate).getTime() - new Date(firstDate).getTime();
 }

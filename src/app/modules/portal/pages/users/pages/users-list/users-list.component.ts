@@ -1,13 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { Alignment } from '@app/core/enums/align.enum';
+import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { User } from '@app/core/models/user.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
+import { EditUserComponent } from '../../component/edit-user/edit-user.component';
 
 @Component({
   selector: 'app-users-list',
@@ -35,17 +39,32 @@ export class UsersListComponent {
       dotNotationPath: 'status',
       type: ColumnType.STRING,
     },
+    {
+      label: 'Action',
+      dotNotationPath: '_id',
+      type: ColumnType.ACTION,
+      align: Alignment.CENTER,
+      actions: [
+        {
+          name: 'Edit User',
+          action: 'edit',
+          icon: 'edit',
+          color: Color.WARNING,
+        },
+      ],
+    },
   ];
   users: User[] = [];
 
   constructor(
     private snackbarService: SnackbarService,
-    private userApi: UserApiService
+    private userApi: UserApiService,
+    private dialog: MatDialog
   ) {
     this.getUsers();
   }
 
-  getUsers() {
+  public getUsers() {
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching users...');
     this.userApi
       .getUsers({
@@ -74,16 +93,27 @@ export class UsersListComponent {
     this.getUsers();
   }
 
-  openEditUser(_id: string) {
-    // this.dialog
-    //   .open(EditSupplierComponent, {
-    //     width: '100rem',
-    //     disableClose: true,
-    //     data: { _id },
-    //   })
-    //   .afterClosed()
-    //   .subscribe((refresh: boolean) => {
-    //     if (refresh) this.getSuppliers();
-    //   });
+  actionEvent(e: any) {
+    const { action } = e.action;
+    const user = e.element;
+
+    switch (action) {
+      case 'edit':
+        this._openEditUser(user);
+        break;
+    }
+  }
+
+  private _openEditUser(user: User) {
+    this.dialog
+      .open(EditUserComponent, {
+        width: '100rem',
+        disableClose: true,
+        data: user,
+      })
+      .afterClosed()
+      .subscribe((refresh: boolean) => {
+        if (refresh) this.getUsers();
+      });
   }
 }

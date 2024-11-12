@@ -94,6 +94,11 @@ export const NAV_ROUTES = [
         path: 'users',
         icon: NavIcon.USERS,
       },
+      {
+        name: 'Settings',
+        path: 'settings',
+        icon: NavIcon.SETTINGS,
+      },
     ],
   },
 ];
