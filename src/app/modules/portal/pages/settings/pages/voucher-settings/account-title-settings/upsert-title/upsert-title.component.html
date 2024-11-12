@@ -1,0 +1,21 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<div mat-dialog-content [formGroup]="accountTitleGroup">
+  <mat-form-field class="w-full">
+    <mat-label>Account Title</mat-label>
+    <input matInput type="text" formControlName="name" (input)="onInputChange()">
+  </mat-form-field>
+
+  <mat-form-field class="w-full">
+    <mat-label>Account Category</mat-label>
+    <mat-select formControlName="category">
+      @for(category of categories; track category) {
+      <mat-option [value]="category">{{ category }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions class="flex !justify-between items-center">
+  <button mat-button mat-dialog-close color="warn">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="accountTitleGroup.invalid || accountTitleGroup.pristine"
+    (click)="onSubmit()">{{ submitLabel }}</button>
+</div>

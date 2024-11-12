@@ -4,8 +4,6 @@ import { User } from '@core/models/user.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
 @Component({
   selector: 'app-header',
@@ -20,8 +18,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private snackbarService: SnackbarService,
-    private router: Router,
-    private readonly dialog: MatDialog
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -32,17 +29,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onAccountSettings() {
-    const dialogRef = this.dialog.open(AccountSettingsComponent, {
-      data: {
-        user: this.me,
-      },
-      maxWidth: '100%',
-      disableClose: true,
-      autoFocus: false,
-    });
-    dialogRef.afterClosed().subscribe(() => {
-      //do something
-    });
+    this.router.navigate(['portal', 'settings', 'account']);
   }
 
   onLogout() {

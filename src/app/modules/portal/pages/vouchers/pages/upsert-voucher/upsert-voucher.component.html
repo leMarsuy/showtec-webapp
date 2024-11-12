@@ -52,7 +52,7 @@
 
       <!-- DISTRIBUTION OF ACCOUNTS -->
       <app-accounts-array-form [fArray]="$any(voucherForm).get('accounts')"
-        [defaultValueArray]="voucher ? voucher.accounts : null">
+        [defaultValueArray]="voucher ? voucher.accounts : null" [accountTitles]="accountTitles">
       </app-accounts-array-form>
 
       <!-- SIGNATORIES -->
