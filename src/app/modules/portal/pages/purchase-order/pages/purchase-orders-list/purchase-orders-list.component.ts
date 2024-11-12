@@ -17,7 +17,8 @@ import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
-import { ViewPurchaseOrderComponent } from '../view-purchase-order/view-purchase-order.component';
+import { MatSelectChange } from '@angular/material/select';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
 
 @Component({
   selector: 'app-purchase-orders-list',
@@ -28,8 +29,10 @@ export class PurchaseOrdersListComponent {
   placeholder = 'Search for Purchase No. | Contact Person';
   searchText: FormControl = new FormControl('');
 
+  statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...PURCHASE_ORDER_STATUSES];
-  tableFilterStatus = 'All';
+  selectedFilterStatus = 'All';
+  selectedFilterDate = DateFilterType.ALL_TIME;
 
   purchaseOrders!: PurchaseOrder[];
   columns: TableColumn[] = [
@@ -119,14 +122,24 @@ export class PurchaseOrdersListComponent {
     this.getPurchaseOrders();
   }
 
-  onFilterStatusChange(status: PurchaseOrderStatus | string) {
-    this.tableFilterStatus = status;
+  onFilterStatusChange(event: MatSelectChange) {
+    this.selectedFilterStatus = event.value;
+    this.getPurchaseOrders();
+  }
+
+  onFilterDateChange(dateFilter: any) {
+    this.selectedFilterDate = dateFilter;
     this.getPurchaseOrders();
   }
 
   getPurchaseOrders() {
     const status =
-      this.tableFilterStatus === 'All' ? '' : this.tableFilterStatus;
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
+
+    const date =
+      this.selectedFilterDate === DateFilterType.ALL_TIME
+        ? ''
+        : this.selectedFilterDate;
 
     this.snackbarService.openLoadingSnackbar('Please Wait', 'Fetching POs...');
     this.purchaseOrderApi
@@ -135,6 +148,7 @@ export class PurchaseOrdersListComponent {
           searchText: this.searchText.value || '',
           ...this.page,
         },
+        date,
         status
       )
       .subscribe({

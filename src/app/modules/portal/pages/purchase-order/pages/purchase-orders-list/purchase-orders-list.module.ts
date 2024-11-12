@@ -9,6 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TableModule } from '@app/shared/components/table/table.module';
+import { MatSelectModule } from '@angular/material/select';
+import { DateFilterInputModule } from '@app/shared/components/date-filter-input/date-filter-input.module';
 
 @NgModule({
   declarations: [PurchaseOrdersListComponent],
@@ -20,7 +22,9 @@ import { TableModule } from '@app/shared/components/table/table.module';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule,
     ReactiveFormsModule,
+    DateFilterInputModule,
   ],
   exports: [PurchaseOrdersListComponent],
 })
