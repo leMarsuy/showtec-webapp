@@ -22,7 +22,7 @@ export class VoucherApiService {
     return this.httpService.post(`${this.apiPrefix}`, voucher);
   }
 
-  getVouchers(query?: QueryParams, dateFilter?: any, status: string = '') {
+  getVouchers(query?: QueryParams, date?: any, status: string = '') {
     let sanitizedQuery: QueryParams = {};
     if (query) {
       sanitizedQuery = {
@@ -34,13 +34,14 @@ export class VoucherApiService {
     }
 
     let params: any = { ...sanitizedQuery, status };
-    if (dateFilter) {
-      if (typeof dateFilter === 'object') {
-        const filterObj = JSON.stringify(dateFilter);
-        params = { ...params, dateFilter: filterObj };
-      } else {
-        params = { ...params, dateFilter };
-      }
+
+    if (date && typeof date === 'object') {
+      const objectToString = JSON.stringify(date);
+      params = { ...params, date: objectToString };
+    }
+
+    if (date && typeof date !== 'object') {
+      params = { ...params, date };
     }
 
     return this.httpService.get(`${this.apiPrefix}`, params);
