@@ -13,6 +13,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
 import { DeepFindPipe } from '@app/shared/pipes/deep-find/deep-find.pipe';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
+import { DateFilterInputModule } from '@app/shared/components/date-filter-input/date-filter-input.module';
 
 @NgModule({
   declarations: [OutDeliveryListComponent, CancelOutDeliveryComponent],
@@ -26,9 +29,12 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatButtonModule,
     MatInputModule,
     MatIconModule,
+    MatSelectModule,
     MatTooltipModule,
+    MatMenuModule,
     MatDialogModule,
     DeepFindPipe,
+    DateFilterInputModule,
   ],
 })
 export class OutDeliveryListModule {}

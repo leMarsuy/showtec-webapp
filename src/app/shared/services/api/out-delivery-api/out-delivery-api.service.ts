@@ -20,7 +20,7 @@ export class OutDeliveryApiService {
     return this.httpService.post(`${this.apiPrefix}`, outdelivery);
   }
 
-  getOutDeliverys(query?: QueryParams, status?: string) {
+  getOutDeliverys(query?: QueryParams, date?: any, status?: string) {
     let sanitizedQuery: QueryParams = {};
     status = status ?? '';
 
@@ -32,10 +32,19 @@ export class OutDeliveryApiService {
         searchText: query.searchText || '',
       };
     }
-    return this.httpService.get(`${this.apiPrefix}`, {
-      ...sanitizedQuery,
-      status,
-    });
+
+    let params: any = { ...sanitizedQuery, status };
+
+    if (date && typeof date === 'object') {
+      const objectToString = JSON.stringify(date);
+      params = { ...params, date: objectToString };
+    }
+
+    if (date && typeof date !== 'object') {
+      params = { ...params, date };
+    }
+
+    return this.httpService.get(`${this.apiPrefix}`, params);
   }
 
   getOutDeliveryById(_id: string) {

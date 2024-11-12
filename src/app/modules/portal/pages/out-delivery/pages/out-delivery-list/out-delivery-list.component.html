@@ -12,15 +12,16 @@
       <div class="flex grow justify-between items-start ml-[24px]">
 
 
-        <div class="flex gap-2">
-          @for(status of tableFilterStatuses; track $index) {
-          <div class="py-2 px-4 border-2 cursor-pointer rounded-3xl" [ngClass]="{
-              'border-emerald-800 bg-emerald-100 text-emerald-800' : selectedFilterStatus === status,
-              'border-gray-500' : selectedFilterStatus !== status
-            }" (click)="onFilterStatusChange(status)">
-            {{ status }}
-          </div>
-          }
+        <div class="flex gap-6">
+          <mat-form-field appearance="outline">
+            <mat-select [formControl]="statusControl" (selectionChange)="onFilterStatusChange($event)">
+              @for(status of tableFilterStatuses; track status) {
+              <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <app-date-filter-input (dateFilterSelected)="onFilterDateChange($event)"></app-date-filter-input>
         </div>
         <div>
           <button mat-icon-button (click)="getOutDeliverys()" [disabled]="isLoading" matTooltip="Refresh Table">
