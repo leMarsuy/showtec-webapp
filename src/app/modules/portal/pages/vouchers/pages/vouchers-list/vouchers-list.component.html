@@ -17,23 +17,7 @@
             </mat-select>
           </mat-form-field>
 
-          <button
-            class="box-border h-[56px] min-w-[164px] rounded ring-1 ring-inset ring-gray-500 hover:ring-black pl-4 pr-2 active:ring-blue-800"
-            [matMenuTriggerFor]="dateFilterMenu">
-            <p class="text-gray-700 inline-flex justify-between items-center truncate">Date: {{filterDateDisplay}}<span
-                class="inline-flex justify-between items-center ml-2">
-                <mat-icon>arrow_drop_down</mat-icon>
-              </span></p>
-          </button>
-          <mat-menu #dateFilterMenu="matMenu">
-            <div class="min-w-[144px]">
-              @for(option of tableFilterDates; track option) {
-              <button mat-menu-item (click)="onFilterDateChange(option.value)">
-                <span>{{option.label}}</span>
-              </button>
-              }
-            </div>
-          </mat-menu>
+          <app-date-filter-input (dateFilterSelected)="onFilterDateChange($event)" />
         </div>
 
         <div>

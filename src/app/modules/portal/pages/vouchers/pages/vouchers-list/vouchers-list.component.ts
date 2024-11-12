@@ -24,13 +24,7 @@ import {
 } from '@app/core/enums/voucher-status.enum';
 import { MatSelectChange } from '@angular/material/select';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { filter, map } from 'rxjs';
-import { DateRangeFilterComponent } from './components/date-range-filter/date-range-filter.component';
-import { formatDate } from '@app/shared/utils/dateUtil';
-import {
-  DATE_FILTER_MENU_OPTIONS,
-  DateFilterType,
-} from '@app/core/enums/date-filter.enum';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
 
 @Component({
   selector: 'app-vouchers-list',
@@ -48,8 +42,6 @@ export class VouchersListComponent {
   tableFilterStatuses = ['All', ...VOUCHER_STATUSES];
   selectedFilterStatus = 'All';
 
-  filterDateDisplay = 'All Time';
-  tableFilterDates = DATE_FILTER_MENU_OPTIONS;
   selectedFilterDate: any = DateFilterType.ALL_TIME;
 
   isLoading = false;
@@ -249,65 +241,9 @@ export class VouchersListComponent {
     this.getVouchers();
   }
 
-  /**
-   *
-   * @param action {"this-week" | "this-month" | "this-year" | "" - All Time | "custom" - open modal}
-   */
-  onFilterDateChange(dateFilterType: DateFilterType) {
-    if (dateFilterType !== 'date-range') {
-      this.filterDateDisplay = this._updateFilterDateDisplay(dateFilterType);
-      this.selectedFilterDate = dateFilterType;
-      this.getVouchers();
-      return;
-    }
-
-    this.dialog
-      .open(DateRangeFilterComponent)
-      .afterClosed()
-      .pipe(
-        filter((result) => result),
-        map((result) => result)
-      )
-      .subscribe({
-        next: (dateRangeResult) => {
-          this.filterDateDisplay = this._updateFilterDateDisplay(
-            dateFilterType,
-            dateRangeResult
-          );
-          this.selectedFilterDate = {
-            filter: dateFilterType,
-            dateRange: dateRangeResult,
-          };
-          this.getVouchers();
-        },
-      });
-  }
-
-  private _updateFilterDateDisplay(
-    dateFilterType: DateFilterType,
-    dateRange?: any
-  ): string {
-    let display = 'All Time';
-    switch (dateFilterType) {
-      case DateFilterType.THIS_WEEK:
-        display = 'This Week';
-        break;
-      case DateFilterType.THIS_MONTH:
-        display = 'This Month';
-        break;
-      case DateFilterType.THIS_YEAR:
-        display = 'This Year';
-        break;
-      case DateFilterType.DATE_RANGE:
-        const startFormat = formatDate(new Date(dateRange?.startDate));
-        const endFormat = formatDate(new Date(dateRange?.endDate));
-        display = `${startFormat} - ${endFormat}`;
-        break;
-      default:
-        break;
-    }
-
-    return display;
+  onFilterDateChange(dateFilterType: any) {
+    this.selectedFilterDate = dateFilterType;
+    this.getVouchers();
   }
 
   private _print(voucher: Voucher) {
