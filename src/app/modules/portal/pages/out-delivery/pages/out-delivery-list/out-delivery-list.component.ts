@@ -22,6 +22,11 @@ import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
 import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
 import { OutDeliveryDataService } from '../../out-delivery-data.service';
+import {
+  DATE_FILTER_MENU_OPTIONS,
+  DateFilterType,
+} from '@app/core/enums/date-filter.enum';
+import { MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -39,12 +44,18 @@ export class OutDeliveryListComponent {
 
   columns: TableColumn[] = OUT_DELIVER_CONFIG.tableColumns;
   outdeliveries!: OutDelivery[];
+
+  statusControl = new FormControl(OutDeliveryStatus.PENDING);
   tableFilterStatuses = [
     'All',
     OutDeliveryStatus.PENDING,
     OutDeliveryStatus.CANCELLED,
   ];
   selectedFilterStatus: OutDeliveryStatus | string = OutDeliveryStatus.PENDING;
+
+  selectedFilterDate: DateFilterType | { startDate: string; endDate: string } =
+    DateFilterType.ALL_TIME;
+
   isLoading = false;
 
   constructor(
@@ -60,30 +71,35 @@ export class OutDeliveryListComponent {
   }
 
   getOutDeliverys() {
+    const loadingMsg = 'Fetching Delivery Receipts...';
     const status =
       this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
 
-    this.snackbarService.openLoadingSnackbar(
-      'GetData',
-      'Fetching Delivery Receipts...'
-    );
+    const date =
+      this.selectedFilterDate === DateFilterType.ALL_TIME
+        ? ''
+        : this.selectedFilterDate;
+
+    this._setLoadingState(true, loadingMsg);
 
     this.outdeliveryApi
       .getOutDeliverys(
         {
-          searchText: this.searchText.value || '',
+          searchText: this.searchText.value ?? '',
           ...this.page,
         },
+        date,
         status
       )
       .subscribe({
         next: (resp) => {
           const response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
+          this._setLoadingState(false);
           this.outdeliveries = response.records as OutDelivery[];
           this.page.length = response.total;
         },
         error: (err: HttpErrorResponse) => {
+          this._setLoadingState(false);
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
             err.error.message
@@ -92,8 +108,13 @@ export class OutDeliveryListComponent {
       });
   }
 
-  onFilterStatusChange(status: OutDeliveryStatus | string) {
-    this.selectedFilterStatus = status;
+  onFilterStatusChange(event: MatSelectChange) {
+    this.selectedFilterStatus = event.value;
+    this.getOutDeliverys();
+  }
+
+  onFilterDateChange(dateFilter: DateFilterType) {
+    this.selectedFilterDate = dateFilter;
     this.getOutDeliverys();
   }
 
@@ -106,7 +127,6 @@ export class OutDeliveryListComponent {
   actionEvent(e: any) {
     const { action } = e.action;
     const outDelivery = e.element;
-    const outDeliveryStatus = outDelivery.status;
 
     switch (action) {
       case 'print':

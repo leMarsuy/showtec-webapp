@@ -16,10 +16,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule } from '@angular/material/dialog';
-import { DateRangeFilterComponent } from './components/date-range-filter/date-range-filter.component';
+import { DateFilterInputModule } from '@app/shared/components/date-filter-input/date-filter-input.module';
 
 @NgModule({
-  declarations: [VouchersListComponent, DateRangeFilterComponent],
+  declarations: [VouchersListComponent],
   imports: [
     CommonModule,
     VouchersListRoutingModule,
@@ -30,14 +30,10 @@ import { DateRangeFilterComponent } from './components/date-range-filter/date-ra
     MatIconModule,
     MatTooltipModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
     ChangeStatusModalModule,
-    MatMenuModule,
+    DateFilterInputModule,
   ],
   exports: [VouchersListComponent],
 })
