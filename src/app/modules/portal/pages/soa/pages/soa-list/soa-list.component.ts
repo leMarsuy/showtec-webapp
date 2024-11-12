@@ -18,6 +18,8 @@ import { generateFileName } from '@app/shared/utils/stringUtil';
 import { SoaStatus } from '@app/core/enums/soa-status.enum';
 import { FileService } from '@app/shared/services/file/file.service';
 import { SoaDataService } from '../../soa-data.service';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import { MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'app-soa-list',
@@ -31,8 +33,11 @@ export class SoaListComponent {
 
   soas!: SOA[];
   columns: TableColumn[] = SOA_CONFIG.tableColumns;
+
+  statusControl = new FormControl('All');
   tableFilterStatuses = SOA_CONFIG.tableFilters.statuses;
-  tableFilterStatus: SoaStatus | string = 'All';
+  selectedFilterStatus: SoaStatus | string = 'All';
+  selectedFilterDate = DateFilterType.ALL_TIME;
 
   page: PageEvent = {
     pageIndex: 0,
@@ -53,14 +58,24 @@ export class SoaListComponent {
   }
 
   getSoas() {
+    const status =
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
+
+    const date =
+      this.selectedFilterDate === DateFilterType.ALL_TIME
+        ? ''
+        : this.selectedFilterDate;
+
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching SOAs...');
+
     this.soaApi
       .getSoas(
         {
-          searchText: this.searchText.value || '',
+          searchText: this.searchText.value ?? '',
           ...this.page,
         },
-        this.tableFilterStatus
+        date,
+        status
       )
       .subscribe({
         next: (resp) => {
@@ -124,30 +139,32 @@ export class SoaListComponent {
     });
   }
 
-  onFilterStatusChange(status: SoaStatus | string) {
-    this.tableFilterStatus = status;
+  onFilterStatusChange(event: MatSelectChange) {
+    this.selectedFilterStatus = event.value;
+    this.getSoas();
+  }
+
+  onFilterDateChange(dateFilter: any) {
+    this.selectedFilterDate = dateFilter;
     this.getSoas();
   }
 
   exportTableExcel() {
-    this.snackbarService.openLoadingSnackbar(
-      'Please Wait',
-      'Downloading Excel file...'
-    );
-    this.downloading = true;
+    const loadingMsg = 'Downloading Excel file...';
+    this._setDownloadingState(true, loadingMsg);
+
     const query: QueryParams = {
-      searchText: this.searchText.value || '',
+      searchText: this.searchText.value ?? '',
     };
 
     this.soaApi.exportExcelSoas(query).subscribe({
       next: (response: any) => {
-        this.downloading = false;
-        this.snackbarService.closeLoadingSnackbar();
+        this._setDownloadingState(false);
         const fileName = generateFileName('SOA', 'xlsx');
         this.fileApi.downloadFile(response.body as Blob, fileName);
       },
       error: ({ error }: HttpErrorResponse) => {
-        this.downloading = false;
+        this._setDownloadingState(false);
         this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
       },
       complete: () => {
@@ -170,5 +187,15 @@ export class SoaListComponent {
       .subscribe((res) => {
         if (res) this.getSoas();
       });
+  }
+
+  private _setDownloadingState(isDownloading: boolean, loadingMsg = '') {
+    this.downloading = isDownloading;
+
+    if (isDownloading) {
+      this.snackbarService.openLoadingSnackbar('Please Wait', loadingMsg);
+    } else {
+      this.snackbarService.closeLoadingSnackbar();
+    }
   }
 }

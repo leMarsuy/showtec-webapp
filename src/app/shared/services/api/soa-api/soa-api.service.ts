@@ -36,22 +36,28 @@ export class SoaApiService {
     );
   }
 
-  getSoas(query?: QueryParams, monitorStatus?: string) {
-    var sanitizedQuery: QueryParams = {};
+  getSoas(query?: QueryParams, date?: any, monitorStatus?: string) {
+    let sanitizedQuery: QueryParams = {};
     if (query)
       sanitizedQuery = {
-        pageIndex: query.pageIndex || 0,
-        pageSize: query.pageSize || 0,
-        sort: query.sort || '',
-        searchText: query.searchText || '',
+        pageIndex: query.pageIndex ?? 0,
+        pageSize: query.pageSize ?? 0,
+        sort: query.sort ?? '',
+        searchText: query.searchText ?? '',
       };
 
-    monitorStatus = monitorStatus || '';
+    let params: any = { ...sanitizedQuery, monitorStatus };
 
-    return this.httpService.get(`${this.apiPrefix}`, {
-      ...sanitizedQuery,
-      monitorStatus,
-    });
+    if (date && typeof date === 'object') {
+      const objectToString = JSON.stringify(date);
+      params = { ...params, date: objectToString };
+    }
+
+    if (date && typeof date !== 'object') {
+      params = { ...params, date };
+    }
+
+    return this.httpService.get(`${this.apiPrefix}`, params);
   }
 
   getSoaById(_id: string) {

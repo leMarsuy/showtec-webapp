@@ -11,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DateFilterInputModule } from '@app/shared/components/date-filter-input/date-filter-input.module';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [SoaListComponent],
@@ -23,8 +25,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
+    MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
+    DateFilterInputModule,
     MatTooltipModule,
   ],
 })
