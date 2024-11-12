@@ -13,11 +13,15 @@ import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api
 import { OUT_DELIVER_CONFIG } from '../../out-delivery-config';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { filter, switchMap } from 'rxjs';
-import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
+import {
+  OUT_DELIVERY_STATUS_TYPES,
+  OutDeliveryStatus,
+} from '@app/core/enums/out-delivery-status.enum';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
 import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
+import { OutDeliveryDataService } from '../../out-delivery-data.service';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -35,6 +39,12 @@ export class OutDeliveryListComponent {
 
   columns: TableColumn[] = OUT_DELIVER_CONFIG.tableColumns;
   outdeliveries!: OutDelivery[];
+  tableFilterStatuses = [
+    'All',
+    OutDeliveryStatus.PENDING,
+    OutDeliveryStatus.CANCELLED,
+  ];
+  selectedFilterStatus: OutDeliveryStatus | string = OutDeliveryStatus.PENDING;
   isLoading = false;
 
   constructor(
@@ -43,21 +53,29 @@ export class OutDeliveryListComponent {
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
-    private fileApi: FileService
+    private fileApi: FileService,
+    private outDeliveryDataService: OutDeliveryDataService
   ) {
     this.getOutDeliverys();
   }
 
   getOutDeliverys() {
+    const status =
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
+
     this.snackbarService.openLoadingSnackbar(
       'GetData',
       'Fetching Delivery Receipts...'
     );
+
     this.outdeliveryApi
-      .getOutDeliverys({
-        searchText: this.searchText.value || '',
-        ...this.page,
-      })
+      .getOutDeliverys(
+        {
+          searchText: this.searchText.value || '',
+          ...this.page,
+        },
+        status
+      )
       .subscribe({
         next: (resp) => {
           const response = resp as HttpGetResponse;
@@ -74,6 +92,11 @@ export class OutDeliveryListComponent {
       });
   }
 
+  onFilterStatusChange(status: OutDeliveryStatus | string) {
+    this.selectedFilterStatus = status;
+    this.getOutDeliverys();
+  }
+
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
@@ -87,34 +110,27 @@ export class OutDeliveryListComponent {
 
     switch (action) {
       case 'print':
-        this.print(outDelivery);
+        this._print(outDelivery);
         break;
       case 'edit':
-        if (
-          this._isActionEventRestricted(
-            outDeliveryStatus,
-            'Cancelled/Deleted Out Delivery is uneditable'
-          ) === true
-        ) {
-          return;
-        }
-        this.router.navigate(['portal/out-delivery/edit/' + outDelivery._id]);
+        this.router.navigate([
+          'portal',
+          'out-delivery',
+          'edit',
+          outDelivery._id,
+        ]);
         break;
       case 'change-status-cancel':
-        if (
-          this._isActionEventRestricted(
-            outDeliveryStatus,
-            'Out Delivery status is already cancelled'
-          ) === true
-        ) {
-          return;
-        }
         this._cancelItem(outDelivery);
+        break;
+      case 'clone':
+        this.outDeliveryDataService.setOutDelivery(outDelivery);
+        this.router.navigate(['portal', 'out-delivery', 'create']);
         break;
     }
   }
 
-  print(outdelivery: OutDelivery) {
+  private _print(outdelivery: OutDelivery) {
     if (outdelivery._id)
       this.dialog.open(PdfViewerComponent, {
         data: {
@@ -199,23 +215,6 @@ export class OutDeliveryListComponent {
       this.snackbarService.openLoadingSnackbar('Please Wait', loadingMessage);
     } else {
       this.snackbarService.closeLoadingSnackbar();
-    }
-  }
-
-  private _isActionEventRestricted(
-    outDeliveryStatus: OutDeliveryStatus,
-    errorMessage = ''
-  ) {
-    const restrictedStatus = [
-      OutDeliveryStatus.CANCELLED,
-      OutDeliveryStatus.DELETED,
-    ];
-
-    if (restrictedStatus.includes(outDeliveryStatus)) {
-      this.snackbarService.openErrorSnackbar('Restricted Action', errorMessage);
-      return true;
-    } else {
-      return false;
     }
   }
 }

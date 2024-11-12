@@ -61,22 +61,46 @@ export const OUT_DELIVER_CONFIG = {
       align: Alignment.CENTER,
       actions: [
         {
-          name: 'Print',
+          name: 'Print Delivery',
           icon: 'print',
           action: 'print',
           color: Color.DEAD,
         },
         {
-          name: 'Edit Item',
+          name: 'Edit Delivery',
           icon: 'edit',
           action: 'edit',
           color: Color.WARNING,
+          showIfCondition: {
+            $or: [
+              { status: OutDeliveryStatus.ACTIVE },
+              { status: OutDeliveryStatus.PENDING },
+            ],
+          },
         },
         {
-          name: 'Cancel Item',
+          name: 'Cancel Delivery',
           icon: 'block',
           action: 'change-status-cancel',
           color: Color.ERROR,
+          showIfCondition: {
+            $or: [
+              { status: OutDeliveryStatus.ACTIVE },
+              { status: OutDeliveryStatus.PENDING },
+            ],
+          },
+        },
+        {
+          name: 'Reuse Delivery',
+          icon: 'content_copy',
+          action: 'clone',
+          color: Color.INFO,
+          showIfCondition: {
+            $or: [
+              { status: OutDeliveryStatus.CANCELLED },
+              { status: OutDeliveryStatus.DELETED },
+            ],
+          },
         },
       ],
     },

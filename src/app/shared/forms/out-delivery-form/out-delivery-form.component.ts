@@ -45,6 +45,7 @@ import {
 } from '@app/shared/services/data/transform-data/transform-data.service';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
+import { OutDeliveryDataService } from '@app/modules/portal/pages/out-delivery/out-delivery-data.service';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -155,7 +156,8 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     private poApi: PurchaseOrderApiService,
     private userApi: UserApiService,
     private outdeliveryApi: OutDeliveryApiService,
-    private transformData: TransformDataService,
+    private transformDataService: TransformDataService,
+    private outDeliveryDataService: OutDeliveryDataService,
     private fb: FormBuilder,
     private router: Router,
     private snackbarService: SnackbarService,
@@ -209,7 +211,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async _updateOutDeliveryInit() {
+  private async _outDeliveryUpdateInit() {
     const getOutDeliveryById$ = this.outdeliveryApi
       .getOutDeliveryById(this._id)
       .pipe(
@@ -221,7 +223,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       );
     const response = (await firstValueFrom(getOutDeliveryById$)) as any;
 
-    //Return to DR List if ID not found
+    //Return to OutDelivery List if ID not found
     if (!response) {
       this.snackbarService.openErrorSnackbar(
         'Error',
@@ -231,7 +233,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    //If DR has PO, get its PO
+    //If OutDelivery has PO, get its PO
     if (response._purchaseOrderId) {
       await this._patchDrPo(response._purchaseOrderId);
     }
@@ -321,7 +323,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   }
 
   searchSerialNumber() {
-    var serialNumber = this.serialNumberControl.value;
+    const serialNumber = this.serialNumberControl.value;
     if (serialNumber)
       this.productApi.getInStockProductBySerialNumber(serialNumber).subscribe({
         next: (res: any) => {
@@ -337,9 +339,11 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   }
 
   pushToListedProducts(product: Product) {
-    var items = this.listedItems;
+    const items = this.listedItems;
     for (let item of items) {
-      var index = product.stocks.findIndex((o) => o._id === item.stocks[0]._id);
+      const index = product.stocks.findIndex(
+        (o) => o._id === item.stocks[0]._id
+      );
       if (index >= 0) product.stocks.splice(index, 1);
     }
 
@@ -408,7 +412,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   }
 
   autofillCustomerDetails(selectedCustomer: Customer) {
-    var { mobile, addressDelivery, tin } = selectedCustomer;
+    const { mobile, addressDelivery, tin } = selectedCustomer;
     this.deliveryForm.patchValue({
       mobile,
       tin,
@@ -436,8 +440,12 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
   private _copySignatoriesToSelf() {
     this.listedSignatories.sort((a, b) => {
-      var aIndex = SIGNATORY_ACTIONS.findIndex((action) => action === a.action);
-      var bIndex = SIGNATORY_ACTIONS.findIndex((action) => action === b.action);
+      const aIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === a.action
+      );
+      const bIndex = SIGNATORY_ACTIONS.findIndex(
+        (action) => action === b.action
+      );
       return aIndex - bIndex;
     });
     this.listedSignatories = [...this.listedSignatories];
@@ -531,7 +539,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
     this.outdeliveryApi.updateOutDeliveryById(this._id, outdelivery).subscribe({
       next: (res: any) => {
-        var od = res;
+        const od = res;
         this.snackbarService.openSuccessSnackbar(
           'UPDATE_SUCCESS',
           'Successfully Updated D/R: ' +
@@ -595,53 +603,63 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   private async _componentInit() {
     //If DR Update
     if (this._id) {
-      this._updateOutDeliveryInit();
+      this._outDeliveryUpdateInit();
     } else {
       /**
-       * If hasTransformData is true, get transformed data and get recent dr signatories to createDR.
-       * Else it is a plain dr create with recent dr signatories
+       * If hasTransformData is true, get transformed data and get recent dr signatories to createOutDelivery.
+       * Else it is a plain dr create with recent dr signatories or from clone dr
        */
+      let createOutDelivery: any = {};
+
+      //Check transform data service
       const hasTransformData =
-        this.transformData.verifyTransactionDataFootprint(
+        this.transformDataService.verifyTransactionDataFootprint(
           this.transformServiceId
         );
-
-      let createDR: any = {};
 
       if (hasTransformData) {
-        createDR = this.transformData.formatDataToRecipient(
+        createOutDelivery = this.transformDataService.formatDataToRecipient(
           this.transformServiceId
         );
 
-        //Checks if has purchaseOrderId;
-        if (createDR._purchaseOrderId) {
-          this._patchDrPo(createDR._purchaseOrderId);
-        }
+        this._patchDrPo(createOutDelivery._purchaseOrderId);
+      }
+
+      //Check Out Delivery Data Service for Reuse/Clone Out Delivery
+      const drClone = this.outDeliveryDataService.OutDelivery;
+      if (drClone) {
+        Object.assign(createOutDelivery, drClone);
+        await this._patchDrPo(createOutDelivery._purchaseOrderId);
       }
 
       //Get Recent DR for signatories
-      const getRecentDR$ = this.outdeliveryApi.getMostRecentOutDelivery().pipe(
-        catchError((error) => {
-          console.error(error);
-          return of(false);
-        })
-      );
+      const getRecentOutDelivery$ = this.outdeliveryApi
+        .getMostRecentOutDelivery()
+        .pipe(
+          takeUntil(this.destroyed$),
+          catchError((error) => {
+            console.error(error);
+            return of(false);
+          })
+        );
 
-      const recentDR = (await firstValueFrom(getRecentDR$)) as OutDelivery;
-      if (recentDR) {
-        createDR['signatories'] = recentDR.signatories;
+      const recentOutDelivery = (await firstValueFrom(
+        getRecentOutDelivery$
+      )) as OutDelivery;
+
+      if (recentOutDelivery) {
+        createOutDelivery['signatories'] = recentOutDelivery.signatories;
       }
 
-      this._autoFillForm(createDR);
+      this._autoFillForm(createOutDelivery);
     }
   }
 
   private async _patchDrPo(purchaseOrderId: string) {
     //Checks if has purchaseOrderId;
     if (!purchaseOrderId) return;
-    const purchaseOrder = await this._getPoById(purchaseOrderId);
 
-    //If has no error
+    const purchaseOrder = await this._getPoById(purchaseOrderId);
     if (!purchaseOrder) return;
 
     this.searchPoControl.patchValue(purchaseOrder);
@@ -699,11 +717,13 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (
-      this.transformData.getTransformData()?.from !== this.transformServiceId
+      this.transformDataService.getTransformData()?.from !==
+      this.transformServiceId
     ) {
-      this.transformData.deleteTransformData();
+      this.transformDataService.deleteTransformData();
     }
 
+    this.outDeliveryDataService.deleteOutDelivery();
     this.destroyed$.next();
     this.destroyed$.complete();
   }
