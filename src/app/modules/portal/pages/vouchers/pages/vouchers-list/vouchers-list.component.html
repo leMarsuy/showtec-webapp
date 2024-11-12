@@ -27,21 +27,11 @@
           </button>
           <mat-menu #dateFilterMenu="matMenu">
             <div class="min-w-[144px]">
-              <button mat-menu-item (click)="onFilterDateChange($any('all-time'))">
-                <span>All-Time</span>
+              @for(option of tableFilterDates; track option) {
+              <button mat-menu-item (click)="onFilterDateChange(option.value)">
+                <span>{{option.label}}</span>
               </button>
-              <button mat-menu-item (click)="onFilterDateChange($any('this-week'))">
-                <span>This Week</span>
-              </button>
-              <button mat-menu-item (click)="onFilterDateChange($any('this-month'))">
-                <span>This Month</span>
-              </button>
-              <button mat-menu-item (click)="onFilterDateChange($any('this-year'))">
-                <span>This Year</span>
-              </button>
-              <button mat-menu-item (click)="onFilterDateChange($any('date-range'))">
-                <span>Date Range</span>
-              </button>
+              }
             </div>
           </mat-menu>
         </div>
