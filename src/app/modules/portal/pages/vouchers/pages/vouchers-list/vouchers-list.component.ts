@@ -154,7 +154,7 @@ export class VouchersListComponent {
     const status =
       this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
 
-    const dateFilter =
+    const date =
       this.selectedFilterDate === DateFilterType.ALL_TIME
         ? ''
         : this.selectedFilterDate;
@@ -168,7 +168,7 @@ export class VouchersListComponent {
           sort: this.sortBy,
           ...this.page,
         },
-        dateFilter,
+        date,
         status
       )
       .subscribe({
