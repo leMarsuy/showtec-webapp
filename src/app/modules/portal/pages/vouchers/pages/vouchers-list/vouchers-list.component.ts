@@ -27,7 +27,10 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { filter, map } from 'rxjs';
 import { DateRangeFilterComponent } from './components/date-range-filter/date-range-filter.component';
 import { formatDate } from '@app/shared/utils/dateUtil';
-import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import {
+  DATE_FILTER_MENU_OPTIONS,
+  DateFilterType,
+} from '@app/core/enums/date-filter.enum';
 
 @Component({
   selector: 'app-vouchers-list',
@@ -46,6 +49,7 @@ export class VouchersListComponent {
   selectedFilterStatus = 'All';
 
   filterDateDisplay = 'All Time';
+  tableFilterDates = DATE_FILTER_MENU_OPTIONS;
   selectedFilterDate: any = DateFilterType.ALL_TIME;
 
   isLoading = false;
