@@ -9,18 +9,19 @@
         <h2 class="font-bold text-lg text-sky-500 tracking-wide">Distribution of Accounts</h2>
         <p class="text-gray-600 mt-1">Add, edit or remove account category and title.</p>
       </div>
-      <button mat-flat-button class="w-fit" (click)="onDistributionOfAccountSettingSave()">
+      <button mat-flat-button class="w-fit" (click)="onDistributionOfAccountSettingSave()"
+        [disabled]="!isDistributionOfAccountsDirty">
         <mat-icon fontIcon="save"></mat-icon> Save Changes
       </button>
     </div>
 
     <!-- ACCOUNT CATEGORY -->
     <div class="col-span-6">
-      <app-account-category-settings />
+      <app-account-category-settings (dirtyState)="categoriesDirtyStateHandler($event)" />
     </div>
     <!-- ACCOUNT TITLES -->
     <div class="col-span-6">
-      <app-account-title-settings />
+      <app-account-title-settings (dirtyState)="titlesDirtyStateHandler($event)" />
     </div>
   </article>
 </section>

@@ -21,6 +21,7 @@ import { ConfirmationService } from '@app/shared/components/confirmation/confirm
   styleUrl: './account-category-settings.component.scss',
 })
 export class AccountCategorySettingsComponent implements OnInit, OnDestroy {
+  @Output() dirtyState = new EventEmitter<boolean>();
   categories!: string[];
   isDirty = false;
 
@@ -72,6 +73,7 @@ export class AccountCategorySettingsComponent implements OnInit, OnDestroy {
           } else {
             this.distributionOfAccountDataService.addCategory(category);
           }
+          this._emitDirtyState();
         },
       });
   }
@@ -83,13 +85,19 @@ export class AccountCategorySettingsComponent implements OnInit, OnDestroy {
       .pipe(filter((result) => result))
       .subscribe(() => {
         this.isDirty = true;
+        this._emitDirtyState();
         this.distributionOfAccountDataService.deleteCategory(index);
       });
   }
 
   undoCategoryChanges() {
     this.isDirty = false;
+    this._emitDirtyState();
     this.distributionOfAccountDataService.undoCategoryChanges();
+  }
+
+  private _emitDirtyState() {
+    this.dirtyState.emit(this.isDirty);
   }
 
   ngOnDestroy(): void {

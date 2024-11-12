@@ -1,4 +1,12 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -29,6 +37,7 @@ import { DistributionOfAccountDataService } from '../voucher-settings-data.servi
   styleUrl: './account-title-settings.component.scss',
 })
 export class AccountTitleSettingsComponent implements OnInit, OnDestroy {
+  @Output() dirtyState = new EventEmitter<boolean>();
   categories!: string[];
   titles!: AccountTitle[];
   isDirty = false;
@@ -91,6 +100,7 @@ export class AccountTitleSettingsComponent implements OnInit, OnDestroy {
           } else {
             this.distributionOfAccountDataService.addTitle(title);
           }
+          this._emitDirtyState();
         },
       });
   }
@@ -102,13 +112,19 @@ export class AccountTitleSettingsComponent implements OnInit, OnDestroy {
       .pipe(filter((result) => result))
       .subscribe(() => {
         this.isDirty = true;
+        this._emitDirtyState();
         this.distributionOfAccountDataService.deleteTitle(index);
       });
   }
 
   undoCategoryChanges() {
     this.isDirty = false;
+    this._emitDirtyState();
     this.distributionOfAccountDataService.undoTitlesChanges();
+  }
+
+  private _emitDirtyState() {
+    this.dirtyState.emit(this.isDirty);
   }
 
   ngOnDestroy(): void {

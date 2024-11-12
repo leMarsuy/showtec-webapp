@@ -34,12 +34,19 @@ export class VoucherSettingsComponent implements OnInit {
   private readonly configName = 'voucher';
   config!: VoucherConfig;
 
+  categoriesDirtyState = false;
+  titlesDirtyState = false;
+
   constructor(
     private readonly configApi: ConfigApiService,
     private readonly distributionOfAccountDataService: DistributionOfAccountDataService,
     private readonly snackbar: SnackbarService,
     private readonly confirmation: ConfirmationService
   ) {}
+
+  get isDistributionOfAccountsDirty() {
+    return this.categoriesDirtyState || this.titlesDirtyState;
+  }
 
   ngOnInit(): void {
     this.getVoucherConfig();
@@ -53,7 +60,7 @@ export class VoucherSettingsComponent implements OnInit {
       },
       error: ({ error }: HttpErrorResponse) => {
         console.error(error);
-        this.snackbar.openErrorSnackbar(error.errorCode, 'error.message');
+        this.snackbar.openErrorSnackbar(error.errorCode, error.message);
       },
     });
   }
@@ -102,6 +109,14 @@ export class VoucherSettingsComponent implements OnInit {
           );
         },
       });
+  }
+
+  categoriesDirtyStateHandler(isDirty: boolean) {
+    this.categoriesDirtyState = isDirty;
+  }
+
+  titlesDirtyStateHandler(isDirty: boolean) {
+    this.titlesDirtyState = isDirty;
   }
 
   private _setDistributionOfAccountSettings() {
