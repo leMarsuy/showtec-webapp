@@ -19,13 +19,13 @@ const routes: Routes = [
             (m) => m.AccountSettingsModule
           ),
       },
-      // {
-      //   path: 'product',
-      //   loadChildren: () =>
-      //     import('./pages/product-settings/product-settings.module').then(
-      //       (m) => m.ProductSettingsModule
-      //     ),
-      // },
+      {
+        path: 'product',
+        loadChildren: () =>
+          import('./pages/product-settings/product-settings.module').then(
+            (m) => m.ProductSettingsModule
+          ),
+      },
       {
         path: 'voucher',
         loadChildren: () =>

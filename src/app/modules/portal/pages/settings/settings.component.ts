@@ -23,10 +23,10 @@ export class SettingsComponent {
       label: 'Your Account',
       route: this.baseUrl + '/account',
     },
-    // {
-    //   label: 'Products',
-    //   route: this.baseUrl + '/product',
-    // },
+    {
+      label: 'Products',
+      route: this.baseUrl + '/product',
+    },
     {
       label: 'Vouchers',
       route: this.baseUrl + '/voucher',
