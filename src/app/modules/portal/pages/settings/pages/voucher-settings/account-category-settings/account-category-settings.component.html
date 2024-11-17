@@ -15,6 +15,7 @@
         </thead>
 
         <tbody>
+          @if(categories.length > 0) {
           @for(item of categories; track $index) {
           <tr class="border-b border-gray-200 even:bg-gray-50 odd:bg-gray-100">
             <td class="py-2 px-4">{{ item }}</td>
@@ -27,6 +28,15 @@
               </button>
             </td>
 
+          </tr>
+          }
+          } @else {
+          <tr>
+            <td class="text-center pt-[8rem] pb-2" colspan="2">Empty Account Categories</td>
+          </tr>
+          <tr>
+            <td class="text-center text-gray-500 text-sm " colspan="2">Click "Add Category" to insert new one.
+            </td>
           </tr>
           }
         </tbody>

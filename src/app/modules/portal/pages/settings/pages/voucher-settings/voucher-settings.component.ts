@@ -36,6 +36,7 @@ export class VoucherSettingsComponent implements OnInit {
 
   categoriesDirtyState = false;
   titlesDirtyState = false;
+  isUpdate = false;
 
   constructor(
     private readonly configApi: ConfigApiService,
@@ -55,7 +56,10 @@ export class VoucherSettingsComponent implements OnInit {
   getVoucherConfig() {
     this.configApi.getConfigByName(this.configName).subscribe({
       next: (config: unknown) => {
+        if (!config) return;
+
         this.config = config as VoucherConfig;
+        this.isUpdate = true;
         this._setDistributionOfAccountSettings();
       },
       error: ({ error }: HttpErrorResponse) => {
@@ -87,7 +91,13 @@ export class VoucherSettingsComponent implements OnInit {
             'Saving Account Categories',
             'Please Wait...'
           );
-          return this.configApi.updateConfigByName(this.configName, body);
+
+          if (this.isUpdate) {
+            return this.configApi.updateConfigByName(this.configName, body);
+          } else {
+            body.name = this.configName;
+            return this.configApi.createConfig(body);
+          }
         })
       )
       .subscribe({
@@ -98,6 +108,7 @@ export class VoucherSettingsComponent implements OnInit {
             'Distribution of Account Categories is updated.'
           );
           this.config = config as VoucherConfig;
+          this._setDistributionOfAccountSettingsDirtyState(false);
           this._setDistributionOfAccountSettings();
         },
         error: ({ error }: HttpErrorResponse) => {
@@ -116,6 +127,11 @@ export class VoucherSettingsComponent implements OnInit {
   }
 
   titlesDirtyStateHandler(isDirty: boolean) {
+    this.titlesDirtyState = isDirty;
+  }
+
+  private _setDistributionOfAccountSettingsDirtyState(isDirty: boolean) {
+    this.categoriesDirtyState = isDirty;
     this.titlesDirtyState = isDirty;
   }
 

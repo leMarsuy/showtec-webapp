@@ -5,13 +5,10 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
-import { ObjectService } from '@app/shared/services/util/object/object.service';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { UpsertCategoryComponent } from './upsert-category/upsert-category.component';
-import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
 import { DistributionOfAccountDataService } from '../voucher-settings-data.service';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 
