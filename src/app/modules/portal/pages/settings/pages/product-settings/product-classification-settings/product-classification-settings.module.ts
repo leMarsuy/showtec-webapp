@@ -7,20 +7,22 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
     ProductClassificationSettingsComponent,
     UpsertProductClassificationComponent,
   ],
-  exports: [
-    ProductClassificationSettingsComponent,
+  imports: [
+    CommonModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatIconModule,
     ReactiveFormsModule,
   ],
-  imports: [CommonModule],
+  exports: [ProductClassificationSettingsComponent],
 })
 export class ProductClassificationSettingsModule {}

@@ -6,22 +6,42 @@ import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { Product } from '@core/models/product.model';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
 import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
+import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
+import { ProductConfig } from '../../settings/pages/product-settings/product-settings.component';
 
 @Component({
   selector: 'app-add-product',
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss',
 })
-export class AddProductComponent {
-  classifications = PRODUCT_CLASSIFICATIONS;
+export class AddProductComponent implements OnInit {
+  private readonly configName = 'product';
+
+  classifications: string[] = [];
   filteredClassifications: string[] = [];
 
   constructor(
     private productApi: ProductApiService,
+    private configApi: ConfigApiService,
     private _dialogRef: MatDialogRef<AddProductComponent>,
     private snackbarService: SnackbarService
-  ) {
-    this.filteredClassifications = this.classifications.slice(0, 5);
+  ) {}
+
+  ngOnInit(): void {
+    this.configApi.getConfigByName(this.configName).subscribe({
+      next: (response: unknown) => {
+        const config = response as ProductConfig;
+        this.classifications = config.data.productClassifications;
+        this.filteredClassifications = this.classifications.slice(0, 20);
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        console.error(error);
+        this.snackbarService.openErrorSnackbar(
+          error.errorCode,
+          'Product Classifications is empty.'
+        );
+      },
+    });
   }
 
   productForm = new FormGroup({
@@ -39,10 +59,13 @@ export class AddProductComponent {
   });
 
   filterProductClassification(value: string) {
-    if (value)
+    if (value) {
       this.filteredClassifications = this.classifications.filter((o) =>
         o.toLowerCase().includes(value)
       );
+    } else {
+      this.filteredClassifications = this.classifications.slice(0, 20);
+    }
   }
 
   onSubmit() {

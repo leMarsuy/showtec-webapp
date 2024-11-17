@@ -19,6 +19,7 @@ import { BatchAddProductComponent } from './batch-add-product/batch-add-product.
 import { FileUploadModule } from '../../../../shared/components/file-upload/file-upload.module';
 import { TableModule } from '@app/shared/components/table/table.module';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatDialogModule,
     ContentHeaderModule,
     MatAutocompleteModule,
+    MatSelectModule,
     FileUploadModule,
     TableModule,
     MatProgressBarModule,
