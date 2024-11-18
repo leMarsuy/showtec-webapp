@@ -5,7 +5,7 @@
   <app-static-table-cell [column]="column" [element]="element"></app-static-table-cell>
 </div>
 
-<div class="flex gap-2" *ngIf="">
+<div class="flex gap-2" *ngIf="element['__editOn' + rowIndex + '_' + colIndex]">
   <app-editable-table-cell [column]="column" [element]="element" [rowIndex]="rowIndex" [colIndex]="colIndex"
     (updateCellEmitter)="updateCellEvent($event)"></app-editable-table-cell>
 </div>
