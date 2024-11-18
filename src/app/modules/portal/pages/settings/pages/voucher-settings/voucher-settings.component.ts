@@ -107,9 +107,8 @@ export class VoucherSettingsComponent implements OnInit {
             'Saving Success!',
             'Distribution of Account Categories is updated.'
           );
-          this.config = config as VoucherConfig;
           this._setDistributionOfAccountSettingsDirtyState(false);
-          this._setDistributionOfAccountSettings();
+          this.getVoucherConfig();
         },
         error: ({ error }: HttpErrorResponse) => {
           this.snackbar.closeLoadingSnackbar();

@@ -91,9 +91,9 @@ export class ProductSettingsComponent implements OnInit {
               this.isUpdate ? 'updated' : 'created'
             }.`
           );
-          this.config = config as ProductConfig;
-          this._setProductClassificationSettings();
+
           this.classificationDirtyState = false;
+          this.getProductConfig();
         },
         error: ({ error }: HttpErrorResponse) => {
           this.snackbar.closeLoadingSnackbar();
