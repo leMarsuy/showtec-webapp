@@ -6,6 +6,8 @@ import { Product } from '@core/models/product.model';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
 import { AddProductComponent } from '../add-product/add-product.component';
+import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
+import { ProductConfig } from '../../settings/pages/product-settings/product-settings.component';
 
 @Component({
   selector: 'app-edit-product',
@@ -13,10 +15,14 @@ import { AddProductComponent } from '../add-product/add-product.component';
   styleUrl: './edit-product.component.scss',
 })
 export class EditProductComponent {
+  private readonly configName = 'product';
   product!: Product;
+
+  classifications: string[] = [];
 
   constructor(
     private productApi: ProductApiService,
+    private configApi: ConfigApiService,
     private _dialogRef: MatDialogRef<AddProductComponent>,
     private snackbarService: SnackbarService,
     @Inject(MAT_DIALOG_DATA) public data: { _id: string }
@@ -46,6 +52,20 @@ export class EditProductComponent {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
           err.error.message
+        );
+      },
+    });
+
+    this.configApi.getConfigByName(this.configName).subscribe({
+      next: (response: unknown) => {
+        const config = response as ProductConfig;
+        this.classifications = config.data.productClassifications;
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        console.error(error);
+        this.snackbarService.openErrorSnackbar(
+          error.errorCode,
+          'Product Classifications is empty.'
         );
       },
     });

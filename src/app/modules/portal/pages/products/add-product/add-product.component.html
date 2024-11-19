@@ -16,14 +16,8 @@
 
     <mat-form-field class="col-span-2">
       <mat-label>Classification</mat-label>
-      <input
-        #classificationInput
-        type="text"
-        matInput
-        formControlName="classification"
-        [matAutocomplete]="auto"
-        (keyup)="filterProductClassification(classificationInput.value)"
-      />
+      <input #classificationInput type="text" matInput formControlName="classification" [matAutocomplete]="auto"
+        (keyup)="filterProductClassification(classificationInput.value)" />
       <mat-autocomplete requireSelection #auto="matAutocomplete">
         @for (option of filteredClassifications; track option) {
         <mat-option [value]="option">{{ option }}</mat-option>
@@ -32,12 +26,7 @@
     </mat-form-field>
     <mat-form-field class="col-span-2">
       <mat-label>Description</mat-label>
-      <textarea
-        matInput
-        rows="5"
-        type="text"
-        formControlName="description"
-      ></textarea>
+      <textarea matInput rows="5" type="text" formControlName="description"></textarea>
     </mat-form-field>
     <ng-container formGroupName="price">
       <mat-form-field class="col-span-2">
@@ -49,13 +38,7 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button color="warn" mat-dialog-close="">Cancel</button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="!productForm.valid"
-    cdkFocusInitial
-    (click)="onSubmit()"
-  >
+  <button mat-raised-button color="primary" [disabled]="!productForm.valid" cdkFocusInitial (click)="onSubmit()">
     Add to Product Table
   </button>
 </mat-dialog-actions>

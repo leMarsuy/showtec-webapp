@@ -16,16 +16,15 @@
 
     <mat-form-field class="col-span-2">
       <mat-label>Classification</mat-label>
-      <input matInput type="text" formControlName="classification" />
+      <mat-select matInput formControlName="classification">
+        @for(option of classifications; track option) {
+        <mat-option [value]="option">{{ option }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
     <mat-form-field class="col-span-2">
       <mat-label>Description</mat-label>
-      <textarea
-        matInput
-        rows="5"
-        type="text"
-        formControlName="description"
-      ></textarea>
+      <textarea matInput rows="5" type="text" formControlName="description"></textarea>
     </mat-form-field>
     <ng-container formGroupName="price">
       <mat-form-field class="col-span-2">
@@ -37,13 +36,7 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button color="warn" mat-dialog-close="">Cancel</button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="!productForm.valid"
-    cdkFocusInitial
-    (click)="onSubmit()"
-  >
+  <button mat-raised-button color="primary" [disabled]="!productForm.valid" cdkFocusInitial (click)="onSubmit()">
     Edit to Product Table
   </button>
 </mat-dialog-actions>
