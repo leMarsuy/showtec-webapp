@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<div mat-dialog-content>
+  <mat-form-field class="w-full">
+    <mat-label>Product Classification</mat-label>
+    <input matInput type="text" [formControl]="productClassificationControl" (input)="onInputChange()">
+  </mat-form-field>
+
+</div>
+<div mat-dialog-actions class="flex !justify-between items-center">
+  <button mat-button mat-dialog-close color="warn">Cancel</button>
+  <button mat-flat-button color="primary"
+    [disabled]="productClassificationControl.invalid || productClassificationControl.pristine"
+    (click)="onSubmit()">{{ submitLabel }}</button>
+</div>
