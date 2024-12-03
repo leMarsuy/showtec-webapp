@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
-import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
+import { ConfigApiService } from '@app/shared/services/api/config-api/config-api.service';
 import { ProductClassificationDataService } from './product-settings-data.service';
 import { filter, switchMap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
