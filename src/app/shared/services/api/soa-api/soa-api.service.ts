@@ -5,6 +5,7 @@ import { environment } from '@env/environment';
 import { HttpService } from '../../http/http.service';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
+import { UtilService } from '../../util/util.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,11 @@ import { FileService } from '../../file/file.service';
 export class SoaApiService {
   apiUrl = environment.API_URL;
   apiPrefix = 'soa';
-  constructor(private httpService: HttpService, private file: FileService) {}
+  constructor(
+    private httpService: HttpService,
+    private file: FileService,
+    private utilService: UtilService
+  ) {}
 
   createSoa(soa: SOA) {
     return this.httpService.post(`${this.apiPrefix}`, soa);
@@ -36,28 +41,26 @@ export class SoaApiService {
     );
   }
 
-  getSoas(query?: QueryParams, date?: any, monitorStatus?: string) {
-    let sanitizedQuery: QueryParams = {};
-    if (query)
+  getSoas(query?: QueryParams) {
+    let sanitizedQuery: any = {};
+    if (query) {
       sanitizedQuery = {
         pageIndex: query.pageIndex ?? 0,
         pageSize: query.pageSize ?? 0,
         sort: query.sort ?? '',
         searchText: query.searchText ?? '',
+        monitorStatus: query.status ?? '', // monitorStatus is used
       };
 
-    let params: any = { ...sanitizedQuery, monitorStatus };
-
-    if (date && typeof date === 'object') {
-      const objectToString = JSON.stringify(date);
-      params = { ...params, date: objectToString };
+      if (query?.date) {
+        sanitizedQuery = this.utilService.date.dateToQueryParam(
+          sanitizedQuery,
+          query?.date
+        );
+      }
     }
 
-    if (date && typeof date !== 'object') {
-      params = { ...params, date };
-    }
-
-    return this.httpService.get(`${this.apiPrefix}`, params);
+    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
   getSoaById(_id: string) {
@@ -85,13 +88,21 @@ export class SoaApiService {
   }
 
   exportExcelSoas(query?: QueryParams) {
-    let sanitizedQuery: QueryParams = {};
+    let sanitizedQuery: any = {};
     if (query) {
       sanitizedQuery = {
         pageIndex: 0,
         pageSize: 0,
-        searchText: query.searchText || '',
+        searchText: query.searchText ?? '',
+        monitorStatus: query.status ?? '', // monitorStatus is used
       };
+
+      if (query?.date) {
+        sanitizedQuery = this.utilService.date.dateToQueryParam(
+          sanitizedQuery,
+          query?.date
+        );
+      }
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,

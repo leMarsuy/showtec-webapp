@@ -7,6 +7,7 @@ import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
 import { VoucherStatus } from '@app/core/enums/voucher-status.enum';
+import { UtilService } from '../../util/util.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,13 +17,14 @@ export class VoucherApiService {
   apiPrefix = 'vouchers';
 
   private httpService = inject(HttpService);
+  private utilService = inject(UtilService);
   private file = inject(FileService);
 
   createVoucher(voucher: Voucher) {
     return this.httpService.post(`${this.apiPrefix}`, voucher);
   }
 
-  getVouchers(query?: QueryParams, date?: any, status: string = '') {
+  getVouchers(query?: QueryParams) {
     let sanitizedQuery: QueryParams = {};
     if (query) {
       sanitizedQuery = {
@@ -30,21 +32,18 @@ export class VoucherApiService {
         pageSize: query.pageSize ?? 0,
         sort: query.sort,
         searchText: query.searchText,
+        status: query.status ?? '',
       };
+
+      if (query?.date) {
+        sanitizedQuery = this.utilService.date.dateToQueryParam(
+          sanitizedQuery,
+          query?.date
+        );
+      }
     }
 
-    let params: any = { ...sanitizedQuery, status };
-
-    if (date && typeof date === 'object') {
-      const objectToString = JSON.stringify(date);
-      params = { ...params, date: objectToString };
-    }
-
-    if (date && typeof date !== 'object') {
-      params = { ...params, date };
-    }
-
-    return this.httpService.get(`${this.apiPrefix}`, params);
+    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
   getVoucherById(_id: string) {
@@ -83,18 +82,26 @@ export class VoucherApiService {
     );
   }
 
-  exportExcelVouchers(query?: QueryParams, status: string = '') {
+  exportExcelVouchers(query?: QueryParams) {
     let sanitizedQuery: QueryParams = {};
     if (query) {
       sanitizedQuery = {
         pageIndex: 0,
         pageSize: 0,
-        searchText: query.searchText || '',
+        searchText: query.searchText ?? '',
+        status: query?.status ?? '',
       };
+
+      if (query?.date) {
+        sanitizedQuery = this.utilService.date.dateToQueryParam(
+          sanitizedQuery,
+          query?.date
+        );
+      }
     }
-    return this.httpService.getBlob(`${this.apiPrefix}/export/excel`, {
-      ...sanitizedQuery,
-      status,
-    });
+    return this.httpService.getBlob(
+      `${this.apiPrefix}/export/excel`,
+      sanitizedQuery
+    );
   }
 }

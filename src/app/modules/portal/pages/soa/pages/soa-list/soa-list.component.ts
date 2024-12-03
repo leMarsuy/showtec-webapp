@@ -69,14 +69,12 @@ export class SoaListComponent {
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching SOAs...');
 
     this.soaApi
-      .getSoas(
-        {
-          searchText: this.searchText.value ?? '',
-          ...this.page,
-        },
+      .getSoas({
+        searchText: this.searchText.value ?? '',
+        ...this.page,
         date,
-        status
-      )
+        status,
+      })
       .subscribe({
         next: (resp) => {
           const response = resp as HttpGetResponse;
@@ -153,8 +151,18 @@ export class SoaListComponent {
     const loadingMsg = 'Downloading Excel file...';
     this._setDownloadingState(true, loadingMsg);
 
+    const status =
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
+
+    const date =
+      this.selectedFilterDate === DateFilterType.ALL_TIME
+        ? ''
+        : this.selectedFilterDate;
+
     const query: QueryParams = {
       searchText: this.searchText.value ?? '',
+      status,
+      date,
     };
 
     this.soaApi.exportExcelSoas(query).subscribe({

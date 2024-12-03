@@ -158,15 +158,13 @@ export class VouchersListComponent {
     this._setLoadingState(true, loadingMsg);
 
     this.voucherApi
-      .getVouchers(
-        {
-          searchText: this.searchText.value || '',
-          sort: this.sortBy,
-          ...this.page,
-        },
+      .getVouchers({
+        searchText: this.searchText.value || '',
+        sort: this.sortBy,
+        ...this.page,
         date,
-        status
-      )
+        status,
+      })
       .subscribe({
         next: (resp) => {
           this._setLoadingState(false);
@@ -220,9 +218,10 @@ export class VouchersListComponent {
 
     const query: QueryParams = {
       searchText: this.searchText.value || '',
+      status,
     };
 
-    this.voucherApi.exportExcelVouchers(query, status).subscribe({
+    this.voucherApi.exportExcelVouchers(query).subscribe({
       next: (response: any) => {
         this._setLoadingState(false);
         const fileName = generateFileName('VOUCHER', 'xlsx');
