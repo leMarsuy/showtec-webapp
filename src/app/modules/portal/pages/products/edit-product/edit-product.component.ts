@@ -6,7 +6,7 @@ import { Product } from '@core/models/product.model';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
 import { AddProductComponent } from '../add-product/add-product.component';
-import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
+import { ConfigApiService } from '@app/shared/services/api/config-api/config-api.service';
 import { ProductConfig } from '../../settings/pages/product-settings/product-settings.component';
 
 @Component({

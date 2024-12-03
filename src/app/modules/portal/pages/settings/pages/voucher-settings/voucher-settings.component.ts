@@ -9,7 +9,7 @@ import {
   ACCOUNT_TITLES,
   AccountTitle,
 } from '../../../vouchers/pages/upsert-voucher/account-title.list';
-import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
+import { ConfigApiService } from '@app/shared/services/api/config-api/config-api.service';
 import { DistributionOfAccountDataService } from './voucher-settings-data.service';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 

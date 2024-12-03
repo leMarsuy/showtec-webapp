@@ -39,7 +39,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { isEmpty } from '@app/shared/utils/objectUtil';
 import { Signatory } from '@app/core/models/out-delivery.model';
-import { ConfigApiService } from '@app/shared/services/api/config-apo/config-api.service';
+import { ConfigApiService } from '@app/shared/services/api/config-api/config-api.service';
 import { AccountTitle } from './account-title.list';
 import { VoucherConfig } from '../../../settings/pages/voucher-settings/voucher-settings.component';
 
