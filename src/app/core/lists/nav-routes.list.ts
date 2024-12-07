@@ -35,14 +35,19 @@ export const NAV_ROUTES = [
     group: 'Sales',
     items: [
       {
-        name: 'Purchase Order',
+        name: 'Purchase Orders',
         path: 'purchase-order',
         icon: NavIcon.PURCHASE_ORDER,
       },
       {
-        name: 'SOA',
+        name: 'Statement of Accounts',
         path: 'soa',
         icon: NavIcon.SOA,
+      },
+      {
+        name: 'Transactions',
+        path: 'transactions',
+        icon: NavIcon.TRANSACTIONS,
       },
       // {
       //   name: 'Reports',
@@ -53,11 +58,6 @@ export const NAV_ROUTES = [
       //   name: 'Returns',
       //   path: 'suppliers',
       //   icon: 'undo',
-      // },
-      // {
-      //   name: 'Expenses',
-      //   path: 'expenses',
-      //   icon: 'toll',
       // },
       {
         name: 'Vouchers',
