@@ -6,8 +6,8 @@ import { environment } from '@env/environment';
   providedIn: 'root',
 })
 export class ConfigApiService {
-  apiUrl = environment.API_URL;
-  apiPrefix = 'config';
+  private readonly apiUrl = environment.API_URL;
+  private readonly apiPrefix = 'config';
   constructor(private httpService: HttpService) {}
 
   createConfig(config: any) {
