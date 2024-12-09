@@ -84,6 +84,13 @@ export class ProductApiService {
     );
   }
 
+  checkStockInOutDelivery(stockId: string) {
+    const _id = stockId;
+    return this.httpService.get(
+      `${this.apiPrefix}/stock/${_id}/check-delivery-status`
+    );
+  }
+
   exportExcelProductSerialNos(query?: QueryParams) {
     let sanitizedQuery: QueryParams = {};
     if (query) {
