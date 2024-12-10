@@ -1,0 +1,61 @@
+<p mat-dialog-title>
+  DR# {{ outdelivery.code?.value || "" }}
+</p>
+
+<mat-dialog-content>
+  <div class="flex flex-col p-2 text-base">
+    <section class="grid grid-cols-12 mb-4">
+
+      <article class="col-span-6 flex items-center">
+        <b class="mr-2">Delivery Date:</b> {{ outdelivery.deliveryDate | date: 'MMMM dd, yyyy' }}
+      </article>
+      <article class="col-span-6 flex items-center">
+        <b class="mr-2">Customer Name:</b> {{ outdelivery.STATIC.name }}
+      </article>
+      <article class="col-span-6 flex items-center">
+        <b class="mr-2">Mobile:</b> {{ outdelivery.STATIC.mobile || '' }}
+      </article>
+      <article class="col-span-6 flex items-center">
+        <b class="mr-2">Status:</b> {{ outdelivery.status }}
+      </article>
+      <article class="col-span-12 flex items-center">
+        <b class="mr-2">Address:</b> {{ outdelivery.STATIC.address || '' }}
+      </article>
+    </section>
+
+    <p class="mb-2">Deliverable Items:</p>
+    <div class="container max-h-[256px] overflow-y-scroll">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-300 border-b border-gray-400 sticky top-0">
+            @for(column of tableColumns; track column) {
+            <th class="py-2 px-4 text-left font-medium">{{ column.label }}</th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for(item of outdelivery.items; track item.STATIC._stockId) {
+          <tr class="border-b border-gray-200 even:bg-gray-50 odd:bg-gray-100 hover:bg-blue-200" [ngClass]="{
+            'text-sky-500 font-medium': item.STATIC._stockId === stock._id
+          }">
+            @for(column of tableColumns; track column) {
+            <td class="py-2 px-4">{{ (column.dotNotation | deepFind : item) || "" }}</td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="flex w-full justify-end">
+    <button mat-flat-button color="primary" mat-dialog-close>
+      Ok
+    </button>
+  </div>
+</mat-dialog-actions>
