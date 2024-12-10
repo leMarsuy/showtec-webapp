@@ -1,8 +1,6 @@
 @if(product){
 <div class="flex gap-4">
-  <div
-    class="rounded-xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16 flex-none"
-  >
+  <div class="rounded-xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16 flex-none">
     <div>
       <div class="flex mb-2">
         <button mat-button [routerLink]="'../'">
@@ -10,9 +8,7 @@
         </button>
       </div>
       <div class="grid grid-cols-2 gap-2 w-full">
-        <div
-          class="col-span-2 p-4 bg-amber-100 rounded-xl border-2 border-amber-500"
-        >
+        <div class="col-span-2 p-4 bg-amber-100 rounded-xl border-2 border-amber-500">
           <p>
             <b>{{ product.brand }} {{ product.model }} </b>
           </p>
@@ -72,13 +68,9 @@
       </button>
     </div>
     <div class="w-full">
-      <app-table
-        [dataSource]="filteredStocks"
-        [columns]="columns"
-        [page]="page"
-        (pageEmitter)="pageEvent($event)"
-        (rowEmitter)="editStock($event)"
-      ></app-table>
+      <app-table [dataSource]="filteredStocks" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
+        (actionEmitter)="actionEvent($event)">
+      </app-table>
     </div>
   </div>
 </div>
