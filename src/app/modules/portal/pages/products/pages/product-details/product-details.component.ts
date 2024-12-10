@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, map, of, startWith, switchMap } from 'rxjs';
+import { filter, map, of, switchMap, timer } from 'rxjs';
 import { Product } from '@core/models/product.model';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { TableColumn } from '@core/interfaces/table-column.interface';
@@ -272,7 +272,15 @@ export class ProductDetailsComponent implements OnInit {
     const stockStatus = stock.status;
     const stockId = stock._id;
 
+    const openConfirmation = (message: string) => {
+      return this.confirmation
+        .open('Stock Status Update', message)
+        .afterClosed()
+        .pipe(filter((result) => result));
+    };
+
     let updateStatus: null | StockStatus = null;
+
     this.productApi
       .checkStockInOutDelivery(stockId)
       .pipe(
@@ -281,35 +289,35 @@ export class ProductDetailsComponent implements OnInit {
           let message = '';
           if (hasOutdelivery && stockStatus === StockStatus.IN_STOCK) {
             //Change IN STOCK to FOR DELIVERY
-            message = `This stock is "<b class="text-sky-400">${stockStatus}</b>" but used in pending delivery (<p class="inline text-sky-600">DR# ${outdelivery?.code?.value}</p>).<br>Update the status to "<b class="text-sky-400">${StockStatus.FOR_DELIVERY}</b>"?`;
+            message = `This stock is marked as "<b class="text-sky-500">${stockStatus}</b>" but is allocated for a pending delivery (<span class="text-sky-600">DR# ${outdelivery?.code?.value}</span>).<br>Should the status be updated to "<b class="text-sky-500">${StockStatus.FOR_DELIVERY}</b>"?`;
             updateStatus = StockStatus.FOR_DELIVERY;
-            return this.confirmation
-              .open('Update Confirmation', message)
-              .afterClosed()
-              .pipe(filter((result) => result));
+            return openConfirmation(message);
           }
           if (
             hasOutdelivery === false &&
             stockStatus === StockStatus.FOR_DELIVERY
           ) {
             //Change FOR DELIVERY to IN STOCK
-            message = `This stock is "<b class="text-sky-400">${stockStatus}</b>" but has not used in delivery.<br>Update the status to "<b class="text-sky-400">${StockStatus.IN_STOCK}</b>"?`;
+            message = `This stock is marked as "<b class="text-sky-500">${stockStatus}</b>" but hasn't been used for delivery.<br>Should the status be updated to "<b class="text-sky-500">${StockStatus.IN_STOCK}</b>"?`;
             updateStatus = StockStatus.IN_STOCK;
-            return this.confirmation
-              .open('Update Confirmation', message)
-              .afterClosed()
-              .pipe(filter((result) => result));
+            return openConfirmation(message);
           }
           return of(false);
         }),
         switchMap((hasAccept) => {
-          if (!hasAccept || !updateStatus)
+          if (!hasAccept || !updateStatus) {
             return of(
               this.snackbarService.openSuccessSnackbar(
-                'No Necessary Update Required'
+                'Status verified',
+                'No changes required.'
               )
             );
+          }
 
+          this.snackbarService.openLoadingSnackbar(
+            'Updating stock',
+            'Please wait...'
+          );
           const updateStock = {
             _id: stockId,
             status: updateStatus,
@@ -324,10 +332,13 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response === true) {
-            this.snackbarService.openSuccessSnackbar(
-              'Stock Status Update Success'
-            );
-            this.getProductById();
+            setTimeout(() => {
+              this.snackbarService.openSuccessSnackbar(
+                'Update Success!',
+                'Stock status has been updated.'
+              );
+              this.getProductById();
+            }, 800);
           }
         },
         error: ({ error }: HttpErrorResponse) => {
@@ -336,6 +347,9 @@ export class ProductDetailsComponent implements OnInit {
             error.errorCode,
             error.message
           );
+        },
+        complete: () => {
+          this.snackbarService.closeLoadingSnackbar();
         },
       });
   }
