@@ -1,0 +1,43 @@
+<p mat-dialog-title>
+  DR# {{ outdelivery.code?.value || "" }}
+</p>
+
+<mat-dialog-content>
+  <div class="flex flex-col p-2 text-base">
+
+    <p class="mb-2">Deliverable Items:</p>
+    <div class="container max-h-[256px] overflow-y-scroll">
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-300 border-b border-gray-400 sticky top-0">
+            @for(column of tableColumns; track column) {
+            <th class="py-2 px-4 text-left font-medium">{{ column.label }}</th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for(item of outdelivery.items; track item.STATIC._stockId) {
+          <tr class="border-b border-gray-200 even:bg-gray-50 odd:bg-gray-100 hover:bg-blue-200" [ngClass]="{
+            'text-sky-500 font-medium': item.STATIC._stockId === stock._id
+          }">
+            @for(column of tableColumns; track column) {
+            <td class="py-2 px-4">{{ (column.dotNotation | deepFind : item) || "" }}</td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="flex w-full justify-end">
+    <button mat-flat-button color="primary" mat-dialog-close>
+      Ok
+    </button>
+  </div>
+</mat-dialog-actions>

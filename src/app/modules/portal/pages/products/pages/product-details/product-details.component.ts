@@ -23,6 +23,7 @@ import { Alignment } from '@app/core/enums/align.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { OutdeliverySummaryComponent } from './outdelivery-summary/outdelivery-summary.component';
 
 @Component({
   selector: 'app-product-details',
@@ -293,6 +294,7 @@ export class ProductDetailsComponent implements OnInit {
             updateStatus = StockStatus.FOR_DELIVERY;
             return openConfirmation(message);
           }
+
           if (
             hasOutdelivery === false &&
             stockStatus === StockStatus.FOR_DELIVERY
@@ -302,10 +304,22 @@ export class ProductDetailsComponent implements OnInit {
             updateStatus = StockStatus.IN_STOCK;
             return openConfirmation(message);
           }
+
+          if (hasOutdelivery && stockStatus === StockStatus.FOR_DELIVERY) {
+            this.dialog.open(OutdeliverySummaryComponent, {
+              data: {
+                outdelivery,
+                stock,
+              },
+              minWidth: '55vw',
+            });
+            return of(false);
+          }
+
           return of(false);
         }),
         switchMap((hasAccept) => {
-          if (!hasAccept || !updateStatus) {
+          if (!hasAccept && !updateStatus) {
             return of(
               this.snackbarService.openSuccessSnackbar(
                 'Status verified',
@@ -314,11 +328,15 @@ export class ProductDetailsComponent implements OnInit {
             );
           }
 
+          if (hasAccept && !updateStatus) {
+            return of(null);
+          }
+
           this.snackbarService.openLoadingSnackbar(
             'Updating stock',
             'Please wait...'
           );
-          const updateStock = {
+          const updateStock: any = {
             _id: stockId,
             status: updateStatus,
             serialNumber: stock.serialNumber,
@@ -332,6 +350,7 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response === true) {
+            this.snackbarService.closeLoadingSnackbar();
             setTimeout(() => {
               this.snackbarService.openSuccessSnackbar(
                 'Update Success!',
@@ -342,14 +361,12 @@ export class ProductDetailsComponent implements OnInit {
           }
         },
         error: ({ error }: HttpErrorResponse) => {
+          this.snackbarService.closeLoadingSnackbar();
           console.error(error);
           this.snackbarService.openErrorSnackbar(
             error.errorCode,
             error.message
           );
-        },
-        complete: () => {
-          this.snackbarService.closeLoadingSnackbar();
         },
       });
   }
