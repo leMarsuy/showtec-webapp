@@ -313,7 +313,7 @@ export class ProductDetailsComponent implements OnInit {
               },
               minWidth: '55vw',
             });
-            return of(false);
+            return of(true);
           }
 
           return of(false);
@@ -329,6 +329,7 @@ export class ProductDetailsComponent implements OnInit {
           }
 
           if (hasAccept && !updateStatus) {
+            //if stock is verified to be For Delivery and has active/pending Out Delivery
             return of(null);
           }
 
