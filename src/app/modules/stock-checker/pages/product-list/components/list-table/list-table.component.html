@@ -52,11 +52,13 @@
     }
     <ng-container *matNoDataRow>
       <tr class="empty-row" *ngIf="!isTableLoading">
-        <td>No data found</td>
+        <td colspan="100%"><span class="text-lg font-medium flex items-center justify-center py-4">No data found</span>
+        </td>
       </tr>
 
       <tr class="empty-row" *ngIf="isTableLoading">
-        <td>Loading...</td>
+        <td colspan="100%"><span class="text-lg font-medium flex items-center justify-center py-4">Loading...</span>
+        </td>
       </tr>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-700"></tr>
