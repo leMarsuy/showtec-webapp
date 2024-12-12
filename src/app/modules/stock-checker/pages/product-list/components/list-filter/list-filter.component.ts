@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import {
   ClassificationOption,
@@ -7,10 +7,12 @@ import {
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import {
   debounceTime,
+  map,
   Observable,
   of,
   startWith,
   Subject,
+  take,
   takeUntil,
 } from 'rxjs';
 import { ProductListService } from '../../product-list.service';
@@ -27,9 +29,8 @@ interface SortOption {
   styleUrl: './list-filter.component.scss',
 })
 export class ListFilterComponent implements OnInit, OnDestroy {
-  private readonly snackbar = inject(SnackbarService);
-  private readonly stockCheckerService = inject(StockCheckerService);
   private readonly productListService = inject(ProductListService);
+  private readonly stockCheckerService = inject(StockCheckerService);
 
   productClassifications!: ClassificationOption[];
   sortByCategories: SortOption[] = [
@@ -63,23 +64,24 @@ export class ListFilterComponent implements OnInit, OnDestroy {
 
   private readonly destroyed$ = new Subject<void>();
 
-  constructor() {}
+  constructor() {
+    this.stockCheckerService.classificationFilter$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((classifications) => {
+        this.productClassifications = classifications;
+      });
+  }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.productClassifications =
-        this.stockCheckerService.getClassifications();
-
-      this.searchCategory.valueChanges
-        .pipe(startWith(''), debounceTime(500), takeUntil(this.destroyed$))
-        .subscribe((searchText) => {
-          if (!searchText) {
-            this.filteredCategories$ = of(this.productClassifications);
-          } else {
-            this.filteredCategories$ = this.filterCategory(searchText) as any;
-          }
-        });
-    }, 100);
+    this.searchCategory.valueChanges
+      .pipe(startWith(''), debounceTime(500), takeUntil(this.destroyed$))
+      .subscribe((searchText) => {
+        if (!searchText) {
+          this.filteredCategories$ = of(this.productClassifications);
+        } else {
+          this.filteredCategories$ = this.filterCategory(searchText) as any;
+        }
+      });
   }
 
   classificationSelect(item: ClassificationOption) {
