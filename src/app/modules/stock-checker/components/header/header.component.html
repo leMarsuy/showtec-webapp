@@ -6,8 +6,8 @@
   <mat-form-field appearance="outline"
     class="mrw-[32rem] col-span-4 [&>.mat-mdc-text-field-wrapper]:bg-white [&>.mat-mdc-text-field-wrapper]:rounded-[6px]"
     subscriptSizing="dynamic">
-    <input matInput [placeholder]="placeholder" [formControl]="searchText" />
-    <mat-icon matSuffix class="cursor-pointer">
+    <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="requestFetchProducts()" />
+    <mat-icon matSuffix class="cursor-pointer" (click)="requestFetchProducts()">
       search
     </mat-icon>
   </mat-form-field>

@@ -1,11 +1,13 @@
-<article class="grid grid-cols-12 p-8 bg-gray-200 h-[calc(100%-88px)]">
+<article class="grid grid-cols-12 p-8 gap-4 bg-gray-200 items-start inline-block min-h-[calc(100%-88px)]">
   <!-- FILTER -->
-  <section class="col-span-3">
+  <section class="col-span-3 sticky top-4 self-align-start">
     <app-list-filter></app-list-filter>
   </section>
 
   <!-- TABLE -->
   <section class="col-span-9">
-
+    <app-list-table [dataSource]="products$ | async" [page]="page" [isLoading]="(loading$ | async) ?? false"
+      (pageEmitter)="pageEvent($event)">
+    </app-list-table>
   </section>
 </article>
