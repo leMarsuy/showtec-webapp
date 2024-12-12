@@ -10,15 +10,18 @@
 
     <div class="min-h-auto max-h-[20rem] overflow-y-scroll flex flex-col mt-2">
       <ul cdkListbox>
+        @if((filteredCategories$| async)?.length === 0 ) {
+        <li class="text-center text-gray-400">No Category Found...</li>
+        }
+
         @for(item of filteredCategories$ | async; track item) {
         <li class="example-option" [class.selected]="item.selected" (click)="classificationSelect(item)">
           {{ item.classification }}
         </li>
         }
 
-        @if((filteredCategories$| async)?.length === 0 ) {
-        <li class="text-center text-gray-400">No Category Found...</li>
-        }
+
+
       </ul>
     </div>
   </section>
