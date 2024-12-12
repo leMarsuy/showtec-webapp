@@ -52,12 +52,14 @@
     }
     <ng-container *matNoDataRow>
       <tr class="empty-row" *ngIf="!isTableLoading">
-        <td colspan="100%"><span class="text-lg font-medium flex items-center justify-center py-4">No data found</span>
+        <td colspan="100%"><span class="text-lg font-medium flex items-center justify-center py-4 text-gray-500">No data
+            found</span>
         </td>
       </tr>
 
       <tr class="empty-row" *ngIf="isTableLoading">
-        <td colspan="100%"><span class="text-lg font-medium flex items-center justify-center py-4">Loading...</span>
+        <td colspan="100%"><span
+            class="text-lg font-medium flex items-center justify-center py-4 text-gray-500">Loading...</span>
         </td>
       </tr>
     </ng-container>

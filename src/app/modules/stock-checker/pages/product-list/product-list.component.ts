@@ -26,8 +26,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
   private readonly productListService = inject(ProductListService);
   private readonly snackbar = inject(SnackbarService);
 
+  private readonly destroyed$ = new Subject<void>();
+
   products$ = new Observable<Product[]>();
   loading$ = new BehaviorSubject<boolean>(false);
+  query!: QueryParams & { classifications?: string };
 
   page: PageEvent = {
     pageIndex: 0,
@@ -35,12 +38,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
     length: -1,
   };
 
-  query!: QueryParams & { classifications?: string };
-
-  private readonly destroyed$ = new Subject<void>();
+  private productFilter!: ProductListFilters;
 
   constructor() {
-    this.setQuery();
     this.getProducts();
   }
 
@@ -48,12 +48,18 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.productListService.productListFilters$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((productFilter) => {
-        this.setQuery(productFilter);
+        this.productFilter = productFilter;
         this.getProducts();
       });
   }
 
-  getProducts() {
+  pageEvent(e: PageEvent) {
+    this.page.pageSize = e.pageSize;
+    this.page.pageIndex = e.pageIndex;
+    this.getProducts();
+  }
+
+  private fetchProducts() {
     this.loading$.next(true);
     this.stockCheckerApi
       .getProducts(this.query)
@@ -72,21 +78,19 @@ export class ProductListComponent implements OnInit, OnDestroy {
       });
   }
 
-  pageEvent(e: PageEvent) {
-    this.page.pageSize = e.pageSize;
-    this.page.pageIndex = e.pageIndex;
-    this.getProducts();
+  private getProducts() {
+    this.setQuery();
+    this.fetchProducts();
   }
 
-  private setQuery(filters?: ProductListFilters) {
+  private setQuery() {
     const query = {
       pageSize: this.page.pageSize,
       pageIndex: this.page.pageIndex,
-      sort: filters?.sort ?? '',
-      classifications: filters?.classifications ?? '',
-      searchText: filters?.searchText ?? '',
+      sort: this.productFilter?.sort ?? '',
+      classifications: this.productFilter?.classifications ?? '',
+      searchText: this.productFilter?.searchText ?? '',
     };
-
     this.query = query;
   }
 
