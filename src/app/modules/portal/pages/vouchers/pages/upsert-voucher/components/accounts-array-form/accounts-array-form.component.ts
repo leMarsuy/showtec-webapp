@@ -92,8 +92,6 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
 
   private _filterTitles(searchKey: string) {
     const filterKey = searchKey.toLowerCase();
-    console.log(this.accountTitles);
-
     return this.accountTitles.filter((account: AccountTitle) => {
       return account.name.toLowerCase().includes(filterKey);
     });
