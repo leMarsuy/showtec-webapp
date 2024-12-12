@@ -74,7 +74,6 @@ export class ProductSettingsComponent implements OnInit {
           );
 
           if (this.isUpdate) {
-            console.log('is update', body);
             return this.configApi.updateConfigByName(this.configName, body);
           } else {
             body.name = this.configName;
