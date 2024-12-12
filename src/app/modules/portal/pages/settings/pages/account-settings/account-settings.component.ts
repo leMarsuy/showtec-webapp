@@ -118,7 +118,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
         },
         error: ({ error }: HttpErrorResponse) => {
           this.loading = false;
-          console.log(error);
+          console.error(error);
           this.snackbar.openErrorSnackbar(error?.errorCode, error?.message);
         },
       });
