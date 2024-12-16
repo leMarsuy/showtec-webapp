@@ -1,5 +1,5 @@
 <!-- <button (click)="check()">checker</button> -->
-<table mat-table [dataSource]="dataSource" class="w-full">
+<table mat-table [dataSource]="dataSource ?? []" class="w-full">
   @for (column of columns; track $index) {
   <ng-container [matColumnDef]="column.label">
     <th mat-header-cell *matHeaderCellDef class="w-{{ column.width || 'auto' }}">
@@ -19,8 +19,7 @@
   <!--  -->
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-
-  @if (page.length>=0) {
+  @if(page.length >= 0) {
   <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="rowEmitter.emit(row)" class="hover:bg-gray-100">
   </tr>
   }
@@ -36,8 +35,14 @@
   <mat-icon>timer</mat-icon>
   <h1>Loading Table...</h1>
   </div>
-  } @if (page && hasPagination) {
-  <mat-paginator class="py-2 border-t-2 border-gray-200" [length]="page.length" [pageSize]="page.pageSize"
-    (page)="pageEmitter.emit($event)" aria-label="Select page">
-  </mat-paginator>
+  }
+
+  @if (page && hasPagination) {
+  <!-- <mat-paginator class="py-2 border-t-2 border-gray-200" [length]="page.length" [pageSize]="page.pageSize"
+    [pageIndex]="page.pageIndex" (page)="pageEmitter.emit($event)" aria-label="Select page">
+  </mat-paginator> -->
+
+  <app-pagination [totalItems]="page.length" [itemsPerPage]="page.pageSize || 10"
+    [itemsPerPageOptions]="[5, 10, 25, 50]" [currentPage]="$any(page.pageIndex || 0) + 1"
+    (paginationChange)="onPaginationChange($event)"></app-pagination>
   }
