@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map } from 'rxjs';
+import { filter, map, of, switchMap, timer } from 'rxjs';
 import { Product } from '@core/models/product.model';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { TableColumn } from '@core/interfaces/table-column.interface';
@@ -16,9 +16,14 @@ import { UpdateFieldComponent } from './update-field/update-field.component';
 import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
 
 import { FormField } from '@app/core/interfaces/form-field.interface';
-import { StockType } from '@app/core/enums/stock-type.enum';
+import { STOCK_TYPES, StockType } from '@app/core/enums/stock-type.enum';
 import { EditStockComponent } from './edit-stock/edit-stock.component';
 import { EditProductComponent } from '../../edit-product/edit-product.component';
+import { Alignment } from '@app/core/enums/align.enum';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { OutDelivery } from '@app/core/models/out-delivery.model';
+import { HttpErrorResponse } from '@angular/common/http';
+import { OutdeliverySummaryComponent } from './outdelivery-summary/outdelivery-summary.component';
 
 @Component({
   selector: 'app-product-details',
@@ -38,18 +43,30 @@ export class ProductDetailsComponent implements OnInit {
   total = 0;
   _id!: string;
   product!: Product;
-  constructor(
-    private productApi: ProductApiService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private snackbarService: SnackbarService,
-    private dialog: MatDialog
-  ) {
-    activatedRoute.params.pipe(map((p) => p['_id'])).subscribe((_id) => {
-      this._id = _id;
-      this.getProductById();
-    });
-  }
+
+  fields: FormField[] = [
+    {
+      label: 'SKU',
+      path: 'sku',
+    },
+    {
+      label: 'Brand',
+      path: 'brand',
+    },
+    {
+      label: 'Model',
+      path: 'model',
+    },
+    {
+      label: 'Classification',
+      path: 'classification',
+      select: { options: [...PRODUCT_CLASSIFICATIONS] },
+    },
+    {
+      label: 'Price',
+      path: 'price.amount',
+    },
+  ];
 
   columns: TableColumn[] = [
     {
@@ -100,7 +117,41 @@ export class ProductDetailsComponent implements OnInit {
         },
       ],
     },
+    {
+      label: 'Action',
+      dotNotationPath: '_id',
+      type: ColumnType.ACTION,
+      align: Alignment.CENTER,
+      actions: [
+        {
+          name: 'Edit Stock',
+          icon: 'edit',
+          action: 'edit',
+          color: Color.WARNING,
+        },
+        {
+          name: 'Verify Stock Status',
+          icon: 'troubleshoot',
+          action: 'check_dr',
+          color: Color.DEAD,
+        },
+      ],
+    },
   ];
+
+  constructor(
+    private productApi: ProductApiService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private snackbarService: SnackbarService,
+    private dialog: MatDialog,
+    private confirmation: ConfirmationService
+  ) {
+    activatedRoute.params.pipe(map((p) => p['_id'])).subscribe((_id) => {
+      this._id = _id;
+      this.getProductById();
+    });
+  }
 
   ngOnInit(): void {}
 
@@ -137,6 +188,20 @@ export class ProductDetailsComponent implements OnInit {
     ];
   }
 
+  actionEvent(e: any) {
+    const { action } = e.action;
+    const stock = e.element;
+
+    switch (action) {
+      case 'edit':
+        this.editStock(stock);
+        break;
+      case 'check_dr':
+        this.verifyStockStatus(stock);
+        break;
+    }
+  }
+
   filterStocks(status: string) {
     this.selectedStockStatus = status;
     if (this.selectedStockStatus != 'All')
@@ -165,30 +230,6 @@ export class ProductDetailsComponent implements OnInit {
       });
   }
 
-  fields: FormField[] = [
-    {
-      label: 'SKU',
-      path: 'sku',
-    },
-    {
-      label: 'Brand',
-      path: 'brand',
-    },
-    {
-      label: 'Model',
-      path: 'model',
-    },
-    {
-      label: 'Classification',
-      path: 'classification',
-      select: { options: [...PRODUCT_CLASSIFICATIONS] },
-    },
-    {
-      label: 'Price',
-      path: 'price.amount',
-    },
-  ];
-
   onClickEditField(field: FormField, value: any) {
     this.dialog
       .open(UpdateFieldComponent, {
@@ -211,7 +252,7 @@ export class ProductDetailsComponent implements OnInit {
       });
   }
 
-  editStock(stock: Stock) {
+  private editStock(stock: Stock) {
     this.dialog
       .open(EditStockComponent, {
         width: '50rem',
@@ -225,6 +266,109 @@ export class ProductDetailsComponent implements OnInit {
       .afterClosed()
       .subscribe((res) => {
         if (res) this.getProductById();
+      });
+  }
+
+  private verifyStockStatus(stock: Stock) {
+    const stockStatus = stock.status;
+    const stockId = stock._id;
+
+    const openConfirmation = (message: string) => {
+      return this.confirmation
+        .open('Stock Status Update', message)
+        .afterClosed()
+        .pipe(filter((result) => result));
+    };
+
+    let updateStatus: null | StockStatus = null;
+
+    this.productApi
+      .checkStockInOutDelivery(stockId)
+      .pipe(
+        switchMap((hasOutdelivery) => {
+          const outdelivery = hasOutdelivery as OutDelivery;
+          let message = '';
+          if (hasOutdelivery && stockStatus === StockStatus.IN_STOCK) {
+            //Change IN STOCK to FOR DELIVERY
+            message = `This stock is marked as "<b class="text-sky-500">${stockStatus}</b>" but is allocated for a pending delivery (<span class="text-sky-600">DR# ${outdelivery?.code?.value}</span>).<br>Should the status be updated to "<b class="text-sky-500">${StockStatus.FOR_DELIVERY}</b>"?`;
+            updateStatus = StockStatus.FOR_DELIVERY;
+            return openConfirmation(message);
+          }
+
+          if (
+            hasOutdelivery === false &&
+            stockStatus === StockStatus.FOR_DELIVERY
+          ) {
+            //Change FOR DELIVERY to IN STOCK
+            message = `This stock is marked as "<b class="text-sky-500">${stockStatus}</b>" but hasn't been used for delivery.<br>Should the status be updated to "<b class="text-sky-500">${StockStatus.IN_STOCK}</b>"?`;
+            updateStatus = StockStatus.IN_STOCK;
+            return openConfirmation(message);
+          }
+
+          if (hasOutdelivery && stockStatus === StockStatus.FOR_DELIVERY) {
+            this.dialog.open(OutdeliverySummaryComponent, {
+              data: {
+                outdelivery,
+                stock,
+              },
+              minWidth: '55vw',
+            });
+            return of(true);
+          }
+
+          return of(false);
+        }),
+        switchMap((hasAccept) => {
+          if (!hasAccept && !updateStatus) {
+            return of(
+              this.snackbarService.openSuccessSnackbar(
+                'Status verified',
+                'No changes required.'
+              )
+            );
+          }
+
+          if (hasAccept && !updateStatus) {
+            //if stock is verified to be For Delivery and has active/pending Out Delivery
+            return of(null);
+          }
+
+          this.snackbarService.openLoadingSnackbar(
+            'Updating stock',
+            'Please wait...'
+          );
+          const updateStock: any = {
+            _id: stockId,
+            status: updateStatus,
+            serialNumber: stock.serialNumber,
+            type: stock.type,
+          };
+          return this.productApi
+            .updateStockById(this.product._id, updateStock)
+            .pipe(map(() => true));
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if (response === true) {
+            this.snackbarService.closeLoadingSnackbar();
+            setTimeout(() => {
+              this.snackbarService.openSuccessSnackbar(
+                'Update Success!',
+                'Stock status has been updated.'
+              );
+              this.getProductById();
+            }, 800);
+          }
+        },
+        error: ({ error }: HttpErrorResponse) => {
+          this.snackbarService.closeLoadingSnackbar();
+          console.error(error);
+          this.snackbarService.openErrorSnackbar(
+            error.errorCode,
+            error.message
+          );
+        },
       });
   }
 

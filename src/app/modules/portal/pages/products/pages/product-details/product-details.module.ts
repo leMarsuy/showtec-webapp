@@ -20,12 +20,14 @@ import { ProductDetailsRoutingModule } from './product-details-routing.module';
 import { ProductDetailsComponent } from './product-details.component';
 import { EditStockComponent } from './edit-stock/edit-stock.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { OutdeliverySummaryComponent } from './outdelivery-summary/outdelivery-summary.component';
 
 @NgModule({
   declarations: [
     ProductDetailsComponent,
     UpdateStockComponent,
     EditStockComponent,
+    OutdeliverySummaryComponent,
   ],
   imports: [
     DeepFindPipe,

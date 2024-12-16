@@ -19,6 +19,13 @@ export const routes: Routes = [
       ).then((m) => m.CustomerRegistrationModule),
   },
   {
+    path: 'stock-checker',
+    loadChildren: () =>
+      import('./modules/stock-checker/stock-checker.module').then(
+        (m) => m.StockCheckerModule
+      ),
+  },
+  {
     path: '',
     redirectTo: 'auth',
     pathMatch: 'full',

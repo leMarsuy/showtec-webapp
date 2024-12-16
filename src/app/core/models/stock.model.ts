@@ -8,7 +8,7 @@ export class Stock {
   _warehouseId?: string;
   purchaseDate?: Date;
   purchaseCost?: Number;
-  scanDate: Date;
+  scanDate?: Date;
   type: StockType;
   remarks?: string;
   status: StockStatus;

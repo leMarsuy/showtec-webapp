@@ -1,0 +1,14 @@
+<div class="grid grid-cols-8 items-center py-4 gap-4 bg-gradient-to-r from-black via-gray-400 to-red-500">
+  <article class="col-start-2 col-span-1">
+    <img [src]="logoSrc" class="min-w-[12rem] w-[12rem]" />
+  </article>
+
+  <mat-form-field appearance="outline"
+    class="mrw-[32rem] col-span-4 [&>.mat-mdc-text-field-wrapper]:bg-white [&>.mat-mdc-text-field-wrapper]:rounded-[6px]"
+    subscriptSizing="dynamic">
+    <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="requestFetchProducts()" />
+    <mat-icon matSuffix class="cursor-pointer" (click)="requestFetchProducts()">
+      search
+    </mat-icon>
+  </mat-form-field>
+</div>

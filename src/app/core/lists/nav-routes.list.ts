@@ -10,6 +10,11 @@ export const NAV_ROUTES = [
       //   icon: 'dashboard',
       // },
       {
+        name: 'Stock Checker',
+        path: '/stock-checker',
+        icon: NavIcon.STOCK_CHECKER,
+      },
+      {
         name: 'Reports',
         path: 'reports/sales',
         icon: NavIcon.REPORTS,
