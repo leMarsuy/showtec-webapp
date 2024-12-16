@@ -134,6 +134,11 @@ export class VouchersListComponent {
     length: -1,
   };
 
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 10,
+  };
+
   constructor(
     private voucherApi: VoucherApiService,
     private fileApi: FileService,
@@ -145,8 +150,30 @@ export class VouchersListComponent {
     this.getVouchers();
   }
 
-  getVouchers() {
+  getVouchers(isPageEvent = false) {
     const loadingMsg = 'Fetching expenses...';
+    this.setQuery(isPageEvent);
+
+    this._setLoadingState(true, loadingMsg);
+
+    this.voucherApi.getVouchers(this.query).subscribe({
+      next: (resp) => {
+        this._setLoadingState(false);
+        const response = resp as HttpGetResponse;
+        this.vouchers = response.records as Voucher[];
+        this.page.length = response.total;
+      },
+      error: (err: HttpErrorResponse) => {
+        this._setLoadingState(false);
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
+  }
+
+  private setQuery(isPageEvent = false) {
     const status =
       this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
 
@@ -155,31 +182,18 @@ export class VouchersListComponent {
         ? ''
         : this.selectedFilterDate;
 
-    this._setLoadingState(true, loadingMsg);
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
+    const searchText = this.searchText.value ?? '';
+    const sort = this.sortBy;
 
-    this.voucherApi
-      .getVouchers({
-        searchText: this.searchText.value || '',
-        sort: this.sortBy,
-        ...this.page,
-        date,
-        status,
-      })
-      .subscribe({
-        next: (resp) => {
-          this._setLoadingState(false);
-          const response = resp as HttpGetResponse;
-          this.vouchers = response.records as Voucher[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this._setLoadingState(false);
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+    this.query = {
+      searchText,
+      status,
+      sort,
+      date,
+      pageIndex,
+      pageSize: this.page.pageSize,
+    };
   }
 
   actionEvent(e: any) {
@@ -206,19 +220,17 @@ export class VouchersListComponent {
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getVouchers();
+    this.getVouchers(true);
   }
 
   exportTableExcel() {
     const loadingMsg = 'Downloading Excel File...';
     this._setLoadingState(true, loadingMsg);
 
-    const status =
-      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
-
     const query: QueryParams = {
-      searchText: this.searchText.value || '',
-      status,
+      searchText: this.query.searchText,
+      status: this.query.status,
+      date: this.query.date,
     };
 
     this.voucherApi.exportExcelVouchers(query).subscribe({

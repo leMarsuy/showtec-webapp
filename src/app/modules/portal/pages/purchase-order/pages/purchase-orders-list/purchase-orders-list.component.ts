@@ -19,6 +19,7 @@ import { SnackbarService } from '@app/shared/components/snackbar/snackbar.servic
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 import { MatSelectChange } from '@angular/material/select';
 import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Component({
   selector: 'app-purchase-orders-list',
@@ -113,6 +114,13 @@ export class PurchaseOrdersListComponent {
     length: -1,
   };
 
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 10,
+  };
+
+  private sortBy = '-code.value';
+
   constructor(
     private purchaseOrderApi: PurchaseOrderApiService,
     private snackbarService: SnackbarService,
@@ -132,39 +140,23 @@ export class PurchaseOrdersListComponent {
     this.getPurchaseOrders();
   }
 
-  getPurchaseOrders() {
-    const status =
-      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
-
-    const date =
-      this.selectedFilterDate === DateFilterType.ALL_TIME
-        ? ''
-        : this.selectedFilterDate;
-
+  getPurchaseOrders(isPageEvent = false) {
+    this.setQuery(isPageEvent);
     this.snackbarService.openLoadingSnackbar('Please Wait', 'Fetching POs...');
-    this.purchaseOrderApi
-      .getPurchaseOrders(
-        {
-          searchText: this.searchText.value || '',
-          ...this.page,
-        },
-        date,
-        status
-      )
-      .subscribe({
-        next: (resp) => {
-          const response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
-          this.purchaseOrders = response.records as PurchaseOrder[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+    this.purchaseOrderApi.getPurchaseOrders(this.query).subscribe({
+      next: (resp) => {
+        const response = resp as HttpGetResponse;
+        this.snackbarService.closeLoadingSnackbar();
+        this.purchaseOrders = response.records as PurchaseOrder[];
+        this.page.length = response.total;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 
   actionEvent(e: any) {
@@ -183,7 +175,30 @@ export class PurchaseOrdersListComponent {
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getPurchaseOrders();
+    this.getPurchaseOrders(true);
+  }
+
+  private setQuery(isPageEvent = false) {
+    const status =
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
+
+    const date =
+      this.selectedFilterDate === DateFilterType.ALL_TIME
+        ? ''
+        : this.selectedFilterDate;
+
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
+    const searchText = this.searchText.value ?? '';
+    const sort = this.sortBy;
+
+    this.query = {
+      searchText,
+      status,
+      sort,
+      date,
+      pageIndex,
+      pageSize: this.page.pageSize,
+    };
   }
 
   private _print(purchaseOrder: PurchaseOrder) {

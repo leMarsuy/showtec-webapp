@@ -17,7 +17,7 @@
         </span>
         } @else {
         @switch(column.type) {
-        @case ('productDisplay') {
+        @case('productDisplay') {
         <span class="inline-block text-sm py-2">
           <p class="text-base font-medium">{{ ('sku' | deepFind : element)  }}</p>
           <p class="text-gray-500">{{ ('description' | deepFind : element) }}</p>
@@ -68,7 +68,9 @@
       class="hover:bg-gray-100 cursor-pointer"></tr>
 
   </table>
-  <mat-paginator class="py-2 border-t-2 border-gray-200" [pageSizeOptions]="pageSizeOptions" [length]="page.length"
-    [pageSize]="page.pageSize" (page)="pageEmitter.emit($event)" aria-label="Select page">
-  </mat-paginator>
+
+  <app-pagination [totalItems]="page.length" [itemsPerPage]="page.pageSize || 10"
+    [currentPage]="$any(page.pageIndex || 0) + 1" [itemsPerPageOptions]="[5, 10, 25, 50]"
+    (paginationChange)="onPaginationChange($event)">
+  </app-pagination>
 </div>

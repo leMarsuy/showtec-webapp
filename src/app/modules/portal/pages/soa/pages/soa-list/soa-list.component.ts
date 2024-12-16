@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
@@ -20,18 +20,25 @@ import { FileService } from '@app/shared/services/file/file.service';
 import { SoaDataService } from '../../soa-data.service';
 import { DateFilterType } from '@app/core/enums/date-filter.enum';
 import { MatSelectChange } from '@angular/material/select';
+import {
+  BehaviorSubject,
+  finalize,
+  Observable,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 
 @Component({
   selector: 'app-soa-list',
   templateUrl: './soa-list.component.html',
   styleUrl: './soa-list.component.scss',
 })
-export class SoaListComponent {
+export class SoaListComponent implements OnDestroy {
   searchText = new FormControl('');
   placeholder = 'Search SOA No. | Contact Person';
-  downloading = false;
 
-  soas!: SOA[];
+  soas!: any;
+  tableResponse$ = new Observable<any>();
   columns: TableColumn[] = SOA_CONFIG.tableColumns;
 
   statusControl = new FormControl('All');
@@ -45,6 +52,13 @@ export class SoaListComponent {
     length: -1,
   };
 
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 10,
+  };
+
+  downloading = false;
+  private destroyed$ = new Subject<void>();
   constructor(
     private soaApi: SoaApiService,
     private snackbarService: SnackbarService,
@@ -57,7 +71,27 @@ export class SoaListComponent {
     this.getSoas();
   }
 
-  getSoas() {
+  getSoas(isPageEvent = false) {
+    this.setQuery(isPageEvent);
+
+    this.snackbarService.openLoadingSnackbar('Fetching SOAS', 'Please Wait...');
+    this.soaApi
+      .getSoas(this.query)
+      .pipe(
+        finalize(() => {
+          this.snackbarService.closeLoadingSnackbar();
+        })
+      )
+      .subscribe({
+        next: (resp) => {
+          const response = resp as HttpGetResponse;
+          this.soas = response.records as SOA[];
+          this.page.length = response.total;
+        },
+      });
+  }
+
+  private setQuery(isPageEvent = false) {
     const status =
       this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
 
@@ -66,35 +100,23 @@ export class SoaListComponent {
         ? ''
         : this.selectedFilterDate;
 
-    this.snackbarService.openLoadingSnackbar('GetData', 'Fetching SOAs...');
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
 
-    this.soaApi
-      .getSoas({
-        searchText: this.searchText.value ?? '',
-        ...this.page,
-        date,
-        status,
-      })
-      .subscribe({
-        next: (resp) => {
-          const response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
-          this.soas = response.records as SOA[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+    const searchText = this.searchText.value ?? '';
+
+    this.query = {
+      searchText,
+      status,
+      date,
+      pageIndex,
+      pageSize: this.page.pageSize,
+    };
   }
 
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getSoas();
+    this.getSoas(true);
   }
 
   actionEvent(e: any) {
@@ -151,18 +173,10 @@ export class SoaListComponent {
     const loadingMsg = 'Downloading Excel file...';
     this._setDownloadingState(true, loadingMsg);
 
-    const status =
-      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
-
-    const date =
-      this.selectedFilterDate === DateFilterType.ALL_TIME
-        ? ''
-        : this.selectedFilterDate;
-
     const query: QueryParams = {
-      searchText: this.searchText.value ?? '',
-      status,
-      date,
+      searchText: this.query.searchText,
+      status: this.query.status,
+      date: this.query.date,
     };
 
     this.soaApi.exportExcelSoas(query).subscribe({
@@ -205,5 +219,10 @@ export class SoaListComponent {
     } else {
       this.snackbarService.closeLoadingSnackbar();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 }

@@ -12,6 +12,7 @@ import { AddSupplierComponent } from './add-supplier/add-supplier.component';
 import { EditSupplierComponent } from './edit-supplier/edit-supplier.component';
 import { ColumnType } from '@core/enums/column-type.enum';
 import { ContentHeaderAction } from '@core/interfaces/content-header-action.interface';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Component({
   selector: 'app-suppliers',
@@ -39,6 +40,10 @@ export class SuppliersComponent {
     pageIndex: 0,
     pageSize: 50,
     length: -1,
+  };
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 5,
   };
 
   columns: TableColumn[] = [
@@ -87,36 +92,33 @@ export class SuppliersComponent {
       });
   }
 
-  getSuppliers() {
+  getSuppliers(isPageEvent = false) {
     this.snackbarService.openLoadingSnackbar(
       'GetData',
       'Fetching suppliers...'
     );
-    this.supplierApi
-      .getSuppliers({
-        searchText: this.searchText.value || '',
-        ...this.page,
-      })
-      .subscribe({
-        next: (resp) => {
-          var response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
-          this.suppliers = response.records as Supplier[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+
+    this.setQuery(isPageEvent);
+    this.supplierApi.getSuppliers(this.query).subscribe({
+      next: (resp) => {
+        var response = resp as HttpGetResponse;
+        this.snackbarService.closeLoadingSnackbar();
+        this.suppliers = response.records as Supplier[];
+        this.page.length = response.total;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getSuppliers();
+    this.getSuppliers(true);
   }
 
   actionEvent(action: string) {
@@ -124,5 +126,17 @@ export class SuppliersComponent {
       case 'add':
         this.openAddSupplier();
     }
+  }
+
+  private setQuery(isPageEvent = false) {
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
+
+    const searchText = this.searchText.value ?? '';
+
+    this.query = {
+      searchText,
+      pageIndex,
+      pageSize: this.page.pageSize,
+    };
   }
 }

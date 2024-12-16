@@ -94,6 +94,11 @@ export class ProductsListComponent {
   products!: Product[];
   downloading = false;
 
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 10,
+  };
+
   constructor(
     private productApi: ProductApiService,
     private snackbarService: SnackbarService,
@@ -104,34 +109,41 @@ export class ProductsListComponent {
     this.getProducts();
   }
 
-  getProducts() {
+  getProducts(isPageEvent = false) {
+    this.setQuery(isPageEvent);
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching products...');
-    this.productApi
-      .getProducts({
-        searchText: this.searchText?.value || '',
-        ...this.page,
-        sort: 'brand model',
-      })
-      .subscribe({
-        next: (resp) => {
-          var response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
-          this.products = response.records as Product[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+    this.productApi.getProducts(this.query).subscribe({
+      next: (resp) => {
+        var response = resp as HttpGetResponse;
+        this.snackbarService.closeLoadingSnackbar();
+        this.products = response.records as Product[];
+        this.page.length = response.total;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getProducts();
+    this.getProducts(true);
+  }
+
+  private setQuery(isPageEvent = false) {
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
+    const searchText = this.searchText.value ?? '';
+    const sort = 'brand model';
+    this.query = {
+      searchText,
+      pageIndex,
+      pageSize: this.page.pageSize,
+      sort,
+    };
   }
 
   rowEvent(product: Product) {
@@ -145,7 +157,7 @@ export class ProductsListComponent {
     );
     this.downloading = true;
     const query: QueryParams = {
-      searchText: this.searchText.value || '',
+      searchText: this.query.searchText,
     };
 
     this.productApi.exportExcelProductSerialNos(query).subscribe({
@@ -172,7 +184,7 @@ export class ProductsListComponent {
     );
     this.downloading = true;
     const query: QueryParams = {
-      searchText: this.searchText.value || '',
+      searchText: this.query.searchText,
     };
 
     this.productApi.exportExcelProducts(query).subscribe({

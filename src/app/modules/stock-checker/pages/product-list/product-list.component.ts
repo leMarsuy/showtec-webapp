@@ -48,6 +48,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.productListService.productListFilters$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((productFilter) => {
+        console.log('from external component');
         this.productFilter = productFilter;
         this.getProducts();
       });
@@ -56,10 +57,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getProducts();
+    this.getProducts(true);
   }
 
-  private fetchProducts() {
+  private getProducts(isPageEvent = false) {
+    this.setQuery(isPageEvent);
     this.loading$.next(true);
     this.stockCheckerApi
       .getProducts(this.query)
@@ -78,20 +80,21 @@ export class ProductListComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getProducts() {
-    this.setQuery();
-    this.fetchProducts();
-  }
+  /**
+   *
+   * @param isPageEvent - indication of caller is from pageEvent()
+   *
+   */
+  private setQuery(isPageEvent = false) {
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
 
-  private setQuery() {
-    const query = {
-      pageSize: this.page.pageSize,
-      pageIndex: this.page.pageIndex,
-      sort: this.productFilter?.sort ?? '',
+    this.query = {
+      pageIndex,
+      pageSize: this.page.pageSize ?? 10,
+      sort: this.productFilter?.sort ?? 'brand model',
       classifications: this.productFilter?.classifications ?? '',
       searchText: this.productFilter?.searchText ?? '',
     };
-    this.query = query;
   }
 
   ngOnDestroy(): void {
