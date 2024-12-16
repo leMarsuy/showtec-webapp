@@ -106,7 +106,7 @@ export class OutDeliveryListComponent {
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getOutDeliverys();
+    this.getOutDeliverys(true);
   }
 
   actionEvent(e: any) {

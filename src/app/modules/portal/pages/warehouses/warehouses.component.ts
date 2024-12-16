@@ -12,6 +12,7 @@ import { ContentHeaderAction } from '@core/interfaces/content-header-action.inte
 import { Warehouse } from '@core/models/warehouse.model';
 import { AddWarehouseComponent } from '../warehouses/add-warehouse/add-warehouse.component';
 import { EditWarehouseComponent } from '../warehouses/edit-warehouse/edit-warehouse.component';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Component({
   selector: 'app-warehouses',
@@ -39,6 +40,11 @@ export class WarehousesComponent {
     pageIndex: 0,
     pageSize: 50,
     length: -1,
+  };
+
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 50,
   };
 
   columns: TableColumn[] = [
@@ -81,36 +87,33 @@ export class WarehousesComponent {
       });
   }
 
-  getWarehouses() {
+  getWarehouses(isPageEvent = false) {
     this.snackbarService.openLoadingSnackbar(
       'GetData',
       'Fetching warehouses...'
     );
-    this.warehouseApi
-      .getWarehouses({
-        searchText: this.searchText.value || '',
-        ...this.page,
-      })
-      .subscribe({
-        next: (resp) => {
-          var response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
-          this.warehouses = response.records as Warehouse[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+
+    this.setQuery(isPageEvent);
+    this.warehouseApi.getWarehouses(this.query).subscribe({
+      next: (resp) => {
+        const response = resp as HttpGetResponse;
+        this.snackbarService.closeLoadingSnackbar();
+        this.warehouses = response.records as Warehouse[];
+        this.page.length = response.total;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getWarehouses();
+    this.getWarehouses(true);
   }
 
   actionEvent(action: string) {
@@ -118,5 +121,15 @@ export class WarehousesComponent {
       case 'add':
         this.openAddWarehouse();
     }
+  }
+
+  private setQuery(isPageEvent = false) {
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
+    const searchText = this.searchText.value ?? '';
+    this.query = {
+      searchText,
+      pageIndex,
+      pageSize: this.page.pageSize,
+    };
   }
 }

@@ -12,6 +12,7 @@ import { User } from '@app/core/models/user.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
 import { EditUserComponent } from '../../component/edit-user/edit-user.component';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Component({
   selector: 'app-users-list',
@@ -24,6 +25,10 @@ export class UsersListComponent {
     pageIndex: 0,
     pageSize: 50,
     length: -1,
+  };
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 50,
   };
 
   columns: TableColumn[] = [
@@ -64,33 +69,29 @@ export class UsersListComponent {
     this.getUsers();
   }
 
-  public getUsers() {
+  public getUsers(isPageEvent = false) {
     this.snackbarService.openLoadingSnackbar('GetData', 'Fetching users...');
-    this.userApi
-      .getUsers({
-        searchText: this.searchText.value || '',
-        ...this.page,
-      })
-      .subscribe({
-        next: (resp) => {
-          var response = resp as HttpGetResponse;
-          this.snackbarService.closeLoadingSnackbar();
-          this.users = response.records as User[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+    this.setQuery(isPageEvent);
+    this.userApi.getUsers(this.query).subscribe({
+      next: (resp) => {
+        const response = resp as HttpGetResponse;
+        this.snackbarService.closeLoadingSnackbar();
+        this.users = response.records as User[];
+        this.page.length = response.total;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 
   pageEvent(e: PageEvent) {
     this.page.pageSize = e.pageSize;
     this.page.pageIndex = e.pageIndex;
-    this.getUsers();
+    this.getUsers(true);
   }
 
   actionEvent(e: any) {
@@ -115,5 +116,17 @@ export class UsersListComponent {
       .subscribe((refresh: boolean) => {
         if (refresh) this.getUsers();
       });
+  }
+
+  private setQuery(isPageEvent = false) {
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
+
+    const searchText = this.searchText.value ?? '';
+
+    this.query = {
+      searchText,
+      pageIndex,
+      pageSize: this.page.pageSize,
+    };
   }
 }
