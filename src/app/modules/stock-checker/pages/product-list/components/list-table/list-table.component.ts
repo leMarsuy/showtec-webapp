@@ -105,6 +105,16 @@ export class ListTableComponent implements OnInit, OnDestroy {
     this.isTableLoading$.next(changes['isLoading']?.currentValue);
   }
 
+  onPaginationChange(event: any) {
+    const pageIndex = event.pageIndex - 1;
+
+    this.pageEmitter.emit({
+      pageIndex,
+      pageSize: event.pageSize,
+      length: event.length,
+    });
+  }
+
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();

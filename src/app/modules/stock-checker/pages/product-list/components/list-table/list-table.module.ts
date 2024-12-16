@@ -8,6 +8,7 @@ import { DeepFindPipe } from '@app/shared/pipes/deep-find/deep-find.pipe';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
+import { PaginationModule } from '@app/shared/components/table/pagination/pagination.module';
 
 @NgModule({
   declarations: [ListTableComponent],
@@ -21,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatTooltipModule,
     MatButtonModule,
     DeepFindPipe,
+    PaginationModule,
   ],
 })
 export class ListTableModule {}
