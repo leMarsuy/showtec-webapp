@@ -11,21 +11,14 @@ import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
 import { OUT_DELIVER_CONFIG } from '../../out-delivery-config';
-import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { filter, switchMap } from 'rxjs';
-import {
-  OUT_DELIVERY_STATUS_TYPES,
-  OutDeliveryStatus,
-} from '@app/core/enums/out-delivery-status.enum';
+import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
 import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
 import { OutDeliveryDataService } from '../../out-delivery-data.service';
-import {
-  DATE_FILTER_MENU_OPTIONS,
-  DateFilterType,
-} from '@app/core/enums/date-filter.enum';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
 import { MatSelectChange } from '@angular/material/select';
 
 @Component({
@@ -58,6 +51,13 @@ export class OutDeliveryListComponent {
 
   isLoading = false;
 
+  query: QueryParams = {
+    pageIndex: 0,
+    pageSize: 10,
+  };
+
+  private sortBy = '-code.value';
+
   constructor(
     private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
@@ -70,40 +70,27 @@ export class OutDeliveryListComponent {
     this.getOutDeliverys();
   }
 
-  getOutDeliverys() {
+  getOutDeliverys(isPageEvent = false) {
+    this.setQuery(isPageEvent);
+
     const loadingMsg = 'Fetching Delivery Receipts...';
-    const status =
-      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
-
-    const date =
-      this.selectedFilterDate === DateFilterType.ALL_TIME
-        ? ''
-        : this.selectedFilterDate;
-
     this._setLoadingState(true, loadingMsg);
 
-    this.outdeliveryApi
-      .getOutDeliverys({
-        ...this.page,
-        searchText: this.searchText.value ?? '',
-        date,
-        status,
-      })
-      .subscribe({
-        next: (resp) => {
-          const response = resp as HttpGetResponse;
-          this._setLoadingState(false);
-          this.outdeliveries = response.records as OutDelivery[];
-          this.page.length = response.total;
-        },
-        error: (err: HttpErrorResponse) => {
-          this._setLoadingState(false);
-          this.snackbarService.openErrorSnackbar(
-            err.error.errorCode,
-            err.error.message
-          );
-        },
-      });
+    this.outdeliveryApi.getOutDeliverys(this.query).subscribe({
+      next: (resp) => {
+        const response = resp as HttpGetResponse;
+        this._setLoadingState(false);
+        this.outdeliveries = response.records as OutDelivery[];
+        this.page.length = response.total;
+      },
+      error: (err: HttpErrorResponse) => {
+        this._setLoadingState(false);
+        this.snackbarService.openErrorSnackbar(
+          err.error.errorCode,
+          err.error.message
+        );
+      },
+    });
   }
 
   onFilterStatusChange(event: MatSelectChange) {
@@ -148,6 +135,29 @@ export class OutDeliveryListComponent {
     }
   }
 
+  private setQuery(isPageEvent = false) {
+    const status =
+      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
+
+    const date =
+      this.selectedFilterDate === DateFilterType.ALL_TIME
+        ? ''
+        : this.selectedFilterDate;
+
+    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
+    const searchText = this.searchText.value ?? '';
+    const sort = this.sortBy;
+
+    this.query = {
+      searchText,
+      status,
+      sort,
+      date,
+      pageIndex,
+      pageSize: this.page.pageSize,
+    };
+  }
+
   private _print(outdelivery: OutDelivery) {
     if (outdelivery._id)
       this.dialog.open(PdfViewerComponent, {
@@ -163,17 +173,10 @@ export class OutDeliveryListComponent {
   }
 
   exportTableExcel() {
-    const status =
-      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
-
-    const date =
-      this.selectedFilterDate === DateFilterType.ALL_TIME
-        ? ''
-        : this.selectedFilterDate;
     const query: QueryParams = {
-      searchText: this.searchText.value ?? '',
-      status,
-      date,
+      searchText: this.query.searchText,
+      status: this.query.status,
+      date: this.query.date,
     };
     this._setLoadingState(true, 'Downloading Excel');
 
