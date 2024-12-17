@@ -4,6 +4,7 @@ import { AuthService } from '@shared/services/api';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { Router } from '@angular/router';
+import { NavIcon } from '@app/core/enums/nav-icons.enum';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class LoginComponent implements OnInit {
   });
   showPassword = false;
 
+  readonly stockCheckerIcon = NavIcon.STOCK_CHECKER;
   constructor(
     private authService: AuthService,
     private snackbarService: SnackbarService,
