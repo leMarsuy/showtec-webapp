@@ -38,10 +38,8 @@ export class OutDeliveryApiService {
       };
 
       if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date
-        );
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
       }
     }
 
@@ -93,10 +91,8 @@ export class OutDeliveryApiService {
       };
 
       if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date
-        );
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
       }
     }
 

@@ -23,9 +23,9 @@ export class SoaApiService {
     return this.httpService.post(`${this.apiPrefix}`, soa);
   }
 
-  createPayment(_id: string, transaction: Transaction) {
+  createPayment(soaId: string, transaction: Transaction) {
     return this.httpService.post(
-      `${this.apiPrefix}/payment/${_id}`,
+      `${this.apiPrefix}/payment/${soaId}`,
       transaction
     );
   }
@@ -53,10 +53,8 @@ export class SoaApiService {
       };
 
       if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date
-        );
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
       }
     }
 
@@ -98,10 +96,8 @@ export class SoaApiService {
       };
 
       if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date
-        );
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
       }
     }
     return this.httpService.getBlob(
