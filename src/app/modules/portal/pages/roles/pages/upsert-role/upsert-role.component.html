@@ -1,0 +1,57 @@
+<h1 mat-dialog-title>{{ title }}</h1>
+<div mat-dialog-content class="mb-4" [formGroup]="roleForm">
+  <mat-form-field class="w-full">
+    <mat-label>Role Name</mat-label>
+    <input matInput type="text" formControlName="name" />
+  </mat-form-field>
+
+  <cdk-accordion class="flex flex-col w-full gap-2 pb-4">
+    @for (permission of permissions; track permission; let index = $index) {
+      <cdk-accordion-item
+        #accordionItem="cdkAccordionItem"
+        class="example-accordion-item"
+      >
+        <button
+          class="px-4 py-2 w-full text-left border border-gray-300 rounded-md"
+          tabindex="0"
+          (click)="onPermissionClick(permission)"
+          [attr.id]="'accordion-header-' + index"
+          [attr.aria-controls]="'accordion-body-' + index"
+        >
+          <p
+            class="ml-7 font-medium relative cursor-pointer example-option"
+            [ngClass]="{
+              'selected text-sky-500 border-sky-500': permission.hasAccess,
+            }"
+          >
+            {{ permission.name }}
+          </p>
+        </button>
+        <!-- @if(accordionItem.expanded) {
+      <div
+        class="example-accordion-item-body"
+        role="region"
+        [style.display]="accordionItem.expanded ? '' : 'none'"
+        [attr.id]="'accordion-body-' + index"
+        [attr.aria-labelledby]="'accordion-header-' + index"
+      >
+        Lorem ipsum dolor, sit amet, consectetur adipisicing elit. Perferendis excepturi incidunt ipsum
+        deleniti labore, tempore non nam doloribus blanditiis veritatis illo autem iure aliquid ullam
+        rem tenetur deserunt velit culpa?
+      </div>
+      } -->
+      </cdk-accordion-item>
+    }
+  </cdk-accordion>
+</div>
+<div mat-dialog-actions class="flex !justify-between items-center">
+  <button mat-button mat-dialog-close color="warn">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="roleForm.invalid || roleForm.pristine"
+    (click)="onSubmit()"
+  >
+    {{ submitLabel }}
+  </button>
+</div>

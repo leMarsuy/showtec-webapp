@@ -1,0 +1,39 @@
+<div class="flex flex-col gap-4 rounded-xl bg-white p-4">
+    <div class="flex">
+      <mat-form-field appearance="outline" class="w-[32rem]">
+        <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="getRoles()" />
+        <mat-icon matSuffix class="cursor-pointer" (click)="getRoles()">
+          search
+        </mat-icon>
+      </mat-form-field>
+      <div class="flex grow justify-between items-start ml-[24px]">
+
+        <div class="flex gap-6">
+          <mat-form-field appearance="outline">
+            <mat-select [formControl]="statusControl" (selectionChange)="onFilterStatusChange($event)">
+              @for(status of tableFilterStatuses; track status) {
+              <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <app-date-filter-input (dateFilterSelected)="onFilterDateChange($event)" />
+        </div>
+
+        <div>
+          <button mat-icon-button (click)="getRoles()" [disabled]="isLoading" matTooltip="Refresh Table">
+            <mat-icon class="mr-2  disabled:text-gray-300"> refresh </mat-icon>
+          </button>
+          <!-- <button mat-icon-button (click)="exportTableExcel()" [disabled]="isLoading"
+            matTooltip="Download Table Excel">
+            <mat-icon class="mr-2 disabled:text-gray-300">
+              {{ isLoading ? "downloading" : "download_for_offline" }}
+            </mat-icon>
+          </button> -->
+        </div>
+      </div>
+    </div>
+    <app-table [dataSource]="roles" [columns]="columns" [page]="page" (actionEmitter)="actionEvent($event)"
+      (pageEmitter)="pageEvent($event)">
+    </app-table>
+  </div>
