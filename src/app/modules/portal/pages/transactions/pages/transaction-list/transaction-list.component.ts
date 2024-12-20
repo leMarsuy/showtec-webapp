@@ -20,6 +20,8 @@ import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Transaction } from '@app/core/models/transaction.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { TransactionApiService } from '@app/shared/services/api/transaction-api/transaction-api.service';
+import { FileService } from '@app/shared/services/file/file.service';
+import { generateFileName } from '@app/shared/utils/stringUtil';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -47,15 +49,21 @@ export class TransactionListComponent {
       dotNotationPath: 'code.value',
       type: ColumnType.STRING,
     },
+  
+    {
+      label: 'Amount',
+      dotNotationPath: 'amount',
+      type: ColumnType.CURRENCY,
+    },
     {
       label: 'Payment Method',
       dotNotationPath: 'paymentMethod',
       type: ColumnType.STRING,
     },
     {
-      label: 'Amount',
-      dotNotationPath: 'amount',
-      type: ColumnType.CURRENCY,
+      label: 'Bank',
+      dotNotationPath: 'bank',
+      type: ColumnType.STRING,
     },
     {
       label: 'Payment Status',
@@ -109,9 +117,8 @@ export class TransactionListComponent {
 
   constructor(
     private snackbarService: SnackbarService,
-    private router: Router,
-    private dialog: MatDialog,
-    private readonly transactionApi: TransactionApiService
+    private readonly transactionApi: TransactionApiService,
+    private readonly fileApi: FileService,
   ) {
     this.getTransactions();
   }
@@ -169,6 +176,30 @@ export class TransactionListComponent {
     this.page.pageIndex = e.pageIndex;
     this.getTransactions(true);
   }
+
+   exportTableExcel() {
+      const loadingMsg = 'Downloading Excel File...';
+      this._setLoadingState(true, loadingMsg);
+  
+      const query: QueryParams = {
+        searchText: this.query.searchText,
+        status: this.query.status,
+        date: this.query.date,
+      };
+  
+      this.transactionApi.exportExcelTransactions(query).subscribe({
+        next: (response: any) => {
+          this._setLoadingState(false);
+          const fileName = generateFileName('TRANSACTION', 'xlsx');
+          this.fileApi.downloadFile(response.body as Blob, fileName);
+        },
+        error: ({ error }: HttpErrorResponse) => {
+          this._setLoadingState(false);
+          console.error(error);
+          this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+        },
+      });
+    }
 
   private setQuery(isPageEvent: boolean) {
     const status =

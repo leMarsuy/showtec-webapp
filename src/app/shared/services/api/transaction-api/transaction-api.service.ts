@@ -31,4 +31,25 @@ export class TransactionApiService {
 
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
+
+  exportExcelTransactions(query?: QueryParams) {
+    let sanitizedQuery: QueryParams = {};
+    if (query) {
+      sanitizedQuery = {
+        pageIndex: 0,
+        pageSize: 0,
+        searchText: query.searchText ?? '',
+        status: query?.status ?? '',
+      };
+
+      if (query?.date) {
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
+      }
+    }
+    return this.httpService.getBlob(
+      `${this.apiPrefix}/export/excel`,
+      sanitizedQuery
+    );
+  }
 }
