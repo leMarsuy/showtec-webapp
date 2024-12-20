@@ -8,9 +8,8 @@ describe('VoucherSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [VoucherSettingsComponent]
-    })
-    .compileComponents();
+      declarations: [VoucherSettingsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(VoucherSettingsComponent);
     component = fixture.componentInstance;

@@ -8,9 +8,8 @@ describe('ParticularsArrayFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ParticularsArrayFormComponent]
-    })
-    .compileComponents();
+      imports: [ParticularsArrayFormComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ParticularsArrayFormComponent);
     component = fixture.componentInstance;

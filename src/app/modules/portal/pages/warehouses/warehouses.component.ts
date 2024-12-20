@@ -57,7 +57,7 @@ export class WarehousesComponent {
   constructor(
     private dialog: MatDialog,
     private warehouseApi: WarehouseApiService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {
     this.getWarehouses();
   }
@@ -90,7 +90,7 @@ export class WarehousesComponent {
   getWarehouses(isPageEvent = false) {
     this.snackbarService.openLoadingSnackbar(
       'GetData',
-      'Fetching warehouses...'
+      'Fetching warehouses...',
     );
 
     this.setQuery(isPageEvent);
@@ -104,7 +104,7 @@ export class WarehousesComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });

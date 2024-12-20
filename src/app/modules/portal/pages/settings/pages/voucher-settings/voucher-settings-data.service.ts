@@ -90,7 +90,7 @@ export class DistributionOfAccountDataService {
 
   private sortTitles(titles: AccountTitle[]): AccountTitle[] {
     return titles.sort((a: AccountTitle, b: AccountTitle) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
   }
 
@@ -98,7 +98,7 @@ export class DistributionOfAccountDataService {
     const titles = this.titlesSubject.getValue();
     return titles.some(
       (temp: AccountTitle) =>
-        temp.name === title.name && temp.category === title.category
+        temp.name === title.name && temp.category === title.category,
     );
   }
 

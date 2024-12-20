@@ -20,7 +20,10 @@ export class ExpenseFormComponent implements OnInit {
   paymentMethods = PAYMENT_METHODS;
   expenseForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private sb: SnackbarService) {
+  constructor(
+    private fb: FormBuilder,
+    private sb: SnackbarService,
+  ) {
     this.expenseForm = this.fb.group({
       paymentMethod: ['', Validators.required],
       bank: ['', Validators.required],

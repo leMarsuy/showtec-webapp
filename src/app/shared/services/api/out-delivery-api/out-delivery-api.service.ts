@@ -18,7 +18,7 @@ export class OutDeliveryApiService {
   constructor(
     private httpService: HttpService,
     private file: FileService,
-    private utilService: UtilService
+    private utilService: UtilService,
   ) {}
 
   createOutDelivery(outdelivery: OutDelivery) {
@@ -40,7 +40,7 @@ export class OutDeliveryApiService {
       if (query?.date) {
         sanitizedQuery = this.utilService.date.dateToQueryParam(
           sanitizedQuery,
-          query?.date
+          query?.date,
         );
       }
     }
@@ -64,7 +64,7 @@ export class OutDeliveryApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 
@@ -95,14 +95,14 @@ export class OutDeliveryApiService {
       if (query?.date) {
         sanitizedQuery = this.utilService.date.dateToQueryParam(
           sanitizedQuery,
-          query?.date
+          query?.date,
         );
       }
     }
 
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 

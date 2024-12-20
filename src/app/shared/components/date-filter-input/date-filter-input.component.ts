@@ -37,13 +37,13 @@ export class DateFilterInputComponent {
       .afterClosed()
       .pipe(
         filter((result) => result),
-        map((result) => result)
+        map((result) => result),
       )
       .subscribe({
         next: (dateRangeResult) => {
           this.filterDateDisplay = this._updateFilterDateDisplay(
             dateFilterType,
-            dateRangeResult
+            dateRangeResult,
           );
 
           this.dateFilterSelected.emit({
@@ -56,7 +56,7 @@ export class DateFilterInputComponent {
 
   private _updateFilterDateDisplay(
     dateFilterType: DateFilterType,
-    dateRange?: any
+    dateRange?: any,
   ): string {
     let display = 'All Time';
     switch (dateFilterType) {

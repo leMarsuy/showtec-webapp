@@ -24,7 +24,7 @@ const routes: Routes = [
         path: 'forgot-password',
         loadChildren: () =>
           import('./pages/forgot-password/forgot-password.module').then(
-            (m) => m.ForgotPasswordModule
+            (m) => m.ForgotPasswordModule,
           ),
       },
       {
@@ -32,7 +32,7 @@ const routes: Routes = [
         canActivate: [resetPasswordGuard],
         loadChildren: () =>
           import('./pages/reset-password/reset-password.module').then(
-            (m) => m.ResetPasswordModule
+            (m) => m.ResetPasswordModule,
           ),
       },
     ],

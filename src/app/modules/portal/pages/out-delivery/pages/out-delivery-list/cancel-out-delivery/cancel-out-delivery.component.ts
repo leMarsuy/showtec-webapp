@@ -30,7 +30,7 @@ export class CancelOutDeliveryComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private _dialogRef: MatDialogRef<CancelOutDeliveryComponent>
+    private _dialogRef: MatDialogRef<CancelOutDeliveryComponent>,
   ) {}
 
   onDialogClose(isConfirm = false) {

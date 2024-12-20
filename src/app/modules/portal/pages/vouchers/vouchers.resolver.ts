@@ -10,7 +10,7 @@ import { catchError, of } from 'rxjs';
 
 export const vouchersResolver = (
   route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
+  state: RouterStateSnapshot,
 ) => {
   const router = inject(Router);
   const voucherApi = inject(VoucherApiService);
@@ -30,6 +30,6 @@ export const vouchersResolver = (
       console.error(error);
       navigateFallback();
       return of(false);
-    })
+    }),
   );
 };

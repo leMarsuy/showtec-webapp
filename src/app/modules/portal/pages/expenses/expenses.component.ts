@@ -43,7 +43,7 @@ export class ExpensesComponent {
   constructor(
     private dialog: MatDialog,
     private expenseApi: ExpenseApiService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {
     this.getExpenses();
 
@@ -106,7 +106,7 @@ export class ExpensesComponent {
 
     this.snackbarService.openLoadingSnackbar(
       EXPENSES_CONFIG.loadingExpenseTitle,
-      EXPENSES_CONFIG.loadingExpenseMsg
+      EXPENSES_CONFIG.loadingExpenseMsg,
     );
     this.expenseApi
       .getExpenses(
@@ -114,7 +114,7 @@ export class ExpensesComponent {
           searchText: this.searchText.value || '',
           ...this.page,
         },
-        status
+        status,
       )
       .subscribe({
         next: (resp) => {
@@ -126,7 +126,7 @@ export class ExpensesComponent {
         error: (err: HttpErrorResponse) => {
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         },
       });

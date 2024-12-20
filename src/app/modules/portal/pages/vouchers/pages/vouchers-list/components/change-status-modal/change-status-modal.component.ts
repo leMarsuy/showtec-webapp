@@ -25,13 +25,13 @@ export class ChangeStatusModalComponent {
     private voucherApi: VoucherApiService,
     private formBuilder: FormBuilder,
     private confirmation: ConfirmationService,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
   ) {
     const voucherStatus = this.data.status;
 
     this.statusControl = this.formBuilder.control(
       voucherStatus,
-      Validators.required
+      Validators.required,
     );
   }
 
@@ -61,15 +61,15 @@ export class ChangeStatusModalComponent {
           this._setSubmittingState(true);
           return this.voucherApi.patchVoucherStatusById(
             voucherId,
-            selectedStatus
+            selectedStatus,
           );
-        })
+        }),
       )
       .subscribe({
         next: () => {
           this.snackbar.openSuccessSnackbar(
             'Success',
-            'Voucher status has been successfully updated!'
+            'Voucher status has been successfully updated!',
           );
 
           setTimeout(() => {

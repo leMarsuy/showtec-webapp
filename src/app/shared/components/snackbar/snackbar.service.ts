@@ -20,7 +20,7 @@ export class SnackbarService {
           title,
           message,
         },
-      }
+      },
     );
   }
 

@@ -17,7 +17,7 @@ export class UpsertTitleComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private readonly dialogRef: MatDialogRef<UpsertTitleComponent>,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
   ) {
     this.accountTitleGroup = this.fb.group({
       name: ['', Validators.required],

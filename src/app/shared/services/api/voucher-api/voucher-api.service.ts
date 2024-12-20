@@ -38,7 +38,7 @@ export class VoucherApiService {
       if (query?.date) {
         sanitizedQuery = this.utilService.date.dateToQueryParam(
           sanitizedQuery,
-          query?.date
+          query?.date,
         );
       }
     }
@@ -78,7 +78,7 @@ export class VoucherApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 
@@ -95,13 +95,13 @@ export class VoucherApiService {
       if (query?.date) {
         sanitizedQuery = this.utilService.date.dateToQueryParam(
           sanitizedQuery,
-          query?.date
+          query?.date,
         );
       }
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 }

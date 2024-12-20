@@ -28,7 +28,7 @@ export class AccountCategorySettingsComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog,
     private readonly distributionOfAccountDataService: DistributionOfAccountDataService,
     private readonly snackbar: SnackbarService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmation: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -65,7 +65,7 @@ export class AccountCategorySettingsComponent implements OnInit, OnDestroy {
           if (isUpdate) {
             this.distributionOfAccountDataService.updateCategory(
               index,
-              category
+              category,
             );
           } else {
             this.distributionOfAccountDataService.addCategory(category);

@@ -6,5 +6,8 @@ import { DateService } from './date/date.service';
   providedIn: 'root',
 })
 export class UtilService {
-  constructor(public object: ObjectService, public date: DateService) {}
+  constructor(
+    public object: ObjectService,
+    public date: DateService,
+  ) {}
 }

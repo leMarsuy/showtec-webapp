@@ -13,5 +13,5 @@ export const DATE_FILTER_MENU_OPTIONS = Object.entries(DateFilterType).map(
       .replace(/_/g, ' ') // Replace underscores with spaces
       .replace(/\b\w/g, (char) => char.toUpperCase()), // Capitalize each word
     value: value,
-  })
+  }),
 );

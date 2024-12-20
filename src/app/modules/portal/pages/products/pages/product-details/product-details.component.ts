@@ -145,7 +145,7 @@ export class ProductDetailsComponent implements OnInit {
     private router: Router,
     private snackbarService: SnackbarService,
     private dialog: MatDialog,
-    private confirmation: ConfirmationService
+    private confirmation: ConfirmationService,
   ) {
     activatedRoute.params.pipe(map((p) => p['_id'])).subscribe((_id) => {
       this._id = _id;
@@ -170,7 +170,7 @@ export class ProductDetailsComponent implements OnInit {
       error: (err) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
         setTimeout(() => {
           this.router.navigate(['/portal/products']);
@@ -207,7 +207,7 @@ export class ProductDetailsComponent implements OnInit {
     if (this.selectedStockStatus != 'All')
       this.filteredStocks = [
         ...this.product.stocks.filter(
-          (o) => o.status === this.selectedStockStatus
+          (o) => o.status === this.selectedStockStatus,
         ),
       ];
     else this.filteredStocks = [...this.product.stocks];
@@ -247,7 +247,7 @@ export class ProductDetailsComponent implements OnInit {
         if (res)
           this.snackbarService.openSuccessSnackbar(
             'DataModify',
-            `${this.product.brand} ${this.product.model}`
+            `${this.product.brand} ${this.product.model}`,
           );
       });
   }
@@ -323,8 +323,8 @@ export class ProductDetailsComponent implements OnInit {
             return of(
               this.snackbarService.openSuccessSnackbar(
                 'Status verified',
-                'No changes required.'
-              )
+                'No changes required.',
+              ),
             );
           }
 
@@ -335,7 +335,7 @@ export class ProductDetailsComponent implements OnInit {
 
           this.snackbarService.openLoadingSnackbar(
             'Updating stock',
-            'Please wait...'
+            'Please wait...',
           );
           const updateStock: any = {
             _id: stockId,
@@ -346,7 +346,7 @@ export class ProductDetailsComponent implements OnInit {
           return this.productApi
             .updateStockById(this.product._id, updateStock)
             .pipe(map(() => true));
-        })
+        }),
       )
       .subscribe({
         next: (response) => {
@@ -355,7 +355,7 @@ export class ProductDetailsComponent implements OnInit {
             setTimeout(() => {
               this.snackbarService.openSuccessSnackbar(
                 'Update Success!',
-                'Stock status has been updated.'
+                'Stock status has been updated.',
               );
               this.getProductById();
             }, 800);
@@ -366,7 +366,7 @@ export class ProductDetailsComponent implements OnInit {
           console.error(error);
           this.snackbarService.openErrorSnackbar(
             error.errorCode,
-            error.message
+            error.message,
           );
         },
       });

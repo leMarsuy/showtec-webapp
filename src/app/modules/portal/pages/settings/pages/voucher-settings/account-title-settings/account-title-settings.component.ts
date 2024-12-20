@@ -48,7 +48,7 @@ export class AccountTitleSettingsComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog,
     private readonly distributionOfAccountDataService: DistributionOfAccountDataService,
     private readonly snackbar: SnackbarService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmation: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -89,7 +89,7 @@ export class AccountTitleSettingsComponent implements OnInit, OnDestroy {
           if (this.distributionOfAccountDataService.isTitleDuplicate(title)) {
             this.snackbar.openErrorSnackbar(
               'Error',
-              'Account Title already exists'
+              'Account Title already exists',
             );
             return;
           }

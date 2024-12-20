@@ -17,7 +17,7 @@ export class DateRangeFilterComponent {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly dialogRef: MatDialogRef<DateRangeFilterComponent>
+    private readonly dialogRef: MatDialogRef<DateRangeFilterComponent>,
   ) {}
 
   get isEndGreaterThenStart() {

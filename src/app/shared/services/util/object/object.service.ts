@@ -70,13 +70,13 @@ export class ObjectService {
 
   private _isAnySubConditionMet(document: any, subConditions: any[]): boolean {
     return subConditions.some((subCondition: any) =>
-      this.showIf(document, subCondition)
+      this.showIf(document, subCondition),
     );
   }
 
   private _areAllSubConditionsMet(document: any, subConditions: any[]) {
     return subConditions.every((subCondition: any) =>
-      this.showIf(document, subCondition)
+      this.showIf(document, subCondition),
     );
   }
 
@@ -128,14 +128,14 @@ export class ObjectService {
           case '$in':
             isConditionMet = Array.isArray(actualValue)
               ? actualValue.some((val) =>
-                  conditionValue[operator].includes(val)
+                  conditionValue[operator].includes(val),
                 )
               : conditionValue[operator].includes(actualValue);
             break;
           case '$nin':
             isConditionMet = Array.isArray(actualValue)
               ? !actualValue.some((val) =>
-                  conditionValue[operator].includes(val)
+                  conditionValue[operator].includes(val),
                 )
               : !conditionValue[operator].includes(actualValue);
             break;

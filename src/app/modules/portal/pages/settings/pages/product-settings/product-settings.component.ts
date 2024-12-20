@@ -30,7 +30,7 @@ export class ProductSettingsComponent implements OnInit {
     private readonly configApi: ConfigApiService,
     private readonly classificationDataService: ProductClassificationDataService,
     private readonly snackbar: SnackbarService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmation: ConfirmationService,
   ) {}
 
   get isClassificationDirty() {
@@ -70,7 +70,7 @@ export class ProductSettingsComponent implements OnInit {
         switchMap(() => {
           this.snackbar.openLoadingSnackbar(
             'Saving Product Classifications',
-            'Please Wait...'
+            'Please Wait...',
           );
 
           if (this.isUpdate) {
@@ -79,7 +79,7 @@ export class ProductSettingsComponent implements OnInit {
             body.name = this.configName;
             return this.configApi.createConfig(body);
           }
-        })
+        }),
       )
       .subscribe({
         next: (config) => {
@@ -88,7 +88,7 @@ export class ProductSettingsComponent implements OnInit {
             'Saving Success!',
             `Product Classifications is ${
               this.isUpdate ? 'updated' : 'created'
-            }.`
+            }.`,
           );
 
           this.classificationDirtyState = false;
@@ -99,7 +99,7 @@ export class ProductSettingsComponent implements OnInit {
           console.error(error);
           this.snackbar.openErrorSnackbar(
             error.errorCode,
-            error.message + `Please reload the page`
+            error.message + `Please reload the page`,
           );
         },
       });

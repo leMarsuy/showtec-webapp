@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private snackbarService: SnackbarService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {}
@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
     this.loginForm.disable();
     this.snackbarService.openLoadingSnackbar(
       'Login',
-      'Validating your credentials...'
+      'Validating your credentials...',
     );
     const { email, password } = this.loginForm.getRawValue();
     this.authService.login(email || '', password || '').subscribe({
@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.snackbarService.openSuccessSnackbar(
             'AuthSuccess',
-            'Redirecting to your dashboard...'
+            'Redirecting to your dashboard...',
           );
           this.router.navigate(['portal']);
         });
@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
           this.loginForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

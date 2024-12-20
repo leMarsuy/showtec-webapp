@@ -26,7 +26,7 @@ export class EditStockComponent {
     private productApi: ProductApiService,
     private snackbarService: SnackbarService,
     private dialogRef: MatDialogRef<EditStockComponent>,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     this.stockForm.patchValue(this.data.stock);
   }
@@ -41,7 +41,7 @@ export class EditStockComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -52,14 +52,14 @@ export class EditStockComponent {
       next: (res) => {
         this.snackbarService.openSuccessSnackbar(
           'DeleteSuccess',
-          'Stock successfully remove from Product'
+          'Stock successfully remove from Product',
         );
         this.dialogRef.close(true);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });

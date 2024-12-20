@@ -11,21 +11,21 @@ const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./pages/soa-list/soa-list.module').then(
-            (m) => m.SoaListModule
+            (m) => m.SoaListModule,
           ),
       },
       {
         path: 'create',
         loadChildren: () =>
           import('./pages/create-soa/create-soa.module').then(
-            (m) => m.CreateSoaModule
+            (m) => m.CreateSoaModule,
           ),
       },
       {
         path: 'edit/:_id',
         loadChildren: () =>
           import('./pages/edit-soa/edit-soa.module').then(
-            (m) => m.EditSoaModule
+            (m) => m.EditSoaModule,
           ),
       },
     ],

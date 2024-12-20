@@ -37,7 +37,7 @@ export class ViewSoaComponent {
     private soaApi: SoaApiService,
     private sb: SnackbarService,
     private dialog: MatDialog,
-    private confirmation: ConfirmationService
+    private confirmation: ConfirmationService,
   ) {
     this.getProductById();
   }

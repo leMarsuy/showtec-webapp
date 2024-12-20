@@ -14,7 +14,10 @@ export class PurchaseOrderApiService {
   apiUrl = environment.API_URL;
   apiPrefix = 'purchase-orders';
 
-  constructor(private httpService: HttpService, private file: FileService) {}
+  constructor(
+    private httpService: HttpService,
+    private file: FileService,
+  ) {}
 
   createPurchaseOrder(purchaseOrder: PurchaseOrder) {
     return this.httpService.post(`${this.apiPrefix}`, purchaseOrder);
@@ -23,7 +26,7 @@ export class PurchaseOrderApiService {
   createPayment(_id: string, transaction: Transaction) {
     return this.httpService.post(
       `${this.apiPrefix}/payment/${_id}`,
-      transaction
+      transaction,
     );
   }
 
@@ -34,7 +37,7 @@ export class PurchaseOrderApiService {
   updatePayment(_transId: string, body: any) {
     return this.httpService.patch(
       `${this.apiPrefix}/payment/${_transId}`,
-      body
+      body,
     );
   }
 
@@ -78,7 +81,7 @@ export class PurchaseOrderApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 
@@ -97,7 +100,7 @@ export class PurchaseOrderApiService {
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 
@@ -109,7 +112,7 @@ export class PurchaseOrderApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 }

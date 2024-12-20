@@ -23,7 +23,7 @@ export class AddUserComponent {
     private fb: FormBuilder,
     private userApi: UserApiService,
     private dialogRef: MatDialogRef<AddUserComponent>,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {
     this.generatePassword();
   }
@@ -36,14 +36,14 @@ export class AddUserComponent {
         this.dialogRef.close(true);
         this.snackbarService.openSuccessSnackbar(
           'CreateSuccess',
-          'User added successfully'
+          'User added successfully',
         );
       },
       error: (err: HttpErrorResponse) => {
         this.userForm.enable();
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });

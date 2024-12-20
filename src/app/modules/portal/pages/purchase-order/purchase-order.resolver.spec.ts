@@ -4,8 +4,10 @@ import { ResolveFn } from '@angular/router';
 import { purchaseOrderResolver } from './purchase-order.resolver';
 
 describe('purchaseOrderResolver', () => {
-  const executeResolver: ResolveFn<boolean> = (...resolverParameters) => 
-      TestBed.runInInjectionContext(() => purchaseOrderResolver(...resolverParameters));
+  const executeResolver: ResolveFn<boolean> = (...resolverParameters) =>
+    TestBed.runInInjectionContext(() =>
+      purchaseOrderResolver(...resolverParameters),
+    );
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

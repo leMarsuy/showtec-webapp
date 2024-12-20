@@ -29,7 +29,7 @@ export class EditOutDeliveryComponent {
     private router: Router,
     private transformData: TransformDataService,
     private outDeliveryApi: OutDeliveryApiService,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
   ) {
     aRoute.params.subscribe((res: any) => {
       this._id = res._id;

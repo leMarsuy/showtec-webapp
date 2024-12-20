@@ -23,7 +23,7 @@ export class EditUserComponent {
     private readonly snackbar: SnackbarService,
     private readonly fb: FormBuilder,
     private readonly router: Router,
-    private readonly userApi: UserApiService
+    private readonly userApi: UserApiService,
   ) {
     this.userForm = this.fb.group({
       name: [this.data.name ?? '', Validators.required],
@@ -43,14 +43,14 @@ export class EditUserComponent {
           const userId = this.data._id;
           const body = this.userForm.getRawValue();
           return this.userApi.updateUserById(userId, body);
-        })
+        }),
       )
       .subscribe({
         next: () => {
           this.dialogRef.close(true);
           this.snackbar.openSuccessSnackbar(
             'Update Success',
-            'User has been updated!'
+            'User has been updated!',
           );
         },
         error: ({ error }: HttpErrorResponse) => {

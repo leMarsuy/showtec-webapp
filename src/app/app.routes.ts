@@ -22,7 +22,7 @@ export const routes: Routes = [
     path: 'stock-checker',
     loadChildren: () =>
       import('./modules/stock-checker/stock-checker.module').then(
-        (m) => m.StockCheckerModule
+        (m) => m.StockCheckerModule,
       ),
   },
   {

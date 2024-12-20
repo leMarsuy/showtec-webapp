@@ -8,9 +8,8 @@ describe('SoaFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SoaFormComponent]
-    })
-    .compileComponents();
+      imports: [SoaFormComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SoaFormComponent);
     component = fixture.componentInstance;

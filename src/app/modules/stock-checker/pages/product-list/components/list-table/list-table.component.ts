@@ -92,7 +92,7 @@ export class ListTableComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.displayedColumns = this.columns.map(
-      (column) => column.dotNotationPath
+      (column) => column.dotNotationPath,
     );
     this.isTableLoading$
       .pipe(takeUntil(this.destroyed$))

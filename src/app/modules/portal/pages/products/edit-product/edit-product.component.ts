@@ -25,7 +25,7 @@ export class EditProductComponent {
     private configApi: ConfigApiService,
     private _dialogRef: MatDialogRef<AddProductComponent>,
     private snackbarService: SnackbarService,
-    @Inject(MAT_DIALOG_DATA) public data: { _id: string }
+    @Inject(MAT_DIALOG_DATA) public data: { _id: string },
   ) {}
 
   productForm = new FormGroup({
@@ -51,7 +51,7 @@ export class EditProductComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -65,7 +65,7 @@ export class EditProductComponent {
         console.error(error);
         this.snackbarService.openErrorSnackbar(
           error.errorCode,
-          'Product Classifications is empty.'
+          'Product Classifications is empty.',
         );
       },
     });
@@ -76,7 +76,7 @@ export class EditProductComponent {
     var product = this.productForm.getRawValue() as Product;
     this.snackbarService.openLoadingSnackbar(
       'EditData',
-      'Finalizing changes on product...'
+      'Finalizing changes on product...',
     );
     this.productApi.updateProductById(this.data._id, product).subscribe({
       next: () => {
@@ -89,7 +89,7 @@ export class EditProductComponent {
           this.productForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

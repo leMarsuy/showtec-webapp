@@ -59,7 +59,7 @@ export class ResetPasswordComponent {
     private snackbarService: SnackbarService,
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {
     this.token = this.activatedRoute.snapshot.paramMap.get('token') || '';
     const passwordValidators = [Validators.required, Validators.minLength(8)];
@@ -95,7 +95,7 @@ export class ResetPasswordComponent {
           this._setLoadingstate(false);
           this.snackbarService.openSuccessSnackbar(
             'Success',
-            'You have changed your password successfully.'
+            'You have changed your password successfully.',
           );
           this.router.navigate(['auth', 'login']);
         },
@@ -116,7 +116,7 @@ export class ResetPasswordComponent {
     if (isLoading) {
       this.snackbarService.openLoadingSnackbar(
         'Please wait...',
-        `Changing your password.`
+        `Changing your password.`,
       );
       this.resetPasswordForm.disable();
     } else {

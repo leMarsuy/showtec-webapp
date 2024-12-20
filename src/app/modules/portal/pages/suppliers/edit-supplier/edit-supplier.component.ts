@@ -17,7 +17,7 @@ export class EditSupplierComponent {
     private supplierApi: SupplierApiService,
     private _dialogRef: MatDialogRef<AddSupplierComponent>,
     private snackbarService: SnackbarService,
-    @Inject(MAT_DIALOG_DATA) public data: { _id: string }
+    @Inject(MAT_DIALOG_DATA) public data: { _id: string },
   ) {}
 
   supplierForm = new FormGroup({
@@ -36,7 +36,7 @@ export class EditSupplierComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -47,7 +47,7 @@ export class EditSupplierComponent {
     var supplier = this.supplierForm.getRawValue() as Supplier;
     this.snackbarService.openLoadingSnackbar(
       'EditData',
-      'Finalizing changes on supplier...'
+      'Finalizing changes on supplier...',
     );
     this.supplierApi.updateSupplierById(this.data._id, supplier).subscribe({
       next: () => {
@@ -60,7 +60,7 @@ export class EditSupplierComponent {
           this.supplierForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

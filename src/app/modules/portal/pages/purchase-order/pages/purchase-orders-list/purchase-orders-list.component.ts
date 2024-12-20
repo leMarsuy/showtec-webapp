@@ -125,7 +125,7 @@ export class PurchaseOrdersListComponent {
     private purchaseOrderApi: PurchaseOrderApiService,
     private snackbarService: SnackbarService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.getPurchaseOrders();
   }
@@ -153,7 +153,7 @@ export class PurchaseOrdersListComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -206,7 +206,7 @@ export class PurchaseOrdersListComponent {
     this.dialog.open(PdfViewerComponent, {
       data: {
         apiCall: this.purchaseOrderApi.getPurchaseOrderPdfReceipt(
-          purchaseOrder._id
+          purchaseOrder._id,
         ),
         title: 'View Purchase Order',
       },

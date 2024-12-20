@@ -63,12 +63,12 @@ export class UpdateStockComponent implements AfterViewInit {
 
     this.filteredWarehouses = this.warehouseControl.valueChanges.pipe(
       startWith(''),
-      map((value) => this._filter(value || '', [...this.warehouses]))
+      map((value) => this._filter(value || '', [...this.warehouses])),
     );
 
     this.filteredSuppliers = this.supplierControl.valueChanges.pipe(
       startWith(''),
-      map((value) => this._filter(value || '', [...this.suppliers]))
+      map((value) => this._filter(value || '', [...this.suppliers])),
     );
   }
 
@@ -82,7 +82,7 @@ export class UpdateStockComponent implements AfterViewInit {
 
   get isFormValid() {
     const hasStockOpenedChecker = Object.values(this.isStockTypeEditing).every(
-      (result) => result === false
+      (result) => result === false,
     );
 
     return !this.scannedStocks.length || this.loading || !hasStockOpenedChecker;
@@ -100,7 +100,7 @@ export class UpdateStockComponent implements AfterViewInit {
     private supplierApi: SupplierApiService,
     @Inject(MAT_DIALOG_DATA) public data: { _id: string; name: string },
     private dialogRef: MatDialogRef<UpdateStockComponent>,
-    private snackBarService: SnackbarService
+    private snackBarService: SnackbarService,
   ) {}
 
   addStock() {
@@ -110,7 +110,7 @@ export class UpdateStockComponent implements AfterViewInit {
     if (
       this.allowDuplicates ||
       !this.scannedStocks.find(
-        (o) => o.serialNumber.trim() == stock.serialNumber.trim()
+        (o) => o.serialNumber.trim() == stock.serialNumber.trim(),
       )
     ) {
       this.scannedStocks.unshift({ ...stock, type: StockType.SEALED });
@@ -138,7 +138,7 @@ export class UpdateStockComponent implements AfterViewInit {
         next: (res) => {
           this.snackBarService.openSuccessSnackbar(
             'Stock Success',
-            `Successfully Stocked ${this.scannedStocks.length} New Items.`
+            `Successfully Stocked ${this.scannedStocks.length} New Items.`,
           );
           this.dialogRef.close(true);
         },
@@ -146,7 +146,7 @@ export class UpdateStockComponent implements AfterViewInit {
           this.loading = false;
           this.snackBarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         },
       });

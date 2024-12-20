@@ -4,13 +4,18 @@ import { Injectable } from '@angular/core';
 import { User } from '@core/models/user.model';
 import { environment } from '../../../../../environments/environment';
 import { tap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectUser, UserActions } from '@app/core/states/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   apiUrl = environment.API_URL;
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private store: Store,
+  ) {}
 
   login(email: string, password: string) {
     return this.http
@@ -21,7 +26,9 @@ export class AuthService {
       .pipe(
         tap((response) => {
           localStorage.setItem('auth', response.token || '');
-        })
+          delete response.token;
+          this.store.dispatch(UserActions.setUser(response));
+        }),
       );
   }
 
@@ -34,12 +41,13 @@ export class AuthService {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('auth')}`,
           },
-        }
+        },
       )
       .pipe(
         tap(() => {
+          this.store.dispatch(UserActions.removeUser({}));
           localStorage.removeItem('auth');
-        })
+        }),
       );
   }
 

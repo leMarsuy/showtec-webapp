@@ -20,7 +20,7 @@ export class UpsertProductClassificationComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private readonly dialogRef: MatDialogRef<UpsertProductClassificationComponent>,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
   ) {
     if (this.data) {
       this.productClassificationControl.setValue(this.data);

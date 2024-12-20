@@ -12,14 +12,14 @@ const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./pages/products-list/products-list.module').then(
-            (m) => m.ProductsListModule
+            (m) => m.ProductsListModule,
           ),
       },
       {
         path: ':_id',
         loadChildren: () =>
           import('./pages/product-details/product-details.module').then(
-            (m) => ProductDetailsModule
+            (m) => ProductDetailsModule,
           ),
       },
     ],

@@ -1,4 +1,5 @@
 import { Status } from '../enums/status.enum';
+import { Permission } from './role.model';
 
 export class User {
   _id: string;
@@ -8,6 +9,8 @@ export class User {
   status: Status;
   createdAt: string;
   updatedAt: string;
+  permissions?: Permission[];
+  _roleId?: string;
 
   constructor(model: User) {
     this._id = model._id;
@@ -17,5 +20,6 @@ export class User {
     this.status = model.status;
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;
+    this._roleId = model._roleId;
   }
 }

@@ -12,7 +12,7 @@ import { catchError, map, of } from 'rxjs';
 
 export const editOutDeliveryGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
+  state: RouterStateSnapshot,
 ) => {
   const outDeliveryApi = inject(OutDeliveryApiService);
   const outDeliveryId = route.paramMap.get('_id');
@@ -37,6 +37,6 @@ export const editOutDeliveryGuard: CanActivateFn = (
         return false;
       }
     }),
-    catchError(() => of(false))
+    catchError(() => of(false)),
   );
 };

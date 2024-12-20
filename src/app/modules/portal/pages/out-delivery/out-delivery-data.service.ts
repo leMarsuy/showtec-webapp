@@ -33,7 +33,7 @@ export class OutDeliveryDataService {
   }
 
   private _formatOutDeliveryForReuse(
-    outDelivery: OutDelivery
+    outDelivery: OutDelivery,
   ): ReuseOutDelivery {
     const items = outDelivery.items.map((item: OutDeliveryItems) => item);
 

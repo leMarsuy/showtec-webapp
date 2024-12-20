@@ -31,7 +31,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
     private snackbar: SnackbarService,
     private userApi: UserApiService,
     private authApi: AuthService,
-    private router: Router
+    private router: Router,
   ) {
     this.user = {
       _id: '2312837',
@@ -61,14 +61,14 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
           const user = this.userForm.getRawValue() as User;
           this.snackbar.openLoadingSnackbar('Please Wait', 'Saving changes...');
           return this.userApi.updateUserById(this.user._id, user);
-        })
+        }),
       )
       .subscribe({
         next: (user: any) => {
           this.snackbar.closeLoadingSnackbar();
           this.snackbar.openSuccessSnackbar(
             'Success',
-            'Your account details have been updated'
+            'Your account details have been updated',
           );
           this.user = user;
           this.loading = false;
@@ -88,7 +88,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Password Reset',
-        `<p class='text-base'>Would you like to change your password?</p> <br/><p class='text-gray-500 text-sm'>The reset link will be sent to your email and you'll be logout. Please save your activities before proceeding.</p> <br/>`
+        `<p class='text-base'>Would you like to change your password?</p> <br/><p class='text-gray-500 text-sm'>The reset link will be sent to your email and you'll be logout. Please save your activities before proceeding.</p> <br/>`,
       )
       .afterClosed()
       .pipe(
@@ -97,7 +97,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
           this.loading = true;
           this.snackbar.openLoadingSnackbar('Please Wait', 'Sending Email...');
           return this.authApi.forgotPassword(this.user.email);
-        })
+        }),
       )
       .subscribe({
         next: () => {
@@ -110,7 +110,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
             complete: () => {
               this.snackbar.openSuccessSnackbar(
                 'Logged Out',
-                'You have logged out'
+                'You have logged out',
               );
               this.router.navigate(['/auth/login']);
             },

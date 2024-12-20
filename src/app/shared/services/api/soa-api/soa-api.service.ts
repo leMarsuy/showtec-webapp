@@ -16,7 +16,7 @@ export class SoaApiService {
   constructor(
     private httpService: HttpService,
     private file: FileService,
-    private utilService: UtilService
+    private utilService: UtilService,
   ) {}
 
   createSoa(soa: SOA) {
@@ -26,7 +26,7 @@ export class SoaApiService {
   createPayment(_id: string, transaction: Transaction) {
     return this.httpService.post(
       `${this.apiPrefix}/payment/${_id}`,
-      transaction
+      transaction,
     );
   }
 
@@ -37,7 +37,7 @@ export class SoaApiService {
   updatePayment(_transId: string, body: any) {
     return this.httpService.patch(
       `${this.apiPrefix}/payment/${_transId}`,
-      body
+      body,
     );
   }
 
@@ -55,7 +55,7 @@ export class SoaApiService {
       if (query?.date) {
         sanitizedQuery = this.utilService.date.dateToQueryParam(
           sanitizedQuery,
-          query?.date
+          query?.date,
         );
       }
     }
@@ -79,7 +79,7 @@ export class SoaApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 
@@ -100,13 +100,13 @@ export class SoaApiService {
       if (query?.date) {
         sanitizedQuery = this.utilService.date.dateToQueryParam(
           sanitizedQuery,
-          query?.date
+          query?.date,
         );
       }
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 }
