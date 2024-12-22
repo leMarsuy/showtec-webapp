@@ -48,18 +48,14 @@ export class DateService {
     return new Date(secondDate).getTime() - new Date(firstDate).getTime();
   }
 
-  dateToQueryParam(query: QueryParams, date: any) {
-    let params: any = query;
+  dateToQueryParam(date: any) {
+    let formattedDate: any = date;
 
     if (date && typeof date === 'object') {
       const objectToString = JSON.stringify(date);
-      params = { ...params, date: objectToString };
+      formattedDate = objectToString;
     }
 
-    if (date && typeof date !== 'object') {
-      params = { ...params, date };
-    }
-
-    return params;
+    return formattedDate;
   }
 }
