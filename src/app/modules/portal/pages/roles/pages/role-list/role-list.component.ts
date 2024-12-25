@@ -5,21 +5,17 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSelectChange } from '@angular/material/select';
-import { Router } from '@angular/router';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
-import { DateFilterType } from '@app/core/enums/date-filter.enum';
-import { STATUS_TYPES } from '@app/core/enums/status.enum';
+import { Status } from '@app/core/enums/status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Role } from '@app/core/models/role.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { RoleApiService } from '@app/shared/services/api/role-api/role-api.service';
-import { FileService } from '@app/shared/services/file/file.service';
 import { finalize, Subject, takeUntil } from 'rxjs';
-import { VoucherDataService } from '../../../vouchers/pages/upsert-voucher/voucher-data.service';
 import { RolesService } from '../../roles.service';
 import { UpsertRoleComponent } from '../upsert-role/upsert-role.component';
 
@@ -36,11 +32,10 @@ export class RoleListComponent implements OnInit, OnDestroy {
   private sortBy = 'name'; //Role Name, ascending
   private _destroyed$ = new Subject<void>();
 
-  statusControl = new FormControl('All');
-  tableFilterStatuses = ['All', ...STATUS_TYPES];
-  selectedFilterStatus = 'All';
+  statusControl = new FormControl(Status.ACTIVE);
+  tableFilterStatuses = ['All', Status.ACTIVE, Status.DELETED];
+  selectedFilterStatus: any = this.statusControl.value;
 
-  selectedFilterDate: any = DateFilterType.ALL_TIME;
 
   isLoading = false;
   isDateRange = false;
@@ -56,6 +51,16 @@ export class RoleListComponent implements OnInit, OnDestroy {
       label: 'Status',
       dotNotationPath: 'status',
       type: ColumnType.STATUS,
+      colorCodes: [
+        {
+          value: Status.ACTIVE,
+          color: Color.SUCCESS,
+        },
+        {
+          value: Status.DELETED,
+          color: Color.ERROR,
+        },
+      ]
     },
     {
       label: 'Action',
@@ -68,6 +73,9 @@ export class RoleListComponent implements OnInit, OnDestroy {
           action: 'edit',
           icon: 'edit',
           color: Color.WARNING,
+          showIfCondition: {
+            status: Status.ACTIVE
+          }
         },
         // {
         //   name: 'Change Role Status',
@@ -92,10 +100,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
 
   constructor(
     private roleApi: RoleApiService,
-    private fileApi: FileService,
-    private voucherData: VoucherDataService,
     private snackbarService: SnackbarService,
-    private router: Router,
     private dialog: MatDialog,
     private rolesService: RolesService,
   ) {
@@ -159,11 +164,6 @@ export class RoleListComponent implements OnInit, OnDestroy {
     this.getRoles();
   }
 
-  onFilterDateChange(dateFilterType: any) {
-    this.selectedFilterDate = dateFilterType;
-    this.getRoles();
-  }
-
   private _openEditRole(role: Role) {
     this.dialog
       .open(UpsertRoleComponent, {
@@ -181,13 +181,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
   }
 
   private setQuery(isPageEvent: boolean) {
-    const status =
-      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
-
-    const date =
-      this.selectedFilterDate === DateFilterType.ALL_TIME
-        ? ''
-        : this.selectedFilterDate;
+    const status = this.selectedFilterStatus && this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
@@ -197,7 +191,6 @@ export class RoleListComponent implements OnInit, OnDestroy {
       searchText,
       status,
       sort,
-      date,
       pageIndex,
       pageSize: this.page.pageSize,
     };

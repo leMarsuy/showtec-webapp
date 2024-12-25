@@ -1,8 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Status } from '@app/core/enums/status.enum';
 import { NAV_ROUTES, NavRoute } from '@app/core/lists/nav-routes.list';
-import { Role } from '@app/core/models/role.model';
+import { Permission, Role } from '@app/core/models/role.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { RoleApiService } from '@app/shared/services/api/role-api/role-api.service';
@@ -16,10 +18,11 @@ import { filter, finalize, switchMap } from 'rxjs';
 export class UpsertRoleComponent {
   title = this.data ? 'Update Role' : 'Create Role';
   submitLabel = this.data ? 'Update' : 'Create';
-  isUpdate = this.data ? true : false;
+  isUpdate = this.data ?? false;
   isSubmitting = false;
 
-  private readonly excludedPaths = ['/stock-checker', 'reports/sales'];
+  private readonly excludedPaths = ['/stock-checker'];
+
   permissions = NAV_ROUTES.reduce(
     (acc: Record<string, string | boolean>[], routeGroup) => {
       const paths = routeGroup.items.flatMap((route: NavRoute) => {
@@ -30,7 +33,7 @@ export class UpsertRoleComponent {
       }, []);
 
       //returns arc with all paths with hasAccess: false
-      return (acc = [...acc, ...paths]);
+      return [...acc, ...paths];
     },
     [],
   );
@@ -41,32 +44,19 @@ export class UpsertRoleComponent {
   });
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: Role | undefined,
+    @Inject(MAT_DIALOG_DATA) public data: Role | any,
     public dialogRef: MatDialogRef<UpsertRoleComponent>,
     private roleApiService: RoleApiService,
     private fb: FormBuilder,
     private confirmation: ConfirmationService,
     private snackbar: SnackbarService,
   ) {
-    if (this.isUpdate && this.data?.permissions) {
-      const remapped = this.data.permissions.map((permission) => {
-        const hasAccess = permission.hasAccess ? true : false;
-        return { ...permission, hasAccess };
-      });
-
-      console.log(this.data);
-      console.log(remapped);
-      this.roleForm.setValue({
-        name: this.data?.name,
-        permissions: remapped,
-      });
-
-      console.log(this.roleForm.getRawValue());
-    }
+    this._setPermissionState(this.isUpdate);
   }
 
   onPermissionClick(permission: Record<string, string | boolean>) {
     permission['hasAccess'] = !permission['hasAccess'];
+    this.roleForm.get('permissions')?.markAsDirty();
   }
 
   onSubmit() {
@@ -88,9 +78,7 @@ export class UpsertRoleComponent {
               hasAccess: permission['hasAccess'],
             }),
           );
-
           requestBody.permissions = permissions;
-
           const loadingMsg = this.isUpdate
             ? `Updating role...`
             : `Creating role...`;
@@ -125,6 +113,26 @@ export class UpsertRoleComponent {
       });
   }
 
+  resetRole(){
+    this._setPermissionState(this.isUpdate);
+    this.roleForm.markAsPristine();
+  }
+
+  deleteRole() {
+    this.confirmation.open('Delete Role', `Do you want to delete this role?`).afterClosed().pipe(filter(result => result), switchMap(() => {
+      this._setSubmittingState(true, 'Deleting role...');
+      return this.roleApiService.patchRoleStatus(this.data._id, Status.DELETED);
+    }), finalize(() => this._setSubmittingState(false))).subscribe({
+      next: () => {
+        this.dialogRef.close(true);
+      },
+      error: ({error} : HttpErrorResponse) => {
+        console.error(error);
+        this.snackbar.openErrorSnackbar(error.errorCode, error.message);
+      }
+    });
+  }
+
   private _setSubmittingState(isSubmitting: boolean, loadingMsg = '') {
     this.isSubmitting = isSubmitting;
     this.isSubmitting ? this.roleForm.disable() : this.roleForm.enable();
@@ -133,6 +141,32 @@ export class UpsertRoleComponent {
       this.snackbar.openLoadingSnackbar('Please Wait', loadingMsg);
     } else {
       this.snackbar.closeLoadingSnackbar();
+    }
+  }
+
+  private _setPermissionState(isUpdate: boolean) {
+    if (isUpdate && this.data?.permissions) {
+      this.permissions = this.permissions.map((item:Record<string, string | boolean> ) => {
+        const matchItem  = this.data.permissions.find((permission: Permission) => permission.path === item['path']);
+
+        if(!matchItem) {
+          item['hasAccess'] = false;
+        } else {
+          item['hasAccess'] = matchItem['hasAccess'] ?? false;
+        }
+        return item
+      })
+
+      this.roleForm.setValue({
+        name: this.data?.name,
+        permissions: this.permissions,
+      });
+    }
+     
+    else {
+      this.permissions.forEach((item) => {
+        item.hasAccess = false;
+      })
     }
   }
 }

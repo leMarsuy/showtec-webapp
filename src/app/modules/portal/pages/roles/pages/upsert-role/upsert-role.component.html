@@ -46,12 +46,16 @@
 </div>
 <div mat-dialog-actions class="flex !justify-between items-center">
   <button mat-button mat-dialog-close color="warn">Cancel</button>
-  <button
-    mat-flat-button
-    color="primary"
-    [disabled]="roleForm.invalid || roleForm.pristine"
-    (click)="onSubmit()"
-  >
-    {{ submitLabel }}
-  </button>
+  <div class="flex items-center gap">
+    <button mat-button *ngIf="isUpdate" (click)="deleteRole()">Delete Role</button>
+    <button mat-button  [disabled]="roleForm.pristine" (click)="resetRole()">Reset Role</button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="roleForm.invalid || roleForm.pristine"
+      (click)="onSubmit()"
+    >
+      {{ submitLabel }} Role
+    </button>
+  </div>
 </div>

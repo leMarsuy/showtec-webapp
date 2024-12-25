@@ -16,6 +16,11 @@ const routes: Routes = [
         path: 'sales',
         loadChildren: () =>
           import('./pages/sales/sales.module').then((m) => m.SalesModule),
+      },      
+      {
+        path: '**',
+        redirectTo: 'sales',
+        pathMatch: 'full',
       },
     ],
   },

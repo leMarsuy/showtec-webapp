@@ -27,7 +27,7 @@ export const NAV_ROUTES: NavRouteGroup[] = [
       },
       {
         name: 'Reports',
-        path: 'reports/sales',
+        path: 'reports',
         icon: NavIcon.REPORTS,
       },
     ],
