@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
+import { Status } from '@app/core/enums/status.enum';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { Role } from '@app/core/models/role.model';
+import { FileService } from '../../file/file.service';
 import { HttpService } from '../../http/http.service';
 import { UtilService } from '../../util/util.service';
-import { FileService } from '../../file/file.service';
-import { Role } from '@app/core/models/role.model';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -47,6 +48,10 @@ export class RoleApiService {
 
   updateRoleById(_id: string, updateBody: Role) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
+  }
+
+  patchRoleStatus(_id: string, status: Status) {
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, { status });
   }
 
   exportExcelTransactions(query?: QueryParams) {
