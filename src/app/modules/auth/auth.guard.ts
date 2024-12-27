@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { UserActions } from '@app/core/states/user';
@@ -18,6 +17,7 @@ export const authGuard: CanActivateFn = () => {
 
   return authApi.me().pipe(
     map((response) => {
+      console.log(response);
       store.dispatch(UserActions.setUser(response));
       router.navigate(['portal']);
       return false;

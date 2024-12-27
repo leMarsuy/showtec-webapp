@@ -21,5 +21,6 @@ export class User {
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;
     this._roleId = model._roleId;
+    this.permissions = this.permissions ?? [];
   }
 }

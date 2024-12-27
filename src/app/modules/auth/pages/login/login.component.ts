@@ -1,10 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '@shared/services/api';
-import { HttpErrorResponse } from '@angular/common/http';
-import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { Router } from '@angular/router';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+import { AuthService } from '@shared/services/api';
 
 @Component({
   selector: 'app-login',
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
       'Validating your credentials...',
     );
     const { email, password } = this.loginForm.getRawValue();
-    this.authService.login(email || '', password || '').subscribe({
+    this.authService.login(email ?? '', password ?? '').subscribe({
       next: () => {
         this.snackbarService.closeLoadingSnackbar().then(() => {
           this.snackbarService.openSuccessSnackbar(

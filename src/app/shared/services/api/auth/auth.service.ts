@@ -1,11 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { UserActions } from '@app/core/states/user';
 import { User } from '@core/models/user.model';
-import { environment } from '../../../../../environments/environment';
-import { tap } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectUser, UserActions } from '@app/core/states/user';
+import { tap } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +25,7 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          localStorage.setItem('auth', response.token || '');
+          localStorage.setItem('auth', response.token ?? '');
           delete response.token;
           this.store.dispatch(UserActions.setUser(response));
         }),

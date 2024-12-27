@@ -15,6 +15,7 @@ import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Role } from '@app/core/models/role.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { RoleApiService } from '@app/shared/services/api/role-api/role-api.service';
+import { Store } from '@ngrx/store';
 import { finalize, Subject, takeUntil } from 'rxjs';
 import { RolesService } from '../../roles.service';
 import { UpsertRoleComponent } from '../upsert-role/upsert-role.component';
@@ -103,6 +104,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
     private snackbarService: SnackbarService,
     private dialog: MatDialog,
     private rolesService: RolesService,
+    private store: Store
   ) {
     this.getRoles();
   }

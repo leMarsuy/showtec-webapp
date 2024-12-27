@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { EXCLUDED_PATHS } from '@app/core/constants/nav-excluded-paths';
 import { Status } from '@app/core/enums/status.enum';
 import { NAV_ROUTES, NavRoute } from '@app/core/lists/nav-routes.list';
 import { Permission, Role } from '@app/core/models/role.model';
@@ -21,7 +22,7 @@ export class UpsertRoleComponent {
   isUpdate = this.data ?? false;
   isSubmitting = false;
 
-  private readonly excludedPaths = ['/stock-checker'];
+  private readonly excludedPaths = EXCLUDED_PATHS;
 
   permissions = NAV_ROUTES.reduce(
     (acc: Record<string, string | boolean>[], routeGroup) => {
@@ -104,7 +105,7 @@ export class UpsertRoleComponent {
           }, 500);
         },
         error: (err) => {
-          console.log(err);
+          console.error(err);
           this.snackbar.openErrorSnackbar(
             err.error.errorCode,
             err.error.message,
@@ -124,7 +125,13 @@ export class UpsertRoleComponent {
       return this.roleApiService.patchRoleStatus(this.data._id, Status.DELETED);
     }), finalize(() => this._setSubmittingState(false))).subscribe({
       next: () => {
-        this.dialogRef.close(true);
+        this.snackbar.openSuccessSnackbar(
+          'Deletion Success',
+          `Role has been deleted.`,
+        );
+        setTimeout(() => {
+          this.dialogRef.close(true);
+        }, 500);
       },
       error: ({error} : HttpErrorResponse) => {
         console.error(error);

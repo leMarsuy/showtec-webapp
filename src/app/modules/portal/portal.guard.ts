@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { UserActions } from '@app/core/states/user';
+import { ActivatedRouteSnapshot, CanActivateChildFn, CanActivateFn, Router } from '@angular/router';
+import { selectUser, UserActions } from '@app/core/states/user';
 import { AuthService } from '@app/shared/services/api';
 import { Store } from '@ngrx/store';
 import { catchError, map, of } from 'rxjs';
@@ -19,6 +19,16 @@ export const portalGuard: CanActivateFn = () => {
   return authApi.me().pipe(
     map((response) => {
       store.dispatch(UserActions.setUser(response));
+
+      if (!response.permissions?.length) {
+        router.navigate(['auth', 'login']);
+        //popup alert
+        
+        store.dispatch(UserActions.removeUser({}));
+        localStorage.removeItem('auth');
+        return false;
+      }
+
       return true;
     }),
     catchError((error) => {
@@ -29,3 +39,30 @@ export const portalGuard: CanActivateFn = () => {
     }),
   );
 };
+
+export const roleGuard: CanActivateChildFn = (
+  route: ActivatedRouteSnapshot,
+  state,
+) => {
+  const router = inject(Router);
+  const store = inject(Store);
+
+  if(!route.url[0]) {
+    return true;
+  }
+
+  const url = state.url.split('/')[2];
+
+  return store.select(selectUser()).pipe(map((user) => {
+    const permission = user.permissions?.find((permission) => permission.path === url);
+
+    const hasAccess = permission?.hasAccess;
+    if (!hasAccess) {
+      const firstPermission = user.permissions?.find((permission) => permission.hasAccess); 
+      router.navigate(['portal', firstPermission?.path]);
+    }
+
+    return !!permission?.hasAccess;
+  }))
+
+}

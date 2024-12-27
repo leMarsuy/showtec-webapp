@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { Product } from '@app/core/models/product.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { StockCheckerApiService } from '@app/shared/services/api/stock-checker-api/stock-checker-api.service';
@@ -14,7 +15,6 @@ import {
   takeUntil,
 } from 'rxjs';
 import { ProductListFilters, ProductListService } from './product-list.service';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Component({
   selector: 'app-product-list',
@@ -48,7 +48,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.productListService.productListFilters$
       .pipe(takeUntil(this.destroyed$))
       .subscribe((productFilter) => {
-        console.log('from external component');
         this.productFilter = productFilter;
         this.getProducts();
       });

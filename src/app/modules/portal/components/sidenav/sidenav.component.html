@@ -1,4 +1,30 @@
 @for (nav of navList; track nav) {
+  @if(navGroupState[nav.group]) {
+    <div class class="py-3 px-4 text-gray-500">
+      <small>
+        {{ (expanded ? nav.group : "") | uppercase }}
+      </small>
+    </div>
+
+    @for (item of nav.items; track item) {
+      @if(permissionPathMap[item.path]) {
+        <div
+          class="flex px-4 py-3 w-full hover:bg-gray-200 hover:text-gray-900 cursor-pointer"
+          [routerLink]="[item.path]"
+          routerLinkActive="bg-gray-200 text-gray-900"
+          [matTooltip]="item.name"
+          matTooltipPosition="right"
+        >
+          <mat-icon class="flex-none">{{ item.icon }}</mat-icon>
+          @if (expanded) {
+          <div class="pl-4 grow">{{ item.name }}</div>
+          }
+        </div>
+      }
+    }
+  }
+ }
+<!-- @for (nav of navList; track nav) {
 <div class class="py-3 px-4 text-gray-500">
   <small>
     {{ (expanded ? nav.group : "") | uppercase }}
@@ -17,7 +43,7 @@
   <div class="pl-4 grow">{{ item.name }}</div>
   }
 </div>
-} }
+} } -->
 
 <!-- DEVELOPER MODE -->
 

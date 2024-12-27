@@ -21,15 +21,13 @@ export class RoleApiService {
   }
 
   getRoles(query?: QueryParams) {
-    let sanitizedQuery: QueryParams = {};
-    if (query) {
-      sanitizedQuery = {
-        pageIndex: query.pageIndex ?? 0,
-        pageSize: query.pageSize ?? 0,
-        sort: query.sort,
-        searchText: query.searchText,
-        status: query.status ?? '',
-      };
+    let sanitizedQuery: QueryParams = {
+      pageIndex: query?.pageIndex ?? 0,
+      pageSize: query?.pageSize ?? 0,
+      sort: query?.sort ?? undefined,
+      searchText: query?.searchText ?? '',
+      status: query?.status ?? '',
+    };
 
       if (query?.date) {
         sanitizedQuery = this.utilService.date.dateToQueryParam(
@@ -37,7 +35,6 @@ export class RoleApiService {
           query?.date,
         );
       }
-    }
 
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
