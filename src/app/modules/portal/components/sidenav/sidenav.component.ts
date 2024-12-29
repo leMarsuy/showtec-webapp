@@ -54,38 +54,4 @@ export class SidenavComponent implements OnDestroy {
     this._destroyed$.complete();
   }
 
-  // private _formatNavList(permissions: Permission[]) {
-  //   let remapped = [];
-  //   for(const navRouteGroup of NAV_ROUTES) {
-
-  //     let items = [];
-  //     for(const navRoute of navRouteGroup.items) {
-
-  //       //Check if navRoute.path is in excluded paths that skips user has access verification
-  //       if(this.excludedPaths.includes(navRoute.path)) {
-  //         items.push(navRoute);
-  //         continue;
-  //       }
-
-  //       //Check user permission
-  //       const permission = permissions.filter((item: any) => item.path === navRoute.path)[0];
-  //       if(!permission.hasAccess) {
-  //         continue;
-  //       } 
-  //         items.push(navRoute);
-  //     }
-
-  //     if(items.length === 0) {
-  //       continue;
-  //     }
-
-  //     remapped.push({
-  //       group: navRouteGroup.group,
-  //       items
-  //     })
-  //   }
-
-  //   return remapped;
-  // }
-
 }

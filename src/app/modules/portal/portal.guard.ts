@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateChildFn, CanActivateFn, Router } from '@angular/router';
-import { selectUser, UserActions } from '@app/core/states/user';
+import { selectUserPermissions, UserActions } from '@app/core/states/user';
 import { AuthService } from '@app/shared/services/api';
 import { Store } from '@ngrx/store';
 import { catchError, map, of } from 'rxjs';
@@ -53,12 +53,12 @@ export const roleGuard: CanActivateChildFn = (
 
   const url = state.url.split('/')[2];
 
-  return store.select(selectUser()).pipe(map((user) => {
-    const permission = user.permissions?.find((permission) => permission.path === url);
+  return store.select(selectUserPermissions()).pipe(map((userPermission) => {
+    const permission = userPermission?.find((permission) => permission.path === url);
 
     const hasAccess = permission?.hasAccess;
     if (!hasAccess) {
-      const firstPermission = user.permissions?.find((permission) => permission.hasAccess); 
+      const firstPermission = userPermission?.find((permission) => permission.hasAccess); 
       router.navigate(['portal', firstPermission?.path]);
     }
 
