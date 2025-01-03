@@ -36,8 +36,6 @@ export class VouchersListComponent {
   placeholder = 'Search Voucher No | Payee';
   searchText: FormControl = new FormControl('');
 
-  private sortBy = '-code.value'; //Voucher No, descending
-
   statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...VOUCHER_STATUSES];
   selectedFilterStatus = 'All';
@@ -184,12 +182,10 @@ export class VouchersListComponent {
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
-    const sort = this.sortBy;
 
     this.query = {
       searchText,
       status,
-      sort,
       date,
       pageIndex,
       pageSize: this.page.pageSize,
