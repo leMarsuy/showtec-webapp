@@ -47,7 +47,7 @@ export class OutDeliveryListComponent {
   selectedFilterStatus: OutDeliveryStatus | string = OutDeliveryStatus.PENDING;
 
   selectedFilterDate: DateFilterType | { startDate: string; endDate: string } =
-    DateFilterType.ALL_TIME;
+    DateFilterType.THIS_YEAR;
 
   isLoading = false;
 

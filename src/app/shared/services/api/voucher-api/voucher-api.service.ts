@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
 import { Voucher } from '@app/core/models/voucher.model';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
-import { Status } from '@app/core/enums/status.enum';
 import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
