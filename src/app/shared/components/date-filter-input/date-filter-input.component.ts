@@ -23,7 +23,7 @@ import { filter, map } from 'rxjs';
   styleUrl: './date-filter-input.component.scss',
 })
 export class DateFilterInputComponent implements OnInit, OnChanges {
-  @Input() initialValue: any = DateFilterType.THIS_YEAR;
+  @Input({ required: true }) initialValue: any;
   dateRange!: any;
 
   @Output() dateFilterSelected = new EventEmitter<any>();
@@ -32,10 +32,6 @@ export class DateFilterInputComponent implements OnInit, OnChanges {
   readonly tableFilterDates = DATE_FILTER_MENU_OPTIONS;
 
   filterDateDisplay!: string;
-
-  // get filterDateDisplay() {
-  //   return this._updateFilterDateDisplay(this.initialValue, this.dateRange);
-  // }
 
   ngOnInit(): void {
     this._updateFilterDateDisplay(this.initialValue, this.dateRange);
