@@ -62,6 +62,14 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/soa/soa.module').then((m) => m.SoaModule),
       },
+      {
+        path: 'transactions',
+        loadChildren: () =>
+          import('./pages/transactions/transactions.module').then(
+            (m) => m.TransactionsModule
+          ),
+      },
+
       // {
       //   path: 'expenses',
       //   loadChildren: () =>

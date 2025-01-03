@@ -49,7 +49,7 @@ export class OutDeliveryListComponent {
   selectedFilterStatus: OutDeliveryStatus | string = OutDeliveryStatus.PENDING;
 
   selectedFilterDate: DateFilterType | { startDate: string; endDate: string } =
-    DateFilterType.ALL_TIME;
+    DateFilterType.THIS_YEAR;
 
   isLoading = false;
 
@@ -57,8 +57,6 @@ export class OutDeliveryListComponent {
     pageIndex: 0,
     pageSize: 10,
   };
-
-  private sortBy = '-code.value';
 
   constructor(
     private outdeliveryApi: OutDeliveryApiService,
@@ -148,12 +146,10 @@ export class OutDeliveryListComponent {
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
-    const sort = this.sortBy;
 
     this.query = {
       searchText,
       status,
-      sort,
       date,
       pageIndex,
       pageSize: this.page.pageSize,

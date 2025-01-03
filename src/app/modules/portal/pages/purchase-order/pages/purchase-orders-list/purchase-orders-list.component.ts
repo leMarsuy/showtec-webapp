@@ -33,7 +33,7 @@ export class PurchaseOrdersListComponent {
   statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...PURCHASE_ORDER_STATUSES];
   selectedFilterStatus = 'All';
-  selectedFilterDate = DateFilterType.ALL_TIME;
+  selectedFilterDate = DateFilterType.THIS_YEAR;
 
   purchaseOrders!: PurchaseOrder[];
   columns: TableColumn[] = [
@@ -119,8 +119,6 @@ export class PurchaseOrdersListComponent {
     pageSize: 10,
   };
 
-  private sortBy = '-code.value';
-
   constructor(
     private purchaseOrderApi: PurchaseOrderApiService,
     private snackbarService: SnackbarService,
@@ -189,12 +187,10 @@ export class PurchaseOrdersListComponent {
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
-    const sort = this.sortBy;
 
     this.query = {
       searchText,
       status,
-      sort,
       date,
       pageIndex,
       pageSize: this.page.pageSize,

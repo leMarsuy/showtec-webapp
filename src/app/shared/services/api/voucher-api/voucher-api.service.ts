@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { HttpService } from '../../http/http.service';
 import { Voucher } from '@app/core/models/voucher.model';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
-import { Status } from '@app/core/enums/status.enum';
 import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
@@ -30,16 +29,14 @@ export class VoucherApiService {
       sanitizedQuery = {
         pageIndex: query.pageIndex ?? 0,
         pageSize: query.pageSize ?? 0,
-        sort: query.sort,
+        sort: query.sort ?? '',
         searchText: query.searchText,
         status: query.status ?? '',
       };
 
       if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date,
-        );
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
       }
     }
 
@@ -93,10 +90,8 @@ export class VoucherApiService {
       };
 
       if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date,
-        );
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
       }
     }
     return this.httpService.getBlob(

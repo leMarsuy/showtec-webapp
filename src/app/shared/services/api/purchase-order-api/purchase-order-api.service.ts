@@ -6,6 +6,7 @@ import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
 import { HttpService } from '../../http/http.service';
+import { UtilService } from '../../util/util.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class PurchaseOrderApiService {
   constructor(
     private httpService: HttpService,
     private file: FileService,
+    private utilService: UtilService,
   ) {}
 
   createPurchaseOrder(purchaseOrder: PurchaseOrder) {
@@ -41,28 +43,23 @@ export class PurchaseOrderApiService {
     );
   }
 
-  getPurchaseOrders(query?: QueryParams, date?: any, monitorStatus?: string) {
-    let sanitizedQuery: QueryParams = {};
-    if (query)
+  getPurchaseOrders(query?: QueryParams) {
+    let sanitizedQuery: any = {};
+    if (query) {
       sanitizedQuery = {
         pageIndex: query.pageIndex ?? 0,
         pageSize: query.pageSize ?? 0,
         sort: query.sort ?? '',
         searchText: query.searchText ?? '',
+        monitorStatus: query.status ?? '', // monitorStatus is used
       };
 
-    let params: any = { ...sanitizedQuery, monitorStatus };
-
-    if (date && typeof date === 'object') {
-      const objectToString = JSON.stringify(date);
-      params = { ...params, date: objectToString };
+      if (query?.date) {
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
+      }
     }
-
-    if (date && typeof date !== 'object') {
-      params = { ...params, date };
-    }
-
-    return this.httpService.get(`${this.apiPrefix}`, params);
+    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
   getPurchaseOrderById(_id: string) {

@@ -4,6 +4,7 @@ export enum NavIcon {
   DELIVERY_RECEIPT = 'local_shipping',
   PURCHASE_ORDER = 'fact_check',
   SOA = 'article',
+  TRANSACTIONS = 'account_balance',
   VOUCHERS = 'newspaper',
   CUSTOMERS = 'group',
   WAREHOUSES = 'warehouses',
