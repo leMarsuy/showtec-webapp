@@ -41,8 +41,6 @@ export class PaginationComponent {
   }
 
   goToPage(page: number): void {
-    console.log(page, this.currentPage);
-
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.paginationChange.emit({

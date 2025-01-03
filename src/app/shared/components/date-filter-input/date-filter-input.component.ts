@@ -1,4 +1,13 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
   DATE_FILTER_MENU_OPTIONS,
@@ -13,13 +22,33 @@ import { filter, map } from 'rxjs';
   templateUrl: './date-filter-input.component.html',
   styleUrl: './date-filter-input.component.scss',
 })
-export class DateFilterInputComponent {
+export class DateFilterInputComponent implements OnInit, OnChanges {
+  @Input() initialValue: any = DateFilterType.THIS_YEAR;
+  dateRange!: any;
+
   @Output() dateFilterSelected = new EventEmitter<any>();
 
   private readonly dialog = inject(MatDialog);
+  readonly tableFilterDates = DATE_FILTER_MENU_OPTIONS;
 
-  filterDateDisplay = 'All Time';
-  tableFilterDates = DATE_FILTER_MENU_OPTIONS;
+  filterDateDisplay!: string;
+
+  // get filterDateDisplay() {
+  //   return this._updateFilterDateDisplay(this.initialValue, this.dateRange);
+  // }
+
+  ngOnInit(): void {
+    this._updateFilterDateDisplay(this.initialValue, this.dateRange);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      !changes['initialValue'].firstChange &&
+      changes['initialValue'].previousValue
+    ) {
+      this._updateFilterDateDisplay(this.initialValue, this.dateRange);
+    }
+  }
 
   /**
    *
@@ -27,7 +56,6 @@ export class DateFilterInputComponent {
    */
   onFilterDateChange(dateFilterType: DateFilterType) {
     if (dateFilterType !== 'date-range') {
-      this.filterDateDisplay = this._updateFilterDateDisplay(dateFilterType);
       this.dateFilterSelected.emit(dateFilterType);
       return;
     }
@@ -41,10 +69,7 @@ export class DateFilterInputComponent {
       )
       .subscribe({
         next: (dateRangeResult) => {
-          this.filterDateDisplay = this._updateFilterDateDisplay(
-            dateFilterType,
-            dateRangeResult
-          );
+          this.dateRange = dateRangeResult;
 
           this.dateFilterSelected.emit({
             filter: dateFilterType,
@@ -54,34 +79,39 @@ export class DateFilterInputComponent {
       });
   }
 
-  private _updateFilterDateDisplay(
-    dateFilterType: DateFilterType,
-    dateRange?: any
-  ): string {
+  private _updateFilterDateDisplay(dateFilterType: any, dateRange?: any) {
     let display = 'All Time';
-    switch (dateFilterType) {
-      case DateFilterType.THIS_WEEK:
-        display = 'This Week';
-        break;
-      case DateFilterType.THIS_MONTH:
-        display = 'This Month';
-        break;
-      case DateFilterType.THIS_YEAR:
-        display = 'This Year';
-        break;
-      case DateFilterType.DATE_RANGE: {
-        const startDate = new Date(dateRange.startDate);
-        const endDate = new Date(dateRange.endDate);
 
-        const startFormat = formatDate(startDate);
-        const endFormat = formatDate(endDate);
-        display = `${startFormat} - ${endFormat}`;
-        break;
+    if (typeof dateFilterType !== 'object') {
+      switch (dateFilterType) {
+        case DateFilterType.THIS_WEEK:
+          display = 'This Week';
+          break;
+        case DateFilterType.THIS_MONTH:
+          display = 'This Month';
+          break;
+        case DateFilterType.THIS_YEAR:
+          display = 'This Year';
+          break;
+        default:
+          break;
       }
-      default:
-        break;
+    } else {
+      switch (dateFilterType.filter) {
+        case DateFilterType.DATE_RANGE: {
+          const startDate = new Date(dateRange.startDate);
+          const endDate = new Date(dateRange.endDate);
+
+          const startFormat = formatDate(startDate);
+          const endFormat = formatDate(endDate);
+          display = `${startFormat} - ${endFormat}`;
+          break;
+        }
+        default:
+          break;
+      }
     }
 
-    return display;
+    this.filterDateDisplay = display;
   }
 }
