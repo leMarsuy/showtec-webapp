@@ -29,12 +29,9 @@ export class RoleApiService {
       status: query?.status ?? '',
     };
 
-      if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date,
-        );
-      }
+    if (query?.date) {
+      sanitizedQuery = this.utilService.date.dateToQueryParam(query?.date);
+    }
 
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
@@ -48,12 +45,14 @@ export class RoleApiService {
   }
 
   patchRoleStatus(roleId: string, status: Status) {
-    return this.httpService.patch(`${this.apiPrefix}/${roleId}/status`, { status });
+    return this.httpService.patch(`${this.apiPrefix}/${roleId}/status`, {
+      status,
+    });
   }
 
   checkRoleIfHasExistingUser(roleId: string) {
-    return this.httpService.get(`${this.apiPrefix}/${roleId}/has-existing-users`);
+    return this.httpService.get(
+      `${this.apiPrefix}/${roleId}/has-existing-users`,
+    );
   }
-
-
 }
