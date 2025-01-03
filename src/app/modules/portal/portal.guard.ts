@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateChildFn, CanActivateFn, Router } from '@angular/router';
 import { selectUserPermissions, UserActions } from '@app/core/states/user';
+import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { AuthService } from '@app/shared/services/api';
 import { Store } from '@ngrx/store';
 import { catchError, map, of } from 'rxjs';
@@ -9,6 +10,7 @@ export const portalGuard: CanActivateFn = () => {
   const router = inject(Router);
   const authApi = inject(AuthService);
   const store = inject(Store);
+  const snackbar = inject(SnackbarService);
   const auth = localStorage.getItem('auth');
 
   if (!auth) {
@@ -21,11 +23,10 @@ export const portalGuard: CanActivateFn = () => {
       store.dispatch(UserActions.setUser(response));
 
       if (!response.permissions?.length) {
-        router.navigate(['auth', 'login']);
-        //popup alert
-        
+        snackbar.openErrorSnackbar(`Access Denied`, `You do not have any permissions granted for access. Please contact your Administrator.`, { duration: 3000 });
         store.dispatch(UserActions.removeUser({}));
         localStorage.removeItem('auth');
+        router.navigate(['auth', 'login']);
         return false;
       }
 

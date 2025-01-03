@@ -50,17 +50,18 @@ export class LoginComponent implements OnInit {
     this.authService.login(email ?? '', password ?? '').subscribe({
       next: () => {
         this.snackbarService.closeLoadingSnackbar().then(() => {
+          this.router.navigate(['portal']);
+          this.loginForm.enable();
           this.snackbarService.openSuccessSnackbar(
             'AuthSuccess',
             'Redirecting to your dashboard...',
           );
-          this.router.navigate(['portal']);
         });
       },
       error: (err: HttpErrorResponse) => {
         console.error(err);
+        this.loginForm.enable();
         this.snackbarService.closeLoadingSnackbar().then(() => {
-          this.loginForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
             err.error.message,
