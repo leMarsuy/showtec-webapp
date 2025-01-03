@@ -30,7 +30,7 @@ export class VoucherApiService {
       sanitizedQuery = {
         pageIndex: query.pageIndex ?? 0,
         pageSize: query.pageSize ?? 0,
-        sort: query.sort,
+        sort: query.sort ?? '',
         searchText: query.searchText,
         status: query.status ?? '',
       };
