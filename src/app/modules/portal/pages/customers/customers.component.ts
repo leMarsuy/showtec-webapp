@@ -68,7 +68,7 @@ export class CustomersComponent {
   constructor(
     private dialog: MatDialog,
     private customerApi: CustomerApiService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {
     this.getCustomers();
   }
@@ -111,7 +111,7 @@ export class CustomersComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });

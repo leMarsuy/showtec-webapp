@@ -30,7 +30,7 @@ export class ProductClassificationSettingsComponent
     private readonly dialog: MatDialog,
     private readonly classificationDataService: ProductClassificationDataService,
     private readonly snackbar: SnackbarService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmation: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -63,12 +63,12 @@ export class ProductClassificationSettingsComponent
 
           if (
             this.classificationDataService.isClassificationDuplicate(
-              classification
+              classification,
             )
           ) {
             this.snackbar.openErrorSnackbar(
               'Error',
-              'Product Classification already exists'
+              'Product Classification already exists',
             );
             return;
           }
@@ -77,7 +77,7 @@ export class ProductClassificationSettingsComponent
           if (isUpdate) {
             this.classificationDataService.updateClassification(
               index,
-              classification
+              classification,
             );
           } else {
             this.classificationDataService.addClassfication(classification);
@@ -91,7 +91,7 @@ export class ProductClassificationSettingsComponent
     this.confirmation
       .open(
         'Product Classification',
-        `Do you want to remove "<b>${classification}</b>"?`
+        `Do you want to remove "<b>${classification}</b>"?`,
       )
       .afterClosed()
       .pipe(filter((result) => result))

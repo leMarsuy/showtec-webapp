@@ -27,7 +27,7 @@ export class EditCustomerComponent {
     private customerApi: CustomerApiService,
     private _dialogRef: MatDialogRef<AddCustomerComponent>,
     private snackbarService: SnackbarService,
-    @Inject(MAT_DIALOG_DATA) public data: { _id: string }
+    @Inject(MAT_DIALOG_DATA) public data: { _id: string },
   ) {}
 
   formEventHandler(e: FormGroup) {
@@ -39,14 +39,14 @@ export class EditCustomerComponent {
       next: (response) => {
         this.snackbarService.openSuccessSnackbar(
           'Delete',
-          'Customer Successfully Delete from the Table'
+          'Customer Successfully Delete from the Table',
         );
         this._dialogRef.close(true);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -57,7 +57,7 @@ export class EditCustomerComponent {
     var customer = this.customerForm.getRawValue() as Customer;
     this.snackbarService.openLoadingSnackbar(
       'EditData',
-      'Finalizing changes on customer...'
+      'Finalizing changes on customer...',
     );
     this.customerApi.updateCustomerById(this.data._id, customer).subscribe({
       next: () => {
@@ -70,7 +70,7 @@ export class EditCustomerComponent {
           this.customerForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

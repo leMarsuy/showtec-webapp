@@ -13,7 +13,7 @@ export class SalesComponent implements OnInit {
   pastDays = 25;
   diffDaysFromProjectStart = getDateDiffInDays(
     environment.projectStart,
-    new Date()
+    new Date(),
   );
   dateFrom = getPastDate(new Date(), this.pastDays);
   dateTo = new Date();
@@ -22,11 +22,11 @@ export class SalesComponent implements OnInit {
 
   constructor(
     public saleAnalytics: SalesAnalyticsService,
-    public sb: SnackbarService
+    public sb: SnackbarService,
   ) {
     sb.openLoadingSnackbar(
       'Sales Analytics',
-      'Aggregating data from records...'
+      'Aggregating data from records...',
     );
     this.fetchSalesReport();
   }

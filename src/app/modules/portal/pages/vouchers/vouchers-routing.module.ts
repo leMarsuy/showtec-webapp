@@ -12,14 +12,14 @@ const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./pages/vouchers-list/vouchers-list.module').then(
-            (m) => m.VouchersListModule
+            (m) => m.VouchersListModule,
           ),
       },
       {
         path: 'create',
         loadChildren: () =>
           import('./pages/upsert-voucher/upsert-voucher.module').then(
-            (m) => m.UpsertVoucherModule
+            (m) => m.UpsertVoucherModule,
           ),
       },
       {
@@ -27,7 +27,7 @@ const routes: Routes = [
         resolve: { voucher: vouchersResolver },
         loadChildren: () =>
           import('./pages/upsert-voucher/upsert-voucher.module').then(
-            (m) => m.UpsertVoucherModule
+            (m) => m.UpsertVoucherModule,
           ),
       },
     ],

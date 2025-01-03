@@ -8,9 +8,8 @@ describe('UpdateFieldComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpdateFieldComponent]
-    })
-    .compileComponents();
+      imports: [UpdateFieldComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UpdateFieldComponent);
     component = fixture.componentInstance;

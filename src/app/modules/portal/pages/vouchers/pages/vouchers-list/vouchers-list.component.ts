@@ -142,7 +142,7 @@ export class VouchersListComponent {
     private voucherData: VoucherDataService,
     private snackbarService: SnackbarService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     this.getVouchers();
   }
@@ -164,7 +164,7 @@ export class VouchersListComponent {
         this._setLoadingState(false);
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });

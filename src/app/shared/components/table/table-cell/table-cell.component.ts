@@ -27,7 +27,7 @@ export class TableCellComponent {
     }
 
     const colorCodes = column?.colorCodes?.find(
-      (cc) => cc.value == value
+      (cc) => cc.value == value,
     )?.color;
 
     const color = colorCodes ?? Color.DEAD;

@@ -8,9 +8,8 @@ describe('EditableTableCellComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditableTableCellComponent]
-    })
-    .compileComponents();
+      imports: [EditableTableCellComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EditableTableCellComponent);
     component = fixture.componentInstance;

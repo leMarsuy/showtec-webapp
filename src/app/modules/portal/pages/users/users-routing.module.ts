@@ -11,7 +11,7 @@ const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./pages/users-list/users-list.module').then(
-            (m) => m.UsersListModule
+            (m) => m.UsersListModule,
           ),
       },
     ],

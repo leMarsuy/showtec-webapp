@@ -8,9 +8,8 @@ describe('ViewSoaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ViewSoaComponent]
-    })
-    .compileComponents();
+      imports: [ViewSoaComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ViewSoaComponent);
     component = fixture.componentInstance;

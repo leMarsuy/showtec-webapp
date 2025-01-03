@@ -40,7 +40,7 @@ export class AttachCustomerFormComponent implements OnInit, OnDestroy {
         distinctUntilChanged(),
         switchMap((val: any) => {
           return this._filterCustomers(val || '');
-        })
+        }),
       ) || of([]);
   }
 

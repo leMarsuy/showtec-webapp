@@ -43,7 +43,7 @@ export class FileUploadComponent {
 
   private _formatFileExtensionDisplay(fileExtensions: Array<string>): string {
     const fileExtensionsToUpper = fileExtensions.map((fileExtension: string) =>
-      fileExtension.toUpperCase()
+      fileExtension.toUpperCase(),
     );
 
     if (fileExtensions.length === 1) {

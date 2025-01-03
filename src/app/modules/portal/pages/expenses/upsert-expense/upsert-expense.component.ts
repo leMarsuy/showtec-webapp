@@ -36,7 +36,7 @@ export class UpsertExpenseComponent {
     private snackbarService: SnackbarService,
     private expenseApi: ExpenseApiService,
     private confirmationApi: ConfirmationService,
-    private _dialogRef: MatDialogRef<UpsertExpenseComponent>
+    private _dialogRef: MatDialogRef<UpsertExpenseComponent>,
   ) {
     this.expense = this.data.expense;
     this.isUpdate = !!this.data.expense;
@@ -63,14 +63,14 @@ export class UpsertExpenseComponent {
           const expense = this.expenseForm.getRawValue() as Expense;
           this.snackbarService.openLoadingSnackbar(
             this.config.loadingTitle,
-            this.config.loadingMessage
+            this.config.loadingMessage,
           );
 
           if (this.isUpdate) {
             return this.expenseApi.updateExpenseById(this.expense._id, expense);
           }
           return this.expenseApi.createExpense(expense);
-        })
+        }),
       )
       .subscribe({
         next: () => {
@@ -83,7 +83,7 @@ export class UpsertExpenseComponent {
             this.expenseForm.enable();
             this.snackbarService.openErrorSnackbar(
               err.error?.errorCode,
-              err.error?.message
+              err.error?.message,
             );
           });
         },

@@ -42,7 +42,7 @@ export class VoucherSettingsComponent implements OnInit {
     private readonly configApi: ConfigApiService,
     private readonly distributionOfAccountDataService: DistributionOfAccountDataService,
     private readonly snackbar: SnackbarService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmation: ConfirmationService,
   ) {}
 
   get isDistributionOfAccountsDirty() {
@@ -89,7 +89,7 @@ export class VoucherSettingsComponent implements OnInit {
         switchMap(() => {
           this.snackbar.openLoadingSnackbar(
             'Saving Account Categories',
-            'Please Wait...'
+            'Please Wait...',
           );
 
           if (this.isUpdate) {
@@ -98,14 +98,14 @@ export class VoucherSettingsComponent implements OnInit {
             body.name = this.configName;
             return this.configApi.createConfig(body);
           }
-        })
+        }),
       )
       .subscribe({
         next: (config) => {
           this.snackbar.closeLoadingSnackbar();
           this.snackbar.openSuccessSnackbar(
             'Saving Success!',
-            'Distribution of Account Categories is updated.'
+            'Distribution of Account Categories is updated.',
           );
           this._setDistributionOfAccountSettingsDirtyState(false);
           this.getVoucherConfig();
@@ -115,7 +115,7 @@ export class VoucherSettingsComponent implements OnInit {
           console.error(error);
           this.snackbar.openErrorSnackbar(
             error.errorCode,
-            error.message + `Please reload the page`
+            error.message + `Please reload the page`,
           );
         },
       });

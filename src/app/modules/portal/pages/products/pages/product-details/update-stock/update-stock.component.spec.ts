@@ -8,9 +8,8 @@ describe('UpdateStockComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpdateStockComponent]
-    })
-    .compileComponents();
+      imports: [UpdateStockComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UpdateStockComponent);
     component = fixture.componentInstance;

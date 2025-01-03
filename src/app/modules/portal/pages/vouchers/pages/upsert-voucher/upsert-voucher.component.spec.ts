@@ -8,9 +8,8 @@ describe('UpsertVoucherComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpsertVoucherComponent]
-    })
-    .compileComponents();
+      imports: [UpsertVoucherComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UpsertVoucherComponent);
     component = fixture.componentInstance;

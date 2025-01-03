@@ -75,7 +75,7 @@ export class VoucherApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 
@@ -96,7 +96,7 @@ export class VoucherApiService {
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 }

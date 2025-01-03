@@ -35,7 +35,7 @@ export class CustomerFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private customerApi: CustomerApiService,
-    private sb: SnackbarService
+    private sb: SnackbarService,
   ) {}
 
   ngOnInit(): void {

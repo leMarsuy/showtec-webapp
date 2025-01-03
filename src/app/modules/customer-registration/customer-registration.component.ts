@@ -28,14 +28,14 @@ export class CustomerRegistrationComponent {
     private fb: FormBuilder,
     private confirmation: ConfirmationService,
     private customerApi: CustomerApiService,
-    private sb: SnackbarService
+    private sb: SnackbarService,
   ) {}
 
   onSubmit() {
     this.confirmation
       .open(
         'Before Submitting',
-        'You are about to submit your form. Are your details correct?'
+        'You are about to submit your form. Are your details correct?',
       )
       .afterClosed()
       .subscribe((res) => {
@@ -64,7 +64,7 @@ export class CustomerRegistrationComponent {
           this.sb
             .openSuccessSnackbar(
               'RegisterSuccess',
-              'Thank you for registering!'
+              'Thank you for registering!',
             )
             .afterDismissed()
             .subscribe({

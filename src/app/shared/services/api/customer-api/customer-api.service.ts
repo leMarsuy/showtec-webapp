@@ -22,7 +22,7 @@ export class CustomerApiService {
     tin: string,
     email: string,
     mobile: string,
-    address: string
+    address: string,
   ) {
     return this.httpService.post(`${this.apiPrefix}/register`, {
       name,

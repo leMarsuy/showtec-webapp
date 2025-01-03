@@ -25,7 +25,7 @@ export class EditableTableCellComponent implements OnInit {
     if (typeof this.column.dotNotationPath == 'string')
       this.element['__value' + this.rowIndex + '_' + this.colIndex] = deepFind(
         this.element,
-        this.column.dotNotationPath
+        this.column.dotNotationPath,
       );
   }
 
@@ -34,7 +34,7 @@ export class EditableTableCellComponent implements OnInit {
     column: TableColumn,
     value: any,
     rowIndex: number,
-    colIndex: number
+    colIndex: number,
   ) {
     if (value != 0 && !value) return;
     this.updateCellEmitter.emit({

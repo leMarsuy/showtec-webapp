@@ -104,7 +104,7 @@ export class ProductsListComponent {
     private snackbarService: SnackbarService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
-    private fileApi: FileService
+    private fileApi: FileService,
   ) {
     this.getProducts();
   }
@@ -122,7 +122,7 @@ export class ProductsListComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -153,7 +153,7 @@ export class ProductsListComponent {
   exportExcelProductSNs() {
     this.snackbarService.openLoadingSnackbar(
       'Please Wait',
-      'Downloading Excel file...'
+      'Downloading Excel file...',
     );
     this.downloading = true;
     const query: QueryParams = {
@@ -180,7 +180,7 @@ export class ProductsListComponent {
   exportExcelProducts() {
     this.snackbarService.openLoadingSnackbar(
       'Please Wait',
-      'Downloading Excel file...'
+      'Downloading Excel file...',
     );
     this.downloading = true;
     const query: QueryParams = {

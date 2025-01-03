@@ -96,7 +96,7 @@ export class ListFilterComponent implements OnInit, OnDestroy {
   private filterCategory(searchText: string): Observable<string[]> {
     const filter = searchText.toLowerCase();
     const remapped: any = this.productClassifications.filter((item) =>
-      item.classification.toLowerCase().includes(filter)
+      item.classification.toLowerCase().includes(filter),
     );
 
     return of(remapped) as any;

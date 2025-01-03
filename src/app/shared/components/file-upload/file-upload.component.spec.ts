@@ -8,9 +8,8 @@ describe('FileUploadComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FileUploadComponent]
-    })
-    .compileComponents();
+      imports: [FileUploadComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FileUploadComponent);
     component = fixture.componentInstance;

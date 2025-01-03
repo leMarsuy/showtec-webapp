@@ -194,7 +194,7 @@ export class ProductsFormComponent implements OnInit, OnDestroy, OnChanges {
       distinctUntilChanged(),
       switchMap((val: any) => {
         return this._filterOptions(val || '');
-      })
+      }),
     );
   }
 

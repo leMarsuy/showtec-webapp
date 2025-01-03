@@ -162,7 +162,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private snackbarService: SnackbarService,
     private confirmation: ConfirmationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -175,7 +175,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       switchMap((val: any) => {
         return this._filterCustomers(val || '');
       }),
-      takeUntil(this.destroyed$)
+      takeUntil(this.destroyed$),
     );
 
     this.filteredUsers = this.signatoryControl.valueChanges.pipe(
@@ -185,7 +185,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       switchMap((val: any) => {
         return this._filterUsers(val || '');
       }),
-      takeUntil(this.destroyed$)
+      takeUntil(this.destroyed$),
     );
 
     this.filteredPos = this.searchPoControl.valueChanges.pipe(
@@ -195,7 +195,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       switchMap((val: any) => {
         return this._filterPos(val || '');
       }),
-      takeUntil(this.destroyed$)
+      takeUntil(this.destroyed$),
     );
   }
 
@@ -219,7 +219,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
         catchError((error) => {
           console.error(error);
           return of(false);
-        })
+        }),
       );
     const response = (await firstValueFrom(getOutDeliveryById$)) as any;
 
@@ -227,7 +227,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     if (!response) {
       this.snackbarService.openErrorSnackbar(
         'Error',
-        'No Out Delivery was found for the provided ID.'
+        'No Out Delivery was found for the provided ID.',
       );
       this.router.navigate(['portal', 'out-delivery']);
       return;
@@ -342,7 +342,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     const items = this.listedItems;
     for (let item of items) {
       const index = product.stocks.findIndex(
-        (o) => o._id === item.stocks[0]._id
+        (o) => o._id === item.stocks[0]._id,
       );
       if (index >= 0) product.stocks.splice(index, 1);
     }
@@ -350,7 +350,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     if (product.stocks.length <= 0) {
       this.snackbarService.openErrorSnackbar(
         'Ooops',
-        'Reached Maximum No. of Available Stocks.'
+        'Reached Maximum No. of Available Stocks.',
       );
       return;
     }
@@ -441,10 +441,10 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   private _copySignatoriesToSelf() {
     this.listedSignatories.sort((a, b) => {
       const aIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === a.action
+        (action) => action === a.action,
       );
       const bIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === b.action
+        (action) => action === b.action,
       );
       return aIndex - bIndex;
     });
@@ -498,7 +498,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Confirmation',
-        'You will be adding a <b>Delivery Receipt</b>. Would you like to proceed on this action?'
+        'You will be adding a <b>Delivery Receipt</b>. Would you like to proceed on this action?',
       )
       .afterClosed()
       .subscribe((res) => {
@@ -510,7 +510,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Before you apply the changes...',
-        `This will modify the delivery receipt for <b class='text-rose-500'>${this.customerName}</b>. Would you like to proceed with this action?`
+        `This will modify the delivery receipt for <b class='text-rose-500'>${this.customerName}</b>. Would you like to proceed with this action?`,
       )
       .afterClosed()
       .subscribe((res) => {
@@ -524,7 +524,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Cancel Edit',
-        `Any changes will not be saved for <b class='text-rose-500'>${this.customerName}</b>. Are you sure?`
+        `Any changes will not be saved for <b class='text-rose-500'>${this.customerName}</b>. Are you sure?`,
       )
       .afterClosed()
       .subscribe((res) => {
@@ -546,7 +546,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
             od.code?.value +
             ' for ' +
             od.STATIC.name +
-            '.'
+            '.',
         );
         this.displayPDF(od);
         this.router.navigate(['portal', 'out-delivery']);
@@ -554,7 +554,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -585,7 +585,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -594,7 +594,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   private async _getPoById(poId: string) {
     const getPoById$ = this.poApi.getPurchaseOrderById(poId).pipe(
       takeUntil(this.destroyed$),
-      catchError(() => of(false))
+      catchError(() => of(false)),
     );
     const po = (await firstValueFrom(getPoById$)) as PurchaseOrder;
     return po;
@@ -614,12 +614,12 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       //Check transform data service
       const hasTransformData =
         this.transformDataService.verifyTransactionDataFootprint(
-          this.transformServiceId
+          this.transformServiceId,
         );
 
       if (hasTransformData) {
         createOutDelivery = this.transformDataService.formatDataToRecipient(
-          this.transformServiceId
+          this.transformServiceId,
         );
 
         this._patchDrPo(createOutDelivery._purchaseOrderId);
@@ -640,11 +640,11 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
           catchError((error) => {
             console.error(error);
             return of(false);
-          })
+          }),
         );
 
       const recentOutDelivery = (await firstValueFrom(
-        getRecentOutDelivery$
+        getRecentOutDelivery$,
       )) as OutDelivery;
 
       if (recentOutDelivery) {

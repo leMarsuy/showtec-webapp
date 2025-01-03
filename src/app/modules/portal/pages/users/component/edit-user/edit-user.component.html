@@ -13,6 +13,19 @@
       <mat-label>Designation</mat-label>
       <input matInput type="text" formControlName="designation" />
     </mat-form-field>
+    <mat-form-field class="col-span-2">
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="_roleId" [compareWith]="compareWith">
+        <mat-select-trigger>{{ roleControlValue.name }}</mat-select-trigger>
+        <!-- Todo: Create a select with search -->
+        <!-- <div class="flex justify-center items-center ml-2 w-[calc(100%-1rem)] mb-2">
+          <input type="text" placeholder="Search Role..." class="outline-none text-sm px-4 py-2 w-full rounded-sm">
+        </div> -->
+        @for(role of roles$ | async; track role) {
+          <mat-option [value]="role">{{ role.name }}</mat-option>
+          }
+      </mat-select>
+    </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions class="flex w-full items-center !justify-between">

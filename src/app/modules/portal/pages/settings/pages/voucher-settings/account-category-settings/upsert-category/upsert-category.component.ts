@@ -15,7 +15,7 @@ export class UpsertCategoryComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private readonly dialogRef: MatDialogRef<UpsertCategoryComponent>,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
   ) {
     if (this.data) {
       this.categoryControl.setValue(this.data);

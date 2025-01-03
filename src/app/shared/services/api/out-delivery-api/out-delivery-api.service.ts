@@ -18,7 +18,7 @@ export class OutDeliveryApiService {
   constructor(
     private httpService: HttpService,
     private file: FileService,
-    private utilService: UtilService
+    private utilService: UtilService,
   ) {}
 
   createOutDelivery(outdelivery: OutDelivery) {
@@ -62,7 +62,7 @@ export class OutDeliveryApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 
@@ -98,7 +98,7 @@ export class OutDeliveryApiService {
 
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 

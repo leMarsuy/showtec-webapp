@@ -8,9 +8,8 @@ describe('TaxesFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TaxesFormComponent]
-    })
-    .compileComponents();
+      declarations: [TaxesFormComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TaxesFormComponent);
     component = fixture.componentInstance;

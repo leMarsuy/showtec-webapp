@@ -16,21 +16,21 @@ const routes: Routes = [
         path: 'account',
         loadChildren: () =>
           import('./pages/account-settings/account-settings.module').then(
-            (m) => m.AccountSettingsModule
+            (m) => m.AccountSettingsModule,
           ),
       },
       {
         path: 'product',
         loadChildren: () =>
           import('./pages/product-settings/product-settings.module').then(
-            (m) => m.ProductSettingsModule
+            (m) => m.ProductSettingsModule,
           ),
       },
       {
         path: 'voucher',
         loadChildren: () =>
           import('./pages/voucher-settings/voucher-settings.module').then(
-            (m) => m.VoucherSettingsModule
+            (m) => m.VoucherSettingsModule,
           ),
       },
       {

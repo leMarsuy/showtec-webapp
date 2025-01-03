@@ -24,7 +24,7 @@ export class AddProductComponent implements OnInit {
     private productApi: ProductApiService,
     private configApi: ConfigApiService,
     private _dialogRef: MatDialogRef<AddProductComponent>,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {}
 
   ngOnInit(): void {
@@ -38,7 +38,7 @@ export class AddProductComponent implements OnInit {
         console.error(error);
         this.snackbarService.openErrorSnackbar(
           error.errorCode,
-          'Product Classifications is empty.'
+          'Product Classifications is empty.',
         );
       },
     });
@@ -61,7 +61,7 @@ export class AddProductComponent implements OnInit {
   filterProductClassification(value: string) {
     if (value) {
       this.filteredClassifications = this.classifications.filter((o) =>
-        o.toLowerCase().includes(value)
+        o.toLowerCase().includes(value),
       );
     } else {
       this.filteredClassifications = this.classifications.slice(0, 20);
@@ -73,7 +73,7 @@ export class AddProductComponent implements OnInit {
     var product = this.productForm.getRawValue() as Product;
     this.snackbarService.openLoadingSnackbar(
       'CreateData',
-      'Adding product to list...'
+      'Adding product to list...',
     );
     this.productApi.createProduct(product).subscribe({
       next: () => {
@@ -86,7 +86,7 @@ export class AddProductComponent implements OnInit {
           this.productForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

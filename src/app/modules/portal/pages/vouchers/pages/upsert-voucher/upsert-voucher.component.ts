@@ -1,33 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import {
-  catchError,
-  firstValueFrom,
-  Observable,
-  of,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { catchError, firstValueFrom, of, Subject, takeUntil } from 'rxjs';
 import {
   REGISTERED_BANKS,
   RegisteredBank,
 } from '@app/core/enums/registered-bank.enum';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
-import { TableColumn } from '@app/core/interfaces/table-column.interface';
-import { PageEvent } from '@angular/material/paginator';
-import { Color } from '@app/core/enums/color.enum';
-import { ColumnType } from '@app/core/enums/column-type.enum';
-import {
-  SIGNATORY_ACTIONS,
-  SignatoryAction,
-} from '@app/core/enums/signatory-action.enum';
-import { User } from '@app/core/models/user.model';
+import { SignatoryAction } from '@app/core/enums/signatory-action.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -76,7 +55,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     private readonly voucherData: VoucherDataService,
     private readonly confirmation: ConfirmationService,
     private readonly snackbar: SnackbarService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
   ) {
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
@@ -111,7 +90,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     const activateRouteData$ = this.activatedRoute.data.pipe(
-      takeUntil(this._destroyed$)
+      takeUntil(this._destroyed$),
     );
     const resolverResponse = await firstValueFrom(activateRouteData$);
     //Upsert Create
@@ -121,10 +100,10 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       //Get Latest Voucher
       const getRecentVoucher$ = this.voucherApi.getRecentVoucher().pipe(
         takeUntil(this._destroyed$),
-        catchError(() => of(false))
+        catchError(() => of(false)),
       );
       const recentVoucher = (await firstValueFrom(
-        getRecentVoucher$
+        getRecentVoucher$,
       )) as Voucher;
 
       if (recentVoucher) {
@@ -164,7 +143,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Voucher Confirmation',
-        `Would you like to proceed on ${message} this <b>Voucher</b>?`
+        `Would you like to proceed on ${message} this <b>Voucher</b>?`,
       )
       .afterClosed()
       .subscribe((res) => {
@@ -240,7 +219,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.snackbar.openSuccessSnackbar(
           'Success',
-          'Voucher Successfully Created.'
+          'Voucher Successfully Created.',
         );
         this._displayPDF(res);
         this.navigateBack();
@@ -257,7 +236,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.snackbar.openSuccessSnackbar(
           'Success',
-          'Voucher Successfully Updated.'
+          'Voucher Successfully Updated.',
         );
         this._displayPDF(res);
         this.navigateBack();

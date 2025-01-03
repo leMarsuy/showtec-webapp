@@ -29,7 +29,7 @@ export class AddPaymentComponent {
     private poApi: PurchaseOrderApiService,
     private sb: SnackbarService,
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AddPaymentComponent>
+    private dialogRef: MatDialogRef<AddPaymentComponent>,
   ) {
     this.onTransactionFormChange();
   }
@@ -101,7 +101,7 @@ export class AddPaymentComponent {
         this.submitting = false;
         this.sb.openSuccessSnackbar(
           'Payment Success',
-          'Payment successfully added to this SOA.'
+          'Payment successfully added to this SOA.',
         );
         this.dialogRef.close(true);
       },

@@ -8,9 +8,8 @@ describe('EditSoaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditSoaComponent]
-    })
-    .compileComponents();
+      imports: [EditSoaComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EditSoaComponent);
     component = fixture.componentInstance;

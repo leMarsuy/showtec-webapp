@@ -31,7 +31,7 @@ export class PdfViewerComponent {
     public data: PdfViewerProps,
     private domSanitizer: DomSanitizer,
     private file: FileService,
-    private sb: SnackbarService
+    private sb: SnackbarService,
   ) {
     data.apiCall.subscribe(
       (response: { blob: Blob; filename: string }) => {
@@ -46,7 +46,7 @@ export class PdfViewerComponent {
       (error) => {
         var { errorCode, message } = error.error;
         this.sb.openErrorSnackbar(errorCode, message);
-      }
+      },
     );
   }
 
@@ -60,7 +60,7 @@ export class PdfViewerComponent {
 
   print() {
     var iframe: HTMLIFrameElement = document.getElementById(
-      'pdfFrame'
+      'pdfFrame',
     ) as HTMLIFrameElement;
     iframe.contentWindow?.print();
   }

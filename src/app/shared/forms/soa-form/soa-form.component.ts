@@ -265,7 +265,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     private confirmation: ConfirmationService,
     private dialog: MatDialog,
     private transformDataService: TransformDataService,
-    private soaDataService: SoaDataService
+    private soaDataService: SoaDataService,
   ) {}
 
   ngOnInit(): void {
@@ -277,7 +277,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       switchMap((val: any) => {
         return this._filterCustomers(val || '');
-      })
+      }),
     );
 
     this.filteredUsers = this.signatoryControl.valueChanges.pipe(
@@ -286,7 +286,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       switchMap((val: any) => {
         return this._filterUsers(val || '');
-      })
+      }),
     );
 
     this.filteredProducts = this.productNameControl.valueChanges.pipe(
@@ -295,7 +295,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       switchMap((val: any) => {
         return this._filterProducts(val || '');
-      })
+      }),
     );
 
     this.filteredPos = this.searchPoControl.valueChanges.pipe(
@@ -304,7 +304,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       switchMap((val: any) => {
         return this._filterPos(val || '');
-      })
+      }),
     );
   }
 
@@ -320,7 +320,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       catchError((error) => {
         console.error(error);
         return of(false);
-      })
+      }),
     );
     const soaFromResponse = (await firstValueFrom(getSoaById$)) as any;
 
@@ -328,7 +328,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     if (!soaFromResponse) {
       this.snackbarService.openErrorSnackbar(
         'Error',
-        `No SOA was found for the provided ID.`
+        `No SOA was found for the provided ID.`,
       );
       this.router.navigate(['portal', 'soa']);
       return;
@@ -435,10 +435,10 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   private _copySignatoriesToSelf() {
     this.listedSignatories.sort((a, b) => {
       const aIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === a.action
+        (action) => action === a.action,
       );
       const bIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === b.action
+        (action) => action === b.action,
       );
       return aIndex - bIndex;
     });
@@ -455,7 +455,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.snackbarService.openSuccessSnackbar(
           'Success',
-          'SOA Successfully Created.'
+          'SOA Successfully Created.',
         );
         this.router.navigate(['portal', 'soa']);
         this.displayPDF(res);
@@ -464,7 +464,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
         console.error(err);
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -490,7 +490,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       next: (newSoa: any) => {
         this.snackbarService.openSuccessSnackbar(
           'Update Success',
-          `SOA ${newSoa.code?.value} successfully updated.`
+          `SOA ${newSoa.code?.value} successfully updated.`,
         );
         this.router.navigate(['portal', 'soa']);
         this.displayPDF(newSoa);
@@ -498,7 +498,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -616,7 +616,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Confirmation',
-        'You will be adding a <b>Statement Of Account</b>. Would you like to proceed on this action?'
+        'You will be adding a <b>Statement Of Account</b>. Would you like to proceed on this action?',
       )
       .afterClosed()
       .subscribe((res) => {
@@ -630,7 +630,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Before you apply the changes...',
-        `This will modify the SOA for <b class='text-rose-500'>${this.customerName}</b>. Would you like to proceed with this action?`
+        `This will modify the SOA for <b class='text-rose-500'>${this.customerName}</b>. Would you like to proceed with this action?`,
       )
       .afterClosed()
       .subscribe((res) => {
@@ -644,7 +644,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Cancel Edit',
-        `Any changes will not be saved for <b class='text-rose-500'>${this.customerName}</b>. Are you sure?`
+        `Any changes will not be saved for <b class='text-rose-500'>${this.customerName}</b>. Are you sure?`,
       )
       .afterClosed()
       .subscribe((res) => {
@@ -739,12 +739,12 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       //Check transform data service
       const hasTransformData =
         this.transformDataService.verifyTransactionDataFootprint(
-          this.transformServiceId
+          this.transformServiceId,
         );
 
       if (hasTransformData) {
         createSoa = this.transformDataService.formatDataToRecipient(
-          this.transformServiceId
+          this.transformServiceId,
         );
         await this._patchSoaPo(createSoa._purchaseOrderId);
       }
@@ -762,7 +762,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
         catchError((error) => {
           console.error(error);
           return of(false);
-        })
+        }),
       );
       const recentSOA = (await firstValueFrom(getRecentSoa$)) as SOA;
 
@@ -780,7 +780,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       catchError((error: HttpErrorResponse) => {
         console.error(error.error);
         return of(false);
-      })
+      }),
     );
 
     const po = await lastValueFrom(getPoById$);

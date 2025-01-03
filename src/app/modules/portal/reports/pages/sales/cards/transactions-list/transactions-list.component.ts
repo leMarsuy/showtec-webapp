@@ -96,7 +96,7 @@ export class TransactionsListComponent implements OnInit {
     var skip = this.page.pageSize * this.page.pageIndex;
     this.pagedTransactions = this.transactions.slice(
       skip,
-      skip + this.page.pageSize
+      skip + this.page.pageSize,
     );
 
     // this.pagedTransactions = [...this.pagedTransactions];

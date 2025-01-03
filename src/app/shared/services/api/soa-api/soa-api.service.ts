@@ -16,7 +16,7 @@ export class SoaApiService {
   constructor(
     private httpService: HttpService,
     private file: FileService,
-    private utilService: UtilService
+    private utilService: UtilService,
   ) {}
 
   createSoa(soa: SOA) {
@@ -37,7 +37,7 @@ export class SoaApiService {
   updatePayment(_transId: string, body: any) {
     return this.httpService.patch(
       `${this.apiPrefix}/payment/${_transId}`,
-      body
+      body,
     );
   }
 
@@ -77,7 +77,7 @@ export class SoaApiService {
           blob: response.body,
           filename,
         };
-      })
+      }),
     );
   }
 
@@ -102,7 +102,7 @@ export class SoaApiService {
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 }
