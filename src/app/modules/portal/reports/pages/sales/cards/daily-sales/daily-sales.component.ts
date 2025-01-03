@@ -88,7 +88,7 @@ export class DailySalesComponent implements OnInit {
         (startDate.getFullYear() - 2000);
 
       var value = this.data.find(
-        (o) => new Date(o.date).getDate() === new Date(startDate).getDate()
+        (o) => new Date(o.date).getDate() === new Date(startDate).getDate(),
       );
 
       this.options.xaxis.categories.push(label);

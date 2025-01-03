@@ -8,9 +8,8 @@ describe('DateRangeFilterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DateRangeFilterComponent]
-    })
-    .compileComponents();
+      declarations: [DateRangeFilterComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DateRangeFilterComponent);
     component = fixture.componentInstance;

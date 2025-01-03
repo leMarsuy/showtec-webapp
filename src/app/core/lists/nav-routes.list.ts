@@ -1,6 +1,17 @@
 import { NavIcon } from '../enums/nav-icons.enum';
 
-export const NAV_ROUTES = [
+export interface NavRoute {
+  name: string;
+  path: string;
+  icon: NavIcon;
+}
+
+export interface NavRouteGroup {
+  group: string;
+  items: NavRoute[];
+}
+
+export const NAV_ROUTES: NavRouteGroup[] = [
   {
     group: 'Home',
     items: [
@@ -16,7 +27,7 @@ export const NAV_ROUTES = [
       },
       {
         name: 'Reports',
-        path: 'reports/sales',
+        path: 'reports',
         icon: NavIcon.REPORTS,
       },
     ],
@@ -31,7 +42,7 @@ export const NAV_ROUTES = [
       },
       {
         name: 'Delivery Receipt',
-        path: 'out-delivery',
+        path: 'out-deliveries',
         icon: NavIcon.DELIVERY_RECEIPT,
       },
     ],
@@ -40,8 +51,8 @@ export const NAV_ROUTES = [
     group: 'Sales',
     items: [
       {
-        name: 'Purchase Orders',
-        path: 'purchase-order',
+        name: 'Purchase Order',
+        path: 'purchase-orders',
         icon: NavIcon.PURCHASE_ORDER,
       },
       {
@@ -98,6 +109,11 @@ export const NAV_ROUTES = [
         name: 'Users',
         path: 'users',
         icon: NavIcon.USERS,
+      },
+      {
+        name: 'Roles',
+        path: 'roles',
+        icon: NavIcon.ROLES,
       },
       {
         name: 'Settings',

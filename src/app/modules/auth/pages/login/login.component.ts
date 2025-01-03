@@ -1,10 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '@shared/services/api';
-import { HttpErrorResponse } from '@angular/common/http';
-import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { Router } from '@angular/router';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+import { AuthService } from '@shared/services/api';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private snackbarService: SnackbarService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {}
@@ -44,26 +44,27 @@ export class LoginComponent implements OnInit {
     this.loginForm.disable();
     this.snackbarService.openLoadingSnackbar(
       'Login',
-      'Validating your credentials...'
+      'Validating your credentials...',
     );
     const { email, password } = this.loginForm.getRawValue();
-    this.authService.login(email || '', password || '').subscribe({
+    this.authService.login(email ?? '', password ?? '').subscribe({
       next: () => {
         this.snackbarService.closeLoadingSnackbar().then(() => {
+          this.router.navigate(['portal']);
+          this.loginForm.enable();
           this.snackbarService.openSuccessSnackbar(
             'AuthSuccess',
-            'Redirecting to your dashboard...'
+            'Redirecting to your dashboard...',
           );
-          this.router.navigate(['portal']);
         });
       },
       error: (err: HttpErrorResponse) => {
         console.error(err);
+        this.loginForm.enable();
         this.snackbarService.closeLoadingSnackbar().then(() => {
-          this.loginForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

@@ -20,6 +20,8 @@ import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-del
 import { OutDeliveryDataService } from '../../out-delivery-data.service';
 import { DateFilterType } from '@app/core/enums/date-filter.enum';
 import { MatSelectChange } from '@angular/material/select';
+import { select, Store } from '@ngrx/store';
+import { selectUser } from '@app/core/states/user';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -60,10 +62,10 @@ export class OutDeliveryListComponent {
     private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
     public router: Router,
-    public activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
     private fileApi: FileService,
-    private outDeliveryDataService: OutDeliveryDataService
+    private outDeliveryDataService: OutDeliveryDataService,
+    private store: Store,
   ) {
     this.getOutDeliverys();
   }
@@ -85,7 +87,7 @@ export class OutDeliveryListComponent {
         this._setLoadingState(false);
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -210,14 +212,14 @@ export class OutDeliveryListComponent {
         switchMap(() => {
           this._setLoadingState(true, 'Cancelling Delivery');
           return this.outdeliveryApi.cancelOutDeliveryById(outDeliveryId);
-        })
+        }),
       )
       .subscribe({
         next: () => {
           this._setLoadingState(false);
           this.snackbarService.openSuccessSnackbar(
             'Success',
-            'Delivery has been cancelled.'
+            'Delivery has been cancelled.',
           );
           setTimeout(() => {
             this.getOutDeliverys();
@@ -228,7 +230,7 @@ export class OutDeliveryListComponent {
           console.error(error);
           this.snackbarService.openErrorSnackbar(
             error.errorCode,
-            error.message
+            error.message,
           );
         },
       });

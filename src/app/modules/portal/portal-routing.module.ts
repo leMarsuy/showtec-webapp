@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PortalComponent } from './portal.component';
-import { portalGuard } from './portal.guard';
+import { portalGuard, roleGuard } from './portal.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: PortalComponent,
     canActivate: [portalGuard],
+    canActivateChild: [roleGuard],
     children: [
       // {
       //   path: 'dashboard',
@@ -25,35 +26,35 @@ const routes: Routes = [
         path: 'customers',
         loadChildren: () =>
           import('./pages/customers/customers.module').then(
-            (m) => m.CustomersModule
+            (m) => m.CustomersModule,
           ),
       },
       {
         path: 'products',
         loadChildren: () =>
           import('./pages/products/products.module').then(
-            (m) => m.ProductsModule
+            (m) => m.ProductsModule,
           ),
       },
       {
         path: 'suppliers',
         loadChildren: () =>
           import('./pages/suppliers/suppliers.module').then(
-            (m) => m.SuppliersModule
+            (m) => m.SuppliersModule,
           ),
       },
       {
         path: 'warehouses',
         loadChildren: () =>
           import('./pages/warehouses/warehouses.module').then(
-            (m) => m.WarehousesModule
+            (m) => m.WarehousesModule,
           ),
       },
       {
-        path: 'out-delivery',
+        path: 'out-deliveries',
         loadChildren: () =>
           import('./pages/out-delivery/out-delivery.module').then(
-            (m) => m.OutDeliveryModule
+            (m) => m.OutDeliveryModule,
           ),
       },
       {
@@ -85,22 +86,27 @@ const routes: Routes = [
         path: 'vouchers',
         loadChildren: () =>
           import('./pages/vouchers/vouchers.module').then(
-            (m) => m.VouchersModule
+            (m) => m.VouchersModule,
           ),
       },
       {
-        path: 'purchase-order',
+        path: 'purchase-orders',
         loadChildren: () =>
           import('./pages/purchase-order/purchase-order.module').then(
-            (m) => m.PurchaseOrderModule
+            (m) => m.PurchaseOrderModule,
           ),
       },
       {
         path: 'settings',
         loadChildren: () =>
           import('./pages/settings/settings.module').then(
-            (m) => m.SettingsModule
+            (m) => m.SettingsModule,
           ),
+      },
+      {
+        path: 'roles',
+        loadChildren: () =>
+          import('./pages/roles/roles.module').then((m) => m.RolesModule),
       },
       {
         path: '',

@@ -54,7 +54,7 @@ export class ProductApiService {
     if (allowDuplicates) {
       return this.httpService.post(
         `${this.apiPrefix}/stock-with-duplicate/${_id}`,
-        stocks
+        stocks,
       );
     }
     return this.httpService.post(`${this.apiPrefix}/stock/${_id}`, stocks);
@@ -80,14 +80,14 @@ export class ProductApiService {
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 
   checkStockInOutDelivery(stockId: string) {
     const _id = stockId;
     return this.httpService.get(
-      `${this.apiPrefix}/stock/${_id}/check-delivery-status`
+      `${this.apiPrefix}/stock/${_id}/check-delivery-status`,
     );
   }
 
@@ -102,7 +102,7 @@ export class ProductApiService {
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel/serial-number`,
-      sanitizedQuery
+      sanitizedQuery,
     );
   }
 }

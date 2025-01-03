@@ -1,0 +1,12 @@
+<div class="px-4 py-4">
+    <app-content-header
+      [icon]="roleIcon"
+      [label]="roleLabel"
+      [actions]="actions"
+      (actionEmitter)="actionEvent($event)"
+    ></app-content-header>
+  </div>
+  <div class="px-4">
+    <router-outlet></router-outlet>
+  </div>
+  

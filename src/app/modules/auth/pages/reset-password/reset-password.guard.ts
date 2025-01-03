@@ -5,7 +5,7 @@ import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { catchError, map, of } from 'rxjs';
 
 export const resetPasswordGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot
+  route: ActivatedRouteSnapshot,
 ) => {
   const router = inject(Router);
   const authService = inject(AuthService);
@@ -23,6 +23,6 @@ export const resetPasswordGuard: CanActivateFn = (
       snackbarService.openErrorSnackbar(e.error.message);
       router.navigate(['auth', 'login']);
       return of(false);
-    })
+    }),
   );
 };

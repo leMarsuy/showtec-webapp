@@ -10,7 +10,7 @@ import { catchError, of } from 'rxjs';
 
 export const purchaseOrderResolver = (
   route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
+  state: RouterStateSnapshot,
 ) => {
   const router = inject(Router);
   const purchaseOrderApi = inject(PurchaseOrderApiService);
@@ -26,6 +26,6 @@ export const purchaseOrderResolver = (
       console.error(error);
       router.navigate(['portal/purchase-order/list']);
       return of('PO not found');
-    })
+    }),
   );
 };

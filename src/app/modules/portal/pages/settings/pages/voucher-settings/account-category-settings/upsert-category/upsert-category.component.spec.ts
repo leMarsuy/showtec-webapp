@@ -8,9 +8,8 @@ describe('UpsertCategoryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpsertCategoryComponent]
-    })
-    .compileComponents();
+      imports: [UpsertCategoryComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UpsertCategoryComponent);
     component = fixture.componentInstance;

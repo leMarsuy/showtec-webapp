@@ -8,9 +8,8 @@ describe('AccountTitleSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AccountTitleSettingsComponent]
-    })
-    .compileComponents();
+      declarations: [AccountTitleSettingsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AccountTitleSettingsComponent);
     component = fixture.componentInstance;

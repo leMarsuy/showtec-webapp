@@ -19,7 +19,7 @@ export class UpdateFieldComponent {
     public data: { field: FormField; value: any; product: Product },
     private productApi: ProductApiService,
     private dialogRef: MatDialogRef<UpdateFieldComponent>,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {}
 
   saveChanges() {
@@ -31,7 +31,7 @@ export class UpdateFieldComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });

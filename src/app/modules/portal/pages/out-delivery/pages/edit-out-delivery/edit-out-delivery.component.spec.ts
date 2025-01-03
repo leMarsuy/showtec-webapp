@@ -8,9 +8,8 @@ describe('EditOutDeliveryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditOutDeliveryComponent]
-    })
-    .compileComponents();
+      imports: [EditOutDeliveryComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EditOutDeliveryComponent);
     component = fixture.componentInstance;

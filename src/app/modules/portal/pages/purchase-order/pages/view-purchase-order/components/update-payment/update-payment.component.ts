@@ -36,7 +36,7 @@ export class UpdatePaymentComponent {
     private confirmation: ConfirmationService,
     private poApi: PurchaseOrderApiService,
     private sb: SnackbarService,
-    private dialogRef: MatDialogRef<UpdatePaymentComponent>
+    private dialogRef: MatDialogRef<UpdatePaymentComponent>,
   ) {
     this.transactionForm.get('status')?.setValue(this.data.status);
     this.transactionForm.get('bank')?.setValue(this.data.bank);
@@ -75,7 +75,7 @@ export class UpdatePaymentComponent {
     this.confirmation
       .open(
         'Mark as ' + this.transactionForm.value.status + ' Payment?',
-        'Would you like to confirm this action?'
+        'Would you like to confirm this action?',
       )
       .afterClosed()
       .subscribe((res) => {
@@ -85,7 +85,7 @@ export class UpdatePaymentComponent {
             next: (response) => {
               this.sb.openSuccessSnackbar(
                 'PaymentUpdate',
-                'Update of Payment Transaction is Successful'
+                'Update of Payment Transaction is Successful',
               );
               this.dialogRef.close(true);
             },

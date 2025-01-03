@@ -31,7 +31,7 @@ export class PaginationComponent {
 
   private calculateTotalPages(): void {
     this.totalPages = Math.ceil(
-      this.totalItems / parseInt(this.itemsPerPage.toString())
+      this.totalItems / parseInt(this.itemsPerPage.toString()),
     );
     this.pageNumbers = Array(this.totalPages)
       .fill(0)
@@ -77,7 +77,7 @@ export class PaginationComponent {
       (this.currentPage - 1) * parseInt(this.itemsPerPage.toString()) + 1;
     const end = Math.min(
       this.currentPage * parseInt(this.itemsPerPage.toString()),
-      this.totalItems
+      this.totalItems,
     );
     return `${start}-${end}`;
   }

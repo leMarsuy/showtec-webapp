@@ -21,7 +21,7 @@ export class AddCustomerComponent {
   constructor(
     private customerApi: CustomerApiService,
     private _dialogRef: MatDialogRef<AddCustomerComponent>,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {}
 
   formEventHandler(e: FormGroup) {
@@ -33,7 +33,7 @@ export class AddCustomerComponent {
     var customer = this.customerForm.getRawValue() as Customer;
     this.snackbarService.openLoadingSnackbar(
       'CreateData',
-      'Adding customer to list...'
+      'Adding customer to list...',
     );
     this.customerApi.createCustomer(customer).subscribe({
       next: () => {
@@ -46,7 +46,7 @@ export class AddCustomerComponent {
           this.customerForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

@@ -10,8 +10,6 @@
       </div>
 
       <div class="flex grow justify-between items-start ml-[24px]">
-
-
         <div class="flex gap-6">
           <mat-form-field appearance="outline">
             <mat-select [formControl]="statusControl" (selectionChange)="onFilterStatusChange($event)">
@@ -36,6 +34,7 @@
         </div>
       </div>
     </div>
+
     <app-table [dataSource]="outdeliveries" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
       (actionEmitter)="actionEvent($event)"></app-table>
   </div>

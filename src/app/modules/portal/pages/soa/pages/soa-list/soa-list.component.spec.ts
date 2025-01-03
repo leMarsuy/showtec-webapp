@@ -8,9 +8,8 @@ describe('SoaListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SoaListComponent]
-    })
-    .compileComponents();
+      imports: [SoaListComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SoaListComponent);
     component = fixture.componentInstance;

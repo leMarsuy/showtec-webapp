@@ -16,7 +16,7 @@ export class ForgotPasswordComponent {
   constructor(
     private router: Router,
     private authApi: AuthService,
-    private snackbar: SnackbarService
+    private snackbar: SnackbarService,
   ) {}
 
   onLoginNavigate() {
@@ -35,7 +35,7 @@ export class ForgotPasswordComponent {
 
         this.snackbar.openSuccessSnackbar(
           'Email Sent!',
-          'Please check your inbox'
+          'Please check your inbox',
         );
       },
       error: ({ error }: HttpErrorResponse) => {

@@ -38,7 +38,7 @@ export class OutdeliverySummaryComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: OutDeliverySummary,
-    public dialogRef: MatDialogRef<OutdeliverySummaryComponent>
+    public dialogRef: MatDialogRef<OutdeliverySummaryComponent>,
   ) {
     this.outdelivery = this.data.outdelivery;
     this.stock = this.data.stock;

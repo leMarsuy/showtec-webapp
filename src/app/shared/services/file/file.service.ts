@@ -24,7 +24,7 @@ export class FileService {
 
   getFileNameFromResponseHeader<T>(response: HttpResponse<T>) {
     const contentDispositionHeader = response.headers.get(
-      'content-disposition'
+      'content-disposition',
     );
 
     const fileNameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;

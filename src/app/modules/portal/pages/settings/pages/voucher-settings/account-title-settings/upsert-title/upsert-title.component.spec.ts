@@ -8,9 +8,8 @@ describe('UpsertTitleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpsertTitleComponent]
-    })
-    .compileComponents();
+      imports: [UpsertTitleComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UpsertTitleComponent);
     component = fixture.componentInstance;

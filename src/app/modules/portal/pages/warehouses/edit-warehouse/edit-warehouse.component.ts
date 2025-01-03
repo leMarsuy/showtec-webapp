@@ -17,7 +17,7 @@ export class EditWarehouseComponent {
     private warehouseApi: WarehouseApiService,
     private _dialogRef: MatDialogRef<AddWarehouseComponent>,
     private snackbarService: SnackbarService,
-    @Inject(MAT_DIALOG_DATA) public data: { _id: string }
+    @Inject(MAT_DIALOG_DATA) public data: { _id: string },
   ) {}
 
   warehouseForm = new FormGroup({
@@ -37,7 +37,7 @@ export class EditWarehouseComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });
@@ -48,7 +48,7 @@ export class EditWarehouseComponent {
     var warehouse = this.warehouseForm.getRawValue() as Warehouse;
     this.snackbarService.openLoadingSnackbar(
       'EditData',
-      'Finalizing changes on warehouse...'
+      'Finalizing changes on warehouse...',
     );
     this.warehouseApi.updateWarehouseById(this.data._id, warehouse).subscribe({
       next: () => {
@@ -61,7 +61,7 @@ export class EditWarehouseComponent {
           this.warehouseForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

@@ -18,7 +18,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private snackbarService: SnackbarService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +40,7 @@ export class HeaderComponent implements OnInit {
       complete: () => {
         this.snackbarService.openSuccessSnackbar(
           'Logged Out',
-          'You have logged out'
+          'You have logged out',
         );
         this.router.navigate(['/auth/login']);
       },

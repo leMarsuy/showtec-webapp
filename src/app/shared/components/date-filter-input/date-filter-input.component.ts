@@ -61,12 +61,11 @@ export class DateFilterInputComponent implements OnInit, OnChanges {
       .afterClosed()
       .pipe(
         filter((result) => result),
-        map((result) => result)
+        map((result) => result),
       )
       .subscribe({
         next: (dateRangeResult) => {
           this.dateRange = dateRangeResult;
-
           this.dateFilterSelected.emit({
             filter: dateFilterType,
             dateRange: dateRangeResult,

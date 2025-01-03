@@ -43,7 +43,7 @@ export class ViewPurchaseOrderComponent {
     private poApi: PurchaseOrderApiService,
     private dialog: MatDialog,
     private snackbar: SnackbarService,
-    private dialogRef: MatDialogRef<ViewPurchaseOrderComponent>
+    private dialogRef: MatDialogRef<ViewPurchaseOrderComponent>,
   ) {
     this._getPurchaseOrderById(this.data as any);
   }

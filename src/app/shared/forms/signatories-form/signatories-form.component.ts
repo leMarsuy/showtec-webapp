@@ -101,7 +101,7 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
       switchMap((val: any) => {
         return this._filterUsers(val || '');
       }),
-      takeUntil(this.destroyed$)
+      takeUntil(this.destroyed$),
     );
   }
 
@@ -147,10 +147,10 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
   private _copySignatoriesToSelf() {
     this.signatories.sort((a, b) => {
       const aIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === a.action
+        (action) => action === a.action,
       );
       const bIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === b.action
+        (action) => action === b.action,
       );
       return aIndex - bIndex;
     });

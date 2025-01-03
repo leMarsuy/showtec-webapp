@@ -12,6 +12,6 @@ export class ConfirmationComponent {
     public data: {
       title: string;
       message: string;
-    }
+    },
   ) {}
 }

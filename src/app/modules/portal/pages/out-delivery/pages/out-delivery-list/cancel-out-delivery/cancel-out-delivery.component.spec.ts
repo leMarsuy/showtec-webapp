@@ -8,9 +8,8 @@ describe('CancelOutDeliveryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CancelOutDeliveryComponent]
-    })
-    .compileComponents();
+      declarations: [CancelOutDeliveryComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CancelOutDeliveryComponent);
     component = fixture.componentInstance;

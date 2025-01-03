@@ -78,12 +78,12 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     private transformData: TransformDataService,
     private confirmation: ConfirmationService,
     private snackbar: SnackbarService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   async ngOnInit() {
     const activateRouteData$ = this.activatedRoute.data.pipe(
-      takeUntil(this._destroyed$)
+      takeUntil(this._destroyed$),
     );
     const resolverResponse = await firstValueFrom(activateRouteData$);
 
@@ -91,7 +91,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     if (isEmpty(resolverResponse)) {
       const hasTransformData =
         this.transformData.verifyTransactionDataFootprint(
-          this.transformServiceId
+          this.transformServiceId,
         );
 
       let createPurchaseOrder: any = {};
@@ -100,7 +100,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       //TransformData Service has found value
       if (hasTransformData) {
         createPurchaseOrder = this.transformData.formatDataToRecipient(
-          this.transformServiceId
+          this.transformServiceId,
         );
         fromTransformData = true;
       }
@@ -110,11 +110,11 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
         catchError((error) => {
           console.error(error);
           return of(false);
-        })
+        }),
       );
 
       const recentPo = (await firstValueFrom(
-        getMostRecentPO$
+        getMostRecentPO$,
       )) as PurchaseOrder;
 
       if (recentPo) {
@@ -204,7 +204,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     this.confirmation
       .open(
         'Before you apply the changes...',
-        `Would you like to ${actionMsg} this Purchase Order?`
+        `Would you like to ${actionMsg} this Purchase Order?`,
       )
       .afterClosed()
       .subscribe((res) => {

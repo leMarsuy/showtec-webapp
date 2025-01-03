@@ -26,7 +26,7 @@ export class StockCheckerComponent {
         map((response) => {
           const config = response as ProductConfig;
           return config.data.productClassifications;
-        })
+        }),
       )
       .subscribe({
         next: (classifications: Array<string>) => {

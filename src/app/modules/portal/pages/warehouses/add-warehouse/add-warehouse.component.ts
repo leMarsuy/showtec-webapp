@@ -15,7 +15,7 @@ export class AddWarehouseComponent {
   constructor(
     private warehouseApi: WarehouseApiService,
     private _dialogRef: MatDialogRef<AddWarehouseComponent>,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {}
 
   warehouseForm = new FormGroup({
@@ -32,7 +32,7 @@ export class AddWarehouseComponent {
     var warehouse = this.warehouseForm.getRawValue() as Warehouse;
     this.snackbarService.openLoadingSnackbar(
       'CreateData',
-      'Adding warehouse to list...'
+      'Adding warehouse to list...',
     );
     this.warehouseApi.createWarehouse(warehouse).subscribe({
       next: () => {
@@ -45,7 +45,7 @@ export class AddWarehouseComponent {
           this.warehouseForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

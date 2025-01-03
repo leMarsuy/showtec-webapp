@@ -8,9 +8,8 @@ describe('UpsertPurchaseOrderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UpsertPurchaseOrderComponent]
-    })
-    .compileComponents();
+      imports: [UpsertPurchaseOrderComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UpsertPurchaseOrderComponent);
     component = fixture.componentInstance;

@@ -62,7 +62,7 @@ export class SuppliersComponent {
   constructor(
     private dialog: MatDialog,
     private supplierApi: SupplierApiService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {
     this.getSuppliers();
   }
@@ -95,7 +95,7 @@ export class SuppliersComponent {
   getSuppliers(isPageEvent = false) {
     this.snackbarService.openLoadingSnackbar(
       'GetData',
-      'Fetching suppliers...'
+      'Fetching suppliers...',
     );
 
     this.setQuery(isPageEvent);
@@ -109,7 +109,7 @@ export class SuppliersComponent {
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
           err.error.errorCode,
-          err.error.message
+          err.error.message,
         );
       },
     });

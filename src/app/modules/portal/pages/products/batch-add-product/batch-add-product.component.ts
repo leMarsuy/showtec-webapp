@@ -75,7 +75,7 @@ export class BatchAddProductComponent {
     private excel: ExcelService,
     private productApi: ProductApiService,
     private snackbar: SnackbarService,
-    private dialogRef: MatDialogRef<BatchAddProductComponent>
+    private dialogRef: MatDialogRef<BatchAddProductComponent>,
   ) {}
 
   props = {
@@ -108,7 +108,7 @@ export class BatchAddProductComponent {
               amount: row['Price'],
               currency: 'PHP',
             },
-          } as Product)
+          }) as Product,
       );
 
       this.showTable = true;
@@ -138,7 +138,7 @@ export class BatchAddProductComponent {
         } else {
           this.snackbar.openSuccessSnackbar(
             'BatchInsertSuccess',
-            'Products Successfully Inserted to List.'
+            'Products Successfully Inserted to List.',
           );
           this.dialogRef.close(true);
           this.uploading = false;

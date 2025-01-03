@@ -12,14 +12,14 @@ const routes: Routes = [
         path: '',
         loadChildren: () =>
           import('./pages/out-delivery-list/out-delivery-list.module').then(
-            (m) => m.OutDeliveryListModule
+            (m) => m.OutDeliveryListModule,
           ),
       },
       {
         path: 'create',
         loadChildren: () =>
           import('./pages/create-out-delivery/create-out-delivery.module').then(
-            (m) => m.CreateOutDeliveryModule
+            (m) => m.CreateOutDeliveryModule,
           ),
       },
       {
@@ -27,7 +27,7 @@ const routes: Routes = [
         canActivate: [editOutDeliveryGuard],
         loadChildren: () =>
           import('./pages/edit-out-delivery/edit-out-delivery.module').then(
-            (m) => m.EditOutDeliveryModule
+            (m) => m.EditOutDeliveryModule,
           ),
       },
     ],

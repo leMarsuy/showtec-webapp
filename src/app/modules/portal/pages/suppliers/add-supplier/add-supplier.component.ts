@@ -15,7 +15,7 @@ export class AddSupplierComponent {
   constructor(
     private supplierApi: SupplierApiService,
     private _dialogRef: MatDialogRef<AddSupplierComponent>,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
   ) {}
 
   supplierForm = new FormGroup({
@@ -33,7 +33,7 @@ export class AddSupplierComponent {
     var supplier = this.supplierForm.getRawValue() as Supplier;
     this.snackbarService.openLoadingSnackbar(
       'CreateData',
-      'Adding supplier to list...'
+      'Adding supplier to list...',
     );
     this.supplierApi.createSupplier(supplier).subscribe({
       next: () => {
@@ -46,7 +46,7 @@ export class AddSupplierComponent {
           this.supplierForm.enable();
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         });
       },

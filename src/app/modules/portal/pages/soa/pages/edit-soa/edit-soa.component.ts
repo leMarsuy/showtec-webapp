@@ -25,7 +25,7 @@ export class EditSoaComponent {
     private aRoute: ActivatedRoute,
     private router: Router,
 
-    private transformData: TransformDataService
+    private transformData: TransformDataService,
   ) {
     aRoute.params.subscribe((res: any) => {
       this._id = res._id;

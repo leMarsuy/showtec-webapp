@@ -49,7 +49,7 @@ export class VoucherDataService {
           description: particular.description,
           amount: undefined,
         };
-      }
+      },
     );
 
     return {

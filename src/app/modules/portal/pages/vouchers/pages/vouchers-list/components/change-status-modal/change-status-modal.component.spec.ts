@@ -8,9 +8,8 @@ describe('ChangeStatusModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChangeStatusModalComponent]
-    })
-    .compileComponents();
+      declarations: [ChangeStatusModalComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChangeStatusModalComponent);
     component = fixture.componentInstance;

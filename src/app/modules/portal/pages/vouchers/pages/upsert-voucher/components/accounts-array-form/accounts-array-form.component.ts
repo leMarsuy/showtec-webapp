@@ -55,7 +55,7 @@ export class AccountsArrayFormComponent implements OnInit, OnDestroy {
       ?.valueChanges.pipe(
         takeUntil(this._destroyed$),
         startWith(''),
-        debounceTime(300)
+        debounceTime(300),
       )
       .subscribe((searchControl: any) => {
         if (typeof searchControl === 'object') {

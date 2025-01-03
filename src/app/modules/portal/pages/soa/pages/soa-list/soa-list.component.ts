@@ -66,7 +66,7 @@ export class SoaListComponent implements OnDestroy {
     public activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
     private fileApi: FileService,
-    private soaData: SoaDataService
+    private soaData: SoaDataService,
   ) {
     this.getSoas();
   }
@@ -80,7 +80,7 @@ export class SoaListComponent implements OnDestroy {
       .pipe(
         finalize(() => {
           this.snackbarService.closeLoadingSnackbar();
-        })
+        }),
       )
       .subscribe({
         next: (resp) => {

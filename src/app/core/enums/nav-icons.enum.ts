@@ -11,5 +11,6 @@ export enum NavIcon {
   SUPPLIERS = 'conveyor_belt',
   USERS = 'person',
   SETTINGS = 'settings',
+  ROLES = 'badge',
   STOCK_CHECKER = 'checklist_rtl',
 }
