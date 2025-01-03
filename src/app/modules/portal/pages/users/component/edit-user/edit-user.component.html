@@ -15,7 +15,7 @@
     </mat-form-field>
     <mat-form-field class="col-span-2">
       <mat-label>Role</mat-label>
-      <mat-select formControlName="_roleId">
+      <mat-select formControlName="_roleId" [compareWith]="compareWith">
         <mat-select-trigger>{{ roleControlValue.name }}</mat-select-trigger>
         <!-- Todo: Create a select with search -->
         <!-- <div class="flex justify-center items-center ml-2 w-[calc(100%-1rem)] mb-2">

@@ -18,9 +18,10 @@ import { filter, map, Observable, switchMap } from 'rxjs';
   styleUrl: './edit-user.component.scss',
 })
 export class EditUserComponent {
-  userForm: FormGroup;
+  userForm!: FormGroup;
 
   roles$ = new Observable<Role[]>();
+
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -32,14 +33,13 @@ export class EditUserComponent {
     private readonly roleApiService: RoleApiService,
     private readonly userApi: UserApiService,
   ) {
+    this.roles$ = this._fetchRoles();
     this.userForm = this.fb.group({
       name: [this.data.name ?? '', Validators.required],
       email: [this.data.email ?? '', Validators.required],
       designation: [this.data.designation ?? '', Validators.required],
       _roleId: [this.data._roleId ?? '', Validators.required]
     });
-
-    this.roles$ = this._fetchRoles();
   }
 
   get roleControlValue() {
@@ -73,6 +73,10 @@ export class EditUserComponent {
           this.snackbar.openErrorSnackbar(error.errorCode, error.message);
         },
       });
+  }
+
+  compareWith(a: any, b: any) {
+    return a._id === b._id;
   }
 
   private _fetchRoles() {

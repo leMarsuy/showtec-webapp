@@ -39,38 +39,21 @@ export class RoleApiService {
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 
-  getRoleById(_id: string) {
-    return this.httpService.get(`${this.apiPrefix}/${_id}`);
+  getRoleById(roleId: string) {
+    return this.httpService.get(`${this.apiPrefix}/${roleId}`);
   }
 
-  updateRoleById(_id: string, updateBody: Role) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
+  updateRoleById(roleId: string, updateBody: Role) {
+    return this.httpService.patch(`${this.apiPrefix}/${roleId}`, updateBody);
   }
 
-  patchRoleStatus(_id: string, status: Status) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, { status });
+  patchRoleStatus(roleId: string, status: Status) {
+    return this.httpService.patch(`${this.apiPrefix}/${roleId}/status`, { status });
   }
 
-  exportExcelTransactions(query?: QueryParams) {
-    let sanitizedQuery: QueryParams = {};
-    if (query) {
-      sanitizedQuery = {
-        pageIndex: 0,
-        pageSize: 0,
-        searchText: query.searchText ?? '',
-        status: query?.status ?? '',
-      };
-
-      if (query?.date) {
-        sanitizedQuery = this.utilService.date.dateToQueryParam(
-          sanitizedQuery,
-          query?.date,
-        );
-      }
-    }
-    return this.httpService.getBlob(
-      `${this.apiPrefix}/export/excel`,
-      sanitizedQuery,
-    );
+  checkRoleIfHasExistingUser(roleId: string) {
+    return this.httpService.get(`${this.apiPrefix}/${roleId}/has-existing-users`);
   }
+
+
 }

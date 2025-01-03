@@ -9,7 +9,7 @@ import { Permission, Role } from '@app/core/models/role.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { RoleApiService } from '@app/shared/services/api/role-api/role-api.service';
-import { filter, finalize, switchMap } from 'rxjs';
+import { catchError, filter, finalize, lastValueFrom, map, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-upsert-role',
@@ -119,24 +119,39 @@ export class UpsertRoleComponent {
     this.roleForm.markAsPristine();
   }
 
-  deleteRole() {
-    this.confirmation.open('Delete Role', `Do you want to delete this role?`).afterClosed().pipe(filter(result => result), switchMap(() => {
-      this._setSubmittingState(true, 'Deleting role...');
-      return this.roleApiService.patchRoleStatus(this.data._id, Status.DELETED);
-    }), finalize(() => this._setSubmittingState(false))).subscribe({
-      next: () => {
-        this.snackbar.openSuccessSnackbar(
-          'Deletion Success',
-          `Role has been deleted.`,
-        );
-        setTimeout(() => {
-          this.dialogRef.close(true);
-        }, 500);
-      },
-      error: ({error} : HttpErrorResponse) => {
-        console.error(error);
-        this.snackbar.openErrorSnackbar(error.errorCode, error.message);
-      }
+  async deleteRole() {
+    const roleHasExistingUser$ = this.roleApiService.checkRoleIfHasExistingUser(this.data._id).pipe(map(result => result), catchError(() => of(false)));
+    const hasExistingUser = await lastValueFrom(roleHasExistingUser$);
+
+    if(hasExistingUser) {
+      this.snackbar.openErrorSnackbar('Action Denied!', 'This role have active users');
+      return
+    }
+
+    this.confirmation
+      .open('Delete Role', `Do you want to delete this role?`)
+      .afterClosed()
+      .pipe(
+        filter(result => result), 
+        switchMap(() => {
+          this._setSubmittingState(true, 'Deleting role...');
+          return this.roleApiService.patchRoleStatus(this.data._id, Status.DELETED);
+        }), 
+        finalize(() => this._setSubmittingState(false)))
+      .subscribe({
+        next: () => {
+          this.snackbar.openSuccessSnackbar(
+            'Deletion Success',
+            `Role has been deleted.`,
+          );
+          setTimeout(() => {
+            this.dialogRef.close(true);
+          }, 500);
+        },
+        error: ({error} : HttpErrorResponse) => {
+          console.error(error);
+          this.snackbar.openErrorSnackbar(error.errorCode, error.message);
+        }
     });
   }
 
