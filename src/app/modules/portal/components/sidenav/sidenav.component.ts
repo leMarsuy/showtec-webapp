@@ -13,8 +13,6 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class SidenavComponent implements OnDestroy {
   private readonly store = inject(Store);
-  private readonly excludedPaths = EXCLUDED_PATHS;
-
 
   navList = NAV_ROUTES;
   @Input() expanded!: Boolean;

@@ -17,7 +17,6 @@ export const authGuard: CanActivateFn = () => {
 
   return authApi.me().pipe(
     map((response) => {
-      console.log(response);
       store.dispatch(UserActions.setUser(response));
       router.navigate(['portal']);
       return false;
