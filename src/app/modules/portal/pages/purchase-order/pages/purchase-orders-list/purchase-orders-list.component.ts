@@ -119,8 +119,6 @@ export class PurchaseOrdersListComponent {
     pageSize: 10,
   };
 
-  private sortBy = '-code.value';
-
   constructor(
     private purchaseOrderApi: PurchaseOrderApiService,
     private snackbarService: SnackbarService,
@@ -189,12 +187,10 @@ export class PurchaseOrdersListComponent {
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
-    const sort = this.sortBy;
 
     this.query = {
       searchText,
       status,
-      sort,
       date,
       pageIndex,
       pageSize: this.page.pageSize,

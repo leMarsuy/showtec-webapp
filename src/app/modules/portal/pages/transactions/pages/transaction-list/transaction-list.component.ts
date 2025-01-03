@@ -38,8 +38,6 @@ export class TransactionListComponent {
   selectedFilterStatus = 'All';
   selectedFilterDate = DateFilterType.THIS_YEAR;
 
-  private readonly sortBy = '-code.value';
-
   isLoading = false;
 
   transactions!: any; // TRANSACTION interface
@@ -212,12 +210,10 @@ export class TransactionListComponent {
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
-    const sort = this.sortBy;
 
     this.query = {
       searchText,
       status,
-      sort,
       date,
       pageIndex,
       pageSize: this.page.pageSize,

@@ -56,8 +56,6 @@ export class OutDeliveryListComponent {
     pageSize: 10,
   };
 
-  private sortBy = '-code.value';
-
   constructor(
     private outdeliveryApi: OutDeliveryApiService,
     private snackbarService: SnackbarService,
@@ -146,12 +144,10 @@ export class OutDeliveryListComponent {
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
-    const sort = this.sortBy;
 
     this.query = {
       searchText,
       status,
-      sort,
       date,
       pageIndex,
       pageSize: this.page.pageSize,
