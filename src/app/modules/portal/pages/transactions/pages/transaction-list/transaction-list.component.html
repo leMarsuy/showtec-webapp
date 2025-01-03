@@ -16,7 +16,7 @@
           </mat-select>
 
         </mat-form-field>
-        <app-date-filter-input (dateFilterSelected)="onFilterDateChange($event)" />
+        <app-date-filter-input [initialValue]="selectedFilterDate" (dateFilterSelected)="onFilterDateChange($event)" />
       </div>
       <div>
         <button mat-icon-button (click)="getTransactions()" [disabled]="isLoading === true" matTooltip="Refresh Table">

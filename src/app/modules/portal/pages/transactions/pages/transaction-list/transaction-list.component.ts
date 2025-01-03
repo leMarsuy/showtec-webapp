@@ -36,9 +36,7 @@ export class TransactionListComponent {
   statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...PAYMENT_STATUSES];
   selectedFilterStatus = 'All';
-  selectedFilterDate = DateFilterType.ALL_TIME;
-
-  private readonly sortBy = '-code.value';
+  selectedFilterDate = DateFilterType.THIS_YEAR;
 
   isLoading = false;
 
@@ -49,7 +47,7 @@ export class TransactionListComponent {
       dotNotationPath: 'code.value',
       type: ColumnType.STRING,
     },
-  
+
     {
       label: 'Amount',
       dotNotationPath: 'amount',
@@ -118,7 +116,7 @@ export class TransactionListComponent {
   constructor(
     private snackbarService: SnackbarService,
     private readonly transactionApi: TransactionApiService,
-    private readonly fileApi: FileService,
+    private readonly fileApi: FileService
   ) {
     this.getTransactions();
   }
@@ -177,29 +175,29 @@ export class TransactionListComponent {
     this.getTransactions(true);
   }
 
-   exportTableExcel() {
-      const loadingMsg = 'Downloading Excel File...';
-      this._setLoadingState(true, loadingMsg);
-  
-      const query: QueryParams = {
-        searchText: this.query.searchText,
-        status: this.query.status,
-        date: this.query.date,
-      };
-  
-      this.transactionApi.exportExcelTransactions(query).subscribe({
-        next: (response: any) => {
-          this._setLoadingState(false);
-          const fileName = generateFileName('TRANSACTION', 'xlsx');
-          this.fileApi.downloadFile(response.body as Blob, fileName);
-        },
-        error: ({ error }: HttpErrorResponse) => {
-          this._setLoadingState(false);
-          console.error(error);
-          this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
-        },
-      });
-    }
+  exportTableExcel() {
+    const loadingMsg = 'Downloading Excel File...';
+    this._setLoadingState(true, loadingMsg);
+
+    const query: QueryParams = {
+      searchText: this.query.searchText,
+      status: this.query.status,
+      date: this.query.date,
+    };
+
+    this.transactionApi.exportExcelTransactions(query).subscribe({
+      next: (response: any) => {
+        this._setLoadingState(false);
+        const fileName = generateFileName('TRANSACTION', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        this._setLoadingState(false);
+        console.error(error);
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+    });
+  }
 
   private setQuery(isPageEvent: boolean) {
     const status =
@@ -212,12 +210,10 @@ export class TransactionListComponent {
 
     const pageIndex = isPageEvent ? this.page.pageIndex : 0;
     const searchText = this.searchText.value ?? '';
-    const sort = this.sortBy;
 
     this.query = {
       searchText,
       status,
-      sort,
       date,
       pageIndex,
       pageSize: this.page.pageSize,

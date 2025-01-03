@@ -44,7 +44,7 @@ export class SoaListComponent implements OnDestroy {
   statusControl = new FormControl('All');
   tableFilterStatuses = SOA_CONFIG.tableFilters.statuses;
   selectedFilterStatus: SoaStatus | string = 'All';
-  selectedFilterDate = DateFilterType.ALL_TIME;
+  selectedFilterDate = DateFilterType.THIS_YEAR;
 
   page: PageEvent = {
     pageIndex: 0,
