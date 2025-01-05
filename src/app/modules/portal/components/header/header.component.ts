@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '@shared/services/api';
-import { User } from '@core/models/user.model';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AUTH_PATHS, PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
+import { User } from '@core/models/user.model';
+import { AuthService } from '@shared/services/api';
 
 @Component({
   selector: 'app-header',
@@ -29,7 +30,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onAccountSettings() {
-    this.router.navigate(['portal', 'settings', 'account']);
+    this.router.navigate([PORTAL_PATHS.settings.account.relativeUrl]);
   }
 
   onLogout() {
@@ -42,7 +43,7 @@ export class HeaderComponent implements OnInit {
           'Logged Out',
           'You have logged out',
         );
-        this.router.navigate(['/auth/login']);
+        this.router.navigate([AUTH_PATHS.login.relativeUrl]);
       },
     });
   }

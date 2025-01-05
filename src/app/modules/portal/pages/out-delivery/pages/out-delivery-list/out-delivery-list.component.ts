@@ -1,27 +1,27 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatSelectChange } from '@angular/material/select';
+import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
-import { OUT_DELIVER_CONFIG } from '../../out-delivery-config';
-import { filter, switchMap } from 'rxjs';
-import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
-import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
-import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { Store } from '@ngrx/store';
+import { filter, switchMap } from 'rxjs';
+import { OUT_DELIVER_CONFIG } from '../../out-delivery-config';
 import { OutDeliveryDataService } from '../../out-delivery-data.service';
-import { DateFilterType } from '@app/core/enums/date-filter.enum';
-import { MatSelectChange } from '@angular/material/select';
-import { select, Store } from '@ngrx/store';
-import { selectUser } from '@app/core/states/user';
+import { CancelOutDeliveryComponent } from './cancel-out-delivery/cancel-out-delivery.component';
 
 @Component({
   selector: 'app-out-delivery-list',
@@ -119,9 +119,7 @@ export class OutDeliveryListComponent {
         break;
       case 'edit':
         this.router.navigate([
-          'portal',
-          'out-delivery',
-          'edit',
+          PORTAL_PATHS.deliveryReceipts.editUrl,
           outDelivery._id,
         ]);
         break;
@@ -130,7 +128,7 @@ export class OutDeliveryListComponent {
         break;
       case 'clone':
         this.outDeliveryDataService.setOutDelivery(outDelivery);
-        this.router.navigate(['portal', 'out-delivery', 'create']);
+        this.router.navigate([PORTAL_PATHS.deliveryReceipts.createUrl]);
         break;
     }
   }

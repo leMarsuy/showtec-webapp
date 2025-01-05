@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AUTH_PATHS, PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { AuthService } from '@shared/services/api';
@@ -37,7 +38,7 @@ export class LoginComponent implements OnInit {
   }
 
   onForgotPasswordNavigate() {
-    this.router.navigate(['auth', 'forgot-password']);
+    this.router.navigate([AUTH_PATHS.forgotPassword.relativeUrl]);
   }
 
   login() {
@@ -50,7 +51,7 @@ export class LoginComponent implements OnInit {
     this.authService.login(email ?? '', password ?? '').subscribe({
       next: () => {
         this.snackbarService.closeLoadingSnackbar().then(() => {
-          this.router.navigate(['portal']);
+          this.router.navigate([PORTAL_PATHS.baseUrl]);
           this.loginForm.enable();
           this.snackbarService.openSuccessSnackbar(
             'AuthSuccess',

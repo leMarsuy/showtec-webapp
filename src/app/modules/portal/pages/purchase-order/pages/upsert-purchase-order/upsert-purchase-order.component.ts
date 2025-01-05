@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { Signatory } from '@app/core/models/out-delivery.model';
 import { Product } from '@app/core/models/product.model';
@@ -167,7 +168,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   }
 
   navigateBack() {
-    this.router.navigate(['portal/purchase-order']);
+    this.router.navigate([PORTAL_PATHS.purchaseOrders.relativeUrl]);
   }
 
   onTransformData(recipient: TransformReference) {
@@ -179,11 +180,11 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     this.transformData.setTransformData(packet);
 
     if (recipient === 'delivery-receipt') {
-      this.router.navigate(['portal', 'out-delivery', 'create']);
+      this.router.navigate([PORTAL_PATHS.deliveryReceipts.createUrl]);
     }
 
     if (recipient === 'soa') {
-      this.router.navigate(['portal', 'soa', 'create']);
+      this.router.navigate([PORTAL_PATHS.soas.createUrl]);
     }
   }
 

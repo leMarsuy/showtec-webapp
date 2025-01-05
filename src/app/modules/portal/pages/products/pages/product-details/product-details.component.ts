@@ -1,28 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { filter, map, of, switchMap, timer } from 'rxjs';
-import { Product } from '@core/models/product.model';
-import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
-import { TableColumn } from '@core/interfaces/table-column.interface';
-import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
-import { UpdateStockComponent } from './update-stock/update-stock.component';
-import { Stock } from '@core/models/stock.model';
-import { ColumnType } from '@core/enums/column-type.enum';
+import { PageEvent } from '@angular/material/paginator';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Color } from '@app/core/enums/color.enum';
 import { STOCK_STATUSES, StockStatus } from '@app/core/enums/stock-status.enum';
-import { UpdateFieldComponent } from './update-field/update-field.component';
 import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
+import { ColumnType } from '@core/enums/column-type.enum';
+import { TableColumn } from '@core/interfaces/table-column.interface';
+import { Product } from '@core/models/product.model';
+import { Stock } from '@core/models/stock.model';
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
+import { filter, map, of, switchMap } from 'rxjs';
+import { UpdateFieldComponent } from './update-field/update-field.component';
+import { UpdateStockComponent } from './update-stock/update-stock.component';
 
-import { FormField } from '@app/core/interfaces/form-field.interface';
-import { STOCK_TYPES, StockType } from '@app/core/enums/stock-type.enum';
-import { EditStockComponent } from './edit-stock/edit-stock.component';
-import { EditProductComponent } from '../../edit-product/edit-product.component';
-import { Alignment } from '@app/core/enums/align.enum';
-import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
-import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import { Alignment } from '@app/core/enums/align.enum';
+import { StockType } from '@app/core/enums/stock-type.enum';
+import { FormField } from '@app/core/interfaces/form-field.interface';
+import { OutDelivery } from '@app/core/models/out-delivery.model';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { EditProductComponent } from '../../edit-product/edit-product.component';
+import { EditStockComponent } from './edit-stock/edit-stock.component';
 import { OutdeliverySummaryComponent } from './outdelivery-summary/outdelivery-summary.component';
 
 @Component({
@@ -173,7 +174,7 @@ export class ProductDetailsComponent implements OnInit {
           err.error.message,
         );
         setTimeout(() => {
-          this.router.navigate(['/portal/products']);
+          this.router.navigate([PORTAL_PATHS.products.relativeUrl]);
         }, 3000);
       },
     });

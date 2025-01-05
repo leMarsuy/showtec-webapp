@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { ContentHeaderAction } from '@app/core/interfaces/content-header-action.interface';
 
 @Component({
@@ -19,7 +20,7 @@ export class VouchersComponent {
   actionEvent(action: string) {
     switch (action) {
       case 'add':
-        this.router.navigate(['/portal/vouchers/create']);
+        this.router.navigate([PORTAL_PATHS.vouchers.createUrl]);
         break;
 
       default:

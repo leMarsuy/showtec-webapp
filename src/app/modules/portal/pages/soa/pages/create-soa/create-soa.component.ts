@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 
 @Component({
   selector: 'app-create-soa',
@@ -10,6 +11,6 @@ export class CreateSoaComponent {
   private router = inject(Router);
 
   navigateBack() {
-    this.router.navigate(['portal', 'soa']);
+    this.router.navigate([PORTAL_PATHS.soas.relativeUrl]);
   }
 }

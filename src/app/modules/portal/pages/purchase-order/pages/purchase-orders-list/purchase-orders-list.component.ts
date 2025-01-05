@@ -3,23 +3,24 @@ import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { MatSelectChange } from '@angular/material/select';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
 import {
   PURCHASE_ORDER_STATUSES,
   PurchaseOrderStatus,
 } from '@app/core/enums/purchase-order.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
-import { MatSelectChange } from '@angular/material/select';
-import { DateFilterType } from '@app/core/enums/date-filter.enum';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Component({
   selector: 'app-purchase-orders-list',
@@ -159,13 +160,17 @@ export class PurchaseOrdersListComponent {
 
   actionEvent(e: any) {
     const { action } = e.action;
+    const purchaseOrder = e.element;
 
     switch (action) {
       case 'edit':
-        this.router.navigate(['portal/purchase-order/edit/' + e.element._id]);
+        this.router.navigate([
+          PORTAL_PATHS.purchaseOrders.editUrl,
+          purchaseOrder._id,
+        ]);
         break;
       case 'print':
-        this._print(e.element);
+        this._print(purchaseOrder);
         break;
     }
   }

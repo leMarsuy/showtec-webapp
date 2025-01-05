@@ -5,6 +5,7 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
@@ -24,7 +25,7 @@ export const editOutDeliveryGuard: CanActivateFn = (
   ];
 
   if (!outDeliveryId) {
-    router.navigate(['portal/purchase-order/list']);
+    router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
     return false;
   }
 

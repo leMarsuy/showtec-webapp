@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
@@ -37,7 +38,7 @@ export class EditOutDeliveryComponent {
   }
 
   navigateBack() {
-    this.router.navigate(['portal', 'out-delivery']);
+    this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
   }
 
   onTransformData(recipient: TransformReference) {
@@ -77,10 +78,10 @@ export class EditOutDeliveryComponent {
 
     switch (recipient) {
       case 'soa':
-        this.router.navigate(['portal', 'soa', 'create']);
+        this.router.navigate([PORTAL_PATHS.soas.createUrl]);
         break;
       case 'purchase-order':
-        this.router.navigate(['portal', 'purchase-order', 'create']);
+        this.router.navigate([PORTAL_PATHS.purchaseOrders.createUrl]);
         break;
     }
   }

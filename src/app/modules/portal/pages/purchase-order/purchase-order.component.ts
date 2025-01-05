@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { ContentHeaderAction } from '@app/core/interfaces/content-header-action.interface';
 
 @Component({
@@ -20,7 +21,7 @@ export class PurchaseOrderComponent {
   actionEvent(action: string) {
     switch (action) {
       case 'add':
-        this.router.navigate(['/portal/purchase-order/create']);
+        this.router.navigate([PORTAL_PATHS.purchaseOrders.createUrl]);
         break;
 
       default:

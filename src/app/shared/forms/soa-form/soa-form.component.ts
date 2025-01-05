@@ -1,7 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Validators, FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import {
@@ -11,41 +16,37 @@ import {
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Customer } from '@app/core/models/customer.model';
 import { Product } from '@app/core/models/product.model';
+import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { Discount, SOA, Tax } from '@app/core/models/soa.model';
 import { User } from '@app/core/models/user.model';
+import { SoaDataService } from '@app/modules/portal/pages/soa/soa-data.service';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
 import { ProductApiService } from '@app/shared/services/api/product-api/product-api.service';
+import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
-import { deepInsert } from '@app/shared/utils/deepInsert';
-import {
-  Observable,
-  startWith,
-  debounceTime,
-  distinctUntilChanged,
-  switchMap,
-  map,
-  firstValueFrom,
-  takeUntil,
-  Subject,
-  catchError,
-  of,
-  lastValueFrom,
-} from 'rxjs';
-import { SnackbarService } from '../../components/snackbar/snackbar.service';
-import { Router } from '@angular/router';
-import { ConfirmationService } from '../../components/confirmation/confirmation.service';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { Alignment } from '@app/core/enums/align.enum';
-import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
-import { MatDialog } from '@angular/material/dialog';
 import {
   TransformDataService,
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
-import { PurchaseOrder } from '@app/core/models/purchase-order.model';
-import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
-import { SoaDataService } from '@app/modules/portal/pages/soa/soa-data.service';
+import { deepInsert } from '@app/shared/utils/deepInsert';
+import {
+  Observable,
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  firstValueFrom,
+  lastValueFrom,
+  map,
+  of,
+  startWith,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
+import { ConfirmationService } from '../../components/confirmation/confirmation.service';
+import { SnackbarService } from '../../components/snackbar/snackbar.service';
 
 interface Pricing {
   STATIC: {
@@ -330,7 +331,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
         'Error',
         `No SOA was found for the provided ID.`,
       );
-      this.router.navigate(['portal', 'soa']);
+      this.router.navigate([PORTAL_PATHS.soas.relativeUrl]);
       return;
     }
 
@@ -457,7 +458,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
           'Success',
           'SOA Successfully Created.',
         );
-        this.router.navigate(['portal', 'soa']);
+        this.router.navigate([PORTAL_PATHS.soas.relativeUrl]);
         this.displayPDF(res);
       },
       error: (err: HttpErrorResponse) => {
@@ -492,7 +493,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
           'Update Success',
           `SOA ${newSoa.code?.value} successfully updated.`,
         );
-        this.router.navigate(['portal', 'soa']);
+        this.router.navigate([PORTAL_PATHS.soas.relativeUrl]);
         this.displayPDF(newSoa);
       },
       error: (err: HttpErrorResponse) => {
@@ -649,7 +650,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-          this.router.navigate(['portal/soa']);
+          this.router.navigate([PORTAL_PATHS.soas.relativeUrl]);
         }
       });
   }

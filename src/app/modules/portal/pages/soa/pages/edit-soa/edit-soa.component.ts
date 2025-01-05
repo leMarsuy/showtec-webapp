@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { SOA } from '@app/core/models/soa.model';
 import { SoaFormComponent } from '@app/shared/forms/soa-form/soa-form.component';
@@ -33,7 +34,7 @@ export class EditSoaComponent {
   }
 
   navigateBack() {
-    this.router.navigate(['portal', 'soa']);
+    this.router.navigate([PORTAL_PATHS.soas.relativeUrl]);
   }
 
   onTransformData(recipient: TransformReference) {
@@ -46,11 +47,11 @@ export class EditSoaComponent {
     this.transformData.setTransformData(packet);
 
     if (recipient === 'purchase-order') {
-      this.router.navigate(['portal', 'purchase-order', 'create']);
+      this.router.navigate([PORTAL_PATHS.purchaseOrders.createUrl]);
     }
 
     if (recipient === 'delivery-receipt') {
-      this.router.navigate(['portal', 'out-delivery', 'create']);
+      this.router.navigate([PORTAL_PATHS.deliveryReceipts.createUrl]);
     }
   }
 }

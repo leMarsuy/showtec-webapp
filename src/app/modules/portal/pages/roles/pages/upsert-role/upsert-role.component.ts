@@ -2,14 +2,22 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { EXCLUDED_PATHS } from '@app/core/constants/nav-excluded-paths';
+import { EXCLUDED_PATHS } from '@app/core/constants/nav-paths';
 import { Status } from '@app/core/enums/status.enum';
 import { NAV_ROUTES, NavRoute } from '@app/core/lists/nav-routes.list';
 import { Permission, Role } from '@app/core/models/role.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { RoleApiService } from '@app/shared/services/api/role-api/role-api.service';
-import { catchError, filter, finalize, lastValueFrom, map, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  filter,
+  finalize,
+  lastValueFrom,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 
 @Component({
   selector: 'app-upsert-role',
@@ -22,14 +30,12 @@ export class UpsertRoleComponent {
   isUpdate = this.data ?? false;
   isSubmitting = false;
 
-  private readonly excludedPaths = EXCLUDED_PATHS;
-
   permissions = NAV_ROUTES.reduce(
     (acc: Record<string, string | boolean>[], routeGroup) => {
       const paths = routeGroup.items.flatMap((route: NavRoute) => {
-        //if path is in excludedPaths, return empty array
+        //if path is in EXCLUDED_PATHS, return empty array
         //else return object {path: route.path, hasAccess: false}
-        if (this.excludedPaths.includes(route.path)) return [];
+        if (EXCLUDED_PATHS.includes(route.path)) return [];
         return [{ name: route.name, path: route.path, hasAccess: false }];
       }, []);
 
@@ -114,30 +120,42 @@ export class UpsertRoleComponent {
       });
   }
 
-  resetRole(){
+  resetRole() {
     this._setPermissionState(this.isUpdate);
     this.roleForm.markAsPristine();
   }
 
   async deleteRole() {
-    const roleHasExistingUser$ = this.roleApiService.checkRoleIfHasExistingUser(this.data._id).pipe(map(result => result), catchError(() => of(false)));
+    const roleHasExistingUser$ = this.roleApiService
+      .checkRoleIfHasExistingUser(this.data._id)
+      .pipe(
+        map((result) => result),
+        catchError(() => of(false)),
+      );
     const hasExistingUser = await lastValueFrom(roleHasExistingUser$);
 
-    if(hasExistingUser) {
-      this.snackbar.openErrorSnackbar('Action Denied!', 'This role have active users');
-      return
+    if (hasExistingUser) {
+      this.snackbar.openErrorSnackbar(
+        'Action Denied!',
+        'This role have active users',
+      );
+      return;
     }
 
     this.confirmation
       .open('Delete Role', `Do you want to delete this role?`)
       .afterClosed()
       .pipe(
-        filter(result => result), 
+        filter((result) => result),
         switchMap(() => {
           this._setSubmittingState(true, 'Deleting role...');
-          return this.roleApiService.patchRoleStatus(this.data._id, Status.DELETED);
-        }), 
-        finalize(() => this._setSubmittingState(false)))
+          return this.roleApiService.patchRoleStatus(
+            this.data._id,
+            Status.DELETED,
+          );
+        }),
+        finalize(() => this._setSubmittingState(false)),
+      )
       .subscribe({
         next: () => {
           this.snackbar.openSuccessSnackbar(
@@ -148,11 +166,11 @@ export class UpsertRoleComponent {
             this.dialogRef.close(true);
           }, 500);
         },
-        error: ({error} : HttpErrorResponse) => {
+        error: ({ error }: HttpErrorResponse) => {
           console.error(error);
           this.snackbar.openErrorSnackbar(error.errorCode, error.message);
-        }
-    });
+        },
+      });
   }
 
   private _setSubmittingState(isSubmitting: boolean, loadingMsg = '') {
@@ -168,27 +186,29 @@ export class UpsertRoleComponent {
 
   private _setPermissionState(isUpdate: boolean) {
     if (isUpdate && this.data?.permissions) {
-      this.permissions = this.permissions.map((item:Record<string, string | boolean> ) => {
-        const matchItem  = this.data.permissions.find((permission: Permission) => permission.path === item['path']);
+      this.permissions = this.permissions.map(
+        (item: Record<string, string | boolean>) => {
+          const matchItem = this.data.permissions.find(
+            (permission: Permission) => permission.path === item['path'],
+          );
 
-        if(!matchItem) {
-          item['hasAccess'] = false;
-        } else {
-          item['hasAccess'] = matchItem['hasAccess'] ?? false;
-        }
-        return item
-      })
+          if (!matchItem) {
+            item['hasAccess'] = false;
+          } else {
+            item['hasAccess'] = matchItem['hasAccess'] ?? false;
+          }
+          return item;
+        },
+      );
 
       this.roleForm.setValue({
         name: this.data?.name,
         permissions: this.permissions,
       });
-    }
-     
-    else {
+    } else {
       this.permissions.forEach((item) => {
         item.hasAccess = false;
-      })
+      });
     }
   }
 }

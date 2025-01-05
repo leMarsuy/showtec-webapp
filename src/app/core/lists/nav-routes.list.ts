@@ -1,3 +1,4 @@
+import { PATHS } from '../constants/nav-paths';
 import { NavIcon } from '../enums/nav-icons.enum';
 
 export interface NavRoute {
@@ -22,12 +23,12 @@ export const NAV_ROUTES: NavRouteGroup[] = [
       // },
       {
         name: 'Stock Checker',
-        path: '/stock-checker',
+        path: `/${PATHS.stockChecker.baseUrl}`,
         icon: NavIcon.STOCK_CHECKER,
       },
       {
         name: 'Reports',
-        path: 'reports',
+        path: PATHS.portal.reports.baseUrl,
         icon: NavIcon.REPORTS,
       },
     ],
@@ -37,12 +38,12 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Products',
-        path: 'products',
+        path: PATHS.portal.products.baseUrl,
         icon: NavIcon.PRODUCTS,
       },
       {
         name: 'Delivery Receipt',
-        path: 'out-deliveries',
+        path: PATHS.portal.deliveryReceipts.baseUrl,
         icon: NavIcon.DELIVERY_RECEIPT,
       },
     ],
@@ -52,17 +53,17 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Purchase Order',
-        path: 'purchase-orders',
+        path: PATHS.portal.purchaseOrders.baseUrl,
         icon: NavIcon.PURCHASE_ORDER,
       },
       {
         name: 'Statement of Accounts',
-        path: 'soa',
+        path: PATHS.portal.soas.baseUrl,
         icon: NavIcon.SOA,
       },
       {
         name: 'Transactions',
-        path: 'transactions',
+        path: PATHS.portal.transactions.baseUrl,
         icon: NavIcon.TRANSACTIONS,
       },
       // {
@@ -77,7 +78,7 @@ export const NAV_ROUTES: NavRouteGroup[] = [
       // },
       {
         name: 'Vouchers',
-        path: 'vouchers',
+        path: PATHS.portal.vouchers.baseUrl,
         icon: NavIcon.VOUCHERS,
       },
     ],
@@ -87,17 +88,17 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Customers',
-        path: 'customers',
+        path: PATHS.portal.customers.baseUrl,
         icon: NavIcon.CUSTOMERS,
       },
       {
         name: 'Warehouses',
-        path: 'warehouses',
+        path: PATHS.portal.warehouses.baseUrl,
         icon: NavIcon.WAREHOUSES,
       },
       {
         name: 'Suppliers',
-        path: 'suppliers',
+        path: PATHS.portal.suppliers.baseUrl,
         icon: NavIcon.SUPPLIERS,
       },
     ],
@@ -107,17 +108,17 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Users',
-        path: 'users',
+        path: PATHS.portal.users.baseUrl,
         icon: NavIcon.USERS,
       },
       {
         name: 'Roles',
-        path: 'roles',
+        path: PATHS.portal.roles.baseUrl,
         icon: NavIcon.ROLES,
       },
       {
         name: 'Settings',
-        path: 'settings',
+        path: PATHS.portal.settings.baseUrl,
         icon: NavIcon.SETTINGS,
       },
     ],

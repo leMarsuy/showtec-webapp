@@ -1,4 +1,5 @@
 import { Status } from '../enums/status.enum';
+import { UserType } from '../enums/user-type.enum';
 import { Permission } from './role.model';
 
 export class User {
@@ -11,6 +12,7 @@ export class User {
   updatedAt: string;
   permissions?: Permission[];
   _roleId?: string;
+  userType: UserType;
 
   constructor(model: User) {
     this._id = model._id;
@@ -21,6 +23,7 @@ export class User {
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;
     this._roleId = model._roleId;
-    this.permissions = this.permissions ?? [];
+    this.permissions = model.permissions ?? [];
+    this.userType = model.userType;
   }
 }
