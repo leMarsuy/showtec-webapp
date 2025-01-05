@@ -1,5 +1,117 @@
 import { NavIcon } from '../enums/nav-icons.enum';
 
+export const AUTH_PATHS = {
+  baseUrl: 'auth',
+  login: {
+    baseUrl: 'login',
+    relativeUrl: 'auth/login',
+  },
+  register: {
+    baseUrl: 'register',
+    relativeUrl: 'auth/register',
+  },
+  forgotPassword: {
+    baseUrl: 'forgot-password',
+    relativeUrl: 'auth/forgot-password',
+  },
+};
+
+export const PORTAL_PATHS = {
+  baseUrl: 'portal',
+  dashboard: {
+    baseUrl: 'dashboard',
+    relativeUrl: 'portal/dashboard',
+  },
+  reports: {
+    baseUrl: 'reports',
+    relativeUrl: 'portal/reports',
+    sales: {
+      baseUrl: 'sales',
+      relativeUrl: 'portal/reports/sales',
+    },
+  },
+  customers: {
+    baseUrl: 'customers',
+    relativeUrl: 'portal/customers',
+  },
+  deliveryReceipts: {
+    baseUrl: 'out-deliveries',
+    relativeUrl: 'portal/out-deliveries',
+    createUrl: 'portal/out-deliveries/create',
+    editUrl: 'portal/out-deliveries/edit',
+  },
+  products: {
+    baseUrl: 'products',
+    relativeUrl: 'portal/products',
+  },
+  purchaseOrders: {
+    baseUrl: 'purchase-orders',
+    relativeUrl: 'portal/purchase-orders',
+    createUrl: 'portal/purchase-orders/create',
+    editUrl: 'portal/purchase-orders/edit',
+  },
+  roles: {
+    baseUrl: 'roles',
+    relativeUrl: 'portal/roles',
+    listUrl: 'portal/roles/list',
+  },
+  settings: {
+    baseUrl: 'settings',
+    relativeUrl: 'portal/settings',
+    account: {
+      baseUrl: 'account',
+      relativeUrl: 'portal/settings/account',
+    },
+    product: {
+      baseUrl: 'product',
+      relativeUrl: 'portal/settings/product',
+    },
+    voucher: {
+      baseUrl: 'voucher',
+      relativeUrl: 'portal/settings/voucher',
+    },
+  },
+  soas: {
+    baseUrl: 'soa',
+    relativeUrl: 'portal/soa',
+    createUrl: 'portal/soa/create',
+    editUrl: 'portal/soa/edit',
+  },
+  suppliers: {
+    baseUrl: 'suppliers',
+    relativeUrl: 'portal/suppliers',
+  },
+  transactions: {
+    baseUrl: 'transactions',
+    relativeUrl: 'portal/transactions',
+  },
+  users: {
+    baseUrl: 'users',
+    relativeUrl: 'portal/users',
+  },
+  vouchers: {
+    baseUrl: 'vouchers',
+    relativeUrl: 'portal/vouchers',
+    createUrl: 'portal/vouchers/create',
+    editUrl: 'portal/vouchers/edit',
+  },
+  warehouses: {
+    baseUrl: 'warehouses',
+    relativeUrl: 'portal/warehouses',
+  },
+};
+
+export const PATHS = {
+  auth: AUTH_PATHS,
+  portal: PORTAL_PATHS,
+  stockChecker: {
+    baseUrl: 'stock-checker',
+  },
+  customerRegistration: {
+    baseUrl: 'customer-registration',
+  },
+};
+
 export interface NavRoute {
   name: string;
   path: string;
@@ -22,12 +134,12 @@ export const NAV_ROUTES: NavRouteGroup[] = [
       // },
       {
         name: 'Stock Checker',
-        path: '/stock-checker',
+        path: '/' + PATHS.stockChecker.baseUrl,
         icon: NavIcon.STOCK_CHECKER,
       },
       {
         name: 'Reports',
-        path: 'reports',
+        path: PATHS.portal.reports.baseUrl,
         icon: NavIcon.REPORTS,
       },
     ],
@@ -37,12 +149,12 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Products',
-        path: 'products',
+        path: PATHS.portal.products.baseUrl,
         icon: NavIcon.PRODUCTS,
       },
       {
         name: 'Delivery Receipt',
-        path: 'out-deliveries',
+        path: PATHS.portal.deliveryReceipts.baseUrl,
         icon: NavIcon.DELIVERY_RECEIPT,
       },
     ],
@@ -52,17 +164,17 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Purchase Order',
-        path: 'purchase-orders',
+        path: PATHS.portal.purchaseOrders.baseUrl,
         icon: NavIcon.PURCHASE_ORDER,
       },
       {
         name: 'Statement of Accounts',
-        path: 'soa',
+        path: PATHS.portal.soas.baseUrl,
         icon: NavIcon.SOA,
       },
       {
         name: 'Transactions',
-        path: 'transactions',
+        path: PATHS.portal.transactions.baseUrl,
         icon: NavIcon.TRANSACTIONS,
       },
       // {
@@ -77,7 +189,7 @@ export const NAV_ROUTES: NavRouteGroup[] = [
       // },
       {
         name: 'Vouchers',
-        path: 'vouchers',
+        path: PATHS.portal.vouchers.baseUrl,
         icon: NavIcon.VOUCHERS,
       },
     ],
@@ -87,17 +199,17 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Customers',
-        path: 'customers',
+        path: PATHS.portal.customers.baseUrl,
         icon: NavIcon.CUSTOMERS,
       },
       {
         name: 'Warehouses',
-        path: 'warehouses',
+        path: PATHS.portal.warehouses.baseUrl,
         icon: NavIcon.WAREHOUSES,
       },
       {
         name: 'Suppliers',
-        path: 'suppliers',
+        path: PATHS.portal.suppliers.baseUrl,
         icon: NavIcon.SUPPLIERS,
       },
     ],
@@ -107,17 +219,17 @@ export const NAV_ROUTES: NavRouteGroup[] = [
     items: [
       {
         name: 'Users',
-        path: 'users',
+        path: PATHS.portal.users.baseUrl,
         icon: NavIcon.USERS,
       },
       {
         name: 'Roles',
-        path: 'roles',
+        path: PATHS.portal.roles.baseUrl,
         icon: NavIcon.ROLES,
       },
       {
         name: 'Settings',
-        path: 'settings',
+        path: PATHS.portal.settings.baseUrl,
         icon: NavIcon.SETTINGS,
       },
     ],
