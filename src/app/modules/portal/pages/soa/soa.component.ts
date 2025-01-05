@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { ContentHeaderAction } from '@app/core/interfaces/content-header-action.interface';
 
 @Component({
@@ -24,7 +25,7 @@ export class SoaComponent {
   actionEvent(action: string) {
     switch (action) {
       case 'add':
-        this.router.navigate(['/portal/soa/create']);
+        this.router.navigate([PORTAL_PATHS.soas.createUrl]);
         break;
 
       default:

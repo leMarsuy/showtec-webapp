@@ -3,30 +3,25 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
+import { MatSelectChange } from '@angular/material/select';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import { SoaStatus } from '@app/core/enums/soa-status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { SOA } from '@app/core/models/soa.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
-import { ViewSoaComponent } from '../view-soa/view-soa.component';
-import { SOA_CONFIG } from '../../soa-config';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
-import { generateFileName } from '@app/shared/utils/stringUtil';
-import { SoaStatus } from '@app/core/enums/soa-status.enum';
 import { FileService } from '@app/shared/services/file/file.service';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { finalize, Observable, Subject } from 'rxjs';
+import { SOA_CONFIG } from '../../soa-config';
 import { SoaDataService } from '../../soa-data.service';
-import { DateFilterType } from '@app/core/enums/date-filter.enum';
-import { MatSelectChange } from '@angular/material/select';
-import {
-  BehaviorSubject,
-  finalize,
-  Observable,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { ViewSoaComponent } from '../view-soa/view-soa.component';
 
 @Component({
   selector: 'app-soa-list',
@@ -123,24 +118,25 @@ export class SoaListComponent implements OnDestroy {
     // const action => contains table column action data
     // const element => contains table row data
 
-    const { action, element } = e;
+    const { action } = e.action;
+    const soa = e.element;
 
-    switch (action.action) {
+    switch (action) {
       case 'print':
-        this.print(element);
+        this.print(soa);
         break;
 
       case 'edit':
-        this.router.navigate(['portal/soa/edit/' + element._id]);
+        this.router.navigate([PORTAL_PATHS.soas.editUrl, soa._id]);
         break;
 
       case 'payments':
-        this._onClickPayment(element);
+        this._onClickPayment(soa);
         break;
 
       case 'clone':
-        this.soaData.setSoa(e.element);
-        this.router.navigate(['portal', 'soa', 'create']);
+        this.soaData.setSoa(soa);
+        this.router.navigate([PORTAL_PATHS.soas.createUrl]);
         break;
     }
   }

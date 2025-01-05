@@ -1,51 +1,52 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
+import { CustomerType } from '@app/core/enums/customer-type.enum';
 import {
   SIGNATORY_ACTIONS,
   SignatoryAction,
 } from '@app/core/enums/signatory-action.enum';
+import { StockStatus } from '@app/core/enums/stock-status.enum';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Customer } from '@app/core/models/customer.model';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { Product } from '@app/core/models/product.model';
+import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { User } from '@app/core/models/user.model';
+import { OutDeliveryDataService } from '@app/modules/portal/pages/out-delivery/out-delivery-data.service';
 import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
 import { ProductApiService } from '@app/shared/services/api/product-api/product-api.service';
+import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
-import {
-  Observable,
-  startWith,
-  debounceTime,
-  distinctUntilChanged,
-  switchMap,
-  map,
-  firstValueFrom,
-  Subject,
-  takeUntil,
-  catchError,
-  of,
-} from 'rxjs';
-import { ConfirmationService } from '../../components/confirmation/confirmation.service';
-import { SnackbarService } from '../../components/snackbar/snackbar.service';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { StockStatus } from '@app/core/enums/stock-status.enum';
-import { deepInsert } from '@app/shared/utils/deepInsert';
-import { MatDialog } from '@angular/material/dialog';
-import { PdfViewerComponent } from '../../components/pdf-viewer/pdf-viewer.component';
-import { CustomerType } from '@app/core/enums/customer-type.enum';
 import {
   TransformDataService,
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
-import { PurchaseOrder } from '@app/core/models/purchase-order.model';
-import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
-import { OutDeliveryDataService } from '@app/modules/portal/pages/out-delivery/out-delivery-data.service';
+import { deepInsert } from '@app/shared/utils/deepInsert';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  firstValueFrom,
+  map,
+  Observable,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
+import { ConfirmationService } from '../../components/confirmation/confirmation.service';
+import { PdfViewerComponent } from '../../components/pdf-viewer/pdf-viewer.component';
+import { SnackbarService } from '../../components/snackbar/snackbar.service';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -229,7 +230,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
         'Error',
         'No Out Delivery was found for the provided ID.',
       );
-      this.router.navigate(['portal', 'out-delivery']);
+      this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
       return;
     }
 
@@ -529,7 +530,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-          this.router.navigate(['portal/out-delivery']);
+          this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
         }
       });
   }
@@ -549,7 +550,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
             '.',
         );
         this.displayPDF(od);
-        this.router.navigate(['portal', 'out-delivery']);
+        this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(
@@ -580,7 +581,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     this.outdeliveryApi.createOutDelivery(outdelivery).subscribe({
       next: (res: any) => {
         this.displayPDF(res);
-        this.router.navigate(['portal', 'out-delivery']);
+        this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
       },
       error: (err: HttpErrorResponse) => {
         this.snackbarService.openErrorSnackbar(

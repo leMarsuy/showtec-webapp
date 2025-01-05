@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 
 @Component({
   selector: 'app-create-out-delivery',
@@ -11,6 +12,6 @@ export class CreateOutDeliveryComponent {
   private router = inject(Router);
 
   navigateBack() {
-    this.router.navigate(['portal/out-delivery']);
+    this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
   }
 }

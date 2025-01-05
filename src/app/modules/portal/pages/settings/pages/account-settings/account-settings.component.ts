@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AUTH_PATHS } from '@app/core/constants/nav-paths';
 import { User } from '@app/core/models/user.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
@@ -112,7 +113,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
                 'Logged Out',
                 'You have logged out',
               );
-              this.router.navigate(['/auth/login']);
+              this.router.navigate([AUTH_PATHS.login.relativeUrl]);
             },
           });
         },

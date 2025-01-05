@@ -5,6 +5,7 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
 import { catchError, of } from 'rxjs';
 
@@ -17,7 +18,7 @@ export const vouchersResolver = (
   const voucherId = route.paramMap.get('id');
 
   const navigateFallback = () => {
-    router.navigate(['portal', 'vouchers', 'list']);
+    router.navigate([PORTAL_PATHS.vouchers.relativeUrl]);
   };
 
   if (!voucherId) {

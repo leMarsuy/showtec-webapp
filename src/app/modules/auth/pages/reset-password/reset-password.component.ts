@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AUTH_PATHS } from '@app/core/constants/nav-paths';
 import { RegexValidator } from '@app/core/enums/regex-validators.enum';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { AuthService } from '@app/shared/services/api';
@@ -97,7 +98,7 @@ export class ResetPasswordComponent {
             'Success',
             'You have changed your password successfully.',
           );
-          this.router.navigate(['auth', 'login']);
+          this.router.navigate([AUTH_PATHS.login.relativeUrl]);
         },
         error: (err) => {
           this._setLoadingstate(false);
@@ -107,7 +108,7 @@ export class ResetPasswordComponent {
   }
 
   onBackToLogin() {
-    this.router.navigate(['auth/login']);
+    this.router.navigate([AUTH_PATHS.login.relativeUrl]);
   }
 
   private _setLoadingstate(isLoading: boolean) {

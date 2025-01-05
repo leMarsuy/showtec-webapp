@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AUTH_PATHS } from '@app/core/constants/nav-paths';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { AuthService } from '@app/shared/services/api';
 
@@ -20,7 +21,7 @@ export class ForgotPasswordComponent {
   ) {}
 
   onLoginNavigate() {
-    this.router.navigate(['auth', 'login']);
+    this.router.navigate([AUTH_PATHS.login.relativeUrl]);
   }
 
   onSubmit() {
@@ -31,7 +32,7 @@ export class ForgotPasswordComponent {
     this.authApi.forgotPassword(email).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['auth', 'login']);
+        this.router.navigate([AUTH_PATHS.login.relativeUrl]);
 
         this.snackbar.openSuccessSnackbar(
           'Email Sent!',

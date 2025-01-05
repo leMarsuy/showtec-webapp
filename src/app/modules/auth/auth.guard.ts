@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { UserActions } from '@app/core/states/user';
 import { AuthService } from '@app/shared/services/api';
 import { Store } from '@ngrx/store';
@@ -18,7 +19,7 @@ export const authGuard: CanActivateFn = () => {
   return authApi.me().pipe(
     map((response) => {
       store.dispatch(UserActions.setUser(response));
-      router.navigate(['portal']);
+      router.navigate([PORTAL_PATHS.baseUrl]);
       return false;
     }),
     catchError((error) => {

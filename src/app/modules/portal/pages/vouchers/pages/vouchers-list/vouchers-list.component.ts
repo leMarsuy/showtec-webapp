@@ -1,30 +1,31 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
+import { MatSelectChange } from '@angular/material/select';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
+import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import {
+  VOUCHER_STATUSES,
+  VoucherStatus,
+} from '@app/core/enums/voucher-status.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { Voucher } from '@app/core/models/voucher.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
-import { VoucherDataService } from '../upsert-voucher/voucher-data.service';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
-import { generateFileName } from '@app/shared/utils/stringUtil';
 import { FileService } from '@app/shared/services/file/file.service';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { VoucherDataService } from '../upsert-voucher/voucher-data.service';
 import { ChangeStatusModalComponent } from './components/change-status-modal/change-status-modal.component';
-import {
-  VOUCHER_STATUSES,
-  VoucherStatus,
-} from '@app/core/enums/voucher-status.enum';
-import { MatSelectChange } from '@angular/material/select';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { DateFilterType } from '@app/core/enums/date-filter.enum';
 
 @Component({
   selector: 'app-vouchers-list',
@@ -197,14 +198,14 @@ export class VouchersListComponent {
 
     switch (action) {
       case 'edit':
-        this.router.navigate(['portal', 'vouchers', 'edit', voucher._id]);
+        this.router.navigate([PORTAL_PATHS.vouchers.editUrl, voucher._id]);
         break;
       case 'print':
         this._print(voucher);
         break;
       case 'clone':
         this.voucherData.setVoucher(voucher);
-        this.router.navigate(['portal', 'vouchers', 'create']);
+        this.router.navigate([PORTAL_PATHS.vouchers.createUrl]);
         break;
       case 'change_status':
         this._openChangeStatusModal(voucher);

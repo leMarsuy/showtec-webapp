@@ -1,26 +1,27 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { catchError, firstValueFrom, of, Subject, takeUntil } from 'rxjs';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import {
   REGISTERED_BANKS,
   RegisteredBank,
 } from '@app/core/enums/registered-bank.enum';
-import { ActivatedRoute, Router } from '@angular/router';
 import { SignatoryAction } from '@app/core/enums/signatory-action.enum';
-import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
-import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
-import { Voucher } from '@app/core/models/voucher.model';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { VoucherDataService } from './voucher-data.service';
-import { MatDialog } from '@angular/material/dialog';
-import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
-import { isEmpty } from '@app/shared/utils/objectUtil';
 import { Signatory } from '@app/core/models/out-delivery.model';
+import { Voucher } from '@app/core/models/voucher.model';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
+import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { ConfigApiService } from '@app/shared/services/api/config-api/config-api.service';
-import { AccountTitle } from './account-title.list';
+import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
+import { isEmpty } from '@app/shared/utils/objectUtil';
+import { catchError, firstValueFrom, of, Subject, takeUntil } from 'rxjs';
 import { VoucherConfig } from '../../../settings/pages/voucher-settings/voucher-settings.component';
+import { AccountTitle } from './account-title.list';
+import { VoucherDataService } from './voucher-data.service';
 
 @Component({
   selector: 'app-upsert-voucher',
@@ -268,7 +269,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   }
 
   navigateBack() {
-    this.router.navigate(['portal', 'vouchers']);
+    this.router.navigate([PORTAL_PATHS.vouchers.relativeUrl]);
   }
 
   ngOnDestroy(): void {

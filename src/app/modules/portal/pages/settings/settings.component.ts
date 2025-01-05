@@ -1,8 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { ProductSettingsComponent } from './pages/product-settings/product-settings.component';
-import { AccountSettingsComponent } from './pages/account-settings/account-settings.component';
-import { VoucherSettingsComponent } from './pages/voucher-settings/voucher-settings.component';
 import { Router } from '@angular/router';
+import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 
 interface SettingRouteConfig {
   label: string;
@@ -16,20 +14,19 @@ interface SettingRouteConfig {
 })
 export class SettingsComponent {
   private readonly router = inject(Router);
-  private readonly baseUrl = '/portal/settings';
 
   routeConfigs: SettingRouteConfig[] = [
     {
       label: 'Your Account',
-      route: this.baseUrl + '/account',
+      route: `/${PORTAL_PATHS.settings.account.relativeUrl}`,
     },
     {
       label: 'Products',
-      route: this.baseUrl + '/product',
+      route: `/${PORTAL_PATHS.settings.product.relativeUrl}`,
     },
     {
       label: 'Vouchers',
-      route: this.baseUrl + '/voucher',
+      route: `/${PORTAL_PATHS.settings.voucher.relativeUrl}`,
     },
   ];
   selectedRoute = this.routeConfigs[0];
