@@ -1,22 +1,44 @@
 <div class="grid rounded-xl bg-white p-4">
   <div class="flex">
-    <div class="grow">
-      <mat-form-field appearance="outline" class="w-[32rem]">
-        <input matInput placeholder="Search User" [formControl]="searchText" (keyup.enter)="getUsers()" />
-        <mat-icon matSuffix class="cursor-pointer" (click)="getUsers()">
-          search
-        </mat-icon>
-      </mat-form-field>
-    </div>
-    <div class="flex-none">
-      <button mat-icon-button>
-        <mat-icon class="mr-2"> refresh </mat-icon>
-      </button>
-      <button mat-icon-button>
-        <mat-icon class="mr-2"> download </mat-icon>
-      </button>
+    <mat-form-field appearance="outline" class="w-[32rem]">
+      <input
+        matInput
+        placeholder="Search User"
+        [formControl]="searchText"
+        (keyup.enter)="getUsers()"
+      />
+      <mat-icon matSuffix class="cursor-pointer" (click)="getUsers()">
+        search
+      </mat-icon>
+    </mat-form-field>
+    <div class="flex grow justify-between items-start ml-[24px]">
+      <div class="flex gap-6">
+        <mat-form-field appearance="outline">
+          <mat-select
+            [formControl]="statusControl"
+            (selectionChange)="onFilterStatusChange($event)"
+          >
+            @for (status of tableFilterStatuses; track status) {
+              <mat-option [value]="status">{{ status }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div>
+        <button mat-icon-button>
+          <mat-icon class="mr-2"> refresh </mat-icon>
+        </button>
+        <button mat-icon-button>
+          <mat-icon class="mr-2"> download </mat-icon>
+        </button>
+      </div>
     </div>
   </div>
-  <app-table [dataSource]="users" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
-    (actionEmitter)="actionEvent($event)"></app-table>
+  <app-table
+    [dataSource]="users"
+    [columns]="columns"
+    [page]="page"
+    (pageEmitter)="pageEvent($event)"
+    (actionEmitter)="actionEvent($event)"
+  ></app-table>
 </div>

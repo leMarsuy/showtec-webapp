@@ -1,13 +1,14 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 
-import { UsersListRoutingModule } from './users-list-routing.module';
-import { UsersListComponent } from './users-list.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TableModule } from '@app/shared/components/table/table.module';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { TableModule } from '@app/shared/components/table/table.module';
+import { UsersListRoutingModule } from './users-list-routing.module';
+import { UsersListComponent } from './users-list.component';
 
 @NgModule({
   declarations: [UsersListComponent],
@@ -20,6 +21,8 @@ import { MatInputModule } from '@angular/material/input';
     TableModule,
     MatIconModule,
     MatInputModule,
+    MatInputModule,
+    MatSelectModule,
   ],
 })
 export class UsersListModule {}
