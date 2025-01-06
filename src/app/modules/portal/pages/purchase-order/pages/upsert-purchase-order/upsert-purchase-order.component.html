@@ -2,57 +2,87 @@
   <div class="flex flex-col h-fit w-fit gap-y-4 sticky top-16">
     <button
       class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer"
-      (click)="navigateBack()" matTooltip="Back to Table" matTooltipPosition="right">
+      (click)="navigateBack()"
+      matTooltip="Back to Table"
+      matTooltipPosition="right"
+    >
       <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
     </button>
 
-    @if(isUpdate) {
-    <button
-      class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center  cursor-pointer"
-      matTooltip="Use PO to..." matTooltipPosition="right" [cdkMenuTriggerFor]="menu">
-      <mat-icon class="text-cyan-500 inline-block" fontIcon="content_copy" />
-    </button>
+    @if (isUpdate) {
+      <button
+        class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer"
+        matTooltip="Use PO to..."
+        matTooltipPosition="right"
+        [cdkMenuTriggerFor]="menu"
+      >
+        <mat-icon class="text-cyan-500 inline-block" fontIcon="content_copy" />
+      </button>
 
-    <ng-template #menu>
-      <div
-        class="bg-white flex flex-col gap-y-1 py-2 mt-1 overflow-hidden rounded-lg  shadow-md [&>button]:flex [&>button]:items-center [&>button]:px-3 [&>button]:py-2 [&>button]:text-gray-900"
-        cdkMenu>
-        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem (click)="onTransformData('delivery-receipt')">
-          <mat-icon>{{ drIcon }}</mat-icon>
-          <span>Create Delivery Receipt</span>
-        </button>
-        <button class="hover:bg-gray-200 [&>mat-icon]:mr-2" cdkMenuItem (click)="onTransformData('soa')">
-          <mat-icon>{{ soaIcon }}</mat-icon>
-          <span>Create SOA</span>
-        </button>
-      </div>
-    </ng-template>
+      <ng-template #menu>
+        <div
+          class="bg-white flex flex-col gap-y-1 py-2 mt-1 overflow-hidden rounded-lg shadow-md [&>button]:flex [&>button]:items-center [&>button]:px-3 [&>button]:py-2 [&>button]:text-gray-900"
+          cdkMenu
+        >
+          <button
+            class="hover:bg-gray-200 [&>mat-icon]:mr-2"
+            cdkMenuItem
+            (click)="onTransformData('delivery-receipt')"
+          >
+            <mat-icon>{{ drIcon }}</mat-icon>
+            <span>Create Delivery Receipt</span>
+          </button>
+          @if (!purchaseOrder.soa) {
+            <button
+              class="hover:bg-gray-200 [&>mat-icon]:mr-2"
+              cdkMenuItem
+              (click)="onTransformData('soa')"
+            >
+              <mat-icon>{{ soaIcon }}</mat-icon>
+              <span>Create SOA</span>
+            </button>
+          }
+        </div>
+      </ng-template>
     }
   </div>
   <!-- Form Arrays -->
-  <div class="flex flex-col gap-4 w-full rounded-xl bg-white text-gray-900 p-4 grow">
+  <div
+    class="flex flex-col gap-4 w-full rounded-xl bg-white text-gray-900 p-4 grow"
+  >
     <!-- PRODUCTS LIST -->
     <section>
-      <app-products-form [products]="listedProducts" [loading]="isLoading"
-        (productsEmitter)="productsEmitHandler($event)" />
+      <app-products-form
+        [products]="listedProducts"
+        [loading]="isLoading"
+        (productsEmitter)="productsEmitHandler($event)"
+      />
     </section>
     <!-- DISCOUNTS LIST -->
     <section>
-      <app-discounts-form [discounts]="listedDiscounts" [loading]="isLoading"
-        (discountsEmitter)="discountsEmitHandler($event)" />
+      <app-discounts-form
+        [discounts]="listedDiscounts"
+        [loading]="isLoading"
+        (discountsEmitter)="discountsEmitHandler($event)"
+      />
     </section>
-
 
     <!-- TAXES LIST -->
     <section>
-      <app-taxes-form [taxes]="listedTaxes" [loading]="isLoading" (taxesEmitter)="taxesEmitHandler($event)" />
+      <app-taxes-form
+        [taxes]="listedTaxes"
+        [loading]="isLoading"
+        (taxesEmitter)="taxesEmitHandler($event)"
+      />
     </section>
-
 
     <!-- SIGNATORIES LIST -->
     <section>
-      <app-signatories-form [signatories]="listedSignatories" [loading]="isLoading"
-        (signatoriesEmitter)="signatoriesEmitHandler($event)" />
+      <app-signatories-form
+        [signatories]="listedSignatories"
+        [loading]="isLoading"
+        (signatoriesEmitter)="signatoriesEmitHandler($event)"
+      />
     </section>
   </div>
 
@@ -60,22 +90,34 @@
     <!-- Customer Form -->
     <app-attach-customer-form [fGroup]="poForm" [loading]="isLoading" />
 
-    @if(isLoading === false) {
-    <!-- Total Summary -->
-    <app-total-summary-display [discounts]="listedDiscounts" [taxes]="listedTaxes" [summary]="poSummary" />
+    @if (isLoading === false) {
+      <!-- Total Summary -->
+      <app-total-summary-display
+        [discounts]="listedDiscounts"
+        [taxes]="listedTaxes"
+        [summary]="poSummary"
+      />
     }
 
     <div class="flex justify-between">
-      <button *ngIf="isUpdate" mat-button color="warn" [disabled]="!isValid || !poForm.dirty || isSubmitting"
-        (click)="confirmDiscard()">
+      <button
+        *ngIf="isUpdate"
+        mat-button
+        color="warn"
+        [disabled]="!isValid || !poForm.dirty || isSubmitting"
+        (click)="confirmDiscard()"
+      >
         Discard
       </button>
 
-      <button mat-flat-button color="primary" [disabled]="!isValid || !poForm.dirty || isSubmitting"
-        (click)="confirmChanges()">
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="!isValid || !poForm.dirty || isSubmitting"
+        (click)="confirmChanges()"
+      >
         Save
       </button>
     </div>
   </div>
-
 </div>

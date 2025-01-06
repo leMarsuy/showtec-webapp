@@ -84,7 +84,9 @@
     }
     @if (usePurchaseOrder) {
       <div class="col-span-2">
-        <mat-form-field class="w-full">
+        <mat-form-field
+          class="w-full [&>.mdc-text-field]:!bg-[#e0e2ec] [&>.mdc-text-field>*>*>*]:!text-[#1a1b1f]"
+        >
           <mat-label>PO No.</mat-label>
           <input
             matInput

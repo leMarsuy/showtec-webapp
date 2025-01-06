@@ -4,11 +4,13 @@ import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { SOA } from '@app/core/models/soa.model';
 import { SoaFormComponent } from '@app/shared/forms/soa-form/soa-form.component';
+import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
 import {
   TransformDataService,
   TransformDataType,
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
+import { map, switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-edit-soa',
@@ -21,16 +23,26 @@ export class EditSoaComponent {
 
   _id!: string;
   navIcon = NavIcon;
+  hasPurchaseId!: boolean;
 
   constructor(
     private aRoute: ActivatedRoute,
     private router: Router,
-
+    private soaApi: SoaApiService,
     private transformData: TransformDataService,
   ) {
-    aRoute.params.subscribe((res: any) => {
-      this._id = res._id;
-    });
+    aRoute.params
+      .pipe(
+        take(1),
+        switchMap((res: any) => {
+          this._id = res._id;
+          return this.soaApi.getSoaById(res._id);
+        }),
+        map((soa: any) => soa._purchaseOrderId),
+      )
+      .subscribe((purchaseOrderId: any) => {
+        this.hasPurchaseId = !!purchaseOrderId;
+      });
   }
 
   navigateBack() {
