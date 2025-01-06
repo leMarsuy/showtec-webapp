@@ -1,25 +1,15 @@
-@if (column.type == 'string') {
-
-{{ column.dotNotationPath | deepFind : element }}
-
-} @else if (column.type == 'date') {
-
-{{ column.dotNotationPath | deepFind : element | date : "MMM dd, YYYY" }}
-
-} @else if (column.type == 'number') {
-
-{{ (column.dotNotationPath | deepFind : element | number) || 0 }}
-
-} @else if (column.type == 'percentage') {
-
-{{ (column.dotNotationPath | deepFind : element | number) || 0 | percent }}
-
-} @else if (column.type == 'currency') {
-
-{{ "₱" }}{{ (column.dotNotationPath | deepFind : element | number) || 0 }}
-
-} @else if (column.type == 'age-in-days') {
-
-{{ column.dotNotationPath | deepFind : element | aging : agingDays }}
-
+@if (column.type == "string") {
+  {{ column.dotNotationPath | deepFind: element }}
+} @else if (column.type == "date") {
+  {{ column.dotNotationPath | deepFind: element | date: "MMM dd, YYYY" }}
+} @else if (column.type == "number") {
+  {{ (column.dotNotationPath | deepFind: element | number) || 0 }}
+} @else if (column.type == "percentage") {
+  {{ (column.dotNotationPath | deepFind: element | number) || 0 | percent }}
+} @else if (column.type == "currency") {
+  {{ "₱" }}{{ (column.dotNotationPath | deepFind: element | number) || 0 }}
+} @else if (column.type == "age-in-days") {
+  {{ column.dotNotationPath | deepFind: element | aging: agingDays }}
+} @else if (column.type == "custom" && column.display) {
+  <div [innerHTML]="column.display(element)"></div>
 }

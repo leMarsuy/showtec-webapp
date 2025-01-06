@@ -8,6 +8,7 @@ export enum ColumnType {
   AGE_IN_DAYS = 'age-in-days',
   AGE_IN_MONTHS = 'age-in-months',
   AGE_IN_YEARS = 'age-in-years',
+  CUSTOM = 'custom',
   // special
 
   ACTION = 'action',

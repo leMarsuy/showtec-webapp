@@ -12,6 +12,7 @@ import {
   TransformDataType,
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
+import { map, switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-edit-out-delivery',
@@ -19,7 +20,10 @@ import {
   styleUrl: './edit-out-delivery.component.scss',
 })
 export class EditOutDeliveryComponent {
-  @ViewChild(OutDeliveryFormComponent) private form!: OutDeliveryFormComponent;
+  @ViewChild(OutDeliveryFormComponent)
+  private form!: OutDeliveryFormComponent;
+
+  hasPurchaseOrderId!: boolean;
   private transformServiceId: TransformReference = 'delivery-receipt';
   _id!: string;
   navIcon = NavIcon;
@@ -32,9 +36,18 @@ export class EditOutDeliveryComponent {
     private outDeliveryApi: OutDeliveryApiService,
     private snackbar: SnackbarService,
   ) {
-    aRoute.params.subscribe((res: any) => {
-      this._id = res._id;
-    });
+    aRoute.params
+      .pipe(
+        take(1),
+        switchMap((res: any) => {
+          this._id = res._id;
+          return this.outDeliveryApi.getOutDeliveryById(res._id);
+        }),
+        map((outDelivery: any) => outDelivery._purchaseOrderId),
+      )
+      .subscribe((purchaseOrderId: any) => {
+        this.hasPurchaseOrderId = !!purchaseOrderId;
+      });
   }
 
   navigateBack() {

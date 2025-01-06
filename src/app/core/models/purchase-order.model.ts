@@ -1,3 +1,4 @@
+import { OutDeliveryStatus } from '../enums/out-delivery-status.enum';
 import { PurchaseOrderStatus } from '../enums/purchase-order.enum';
 import { Customer } from './customer.model';
 import { Signatory } from './out-delivery.model';
@@ -17,6 +18,26 @@ export interface PuchaseOrderItems {
   };
 }
 
+interface PurchaseOrderOutDelivery {
+  code: {
+    sequence: number;
+    year: number;
+    month: number;
+    value: string;
+  };
+  _outDeliveryId: string;
+  status: OutDeliveryStatus;
+}
+
+interface PurchaseOrderSoa {
+  _soaId: string;
+  code: {
+    sequence: number;
+    year: number;
+    month: number;
+    value: string;
+  };
+}
 export class PurchaseOrder {
   _id?: string;
   code?: {
@@ -53,6 +74,9 @@ export class PurchaseOrder {
   updatedAt?: string;
   discounts?: Array<Discount>;
   taxes?: Array<Tax>;
+  outDeliveries: PurchaseOrderOutDelivery | [];
+  soa?: PurchaseOrderSoa;
+
   constructor(model: PurchaseOrder) {
     this._id = model._id;
     this.code = model.code;
@@ -66,5 +90,7 @@ export class PurchaseOrder {
     this.status = model.status;
     this.createdAt = model.createdAt;
     this.updatedAt = model.updatedAt;
+    this.outDeliveries = model.outDeliveries;
+    this.soa = model.soa;
   }
 }

@@ -43,7 +43,7 @@ export class PurchaseOrderApiService {
     );
   }
 
-  getPurchaseOrders(query?: QueryParams) {
+  getPurchaseOrders(query?: QueryParams & { hasSoa?: any }) {
     let sanitizedQuery: any = {};
     if (query) {
       sanitizedQuery = {
@@ -52,6 +52,7 @@ export class PurchaseOrderApiService {
         sort: query.sort ?? '',
         searchText: query.searchText ?? '',
         monitorStatus: query.status ?? '', // monitorStatus is used
+        hasSoa: query.hasSoa ?? '',
       };
 
       if (query?.date) {

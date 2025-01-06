@@ -74,7 +74,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     deliveryDate: this.fb.control(new Date(), [Validators.required]),
   });
 
-  usePurchaseOrder = false;
+  usePurchaseOrder = true;
   searchPoControl = new FormControl();
 
   destroyed$ = new Subject<void>();
@@ -236,6 +236,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
     //If OutDelivery has PO, get its PO
     if (response._purchaseOrderId) {
+      this.searchPoControl.disable();
       await this._patchDrPo(response._purchaseOrderId);
     }
 
@@ -664,7 +665,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     if (!purchaseOrder) return;
 
     this.searchPoControl.patchValue(purchaseOrder);
-    this.usePoCheckChange();
   }
 
   private _formatBodyRequest() {
