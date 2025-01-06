@@ -236,6 +236,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
     //If OutDelivery has PO, get its PO
     if (response._purchaseOrderId) {
+      this.searchPoControl.disable();
       await this._patchDrPo(response._purchaseOrderId);
     }
 

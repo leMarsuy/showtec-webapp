@@ -86,7 +86,37 @@ export class PurchaseOrdersListComponent {
       dotNotationPath: 'purchaseOrderDate',
       type: ColumnType.DATE,
     },
+    {
+      label: 'Delivery Receipts',
+      dotNotationPath: 'createdBy.name',
+      type: ColumnType.CUSTOM,
+      display: (element) => {
+        if (!element.outDeliveries?.length) return 'No Deliveries';
 
+        const str = element.outDeliveries.reduce(
+          (acc: string, curr: any, index: number) => {
+            if (index === 0) {
+              return `${curr.code.value}`;
+            } else {
+              return `${acc}<br>${curr.code.value}`;
+            }
+          },
+          '',
+        );
+
+        return str;
+      },
+    },
+    {
+      label: 'SOA',
+      dotNotationPath: 'soa.code.value',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Created By',
+      dotNotationPath: 'createdBy.name',
+      type: ColumnType.STRING,
+    },
     {
       label: 'Action',
       dotNotationPath: '_id',

@@ -19,6 +19,7 @@ export interface TableColumn {
   label: string;
   dotNotationPath: string | string[];
   type: ColumnType;
+  display?: (element: any) => string;
   width?: string;
   editable?: boolean;
   actions?: Action[];

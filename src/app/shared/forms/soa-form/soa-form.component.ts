@@ -340,6 +340,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
     //If SOA has PO, get its PO
     if (soaFromResponse._purchaseOrderId) {
+      this.searchPoControl.disable();
       await this._patchSoaPo(soaFromResponse._purchaseOrderId);
     }
 
