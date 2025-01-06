@@ -82,7 +82,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
   soa!: SOA;
 
-  usePurchaseOrder = false;
+  usePurchaseOrder = true;
   searchPoControl = new FormControl();
   errorMessage = '';
 
@@ -340,6 +340,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
     //If SOA has PO, get its PO
     if (soaFromResponse._purchaseOrderId) {
+      this.searchPoControl.disable();
       await this._patchSoaPo(soaFromResponse._purchaseOrderId);
     }
 
@@ -573,7 +574,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
   private _filterPos(value: string) {
     return this.poApi
-      .getPurchaseOrders({ searchText: value, pageSize: 30 })
+      .getPurchaseOrders({ searchText: value, pageSize: 30, hasSoa: false })
       .pipe(map((response: any) => response.records));
   }
 
@@ -796,7 +797,6 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     if (!purchaseOrder) return;
 
     this.searchPoControl.patchValue(purchaseOrder);
-    this.usePoCheckChange();
   }
 
   private _formatBodyRequest() {

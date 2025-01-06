@@ -4,19 +4,32 @@
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>PRODUCTS</p>
       </div>
-      <app-table [hasPagination]="false" [columns]="listedItemsColumns" [dataSource]="listedItems"
-        [page]="listedItemsPage" (actionEmitter)="actionEventHandler($event)"
-        (updateCellEmitter)="updateCellEventHandler($event)"></app-table>
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedItemsColumns"
+        [dataSource]="listedItems"
+        [page]="listedItemsPage"
+        (actionEmitter)="actionEventHandler($event)"
+        (updateCellEmitter)="updateCellEventHandler($event)"
+      ></app-table>
       <div class="flex gap-4">
         <mat-form-field class="w-full" appearance="outline">
-          <input [formControl]="productNameControl" matInput type="text" placeholder="Search Product Here..."
-            [matAutocomplete]="productAuto" />
-          <mat-autocomplete autoActiveFirstOption #productAuto="matAutocomplete"
-            (optionSelected)="pushToListedProducts($event.option.value)">
+          <input
+            [formControl]="productNameControl"
+            matInput
+            type="text"
+            placeholder="Search Product Here..."
+            [matAutocomplete]="productAuto"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #productAuto="matAutocomplete"
+            (optionSelected)="pushToListedProducts($event.option.value)"
+          >
             @for (option of filteredProducts | async; track option) {
-            <mat-option [value]="option">
-              {{ option.brand }} {{ option.model }}
-            </mat-option>
+              <mat-option [value]="option">
+                {{ option.brand }} {{ option.model }}
+              </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
@@ -27,19 +40,39 @@
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>DISCOUNTS</p>
       </div>
-      <app-table [hasPagination]="false" [columns]="listedDiscountsColumns" [dataSource]="listedDiscounts"
-        [page]="listedDiscountsPage" (actionEmitter)="actionEventDiscounts($event)"></app-table>
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedDiscountsColumns"
+        [dataSource]="listedDiscounts"
+        [page]="listedDiscountsPage"
+        (actionEmitter)="actionEventDiscounts($event)"
+      ></app-table>
       <div class="flex gap-4" [formGroup]="discountForm">
         <mat-form-field class="w-full" appearance="outline">
-          <input formControlName="name" matInput type="text" placeholder="Name of Discount" />
+          <input
+            formControlName="name"
+            matInput
+            type="text"
+            placeholder="Name of Discount"
+          />
         </mat-form-field>
 
         <mat-form-field class="w-full" appearance="outline">
-          <input formControlName="value" matInput type="number" placeholder="Amount" />
+          <input
+            formControlName="value"
+            matInput
+            type="number"
+            placeholder="Amount"
+          />
         </mat-form-field>
 
-        <button mat-flat-button color="primary" class="mat-button-lg w-[25rem]" [disabled]="!discountForm.valid"
-          (click)="pushToListedDiscounts()">
+        <button
+          mat-flat-button
+          color="primary"
+          class="mat-button-lg w-[25rem]"
+          [disabled]="!discountForm.valid"
+          (click)="pushToListedDiscounts()"
+        >
           Add Discount
         </button>
       </div>
@@ -49,19 +82,39 @@
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>TAXES</p>
       </div>
-      <app-table [hasPagination]="false" [columns]="listedTaxesColumns" [dataSource]="listedTaxes"
-        [page]="listedTaxesPage" (actionEmitter)="actionEventTaxes($event)"></app-table>
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedTaxesColumns"
+        [dataSource]="listedTaxes"
+        [page]="listedTaxesPage"
+        (actionEmitter)="actionEventTaxes($event)"
+      ></app-table>
       <div class="flex gap-4" [formGroup]="taxForm">
         <mat-form-field class="w-full" appearance="outline">
-          <input formControlName="name" matInput type="text" placeholder="Name of Tax" />
+          <input
+            formControlName="name"
+            matInput
+            type="text"
+            placeholder="Name of Tax"
+          />
         </mat-form-field>
 
         <mat-form-field class="w-full" appearance="outline">
-          <input formControlName="value" matInput type="number" placeholder="Amount" />
+          <input
+            formControlName="value"
+            matInput
+            type="number"
+            placeholder="Amount"
+          />
         </mat-form-field>
 
-        <button mat-flat-button color="primary" class="mat-button-lg w-[25rem]" [disabled]="!taxForm.valid"
-          (click)="pushToListedTaxes()">
+        <button
+          mat-flat-button
+          color="primary"
+          class="mat-button-lg w-[25rem]"
+          [disabled]="!taxForm.valid"
+          (click)="pushToListedTaxes()"
+        >
           Add Tax
         </button>
       </div>
@@ -71,17 +124,30 @@
       <div class="flex py-2 border-l-4 border-sky-500 text-sky-500 px-3 mb-4">
         <p>SIGNATORIES</p>
       </div>
-      <app-table [hasPagination]="false" [columns]="listedSignatoriesColumns" [dataSource]="listedSignatories"
-        [page]="listedSignatoriesPage" (actionEmitter)="actionEventSignatories($event)"
-        (updateCellEmitter)="updateSignatories($event)"></app-table>
+      <app-table
+        [hasPagination]="false"
+        [columns]="listedSignatoriesColumns"
+        [dataSource]="listedSignatories"
+        [page]="listedSignatoriesPage"
+        (actionEmitter)="actionEventSignatories($event)"
+        (updateCellEmitter)="updateSignatories($event)"
+      ></app-table>
       <div class="flex gap-4">
         <mat-form-field class="w-full">
           <mat-label>Find System User</mat-label>
-          <input [formControl]="signatoryControl" matInput type="text" [matAutocomplete]="userAuto" />
-          <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete"
-            (optionSelected)="pushToListedSignatories($event.option.value)">
+          <input
+            [formControl]="signatoryControl"
+            matInput
+            type="text"
+            [matAutocomplete]="userAuto"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #userAuto="matAutocomplete"
+            (optionSelected)="pushToListedSignatories($event.option.value)"
+          >
             @for (option of filteredUsers | async; track option) {
-            <mat-option [value]="option">{{ option.name }}</mat-option>
+              <mat-option [value]="option">{{ option.name }}</mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
@@ -90,45 +156,75 @@
   </div>
 
   <div class="bg-white rounded-xl p-4 w-[25rem] sticky top-16 h-fit">
-    <div class="col-span-2">
-      <mat-checkbox class="example-margin" [ngModel]="usePurchaseOrder" (change)="usePoCheckChange()">
-        Use Purchase Order
-      </mat-checkbox>
-    </div>
+    @if (!_id) {
+      <div class="col-span-2">
+        <mat-checkbox
+          class="example-margin"
+          [ngModel]="usePurchaseOrder"
+          (change)="usePoCheckChange()"
+        >
+          Use Purchase Order
+        </mat-checkbox>
+      </div>
+    }
 
-    @if(usePurchaseOrder) {
-    <div class="col-span-2">
-      <mat-form-field class="w-full">
-        <mat-label>PO No.</mat-label>
-        <input matInput placeholder="Type PO No..." [matAutocomplete]="poAuto" [formControl]="searchPoControl" />
-        <mat-autocomplete autoActiveFirstOption #poAuto="matAutocomplete"
-          (optionSelected)="autofillCustomerDetailsFromPo($event.option.value)" [displayWith]="displayPo">
-          @for (po of filteredPos | async; track po) {
-          <mat-option [value]="po">
-            <p>PO# {{ po?.code?.value }}</p>
-            <p class="text-xs text-gray-600 mt-1">{{ displayPoOption(po)}}</p>
-          </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-    </div>
+    @if (usePurchaseOrder) {
+      <div class="col-span-2">
+        <mat-form-field
+          class="w-full [&>.mdc-text-field]:!bg-[#e0e2ec] [&>.mdc-text-field>*>*>*]:!text-[#1a1b1f]"
+        >
+          <mat-label>PO No.</mat-label>
+          <input
+            matInput
+            placeholder="Type PO No..."
+            [matAutocomplete]="poAuto"
+            [formControl]="searchPoControl"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #poAuto="matAutocomplete"
+            (optionSelected)="
+              autofillCustomerDetailsFromPo($event.option.value)
+            "
+            [displayWith]="displayPo"
+          >
+            @for (po of filteredPos | async; track po) {
+              <mat-option [value]="po">
+                <p>PO# {{ po?.code?.value }}</p>
+                <p class="text-xs text-gray-600 mt-1">
+                  {{ displayPoOption(po) }}
+                </p>
+              </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
     }
 
     <form class="grid grid-cols-2 gap-x-1" [formGroup]="soaForm">
       <div class="col-span-2">
         <mat-form-field class="w-full">
           <mat-label>Customer's Name</mat-label>
-          <input matInput placeholder="Type Customer Name..." [readonly]="usePurchaseOrder"
-            [matAutocomplete]="customerAuto" formControlName="_customerId" />
-          <mat-autocomplete autoActiveFirstOption #customerAuto="matAutocomplete"
-            (optionSelected)="autofillCustomerDetails($event.option.value)" [displayWith]="displayCustomer">
+          <input
+            matInput
+            placeholder="Type Customer Name..."
+            [readonly]="usePurchaseOrder"
+            [matAutocomplete]="customerAuto"
+            formControlName="_customerId"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #customerAuto="matAutocomplete"
+            (optionSelected)="autofillCustomerDetails($event.option.value)"
+            [displayWith]="displayCustomer"
+          >
             @for (option of filteredCustomers | async; track option) {
-            <mat-option [value]="option">
-              <p>{{ option.name }}</p>
-              <small class="text-xs text-gray-600">
-                {{ option.contactPerson }}
-              </small>
-            </mat-option>
+              <mat-option [value]="option">
+                <p>{{ option.name }}</p>
+                <small class="text-xs text-gray-600">
+                  {{ option.contactPerson }}
+                </small>
+              </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
@@ -151,8 +247,16 @@
       <div class="col-span-1">
         <mat-form-field class="w-full">
           <mat-label>SOA Date</mat-label>
-          <input matInput placeholder="MM/DD/YYYY" formControlName="soaDate" [matDatepicker]="picker" />
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <input
+            matInput
+            placeholder="MM/DD/YYYY"
+            formControlName="soaDate"
+            [matDatepicker]="picker"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
@@ -172,7 +276,9 @@
       </div>
     </form>
 
-    <div class="gap-2x grid grid-cols-2 border-2 border-dashed border-gray-500 p-4 mb-4 text-sm">
+    <div
+      class="gap-2x grid grid-cols-2 border-2 border-dashed border-gray-500 p-4 mb-4 text-sm"
+    >
       <div class="col-span-1">
         <p>Total</p>
       </div>
@@ -187,14 +293,16 @@
         <p>- PHP {{ soaSummary.productDiscount | number }}</p>
       </div>
       @for (item of listedDiscounts; track $index) {
-      <div class="col-span-1">
-        <p>{{ item.name }}</p>
-      </div>
-      <div class="col-span-1 text-right">
-        <p>PHP {{ item.value | number }}</p>
-      </div>
+        <div class="col-span-1">
+          <p>{{ item.name }}</p>
+        </div>
+        <div class="col-span-1 text-right">
+          <p>PHP {{ item.value | number }}</p>
+        </div>
       }
-      <div class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"></div>
+      <div
+        class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"
+      ></div>
       <div class="col-span-1">
         <p>Sub-Total</p>
       </div>
@@ -203,15 +311,17 @@
       </div>
       <!--  -->
       @for (item of listedTaxes; track $index) {
-      <div class="col-span-1">
-        <p>{{ item.name }} {{ item.value | percent }}</p>
-      </div>
-      <div class="col-span-1 text-right">
-        <p>PHP {{ soaSummary.subtotal * item.value | number }}</p>
-      </div>
+        <div class="col-span-1">
+          <p>{{ item.name }} {{ item.value | percent }}</p>
+        </div>
+        <div class="col-span-1 text-right">
+          <p>PHP {{ soaSummary.subtotal * item.value | number }}</p>
+        </div>
       }
 
-      <div class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"></div>
+      <div
+        class="col-span-2 border-b-2 border-gray-500 border-dashed my-2"
+      ></div>
       <div class="col-span-1">
         <p class="font-bold">GRAND TOTAL</p>
       </div>
@@ -221,23 +331,23 @@
     </div>
 
     <div class="flex justify-between">
-      @if(_id){
-      <div class="flex">
-        <button mat-stroked-button color="warn" (click)="confirmDiscard()">
-          Discard
+      @if (_id) {
+        <div class="flex">
+          <button mat-stroked-button color="warn" (click)="confirmDiscard()">
+            Discard
+          </button>
+          <button mat-icon-button>
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+        <button mat-raised-button color="primary" (click)="confirmChanges()">
+          Save
         </button>
-        <button mat-icon-button>
-          <mat-icon>more_vert</mat-icon>
-        </button>
-      </div>
-      <button mat-raised-button color="primary" (click)="confirmChanges()">
-        Save
-      </button>
       } @else {
-      <button mat-stroked-button color="warn">Cancel</button>
-      <button mat-flat-button color="primary" (click)="confirm()">
-        Create
-      </button>
+        <button mat-stroked-button color="warn">Cancel</button>
+        <button mat-flat-button color="primary" (click)="confirm()">
+          Create
+        </button>
       }
     </div>
   </div>

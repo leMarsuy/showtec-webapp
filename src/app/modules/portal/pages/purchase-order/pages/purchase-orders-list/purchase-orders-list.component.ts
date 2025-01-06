@@ -10,6 +10,7 @@ import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import {
   PURCHASE_ORDER_STATUSES,
   PurchaseOrderStatus,
@@ -86,7 +87,47 @@ export class PurchaseOrdersListComponent {
       dotNotationPath: 'purchaseOrderDate',
       type: ColumnType.DATE,
     },
+    {
+      label: 'Delivery Receipts',
+      dotNotationPath: 'outDeliveries',
+      type: ColumnType.CUSTOM,
+      display: (element) => {
+        if (!element.outDeliveries?.length) return 'No Deliveries';
+        const activeStatus = [
+          OutDeliveryStatus.ACTIVE,
+          OutDeliveryStatus.PENDING,
+        ];
+        const str = element.outDeliveries.reduce(
+          (acc: string, curr: any, index: number) => {
+            const color = activeStatus.includes(curr.status)
+              ? '[#1a1b1f]'
+              : 'rose-500';
 
+            const formattedStr = (color: string, text: string) => {
+              return `<span class='w-fit text-${color} text-center'>${text}</span>`;
+            };
+            if (index === 0) {
+              return `${formattedStr(color, curr.code.value)}`;
+            } else {
+              return `${acc}${formattedStr(color, curr.code.value)}`;
+            }
+          },
+          '',
+        );
+
+        return `<div class='inline-flex flex-col gap-1 py-2 pr-5 max-h-[5rem] overflow-y-scroll'>${str}</div>`;
+      },
+    },
+    {
+      label: 'SOA',
+      dotNotationPath: 'soa.code.value',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Created By',
+      dotNotationPath: 'createdBy.name',
+      type: ColumnType.STRING,
+    },
     {
       label: 'Action',
       dotNotationPath: '_id',
