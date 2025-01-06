@@ -7,12 +7,12 @@ import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { User } from '@app/core/models/user.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
 import { EditUserComponent } from '../../component/edit-user/edit-user.component';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
 
 @Component({
   selector: 'app-users-list',
@@ -37,6 +37,11 @@ export class UsersListComponent {
     {
       label: 'Designation',
       dotNotationPath: 'designation',
+      type: ColumnType.STRING,
+    },
+    {
+      label: 'Role',
+      dotNotationPath: '_roleId.name',
       type: ColumnType.STRING,
     },
     {
