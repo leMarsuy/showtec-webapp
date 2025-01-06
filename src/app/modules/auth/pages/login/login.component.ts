@@ -15,11 +15,8 @@ import { AuthService } from '@shared/services/api';
 })
 export class LoginComponent implements OnInit {
   loginForm = new FormGroup({
-    email: new FormControl('it@showtec.ph', [
-      Validators.required,
-      Validators.email,
-    ]),
-    password: new FormControl('Password123!', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required]),
   });
   showPassword = false;
 
