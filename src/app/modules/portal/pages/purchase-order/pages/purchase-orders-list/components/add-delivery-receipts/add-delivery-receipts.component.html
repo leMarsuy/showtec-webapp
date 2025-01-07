@@ -1,0 +1,70 @@
+<h1 mat-dialog-title>Add Existing Delivery Receipts</h1>
+<div mat-dialog-content>
+  <section
+    class="max-h-[10rem] min-h-[10rem] overflow-y-scroll flex flex-col gap-2 mb-4"
+  >
+    @for (formGroup of fArray.controls; track formGroup) {
+      <ng-container *ngIf="formGroup.value as purchaseOrderOutDelivery">
+        <div
+          class="grid grid-cols-4 item-center border border-gray-500 px-4 py-2 rounded-sm"
+        >
+          <div class="col-span-3">
+            <p class="text-md">DR# {{ purchaseOrderOutDelivery.code.value }}</p>
+            <p class="text-md">
+              {{ displayOutDeliveryOption(purchaseOrderOutDelivery) }}
+            </p>
+          </div>
+
+          <button
+            mat-icon-button
+            class="ml-auto"
+            (click)="removeFromList($index)"
+          >
+            <mat-icon fontIcon="close" class="text-rose-500"></mat-icon>
+          </button>
+        </div>
+      </ng-container>
+    }
+  </section>
+
+  <section>
+    <mat-form-field class="w-full">
+      <mat-label>Search DR</mat-label>
+      <input
+        type="text"
+        matInput
+        [formControl]="searchDrControl"
+        [matAutocomplete]="drAuto"
+      />
+      <mat-autocomplete
+        #drAuto="matAutocomplete"
+        (optionSelected)="pushToList($event.option.value)"
+      >
+        @for (outDelivery of filteredDr$ | async; track outDelivery._id) {
+          <mat-option
+            [value]="outDelivery"
+            class="py-1"
+            [ngClass]="{
+              '!text-sky-500 !bg-sky-50 !font-medium': isInArray(outDelivery),
+            }"
+          >
+            <p>DR# {{ outDelivery?.code?.value }}</p>
+            <p class="text-xs mt-1">
+              {{ displayOutDeliveryOption(outDelivery) }}
+            </p>
+          </mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+  </section>
+</div>
+<footer mat-dialog-actions>
+  <button mat-button color="warn" mat-dialog-close>Cancel</button>
+  <button
+    mat-flat-button
+    [disabled]="!fArray.getRawValue().length"
+    (click)="submitChanges()"
+  >
+    Save
+  </button>
+</footer>

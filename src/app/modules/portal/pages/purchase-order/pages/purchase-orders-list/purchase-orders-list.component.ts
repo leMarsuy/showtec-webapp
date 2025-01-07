@@ -10,6 +10,7 @@ import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { DateFilterType } from '@app/core/enums/date-filter.enum';
+import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import {
   PURCHASE_ORDER_STATUSES,
@@ -22,6 +23,7 @@ import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
+import { AddDeliveryReceiptsComponent } from './components/add-delivery-receipts/add-delivery-receipts.component';
 
 @Component({
   selector: 'app-purchase-orders-list',
@@ -146,6 +148,12 @@ export class PurchaseOrdersListComponent {
           icon: 'edit',
           color: Color.WARNING,
         },
+        {
+          name: 'Add Delivery Receipts',
+          action: 'add-out-delivery',
+          icon: NavIcon.DELIVERY_RECEIPT,
+          color: Color.DEAD,
+        },
       ],
     },
   ];
@@ -213,6 +221,9 @@ export class PurchaseOrdersListComponent {
       case 'print':
         this._print(purchaseOrder);
         break;
+      case 'add-out-delivery':
+        this._openAddOutDeliveries(purchaseOrder._id);
+        break;
     }
   }
 
@@ -241,6 +252,23 @@ export class PurchaseOrdersListComponent {
       pageIndex,
       pageSize: this.page.pageSize,
     };
+  }
+
+  private _openAddOutDeliveries(purchaseOrderId: string) {
+    this.dialog
+      .open(AddDeliveryReceiptsComponent, {
+        data: {
+          purchaseOrderId,
+        },
+        maxWidth: '70rem',
+        width: '100%',
+        disableClose: true,
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((response) => {
+        if (response) this.getPurchaseOrders();
+      });
   }
 
   private _print(purchaseOrder: PurchaseOrder) {

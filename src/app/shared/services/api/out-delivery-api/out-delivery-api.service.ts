@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpService } from '../../http/http.service';
-import { OutDelivery } from '@core/models/out-delivery.model';
-import { environment } from '../../../../../environments/environment';
-import { QueryParams } from '@core/interfaces/query-params.interface';
-import { FileService } from '../../file/file.service';
-import { map } from 'rxjs';
-import { Status } from '@app/core/enums/status.enum';
 import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
+import { QueryParams } from '@core/interfaces/query-params.interface';
+import { OutDelivery } from '@core/models/out-delivery.model';
+import { map } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
+import { FileService } from '../../file/file.service';
+import { HttpService } from '../../http/http.service';
 import { UtilService } from '../../util/util.service';
 
 @Injectable({
@@ -25,9 +24,8 @@ export class OutDeliveryApiService {
     return this.httpService.post(`${this.apiPrefix}`, outdelivery);
   }
 
-  getOutDeliverys(query?: QueryParams) {
-    let sanitizedQuery: QueryParams = {};
-
+  getOutDeliverys(query?: QueryParams & { hasPurchaseOrder?: any }) {
+    let sanitizedQuery: any = {};
     if (query) {
       sanitizedQuery = {
         pageIndex: query.pageIndex ?? 0,
@@ -37,12 +35,18 @@ export class OutDeliveryApiService {
         status: query.status ?? '',
       };
 
+      if (query.hasPurchaseOrder !== undefined) {
+        sanitizedQuery = {
+          ...sanitizedQuery,
+          hasPurchaseOrder: query.hasPurchaseOrder,
+        };
+      }
+
       if (query?.date) {
         const date = this.utilService.date.dateToQueryParam(query?.date);
         sanitizedQuery = { ...sanitizedQuery, date };
       }
     }
-
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
 

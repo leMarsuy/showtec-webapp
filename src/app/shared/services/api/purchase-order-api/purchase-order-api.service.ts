@@ -102,6 +102,16 @@ export class PurchaseOrderApiService {
     );
   }
 
+  patchAddPurchaseOrderOutDeliveriesById(
+    purchaseOrderId: string,
+    outDeliveries: any,
+  ) {
+    return this.httpService.patch(
+      `${this.apiPrefix}/${purchaseOrderId}/out-deliveries`,
+      { outDeliveries },
+    );
+  }
+
   getPurchaseOrderPdfReceipt(_id: string) {
     return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
       map((response: any) => {
