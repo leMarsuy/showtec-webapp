@@ -17,7 +17,6 @@ import {
   SignatoryAction,
 } from '@app/core/enums/signatory-action.enum';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
-import { Signatory } from '@app/core/models/out-delivery.model';
 import { User } from '@app/core/models/user.model';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
 import { deepInsert } from '@app/shared/utils/deepInsert';

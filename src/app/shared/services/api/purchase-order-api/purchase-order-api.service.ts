@@ -52,8 +52,11 @@ export class PurchaseOrderApiService {
         sort: query.sort ?? '',
         searchText: query.searchText ?? '',
         monitorStatus: query.status ?? '', // monitorStatus is used
-        hasSoa: query.hasSoa ?? '',
       };
+
+      if (query.hasSoa) {
+        sanitizedQuery = { hasSoa: query.hasSoa };
+      }
 
       if (query?.date) {
         const date = this.utilService.date.dateToQueryParam(query?.date);
@@ -99,6 +102,16 @@ export class PurchaseOrderApiService {
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,
       sanitizedQuery,
+    );
+  }
+
+  patchAddPurchaseOrderOutDeliveriesById(
+    purchaseOrderId: string,
+    outDeliveries: any,
+  ) {
+    return this.httpService.patch(
+      `${this.apiPrefix}/${purchaseOrderId}/out-deliveries`,
+      { outDeliveries },
     );
   }
 
