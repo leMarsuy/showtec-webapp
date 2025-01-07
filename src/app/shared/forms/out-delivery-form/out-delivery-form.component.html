@@ -199,16 +199,23 @@
             <mat-icon>more_vert</mat-icon>
           </button>
         </div>
-        <button mat-raised-button color="primary" (click)="confirmChanges()">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="deliveryForm.pristine || deliveryForm.invalid"
+          (click)="confirmChanges()"
+        >
           Apply Changes
         </button>
       } @else {
-        <button mat-stroked-button color="warn">Cancel Transaction</button>
+        <button mat-stroked-button color="warn" (click)="confirmDiscard()">
+          Cancel Transaction
+        </button>
         <button
           mat-flat-button
           color="primary"
           (click)="confirm()"
-          [disabled]="!deliveryForm.valid"
+          [disabled]="deliveryForm.invalid"
         >
           Create Delivery Receipt
         </button>
