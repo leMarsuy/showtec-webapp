@@ -202,7 +202,9 @@
         <button
           mat-raised-button
           color="primary"
-          [disabled]="deliveryForm.pristine || deliveryForm.invalid"
+          [disabled]="
+            deliveryForm.pristine || deliveryForm.invalid || !listedItems.length
+          "
           (click)="confirmChanges()"
         >
           Apply Changes
@@ -215,7 +217,7 @@
           mat-flat-button
           color="primary"
           (click)="confirm()"
-          [disabled]="deliveryForm.invalid"
+          [disabled]="deliveryForm.invalid || !listedItems.length"
         >
           Create Delivery Receipt
         </button>
