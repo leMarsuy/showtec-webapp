@@ -269,6 +269,14 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     private soaDataService: SoaDataService,
   ) {}
 
+  get checkerPurchaseOrder() {
+    if (this.usePurchaseOrder) {
+      return !!this.soaForm.get('_purchaseOrderId')?.value;
+    }
+
+    return true;
+  }
+
   ngOnInit(): void {
     this._componentInit();
 
@@ -425,12 +433,14 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.listedItemsPage.length++;
     this._calculateSummary();
     this.productNameControl.reset();
+    this.soaForm.markAsDirty();
   }
 
   removeFromListedProducts(i: number) {
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length--;
+    this.soaForm.markAsDirty();
     this._calculateSummary();
   }
 
@@ -512,11 +522,13 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       action: SignatoryAction.APPROVED,
     });
     this._copySignatoriesToSelf();
+    this.soaForm.markAsDirty();
     this.signatoryControl.reset();
   }
 
   removeFromListedSignatories(i: number) {
     this.listedSignatories.splice(i, 1);
+    this.soaForm.markAsDirty();
     this._copySignatoriesToSelf();
   }
 
@@ -527,6 +539,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.listedDiscounts = [...this.listedDiscounts];
     this.listedDiscountsPage.length = this.listedDiscounts.length;
     this._calculateSummary();
+    this.soaForm.markAsDirty();
     this.discountForm.reset();
   }
 
@@ -537,6 +550,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.listedTaxes = [...this.listedTaxes];
     this.listedTaxesPage.length = this.listedTaxes.length;
     this._calculateSummary();
+    this.soaForm.markAsDirty();
     this.taxForm.reset();
   }
 
@@ -544,6 +558,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.listedDiscounts.splice(i, 1);
     this.listedDiscounts = [...this.listedDiscounts];
     this.listedDiscountsPage.length = this.listedDiscounts.length;
+    this.soaForm.markAsDirty();
     this._calculateSummary();
   }
 
@@ -551,6 +566,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.listedTaxes.splice(i, 1);
     this.listedTaxes = [...this.listedTaxes];
     this.listedTaxesPage.length = this.listedTaxes.length;
+    this.soaForm.markAsDirty();
     this._calculateSummary();
   }
 

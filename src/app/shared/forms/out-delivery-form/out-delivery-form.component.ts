@@ -362,6 +362,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       this.listedItems.push(product);
     }
     this.listedItems = [...this.listedItems];
+    this.deliveryForm.markAsDirty();
     this.listedItemsPage.length = this.listedItems.length;
   }
 
@@ -369,6 +370,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length = this.listedItems.length;
+    this.deliveryForm.markAsDirty();
   }
 
   pushToListedSignatories(user: User) {
@@ -378,11 +380,13 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     });
 
     this._copySignatoriesToSelf();
+    this.deliveryForm.markAsDirty();
     this.signatoryControl.reset();
   }
 
   removeFromListedSignatories(i: number) {
     this.listedSignatories.splice(i, 1);
+    this.deliveryForm.markAsDirty();
     this._copySignatoriesToSelf();
   }
 
