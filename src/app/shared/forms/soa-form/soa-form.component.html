@@ -340,12 +340,29 @@
             <mat-icon>more_vert</mat-icon>
           </button>
         </div>
-        <button mat-raised-button color="primary" (click)="confirmChanges()">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="
+            soaForm.pristine ||
+            soaForm.invalid ||
+            !checkerPurchaseOrder ||
+            !listedItems.length
+          "
+          (click)="confirmChanges()"
+        >
           Save
         </button>
       } @else {
         <button mat-stroked-button color="warn">Cancel</button>
-        <button mat-flat-button color="primary" (click)="confirm()">
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="
+            soaForm.invalid || !checkerPurchaseOrder || !listedItems.length
+          "
+          (click)="confirm()"
+        >
           Create
         </button>
       }
