@@ -153,6 +153,16 @@ export class PurchaseOrdersListComponent {
           action: 'add-out-delivery',
           icon: NavIcon.DELIVERY_RECEIPT,
           color: Color.DEAD,
+          showIfCondition: {
+            $or: [
+              {
+                status: PurchaseOrderStatus.ACTIVE,
+              },
+              {
+                status: PurchaseOrderStatus.PENDING,
+              },
+            ],
+          },
         },
       ],
     },
