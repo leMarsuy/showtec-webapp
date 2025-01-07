@@ -52,8 +52,11 @@ export class PurchaseOrderApiService {
         sort: query.sort ?? '',
         searchText: query.searchText ?? '',
         monitorStatus: query.status ?? '', // monitorStatus is used
-        hasSoa: query.hasSoa ?? '',
       };
+
+      if (query.hasSoa) {
+        sanitizedQuery = { hasSoa: query.hasSoa };
+      }
 
       if (query?.date) {
         const date = this.utilService.date.dateToQueryParam(query?.date);
