@@ -163,6 +163,16 @@ export class AddDeliveryReceiptsComponent implements OnInit, OnDestroy {
         hasPurchaseOrder: false,
         status: OutDeliveryStatus.PENDING,
       })
-      .pipe(map((response: any) => response.records as OutDelivery[]));
+      .pipe(
+        map((response: any) => {
+          if (!response.total) {
+            this.snackbar.openErrorSnackbar(
+              'All Delivery Receipts have a Purchase Order attached',
+              'You can close this now.',
+            );
+          }
+          return response.records as OutDelivery[];
+        }),
+      );
   }
 }

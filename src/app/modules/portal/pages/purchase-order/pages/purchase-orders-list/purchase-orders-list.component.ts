@@ -85,10 +85,23 @@ export class PurchaseOrdersListComponent {
       type: ColumnType.CURRENCY,
     },
     {
+      label: 'PO # of Items',
+      dotNotationPath: 'items',
+      type: ColumnType.CUSTOM,
+      display: (element) => {
+        const totalQuantity = element.items.reduce((acc: any, curr: any) => {
+          return acc + curr.STATIC.quantity;
+        }, 0);
+
+        return `${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}`;
+      },
+    },
+    {
       label: 'Date of PO',
       dotNotationPath: 'purchaseOrderDate',
       type: ColumnType.DATE,
     },
+
     {
       label: 'Delivery Receipts',
       dotNotationPath: 'outDeliveries',
@@ -99,7 +112,7 @@ export class PurchaseOrdersListComponent {
           OutDeliveryStatus.ACTIVE,
           OutDeliveryStatus.PENDING,
         ];
-        const str = element.outDeliveries.reduce(
+        const str = this.sortByCode(element.outDeliveries).reduce(
           (acc: string, curr: any, index: number) => {
             const color = activeStatus.includes(curr.status)
               ? '[#1a1b1f]'
@@ -177,6 +190,19 @@ export class PurchaseOrdersListComponent {
   query: QueryParams = {
     pageIndex: 0,
     pageSize: 10,
+  };
+
+  private readonly sortByCode = (array: any) => {
+    return array.sort((a: any, b: any) => {
+      if (a.code.year !== b.code.year) {
+        return b.code.year - a.code.year;
+      }
+
+      if (a.code.month !== b.code.month) {
+        return b.code.month - a.code.month;
+      }
+      return b.code.sequence - a.code.sequence;
+    });
   };
 
   constructor(
