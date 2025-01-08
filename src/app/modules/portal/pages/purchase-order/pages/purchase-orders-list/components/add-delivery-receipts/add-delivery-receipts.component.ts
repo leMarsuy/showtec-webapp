@@ -75,6 +75,7 @@ export class AddDeliveryReceiptsComponent implements OnInit, OnDestroy {
       STATIC: outDelivery.STATIC,
       code: outDelivery.code,
       _id: outDelivery._id,
+      status: outDelivery.status,
       items: this.fb.array(outDelivery.items),
       _customerId: outDelivery._customerId,
     });
@@ -131,8 +132,9 @@ export class AddDeliveryReceiptsComponent implements OnInit, OnDestroy {
               'Update Success!',
               'Addition of Outdeliveries has been successful',
             );
-
-            this.dialogRef.close(true);
+            setTimeout(() => {
+              this.dialogRef.close(true);
+            }, 800);
           }
         },
         error: ({ error }: HttpErrorResponse) => {
@@ -143,8 +145,6 @@ export class AddDeliveryReceiptsComponent implements OnInit, OnDestroy {
   }
 
   private _formatBodyRequest() {
-    console.log(this.fArray.getRawValue());
-
     return this.fArray.getRawValue().reduce((acc: any, item: OutDelivery) => {
       acc.push({
         _outDeliveryId: item._id,
