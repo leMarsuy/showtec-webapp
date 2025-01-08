@@ -62,8 +62,11 @@
             }"
           >
             <p>DR# {{ outDelivery?.code?.value }}</p>
-            <p class="text-xs mt-1">
+            <p class="text-xs">
               {{ displayOutDeliveryOption(outDelivery) }}
+            </p>
+            <p class="text-xs font-medium">
+              Total# of {{ outDelivery.items.length }} item/s
             </p>
           </mat-option>
         }
