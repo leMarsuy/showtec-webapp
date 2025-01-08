@@ -1,11 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSelectChange } from '@angular/material/select';
-import { Router } from '@angular/router';
-import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { DateFilterType } from '@app/core/enums/date-filter.enum';
@@ -13,7 +10,6 @@ import {
   PAYMENT_STATUSES,
   PaymentStatus,
 } from '@app/core/enums/payment-status.enum';
-import { PurchaseOrderStatus } from '@app/core/enums/purchase-order.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
@@ -36,7 +32,7 @@ export class TransactionListComponent {
   statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...PAYMENT_STATUSES];
   selectedFilterStatus = 'All';
-  selectedFilterDate = DateFilterType.THIS_YEAR;
+  selectedFilterDate = DateFilterType.ALL_TIME;
 
   isLoading = false;
 
@@ -116,7 +112,7 @@ export class TransactionListComponent {
   constructor(
     private snackbarService: SnackbarService,
     private readonly transactionApi: TransactionApiService,
-    private readonly fileApi: FileService
+    private readonly fileApi: FileService,
   ) {
     this.getTransactions();
   }
@@ -139,7 +135,7 @@ export class TransactionListComponent {
         error: (err: HttpErrorResponse) => {
           this.snackbarService.openErrorSnackbar(
             err.error.errorCode,
-            err.error.message
+            err.error.message,
           );
         },
       });

@@ -40,16 +40,16 @@ export class OutDeliveryListComponent {
   columns: TableColumn[] = OUT_DELIVER_CONFIG.tableColumns;
   outdeliveries!: OutDelivery[];
 
-  statusControl = new FormControl(OutDeliveryStatus.PENDING);
+  statusControl = new FormControl('All');
   tableFilterStatuses = [
     'All',
     OutDeliveryStatus.PENDING,
     OutDeliveryStatus.CANCELLED,
   ];
-  selectedFilterStatus: OutDeliveryStatus | string = OutDeliveryStatus.PENDING;
+  selectedFilterStatus: OutDeliveryStatus | string = 'All';
 
   selectedFilterDate: DateFilterType | { startDate: string; endDate: string } =
-    DateFilterType.THIS_YEAR;
+    DateFilterType.ALL_TIME;
 
   isLoading = false;
 
