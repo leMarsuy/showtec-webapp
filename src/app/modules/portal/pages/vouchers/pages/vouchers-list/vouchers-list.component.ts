@@ -40,7 +40,7 @@ export class VouchersListComponent {
   statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...VOUCHER_STATUSES];
   selectedFilterStatus = 'All';
-  selectedFilterDate = DateFilterType.THIS_YEAR;
+  selectedFilterDate = DateFilterType.ALL_TIME;
 
   isLoading = false;
   isDateRange = false;

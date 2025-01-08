@@ -37,7 +37,7 @@ export class PurchaseOrdersListComponent {
   statusControl = new FormControl('All');
   tableFilterStatuses = ['All', ...PURCHASE_ORDER_STATUSES];
   selectedFilterStatus = 'All';
-  selectedFilterDate = DateFilterType.THIS_YEAR;
+  selectedFilterDate = DateFilterType.ALL_TIME;
 
   purchaseOrders!: PurchaseOrder[];
   columns: TableColumn[] = [
