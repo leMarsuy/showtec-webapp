@@ -71,157 +71,162 @@
   </div>
 
   <div class="bg-white rounded-xl p-4 w-[25rem] sticky top-16 h-fit">
-    @if (!_id) {
-      <div class="col-span-2">
-        <mat-checkbox
-          class="example-margin"
-          [ngModel]="usePurchaseOrder"
-          (change)="usePoCheckChange()"
-        >
-          Use Purchase Order
-        </mat-checkbox>
-      </div>
-    }
-    @if (usePurchaseOrder) {
-      <div class="col-span-2">
-        <mat-form-field
-          class="w-full [&>.mdc-text-field]:!bg-[#e0e2ec] [&>.mdc-text-field>*>*>*]:!text-[#1a1b1f]"
-        >
-          <mat-label>PO No.</mat-label>
-          <input
-            matInput
-            placeholder="Type PO No..."
-            [matAutocomplete]="poAuto"
-            [formControl]="searchPoControl"
-          />
-          <mat-autocomplete
-            autoActiveFirstOption
-            #poAuto="matAutocomplete"
-            (optionSelected)="
-              autofillCustomerDetailsFromPo($event.option.value)
-            "
-            [displayWith]="displayPo"
+    <div class="col-span-2">
+      <mat-checkbox
+        class="example-margin"
+        [ngModel]="usePurchaseOrder"
+        (change)="usePoCheckChange()"
+      >
+        Use Purchase Order
+      </mat-checkbox>
+
+      @if (usePurchaseOrder) {
+        <div class="col-span-2">
+          <mat-form-field
+            class="w-full [&>.mdc-text-field]:!bg-[#e0e2ec] [&>.mdc-text-field>*>*>*]:!text-[#1a1b1f]"
           >
-            @for (po of filteredPos | async; track po) {
-              <mat-option [value]="po">
-                <p>PO# {{ po?.code?.value }}</p>
-                <p class="text-xs text-gray-600 mt-1">
-                  {{ displayPoOption(po) }}
-                </p>
-              </mat-option>
-            }
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-    }
-    <form class="grid grid-cols-2 gap-2" [formGroup]="deliveryForm">
-      <div class="col-span-2">
-        <mat-form-field class="w-full">
-          <mat-label>Customer's Name</mat-label>
-          <input
-            matInput
-            placeholder="Type Customer Name..."
-            [matAutocomplete]="customerAuto"
-            formControlName="_customerId"
-            [readonly]="usePurchaseOrder"
-          />
-          <mat-autocomplete
-            autoActiveFirstOption
-            #customerAuto="matAutocomplete"
-            (optionSelected)="autofillCustomerDetails($event.option.value)"
-            [displayWith]="displayCustomer"
-          >
-            @for (option of filteredCustomers | async; track option) {
-              <mat-option [value]="option">
-                <p>{{ option.name }}</p>
-                <small class="text-xs text-gray-600">
-                  {{ option.contactPerson }}
-                </small>
-              </mat-option>
-            }
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
-
-      <div class="col-span-2">
-        <mat-form-field class="w-full">
-          <mat-label>TIN No.</mat-label>
-          <input matInput formControlName="tin" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-span-1">
-        <mat-form-field class="w-full">
-          <mat-label>Contact No.</mat-label>
-          <input matInput formControlName="mobile" placeholder="09XXXXXXXXX" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-span-1">
-        <mat-form-field class="w-full">
-          <mat-label>Date of Delivery</mat-label>
-          <input
-            matInput
-            placeholder="MM/DD/YYYY"
-            formControlName="deliveryDate"
-            [matDatepicker]="picker"
-          />
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </div>
-
-      <div class="col-span-2">
-        <mat-form-field class="w-full">
-          <mat-label>Delivery Address</mat-label>
-          <textarea matInput rows="2" formControlName="address"></textarea>
-        </mat-form-field>
-      </div>
-
-      <div class="col-span-2">
-        <mat-form-field class="w-full">
-          <mat-label>Remarks</mat-label>
-          <textarea rows="2" matInput formControlName="remarks"></textarea>
-        </mat-form-field>
-      </div>
-    </form>
-
-    <div class="flex justify-between">
-      @if (_id) {
-        <div class="flex">
-          <button mat-stroked-button color="warn" (click)="confirmDiscard()">
-            Discard Changes
-          </button>
-          <button mat-icon-button>
-            <mat-icon>more_vert</mat-icon>
-          </button>
+            <mat-label>PO No.</mat-label>
+            <input
+              matInput
+              placeholder="Type PO No..."
+              [matAutocomplete]="poAuto"
+              [formControl]="searchPoControl"
+            />
+            <mat-autocomplete
+              autoActiveFirstOption
+              #poAuto="matAutocomplete"
+              (optionSelected)="
+                autofillCustomerDetailsFromPo($event.option.value)
+              "
+              [displayWith]="displayPo"
+            >
+              @for (po of filteredPos | async; track po) {
+                <mat-option [value]="po">
+                  <p>PO# {{ po?.code?.value }}</p>
+                  <p class="text-xs text-gray-600 mt-1">
+                    {{ displayPoOption(po) }}
+                  </p>
+                </mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
         </div>
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="
-            deliveryForm.pristine || deliveryForm.invalid || !listedItems.length
-          "
-          (click)="confirmChanges()"
-        >
-          Apply Changes
-        </button>
-      } @else {
-        <button mat-stroked-button color="warn" (click)="confirmDiscard()">
-          Cancel Transaction
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
-          (click)="confirm()"
-          [disabled]="deliveryForm.invalid || !listedItems.length"
-        >
-          Create Delivery Receipt
-        </button>
       }
+      <form class="grid grid-cols-2 gap-2" [formGroup]="deliveryForm">
+        <div class="col-span-2">
+          <mat-form-field class="w-full">
+            <mat-label>Customer's Name</mat-label>
+            <input
+              matInput
+              placeholder="Type Customer Name..."
+              [matAutocomplete]="customerAuto"
+              formControlName="_customerId"
+              [readonly]="usePurchaseOrder"
+            />
+            <mat-autocomplete
+              autoActiveFirstOption
+              #customerAuto="matAutocomplete"
+              (optionSelected)="autofillCustomerDetails($event.option.value)"
+              [displayWith]="displayCustomer"
+            >
+              @for (option of filteredCustomers | async; track option) {
+                <mat-option [value]="option">
+                  <p>{{ option.name }}</p>
+                  <small class="text-xs text-gray-600">
+                    {{ option.contactPerson }}
+                  </small>
+                </mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-span-2">
+          <mat-form-field class="w-full">
+            <mat-label>TIN No.</mat-label>
+            <input matInput formControlName="tin" />
+          </mat-form-field>
+        </div>
+
+        <div class="col-span-1">
+          <mat-form-field class="w-full">
+            <mat-label>Contact No.</mat-label>
+            <input
+              matInput
+              formControlName="mobile"
+              placeholder="09XXXXXXXXX"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="col-span-1">
+          <mat-form-field class="w-full">
+            <mat-label>Date of Delivery</mat-label>
+            <input
+              matInput
+              placeholder="MM/DD/YYYY"
+              formControlName="deliveryDate"
+              [matDatepicker]="picker"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="col-span-2">
+          <mat-form-field class="w-full">
+            <mat-label>Delivery Address</mat-label>
+            <textarea matInput rows="2" formControlName="address"></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="col-span-2">
+          <mat-form-field class="w-full">
+            <mat-label>Remarks</mat-label>
+            <textarea rows="2" matInput formControlName="remarks"></textarea>
+          </mat-form-field>
+        </div>
+      </form>
+
+      <div class="flex justify-between">
+        @if (_id) {
+          <div class="flex">
+            <button mat-stroked-button color="warn" (click)="confirmDiscard()">
+              Discard Changes
+            </button>
+            <button mat-icon-button>
+              <mat-icon>more_vert</mat-icon>
+            </button>
+          </div>
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="
+              deliveryForm.pristine ||
+              deliveryForm.invalid ||
+              !listedItems.length
+            "
+            (click)="confirmChanges()"
+          >
+            Apply Changes
+          </button>
+        } @else {
+          <button mat-stroked-button color="warn" (click)="confirmDiscard()">
+            Cancel Transaction
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="confirm()"
+            [disabled]="deliveryForm.invalid || !listedItems.length"
+          >
+            Create Delivery Receipt
+          </button>
+        }
+      </div>
     </div>
   </div>
 </div>
