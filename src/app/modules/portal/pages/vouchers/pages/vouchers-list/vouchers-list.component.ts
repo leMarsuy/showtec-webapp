@@ -43,7 +43,6 @@ export class VouchersListComponent {
   selectedFilterDate = DateFilterType.ALL_TIME;
 
   isLoading = false;
-  isDateRange = false;
 
   vouchers!: Voucher[];
   columns: TableColumn[] = [
