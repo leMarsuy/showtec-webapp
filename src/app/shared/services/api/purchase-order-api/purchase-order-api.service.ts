@@ -96,8 +96,13 @@ export class PurchaseOrderApiService {
       sanitizedQuery = {
         pageIndex: 0,
         pageSize: 0,
-        searchText: query.searchText || '',
+        searchText: query.searchText ?? '',
       };
+
+      if (query?.date) {
+        const date = this.utilService.date.dateToQueryParam(query?.date);
+        sanitizedQuery = { ...sanitizedQuery, date };
+      }
     }
     return this.httpService.getBlob(
       `${this.apiPrefix}/export/excel`,

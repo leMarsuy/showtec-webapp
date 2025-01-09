@@ -23,6 +23,8 @@ import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
+import { FileService } from '@app/shared/services/file/file.service';
+import { generateFileName } from '@app/shared/utils/stringUtil';
 import { AddDeliveryReceiptsComponent } from './components/add-delivery-receipts/add-delivery-receipts.component';
 
 @Component({
@@ -38,6 +40,8 @@ export class PurchaseOrdersListComponent {
   tableFilterStatuses = ['All', ...PURCHASE_ORDER_STATUSES];
   selectedFilterStatus = 'All';
   selectedFilterDate = DateFilterType.ALL_TIME;
+
+  isLoading = false;
 
   purchaseOrders!: PurchaseOrder[];
   columns: TableColumn[] = [
@@ -208,6 +212,7 @@ export class PurchaseOrdersListComponent {
   constructor(
     private purchaseOrderApi: PurchaseOrderApiService,
     private snackbarService: SnackbarService,
+    private fileApi: FileService,
     private router: Router,
     private dialog: MatDialog,
   ) {
@@ -321,5 +326,39 @@ export class PurchaseOrdersListComponent {
       disableClose: true,
       autoFocus: false,
     });
+  }
+
+  exportTableExcel() {
+    const loadingMsg = 'Downloading Excel File...';
+    this._setLoadingState(true, loadingMsg);
+
+    const query: QueryParams = {
+      searchText: this.query.searchText,
+      status: this.query.status,
+      date: this.query.date,
+    };
+
+    this.purchaseOrderApi.exportExcelPurchaseOrder(query).subscribe({
+      next: (response: any) => {
+        this._setLoadingState(false);
+        const fileName = generateFileName('PURCHASE_ORDERS', 'xlsx');
+        this.fileApi.downloadFile(response.body as Blob, fileName);
+      },
+      error: ({ error }: HttpErrorResponse) => {
+        this._setLoadingState(false);
+        console.error(error);
+        this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
+      },
+    });
+  }
+
+  private _setLoadingState(isLoading: boolean, loadingMsg = '') {
+    this.isLoading = isLoading;
+
+    if (isLoading) {
+      this.snackbarService.openLoadingSnackbar('Please Wait', loadingMsg);
+    } else {
+      this.snackbarService.closeLoadingSnackbar();
+    }
   }
 }
