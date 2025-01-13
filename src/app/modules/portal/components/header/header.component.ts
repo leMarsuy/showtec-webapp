@@ -1,31 +1,38 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AUTH_PATHS, PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import { selectUser } from '@app/core/states/user';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { User } from '@core/models/user.model';
+import { Store } from '@ngrx/store';
 import { AuthService } from '@shared/services/api';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   appName = 'Inventory Management System';
   logoSrc = 'images/logo.png';
   me!: User;
+
+  private storeMe$: Observable<any> = new Observable<any>();
+  private destroyed$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
     private snackbarService: SnackbarService,
     private router: Router,
+    private store: Store,
   ) {}
 
   ngOnInit(): void {
-    this.authService.me().subscribe((res) => {
-      this.me = res;
-      // console.log(this.me);
+    this.storeMe$ = this.store.select(selectUser());
+    this.storeMe$.pipe(takeUntil(this.destroyed$)).subscribe((user) => {
+      this.me = user;
     });
   }
 
@@ -46,5 +53,10 @@ export class HeaderComponent implements OnInit {
         this.router.navigate([AUTH_PATHS.login.relativeUrl]);
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 }

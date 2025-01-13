@@ -7,17 +7,20 @@
   </div>
   <div class="p-4 text-white bg-rose-500">
     @if (me) {
-    <div class="rounded-lg w-auto flex pl-2">
-      <p>{{ me.name | uppercase }}</p>
-      <mat-icon class="ml-2 cursor-pointer" [matMenuTriggerFor]="menu">
-        account_circle
-      </mat-icon>
-    </div>
+      <div class="rounded-lg w-auto flex pl-2">
+        <p>{{ me.name | uppercase }}</p>
 
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="onAccountSettings()">Account Settings</button>
-      <button mat-menu-item (click)="onLogout()">Logout</button>
-    </mat-menu>
+        <mat-icon class="ml-2 cursor-pointer" [matMenuTriggerFor]="menu">
+          account_circle
+        </mat-icon>
+      </div>
+
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onAccountSettings()">
+          Account Settings
+        </button>
+        <button mat-menu-item (click)="onLogout()">Logout</button>
+      </mat-menu>
     }
   </div>
 </div>

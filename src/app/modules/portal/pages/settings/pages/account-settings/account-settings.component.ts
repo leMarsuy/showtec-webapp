@@ -4,11 +4,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AUTH_PATHS } from '@app/core/constants/nav-paths';
 import { User } from '@app/core/models/user.model';
+import { selectUser, UserActions } from '@app/core/states/user';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { AuthService } from '@app/shared/services/api';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
-import { Subject, filter, switchMap } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { filter, Subject, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-account-settings',
@@ -33,14 +35,12 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
     private userApi: UserApiService,
     private authApi: AuthService,
     private router: Router,
+    private store: Store,
   ) {
-    this.user = {
-      _id: '2312837',
-      name: 'nice',
-      email: 'nice@email.com',
-      designation: 'nice',
-    };
-    this.onResetForm();
+    this.store.select(selectUser()).subscribe((user) => {
+      this.user = user;
+      this.onResetForm();
+    });
   }
 
   ngOnInit() {}
@@ -72,6 +72,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
             'Your account details have been updated',
           );
           this.user = user;
+          this.store.dispatch(UserActions.setUser(user));
           this.loading = false;
           this.userForm.enable();
           this.onResetForm();
