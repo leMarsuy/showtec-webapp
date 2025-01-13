@@ -399,6 +399,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     column: TableColumn;
     element: Product & Pricing;
   }) {
+    this.soaForm.markAsDirty();
     if (typeof e.column.dotNotationPath == 'string')
       deepInsert(e.newValue, e.column.dotNotationPath, e.element);
 
@@ -413,11 +414,13 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   }
 
   updateSignatories(e: any) {
+    this.soaForm.markAsDirty();
     deepInsert(e.newValue, e.column.dotNotationPath, e.element);
     this._copySignatoriesToSelf();
   }
 
   pushToListedProducts(product: Product & Pricing) {
+    this.soaForm.markAsDirty();
     const li = this.listedItems;
     if (!li.find((o) => o._id === product._id))
       this.listedItems.push({
@@ -433,14 +436,13 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     this.listedItemsPage.length++;
     this._calculateSummary();
     this.productNameControl.reset();
-    this.soaForm.markAsDirty();
   }
 
   removeFromListedProducts(i: number) {
+    this.soaForm.markAsDirty();
     this.listedItems.splice(i, 1);
     this.listedItems = [...this.listedItems];
     this.listedItemsPage.length--;
-    this.soaForm.markAsDirty();
     this._calculateSummary();
   }
 
@@ -517,56 +519,56 @@ export class SoaFormComponent implements OnInit, OnDestroy {
   }
 
   pushToListedSignatories(user: User) {
+    this.soaForm.markAsDirty();
     this.listedSignatories.push({
       ...user,
       action: SignatoryAction.APPROVED,
     });
     this._copySignatoriesToSelf();
-    this.soaForm.markAsDirty();
     this.signatoryControl.reset();
   }
 
   removeFromListedSignatories(i: number) {
-    this.listedSignatories.splice(i, 1);
     this.soaForm.markAsDirty();
+    this.listedSignatories.splice(i, 1);
     this._copySignatoriesToSelf();
   }
 
   pushToListedDiscounts() {
+    this.soaForm.markAsDirty();
     this.listedDiscounts.push({
       ...(this.discountForm.getRawValue() as Discount),
     });
     this.listedDiscounts = [...this.listedDiscounts];
     this.listedDiscountsPage.length = this.listedDiscounts.length;
     this._calculateSummary();
-    this.soaForm.markAsDirty();
     this.discountForm.reset();
   }
 
   pushToListedTaxes() {
+    this.soaForm.markAsDirty();
     this.listedTaxes.push({
       ...(this.taxForm.getRawValue() as Tax),
     });
     this.listedTaxes = [...this.listedTaxes];
     this.listedTaxesPage.length = this.listedTaxes.length;
     this._calculateSummary();
-    this.soaForm.markAsDirty();
     this.taxForm.reset();
   }
 
   removeFromListedDiscounts(i: number) {
+    this.soaForm.markAsDirty();
     this.listedDiscounts.splice(i, 1);
     this.listedDiscounts = [...this.listedDiscounts];
     this.listedDiscountsPage.length = this.listedDiscounts.length;
-    this.soaForm.markAsDirty();
     this._calculateSummary();
   }
 
   removeFromListedTaxes(i: number) {
+    this.soaForm.markAsDirty();
     this.listedTaxes.splice(i, 1);
     this.listedTaxes = [...this.listedTaxes];
     this.listedTaxesPage.length = this.listedTaxes.length;
-    this.soaForm.markAsDirty();
     this._calculateSummary();
   }
 
