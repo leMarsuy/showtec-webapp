@@ -18,15 +18,18 @@ export class EditableTableCellComponent implements OnInit {
   type = 'text';
 
   ngOnInit(): void {
-    if (['number', 'percentage', 'currency'].includes(this.column.type))
+    if (['number', 'percentage', 'currency'].includes(this.column.type)) {
       this.type = 'number';
-    else this.type = 'text';
+    } else {
+      this.type = 'text';
+    }
 
-    if (typeof this.column.dotNotationPath == 'string')
+    if (typeof this.column.dotNotationPath == 'string') {
       this.element['__value' + this.rowIndex + '_' + this.colIndex] = deepFind(
         this.element,
         this.column.dotNotationPath,
       );
+    }
   }
 
   updateCell(
@@ -36,11 +39,20 @@ export class EditableTableCellComponent implements OnInit {
     rowIndex: number,
     colIndex: number,
   ) {
-    if (value != 0 && !value) return;
+    let newValue = value;
+
+    if (this.type === 'text' && !value) {
+      return;
+    }
+
+    if (this.type === 'number') {
+      newValue = value || '0';
+    }
+
     this.updateCellEmitter.emit({
       element,
       column,
-      newValue: value,
+      newValue,
     });
     delete element['__editOn' + colIndex + '_' + rowIndex];
     delete element['__value' + colIndex + '_' + rowIndex];
