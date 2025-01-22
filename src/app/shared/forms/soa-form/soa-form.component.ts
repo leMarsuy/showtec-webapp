@@ -99,7 +99,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     mobile: this.fb.control('', [Validators.required]),
     address: this.fb.control('', [Validators.required]),
     tin: this.fb.control(''),
-    soaDate: this.fb.control(new Date(), [Validators.required]),
+    soaDate: this.fb.control('', [Validators.required]),
     dueDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
   });
@@ -877,7 +877,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       mobile: soa.STATIC?.mobile ?? '',
       address: soa.STATIC?.address ?? '',
       tin: soa.STATIC?.tin ?? '',
-      soaDate: soa?.soaDate ?? '',
+      soaDate: soa?.soaDate ?? new Date(),
       remarks: soa?.remarks ?? '',
     });
 
