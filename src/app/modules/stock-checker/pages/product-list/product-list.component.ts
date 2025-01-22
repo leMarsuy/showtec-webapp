@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
+import { StockType } from '@app/core/enums/stock-type.enum';
 import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interface';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { Product } from '@app/core/models/product.model';
@@ -68,7 +69,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           const resp = response as HttpGetResponse;
-          const products = resp.records as Product[];
+          const products = this.remapProducts(resp.records as any);
+
+          console.log(products);
           this.products$ = of(products);
           this.page.length = resp.total;
         },
@@ -77,6 +80,27 @@ export class ProductListComponent implements OnInit, OnDestroy {
           this.snackbar.openErrorSnackbar(error.errorCode, error.message);
         },
       });
+  }
+
+  private remapProducts(products: any) {
+    return products.map((product: any) => {
+      const _$stockTypeSummary = {
+        Sealed: 0,
+        Demo: 0,
+      };
+
+      for (const stock of product.stocks) {
+        if (stock.type === StockType.SEALED) {
+          _$stockTypeSummary.Sealed += 1;
+        }
+
+        if (stock.type === StockType.DEMO) {
+          _$stockTypeSummary.Demo += 1;
+        }
+      }
+      product['_$stockTypeSummary'] = _$stockTypeSummary;
+      return product;
+    });
   }
 
   /**
