@@ -7,14 +7,7 @@ import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { Product } from '@app/core/models/product.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { StockCheckerApiService } from '@app/shared/services/api/stock-checker-api/stock-checker-api.service';
-import {
-  BehaviorSubject,
-  finalize,
-  Observable,
-  of,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, finalize, Subject, takeUntil } from 'rxjs';
 import { ProductListFilters, ProductListService } from './product-list.service';
 
 @Component({
@@ -29,7 +22,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   private readonly destroyed$ = new Subject<void>();
 
-  products$ = new Observable<Product[]>();
+  products: Product[] = [];
   loading$ = new BehaviorSubject<boolean>(false);
   query!: QueryParams & { classifications?: string };
 
@@ -70,9 +63,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
         next: (response) => {
           const resp = response as HttpGetResponse;
           const products = this.remapProducts(resp.records as any);
-
-          console.log(products);
-          this.products$ = of(products);
+          this.products = products;
           this.page.length = resp.total;
         },
         error: ({ error }: HttpErrorResponse) => {
