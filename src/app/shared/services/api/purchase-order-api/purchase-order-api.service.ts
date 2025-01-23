@@ -54,8 +54,8 @@ export class PurchaseOrderApiService {
         monitorStatus: query.status ?? '', // monitorStatus is used
       };
 
-      if (query.hasSoa) {
-        sanitizedQuery = { hasSoa: query.hasSoa };
+      if (typeof query.hasSoa === 'boolean') {
+        sanitizedQuery = { ...sanitizedQuery, hasSoa: query.hasSoa };
       }
 
       if (query?.date) {

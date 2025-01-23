@@ -706,6 +706,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       _customerId: po._customerId as string,
       _purchaseOrderId: po._id,
     });
+
+    this.soaForm.markAsDirty();
   }
 
   soaSummary = {

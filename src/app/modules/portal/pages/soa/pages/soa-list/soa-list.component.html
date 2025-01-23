@@ -1,33 +1,51 @@
 <div class="flex flex-col gap-4 rounded-xl bg-white p-4">
   <div class="flex">
-    <div class="flex ">
+    <div class="flex">
       <mat-form-field appearance="outline" class="w-[32rem]">
-        <input matInput [placeholder]="placeholder" [formControl]="searchText" (keyup.enter)="getSoas()" />
+        <input
+          matInput
+          [placeholder]="placeholder"
+          [formControl]="searchText"
+          (keyup.enter)="getSoas()"
+        />
         <mat-icon matSuffix class="cursor-pointer" (click)="getSoas()">
           search
         </mat-icon>
       </mat-form-field>
-
     </div>
     <div class="flex grow justify-between items-start ml-[24px]">
-
-
       <div class="flex gap-6">
         <mat-form-field appearance="outline">
-          <mat-select [formControl]="statusControl" (selectionChange)="onFilterStatusChange($event)">
-            @for(status of tableFilterStatuses; track status) {
-            <mat-option [value]="status">{{ status }}</mat-option>
+          <mat-select
+            [formControl]="statusControl"
+            (selectionChange)="onFilterStatusChange($event)"
+          >
+            @for (status of tableFilterStatuses; track $index) {
+              <mat-option [value]="status">{{ status }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
 
-        <app-date-filter-input [initialValue]="selectedFilterDate" (dateFilterSelected)="onFilterDateChange($event)" />
+        <app-date-filter-input
+          [initialValue]="selectedFilterDate"
+          (dateFilterSelected)="onFilterDateChange($event)"
+        />
       </div>
       <div>
-        <button mat-icon-button (click)="getSoas()" [disabled]="downloading" matTooltip="Refresh Table">
-          <mat-icon class="mr-2  disabled:text-gray-300"> refresh </mat-icon>
+        <button
+          mat-icon-button
+          (click)="getSoas()"
+          [disabled]="downloading"
+          matTooltip="Refresh Table"
+        >
+          <mat-icon class="mr-2 disabled:text-gray-300"> refresh </mat-icon>
         </button>
-        <button mat-icon-button (click)="exportTableExcel()" [disabled]="downloading" matTooltip="Download Table Excel">
+        <button
+          mat-icon-button
+          (click)="exportTableExcel()"
+          [disabled]="downloading"
+          matTooltip="Download Table Excel"
+        >
           <mat-icon class="mr-2 disabled:text-gray-300">
             {{ downloading ? "downloading" : "download_for_offline" }}
           </mat-icon>
@@ -35,7 +53,12 @@
       </div>
     </div>
   </div>
-  <app-table [dataSource]="soas" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
-    (actionEmitter)="actionEvent($event)">
+  <app-table
+    [dataSource]="soas"
+    [columns]="columns"
+    [page]="page"
+    (pageEmitter)="pageEvent($event)"
+    (actionEmitter)="actionEvent($event)"
+  >
   </app-table>
 </div>
