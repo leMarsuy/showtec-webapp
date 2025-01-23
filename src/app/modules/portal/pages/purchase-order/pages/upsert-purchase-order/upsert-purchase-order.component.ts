@@ -290,7 +290,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       grandtotal: 0,
     };
 
-    for (var item of this.listedProducts) {
+    for (const item of this.listedProducts) {
       summary.total += item.STATIC.unit_price * item.STATIC.quantity;
       summary.productDiscount +=
         item.STATIC.unit_price * item.STATIC.quantity * (item.STATIC.disc || 0);
@@ -298,13 +298,13 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
 
     summary.subtotal = summary.total - summary.productDiscount;
 
-    for (var disc of this.listedDiscounts) {
+    for (const disc of this.listedDiscounts) {
       summary.subtotal -= disc.value;
     }
 
     summary.grandtotal = summary.subtotal;
 
-    for (var tax of this.listedTaxes) {
+    for (const tax of this.listedTaxes) {
       summary.grandtotal += summary.subtotal * tax.value;
     }
 
@@ -367,7 +367,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       mobile: purchaseOrder?.STATIC?.mobile ?? '',
       address: purchaseOrder?.STATIC?.address ?? '',
       tin: purchaseOrder?.STATIC?.tin ?? '',
-      purchaseOrderDate: purchaseOrder?.purchaseOrderDate ?? '',
+      purchaseOrderDate: purchaseOrder?.purchaseOrderDate ?? new Date(),
       remarks: purchaseOrder?.remarks ?? '',
     });
 

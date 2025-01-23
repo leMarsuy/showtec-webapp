@@ -166,7 +166,7 @@ export class AddDeliveryReceiptsComponent implements OnInit, OnDestroy {
       .pipe(
         map((response: any) => {
           if (!response.total) {
-            this.snackbar.openErrorSnackbar(
+            this.snackbar.openInfoSnackbar(
               'All Delivery Receipts have a Purchase Order attached',
               'You can close this now.',
             );
