@@ -7,9 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ErrorComponent } from './error/error.component';
 import { SuccessComponent } from './success/success.component';
+import { InfoComponent } from './info/info.component';
 
 @NgModule({
-  declarations: [LoadingComponent, ErrorComponent, SuccessComponent],
+  declarations: [LoadingComponent, ErrorComponent, SuccessComponent, InfoComponent],
   imports: [
     CommonModule,
     MatSnackBarModule,
