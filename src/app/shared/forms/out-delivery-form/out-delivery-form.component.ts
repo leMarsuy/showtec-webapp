@@ -251,7 +251,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       mobile: outDelivery?.STATIC?.mobile ?? '',
       address: outDelivery?.STATIC?.address ?? '',
       tin: outDelivery?.STATIC?.tin ?? '',
-      deliveryDate: outDelivery?.deliveryDate ?? '',
+      deliveryDate: outDelivery?.deliveryDate ?? new Date(),
       remarks: outDelivery?.remarks ?? '',
     });
 
@@ -437,6 +437,8 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       _customerId: po._customerId as string,
       _purchaseOrderId: po._id,
     });
+
+    this.deliveryForm.markAsDirty();
   }
 
   updateSignatories(e: any) {
