@@ -9,6 +9,7 @@ import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
+import { PurchaseOrderStatus } from '@app/core/enums/purchase-order.enum';
 import {
   SIGNATORY_ACTIONS,
   SignatoryAction,
@@ -592,7 +593,12 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
   private _filterPos(value: string) {
     return this.poApi
-      .getPurchaseOrders({ searchText: value, pageSize: 30, hasSoa: false })
+      .getPurchaseOrders({
+        searchText: value,
+        pageSize: 30,
+        hasSoa: false,
+        status: PurchaseOrderStatus.ACTIVE,
+      })
       .pipe(map((response: any) => response.records));
   }
 

@@ -8,13 +8,32 @@
 
   <div class="flex">
     @for (action of actions; track action) {
-    <div
-      class="flex flex-none border-l-2 bg-white border-gray-200 p-4 last:rounded-r-xl last:pr-6 hover:drop-shadow-lg cursor-pointer"
-      (click)="actionEmitter.emit(action.id)"
-    >
-      <mat-icon class="mr-2"> {{ action.icon }} </mat-icon>
-      <p>{{ action.label }}</p>
-    </div>
+      @if (action.type) {
+        @if (action.type === "menu" && !!action.items?.length) {
+          <button
+            class="flex flex-none border-l-2 bg-white border-gray-200 p-4 last:rounded-r-xl last:pr-6 hover:drop-shadow-lg cursor-pointer"
+            [matMenuTriggerFor]="menu"
+          >
+            <mat-icon class="mr-2"> {{ action.icon }} </mat-icon>
+            <p>{{ action.label }}</p>
+          </button>
+          <mat-menu #menu="matMenu">
+            @for (item of action.items; track $index) {
+              <button mat-menu-item (click)="actionEmitter.emit(item.id)">
+                {{ item.name }}
+              </button>
+            }
+          </mat-menu>
+        }
+      } @else {
+        <button
+          class="flex flex-none border-l-2 bg-white border-gray-200 p-4 last:rounded-r-xl last:pr-6 hover:drop-shadow-lg cursor-pointer"
+          (click)="actionEmitter.emit(action.id)"
+        >
+          <mat-icon class="mr-2"> {{ action.icon }} </mat-icon>
+          <p>{{ action.label }}</p>
+        </button>
+      }
     }
   </div>
 </div>

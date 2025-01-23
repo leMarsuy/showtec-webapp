@@ -90,6 +90,16 @@
     <!-- Customer Form -->
     <app-attach-customer-form [fGroup]="poForm" [loading]="isLoading" />
 
+    <!-- Ordered From Select -->
+    <mat-form-field [formGroup]="poForm" class="w-full">
+      <mat-label>Ordered From</mat-label>
+      <mat-select formControlName="orderedFrom" [compareWith]="compareWith">
+        @for (option of orderedFromOptions; track $index) {
+          <mat-option [value]="option">{{ option }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
     @if (isLoading === false) {
       <!-- Total Summary -->
       <app-total-summary-display

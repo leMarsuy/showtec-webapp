@@ -20,11 +20,14 @@ import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interfac
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 import { FileService } from '@app/shared/services/file/file.service';
+import { UtilService } from '@app/shared/services/util/util.service';
 import { generateFileName } from '@app/shared/utils/stringUtil';
+import { filter, switchMap } from 'rxjs';
 import { AddDeliveryReceiptsComponent } from './components/add-delivery-receipts/add-delivery-receipts.component';
 
 @Component({
@@ -52,12 +55,14 @@ export class PurchaseOrdersListComponent {
     },
     {
       label: 'Customer',
-      dotNotationPath: '_customerId.name',
-      type: ColumnType.STRING,
+      dotNotationPath: '_customerId',
+      type: ColumnType.CUSTOM,
+      display: (element) =>
+        this.utilService.object.displayCustomer(element?._customerId),
     },
     {
-      label: 'Contact Person',
-      dotNotationPath: '_customerId.contactPerson',
+      label: 'Ordered From',
+      dotNotationPath: 'orderedFrom',
       type: ColumnType.STRING,
     },
     {
@@ -67,14 +72,6 @@ export class PurchaseOrdersListComponent {
       colorCodes: [
         {
           value: PurchaseOrderStatus.ACTIVE,
-          color: Color.SUCCESS,
-        },
-        {
-          value: PurchaseOrderStatus.PENDING,
-          color: Color.DEAD,
-        },
-        {
-          value: PurchaseOrderStatus.PAID,
           color: Color.SUCCESS,
         },
         {
@@ -164,6 +161,9 @@ export class PurchaseOrdersListComponent {
           action: 'edit',
           icon: 'edit',
           color: Color.WARNING,
+          showIfCondition: {
+            status: PurchaseOrderStatus.ACTIVE,
+          },
         },
         {
           name: 'Add Delivery Receipts',
@@ -171,12 +171,37 @@ export class PurchaseOrdersListComponent {
           icon: NavIcon.DELIVERY_RECEIPT,
           color: Color.DEAD,
           showIfCondition: {
-            $or: [
+            status: PurchaseOrderStatus.ACTIVE,
+          },
+        },
+        // {
+        //   name: 'Reactivate PO',
+        //   action: 'reactivate',
+        //   icon: NavIcon.PURCHASE_ORDER,
+        //   color: Color.SUCCESS,
+        //   showIfCondition: {
+        //     status: PurchaseOrderStatus.CANCELLED,
+        //   },
+        // },
+        {
+          name: 'Cancel PO',
+          action: 'cancel',
+          icon: 'block',
+          color: Color.ERROR,
+          showIfCondition: {
+            $and: [
               {
                 status: PurchaseOrderStatus.ACTIVE,
               },
               {
-                status: PurchaseOrderStatus.PENDING,
+                soa: {
+                  $empty: true,
+                },
+              },
+              {
+                outDeliveries: {
+                  $empty: true,
+                },
               },
             ],
           },
@@ -212,6 +237,8 @@ export class PurchaseOrdersListComponent {
   constructor(
     private purchaseOrderApi: PurchaseOrderApiService,
     private snackbarService: SnackbarService,
+    private confirmationService: ConfirmationService,
+    private utilService: UtilService,
     private fileApi: FileService,
     private router: Router,
     private dialog: MatDialog,
@@ -264,6 +291,20 @@ export class PurchaseOrdersListComponent {
         break;
       case 'add-out-delivery':
         this._openAddOutDeliveries(purchaseOrder._id);
+        break;
+      case 'cancel':
+        this._changePurchaseOrderStatus(
+          purchaseOrder,
+          PurchaseOrderStatus.CANCELLED,
+          action,
+        );
+        break;
+      case 'reactivate':
+        this._changePurchaseOrderStatus(
+          purchaseOrder,
+          PurchaseOrderStatus.ACTIVE,
+          action,
+        );
         break;
     }
   }
@@ -350,6 +391,55 @@ export class PurchaseOrdersListComponent {
         this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
       },
     });
+  }
+
+  private _changePurchaseOrderStatus(
+    purchaseOrder: PurchaseOrder,
+    status: PurchaseOrderStatus,
+    action: string,
+  ) {
+    const titleAction = action;
+    this.confirmationService
+      .open(
+        `${titleAction} Purchase Order`,
+        `Do you want to ${action} this PO#${purchaseOrder?.code?.value}`,
+      )
+      .afterClosed()
+      .pipe(
+        filter((result) => result),
+        switchMap(() => {
+          this.snackbarService.openLoadingSnackbar(
+            'Updating Status',
+            'Please wait...',
+          );
+          return this.purchaseOrderApi.patchPurchaseOrderStatusById(
+            purchaseOrder?._id ?? '',
+            status,
+          );
+        }),
+      )
+      .subscribe({
+        next: (hasUpdate) => {
+          if (!hasUpdate) return;
+
+          this.snackbarService.closeLoadingSnackbar();
+          this.snackbarService.openSuccessSnackbar(
+            'Update Successful!',
+            'Purchase Order status has been updated.',
+          );
+          setTimeout(() => {
+            this.getPurchaseOrders();
+          }, 800);
+        },
+        error: ({ error }) => {
+          this.snackbarService.closeLoadingSnackbar();
+          console.error(error);
+          this.snackbarService.openErrorSnackbar(
+            error.errorCode,
+            error.message,
+          );
+        },
+      });
   }
 
   private _setLoadingState(isLoading: boolean, loadingMsg = '') {

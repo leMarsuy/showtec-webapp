@@ -1,7 +1,7 @@
 export enum PurchaseOrderStatus {
   ACTIVE = 'Active',
-  PENDING = 'Pending',
-  PAID = 'Paid',
+  // PENDING = 'Pending',
+  // PAID = 'Paid',
   CANCELLED = 'Cancelled',
   // PARTIAL = 'Partial',
 }

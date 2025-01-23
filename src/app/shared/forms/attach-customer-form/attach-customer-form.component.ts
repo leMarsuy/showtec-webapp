@@ -1,4 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { Customer } from '@app/core/models/customer.model';
@@ -12,6 +19,7 @@ import {
   startWith,
   Subject,
   switchMap,
+  take,
   takeUntil,
 } from 'rxjs';
 
@@ -21,7 +29,9 @@ import {
   styleUrl: './attach-customer-form.component.scss',
   providers: [provideNativeDateAdapter()],
 })
-export class AttachCustomerFormComponent implements OnInit, OnDestroy {
+export class AttachCustomerFormComponent
+  implements OnInit, OnDestroy, OnChanges
+{
   @Input({ required: true }) fGroup!: FormGroup;
   @Input({ alias: 'loading' }) isLoading = false;
 
@@ -30,6 +40,17 @@ export class AttachCustomerFormComponent implements OnInit, OnDestroy {
   destroyed$ = new Subject<void>();
 
   constructor(private customerApi: CustomerApiService) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const formGroup = changes['fGroup']?.currentValue as FormGroup;
+    if (!formGroup) return;
+
+    formGroup.valueChanges.pipe(take(2)).subscribe((rawValue) => {
+      const _customerId = rawValue?._customerId;
+      this.fGroup.get('_customerId')?.setValue(_customerId);
+      this.autofillCustomerDetails(_customerId);
+    });
+  }
 
   ngOnInit(): void {
     this.filteredCustomers =

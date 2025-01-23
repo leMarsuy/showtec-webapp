@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Add New Customer</h1>
+<mat-dialog-content>
+  <app-customer-form (formEmitter)="onFormEmit($event)"></app-customer-form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="w-full flex justify-between">
+    <button mat-button color="warn" [mat-dialog-close]="false">Cancel</button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="!customerForm.valid"
+      cdkFocusInitial
+      (click)="onSubmit()"
+    >
+      Create Customer
+    </button>
+  </div>
+</mat-dialog-actions>
