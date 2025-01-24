@@ -26,7 +26,10 @@ import { SnackbarService } from '@app/shared/components/snackbar/snackbar.servic
 import { PurchaseOrderApiService } from '@app/shared/services/api/purchase-order-api/purchase-order-api.service';
 import { FileService } from '@app/shared/services/file/file.service';
 import { UtilService } from '@app/shared/services/util/util.service';
-import { generateFileName } from '@app/shared/utils/stringUtil';
+import {
+  capitalizeFirstLetter,
+  generateFileName,
+} from '@app/shared/utils/stringUtil';
 import { filter, switchMap } from 'rxjs';
 import { AddDeliveryReceiptsComponent } from './components/add-delivery-receipts/add-delivery-receipts.component';
 
@@ -57,8 +60,20 @@ export class PurchaseOrdersListComponent {
       label: 'Customer',
       dotNotationPath: '_customerId',
       type: ColumnType.CUSTOM,
-      display: (element) =>
-        this.utilService.object.displayCustomer(element?._customerId),
+      display: (element) => {
+        const customer = element?._customerId;
+        const customerName = `<p class="font-medium">${customer.name}</p>`;
+
+        if (customer.name !== customer.contactPerson) {
+          return (
+            customerName +
+            `
+            <p class="text-xs">${customer.contactPerson}</p>
+          `
+          );
+        }
+        return customerName;
+      },
     },
     {
       label: 'Ordered From',
@@ -398,7 +413,7 @@ export class PurchaseOrdersListComponent {
     status: PurchaseOrderStatus,
     action: string,
   ) {
-    const titleAction = action;
+    const titleAction = capitalizeFirstLetter(action);
     this.confirmationService
       .open(
         `${titleAction} Purchase Order`,
