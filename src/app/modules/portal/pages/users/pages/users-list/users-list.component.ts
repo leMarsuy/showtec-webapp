@@ -14,6 +14,7 @@ import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { User } from '@app/core/models/user.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
+import { AuthService } from '@app/shared/services/api';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
 import { capitalizeFirstLetter } from '@app/shared/utils/stringUtil';
 import { filter, switchMap } from 'rxjs';
@@ -79,6 +80,15 @@ export class UsersListComponent {
       align: Alignment.CENTER,
       actions: [
         {
+          name: 'Send Reset Password',
+          action: 'send-reset-password',
+          icon: 'mail_lock',
+          color: Color.DEAD,
+          showIfCondition: {
+            status: Status.ACTIVE,
+          },
+        },
+        {
           name: 'Edit User',
           action: 'edit',
           icon: 'edit',
@@ -118,6 +128,7 @@ export class UsersListComponent {
 
   constructor(
     private userApi: UserApiService,
+    private authApi: AuthService,
     private dialog: MatDialog,
     private snackbarService: SnackbarService,
     private confirmationService: ConfirmationService,
@@ -168,12 +179,47 @@ export class UsersListComponent {
       case 'delete':
         this._changeUserStatus(user, Status.DELETED, action);
         break;
+      case 'send-reset-password':
+        this._sendUserResetPassword(user);
+        break;
     }
   }
 
   onFilterStatusChange(event: MatSelectChange) {
     this.statusControl.setValue(event.value);
     this.getUsers();
+  }
+
+  private _sendUserResetPassword(user: User) {
+    this.confirmationService
+      .open(
+        'Send User Reset Password',
+        `Do you want to request password reset for <b>${user.name}</b>?`,
+      )
+      .afterClosed()
+      .pipe(
+        filter((result) => result),
+        switchMap(() => {
+          this.snackbarService.openLoadingSnackbar(
+            'Sending to User Email',
+            'Please wait...',
+          );
+          return this.authApi.forgotPassword(user.email);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.snackbarService.closeLoadingSnackbar();
+          this.snackbarService.openSuccessSnackbar('Email has been sent!');
+        },
+        error: ({ error }) => {
+          console.error(error);
+          this.snackbarService.openErrorSnackbar(
+            error.errorCode,
+            error.message,
+          );
+        },
+      });
   }
 
   private _changeUserStatus(user: User, status: Status, action: string) {
