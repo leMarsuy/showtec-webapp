@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { stockCheckerAuthResolver } from './stock-checker-auth.resolver';
 import { StockCheckerComponent } from './stock-checker.component';
 
 const routes: Routes = [
   {
     path: '',
     component: StockCheckerComponent,
+    resolve: { isUser: stockCheckerAuthResolver },
     children: [
       { path: '', redirectTo: 'products', pathMatch: 'full' },
       /**

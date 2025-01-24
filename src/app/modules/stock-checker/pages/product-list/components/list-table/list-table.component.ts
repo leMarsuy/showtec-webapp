@@ -8,7 +8,6 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-import { Color } from '@app/core/enums/color.enum';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -50,8 +49,13 @@ export class ListTableComponent implements OnInit, OnDestroy {
       type: 'productDisplay',
     },
     {
-      label: 'Stocked Product',
-      dotNotationPath: '_$stockSummary.In Stock',
+      label: 'In Stock',
+      dotNotationPath: '_$stockTypeSummary.Sealed',
+      type: 'number',
+    },
+    {
+      label: 'Demo Stock',
+      dotNotationPath: '_$stockTypeSummary.Demo',
       type: 'number',
     },
     {
