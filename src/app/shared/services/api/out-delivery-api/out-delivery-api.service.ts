@@ -35,7 +35,7 @@ export class OutDeliveryApiService {
         status: query.status ?? '',
       };
 
-      if (query.hasPurchaseOrder !== undefined) {
+      if (typeof query.hasPurchaseOrder === 'boolean') {
         sanitizedQuery = {
           ...sanitizedQuery,
           hasPurchaseOrder: query.hasPurchaseOrder,
