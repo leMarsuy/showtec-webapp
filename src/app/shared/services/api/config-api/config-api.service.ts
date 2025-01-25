@@ -25,4 +25,12 @@ export class ConfigApiService {
   updateConfigByName(name: string, updateBody: any) {
     return this.httpService.put(`${this.apiPrefix}/${name}`, updateBody);
   }
+
+  getPortalConfig() {
+    return this.httpService.get(`${this.apiPrefix}/cache/portal`);
+  }
+
+  getRolesConfig() {
+    return this.httpService.get(`${this.apiPrefix}/cache/roles`);
+  }
 }

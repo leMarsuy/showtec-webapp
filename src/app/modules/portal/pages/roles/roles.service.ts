@@ -5,6 +5,15 @@ import { Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class RolesService {
+  private rolesConfig: any;
+
   fetchRoles$ = new Subject<void>();
-  constructor() {}
+
+  setRolesConfig(config: any) {
+    this.rolesConfig = config;
+  }
+
+  getRolesConfig() {
+    return this.rolesConfig;
+  }
 }
