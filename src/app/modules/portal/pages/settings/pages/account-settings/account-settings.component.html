@@ -1,47 +1,67 @@
-  <div class="grid grid-cols-12 gap-2">
-    <div class="col-span-6 grid grid-cols-12" [formGroup]="userForm">
-      <div class="col-span-12 my-4">
-        <h2 class="font-bold text-lg text-sky-500 tracking-wide">Account Details</h2>
-        <p class="text-gray-600 mt-1">Update your account details.</p>
+<div class="grid grid-cols-12 gap-2 px-4 py-4 mt-4 mx-4">
+  <div class="col-span-6 grid grid-cols-12" [formGroup]="userForm">
+    <div class="col-span-12 my-4">
+      <h2 class="font-bold text-lg text-sky-500 tracking-wide">
+        Account Details
+      </h2>
+      <p class="text-gray-600 mt-1">Update your account details.</p>
 
-        <div class=" mt-8 mr-12 [&>[data-slot=form]]:h-[1rem] border-gray-200 pb-3 ">
-          <div class="col-span-12">
-            <p class="text-xs text-gray-500">Name</p>
-            <mat-form-field data-slot="form" appearance="outline" class="w-full">
-              <input matInput type="text" formControlName="name" />
-            </mat-form-field>
-          </div>
+      <div
+        class="mt-8 mr-12 [&>[data-slot=form]]:h-[1rem] border-gray-200 pb-3"
+      >
+        <div class="col-span-12">
+          <p class="text-xs text-gray-500">Name</p>
+          <mat-form-field data-slot="form" appearance="outline" class="w-full">
+            <input matInput type="text" formControlName="name" />
+          </mat-form-field>
+        </div>
 
-          <div class="col-span-12">
-            <p class="text-xs text-gray-500">Designation</p>
-            <mat-form-field data-slot="form" appearance="outline" class="w-full">
-              <input matInput type="text" formControlName="designation" />
-            </mat-form-field>
-          </div>
+        <div class="col-span-12">
+          <p class="text-xs text-gray-500">Designation</p>
+          <mat-form-field data-slot="form" appearance="outline" class="w-full">
+            <input matInput type="text" formControlName="designation" />
+          </mat-form-field>
+        </div>
 
-          <div class="col-span-12">
-            <p class="text-xs text-gray-500">Email</p>
-            <mat-form-field data-slot="form" appearance="outline" class="w-full">
-              <input matInput type="text" formControlName="email" />
-            </mat-form-field>
-          </div>
+        <div class="col-span-12">
+          <p class="text-xs text-gray-500">Email</p>
+          <mat-form-field data-slot="form" appearance="outline" class="w-full">
+            <input matInput type="text" formControlName="email" />
+          </mat-form-field>
+        </div>
 
-          <div class="flex justify-end gap-2 col-span-12 mt-4">
-            <button mat-button [disabled]="loading || !userForm.dirty " color="primary" (click)="onResetForm()">Discard
-              Changes</button>
-            <button mat-flat-button [disabled]="loading || !userForm.dirty" (click)="onSave()">Save</button>
-          </div>
+        <div class="flex justify-end gap-2 col-span-12 mt-4">
+          <button
+            mat-button
+            [disabled]="loading || !userForm.dirty"
+            color="primary"
+            (click)="onResetForm()"
+          >
+            Discard Changes
+          </button>
+          <button
+            mat-flat-button
+            [disabled]="loading || !userForm.dirty"
+            (click)="onSave()"
+          >
+            Save
+          </button>
         </div>
       </div>
-
-
-    </div>
-    <div class="col-span-6 mt-4">
-      <h2 class="font-bold text-lg text-sky-500 tracking-wide">Change Password</h2>
-      <p class="text-gray-600 mt-1">Update your password.</p>
-
-      <button
-        class="mt-8 bg-[#005cbb] px-5 py-2 rounded-full text-white font-medium hover:bg-[#005cbb]/75 active:bg-blend-darken"
-        [disabled]="loading" (click)="onPasswordResetRequest()">Change Password Request</button>
     </div>
   </div>
+  <div class="col-span-6 mt-4">
+    <h2 class="font-bold text-lg text-sky-500 tracking-wide">
+      Change Password
+    </h2>
+    <p class="text-gray-600 mt-1">Update your password.</p>
+
+    <button
+      class="mt-8 bg-[#005cbb] px-5 py-2 rounded-full text-white font-medium hover:bg-[#005cbb]/75 active:bg-blend-darken"
+      [disabled]="loading"
+      (click)="onPasswordResetRequest()"
+    >
+      Change Password Request
+    </button>
+  </div>
+</div>

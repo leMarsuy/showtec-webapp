@@ -1,18 +1,18 @@
-import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { AddCustomerComponent } from './add-customer/add-customer.component';
-import { CustomerApiService } from '@shared/services/api/customer-api/customer-api.service';
-import { FormControl } from '@angular/forms';
-import { Customer } from '@core/models/customer.model';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
-import { HttpGetResponse } from '@core/interfaces/http-get-response.interface';
-import { TableColumn } from '@core/interfaces/table-column.interface';
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { EditCustomerComponent } from './edit-customer/edit-customer.component';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { ColumnType } from '@core/enums/column-type.enum';
 import { ContentHeaderAction } from '@core/interfaces/content-header-action.interface';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { HttpGetResponse } from '@core/interfaces/http-get-response.interface';
+import { TableColumn } from '@core/interfaces/table-column.interface';
+import { Customer } from '@core/models/customer.model';
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+import { CustomerApiService } from '@shared/services/api/customer-api/customer-api.service';
+import { AddCustomerComponent } from './add-customer/add-customer.component';
+import { EditCustomerComponent } from './edit-customer/edit-customer.component';
 
 @Component({
   selector: 'app-customers',
@@ -27,11 +27,6 @@ export class CustomersComponent {
   // content header
 
   actions: ContentHeaderAction[] = [
-    {
-      label: 'Filter',
-      icon: 'filter_alt',
-      id: 'filter',
-    },
     {
       label: 'Add Customer',
       icon: 'add',

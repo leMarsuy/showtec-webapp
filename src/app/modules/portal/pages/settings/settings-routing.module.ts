@@ -6,6 +6,9 @@ const routes: Routes = [
   {
     path: '',
     component: SettingsComponent,
+    data: {
+      baseUrl: 'settings',
+    },
     children: [
       {
         path: '',
@@ -31,6 +34,28 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/voucher-settings/voucher-settings.module').then(
             (m) => m.VoucherSettingsModule,
+          ),
+      },
+      {
+        path: 'customers',
+        loadChildren: () =>
+          import('./pages/customers/customers.module').then(
+            (m) => m.CustomersModule,
+          ),
+      },
+
+      {
+        path: 'suppliers',
+        loadChildren: () =>
+          import('./pages/suppliers/suppliers.module').then(
+            (m) => m.SuppliersModule,
+          ),
+      },
+      {
+        path: 'warehouses',
+        loadChildren: () =>
+          import('./pages/warehouses/warehouses.module').then(
+            (m) => m.WarehousesModule,
           ),
       },
       {
