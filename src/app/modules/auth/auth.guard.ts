@@ -29,7 +29,7 @@ export const authGuard: CanActivateFn = () => {
       if (response.status !== Status.ACTIVE) {
         snackbar.openErrorSnackbar(
           `Access Denied`,
-          `Your account is not active. Please contact your Administrator.`,
+          `Something is wrong with your account. Please contact your Administrator.`,
           { duration: 3000 },
         );
         removeCachedUser();
@@ -39,7 +39,7 @@ export const authGuard: CanActivateFn = () => {
       if (!response.permissions?.length) {
         snackbar.openErrorSnackbar(
           `Access Denied`,
-          `You do not have any permissions granted for access. Please contact your Administrator.`,
+          `Something is wrong with your account. Please contact your Administrator.`,
           { duration: 3000 },
         );
         removeCachedUser();

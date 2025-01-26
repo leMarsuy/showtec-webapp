@@ -26,7 +26,7 @@ import { RolesService } from '../../roles.service';
 export class UpsertRoleComponent {
   title = this.data ? 'Update Role' : 'Create Role';
   submitLabel = this.data ? 'Update' : 'Create';
-  isUpdate = this.data ?? false;
+  isUpdate = !!this.data;
   isSubmitting = false;
 
   permissions: any = [];
@@ -326,6 +326,9 @@ export class UpsertRoleComponent {
         }
       }
 
+      /**
+       * #NOTE: Limitation of current logic; Route must not have "grand children", Route Child must not have children.
+       */
       if (existingPermission?.children?.length) {
         for (const child of existingPermission.children) {
           this.permissionState[permission.path]['children'][child.path].state =
