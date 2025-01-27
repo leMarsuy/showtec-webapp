@@ -9,21 +9,42 @@
   <div class="flex">
     @for (action of actions; track action) {
       @if (action.type) {
-        @if (action.type === "menu" && !!action.items?.length) {
+        @if (action.type === "menu" && action?.items?.length) {
           <button
             class="flex flex-none border-l-2 bg-white border-gray-200 p-4 last:rounded-r-xl last:pr-6 hover:drop-shadow-lg cursor-pointer"
-            [matMenuTriggerFor]="menu"
+            [cdkMenuTriggerFor]="menu"
+            cdkMenuItem
+            #menuRef
           >
             <mat-icon class="mr-2"> {{ action.icon }} </mat-icon>
             <p>{{ action.label }}</p>
           </button>
-          <mat-menu #menu="matMenu">
-            @for (item of action.items; track $index) {
-              <button mat-menu-item (click)="actionEmitter.emit(item.id)">
-                {{ item.name }}
-              </button>
-            }
-          </mat-menu>
+          <ng-template #menu>
+            <div
+              class="flex flex-col rounded-md bg-white p-1.5 border border-gray-300 text-left mt-1.5"
+              style="box-shadow: 3px 3px 6px 0px #0000001a"
+              [ngStyle]="{
+                width: menuRef.clientWidth + 'px',
+              }"
+              cdkMenu
+            >
+              @for (item of action.items; track $index) {
+                <button
+                  class="text-left rounded-md p-1.5 hover:bg-gray-200 text-black"
+                  cdkMenuItem
+                  (click)="actionEmitter.emit(item.id)"
+                >
+                  <div class="flex items-center w-full px-1">
+                    <span class="flex-1 text-sm">{{ item.name }}</span>
+                    <span
+                      class="flex items-center justify-center shrink-0 w-[32px]"
+                      ><mat-icon *ngIf="item.icon" [fontIcon]="item.icon"
+                    /></span>
+                  </div>
+                </button>
+              }
+            </div>
+          </ng-template>
         }
       } @else {
         <button

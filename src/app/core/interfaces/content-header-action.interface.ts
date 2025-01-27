@@ -5,6 +5,7 @@ export enum ContentHeaderActionType {
 export interface HeaderActionMenuItems {
   name: string;
   id: string;
+  icon?: string;
 }
 export interface ContentHeaderAction {
   id: string;

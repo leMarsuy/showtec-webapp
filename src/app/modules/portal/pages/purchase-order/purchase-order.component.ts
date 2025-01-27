@@ -7,6 +7,7 @@ import {
   ContentHeaderActionType,
 } from '@app/core/interfaces/content-header-action.interface';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
+import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
 import { AddNewCustomerComponent } from './add-new-customer/add-new-customer.component';
 import { PurchaseOrderService } from './purchase-order.service';
 
@@ -20,6 +21,21 @@ export class PurchaseOrderComponent {
   private readonly dialog = inject(MatDialog);
   private readonly snackbar = inject(SnackbarService);
   private readonly purchaseOrderService = inject(PurchaseOrderService);
+  private readonly customerApi = inject(CustomerApiService);
+
+  private addExistingCustomerActionOption = {
+    id: 'add-with-existing-customer',
+    name: 'With Existing Customer',
+    icon: 'person_search',
+  };
+
+  constructor() {
+    this.customerApi.hasCustomer().subscribe((hasCustomer) => {
+      if (!hasCustomer) return;
+      const addAction = this.actions.find((item) => item.id === 'add');
+      addAction?.items?.push(this.addExistingCustomerActionOption);
+    });
+  }
 
   actions: ContentHeaderAction[] = [
     {
@@ -31,10 +47,7 @@ export class PurchaseOrderComponent {
         {
           id: 'add-with-new-customer',
           name: 'With New Customer',
-        },
-        {
-          id: 'add-with-existing-customer',
-          name: 'With Existing Customer',
+          icon: 'person_add',
         },
       ],
     },

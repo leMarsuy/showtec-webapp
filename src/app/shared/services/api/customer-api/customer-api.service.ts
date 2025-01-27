@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpService } from '../../http/http.service';
+import { QueryParams } from '@core/interfaces/query-params.interface';
 import { Customer } from '@core/models/customer.model';
 import { environment } from '../../../../../environments/environment';
-import { QueryParams } from '@core/interfaces/query-params.interface';
+import { HttpService } from '../../http/http.service';
 
 @Injectable({
   providedIn: 'root',
@@ -56,5 +56,9 @@ export class CustomerApiService {
 
   updateCustomerById(_id: string, updateBody: Customer) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
+  }
+
+  hasCustomer() {
+    return this.httpService.get(`${this.apiPrefix}/has-customer`);
   }
 }
