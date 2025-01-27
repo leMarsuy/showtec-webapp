@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, take, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { Subject, takeUntil, tap } from 'rxjs';
 import { PortalService } from '../../portal.service';
 
 interface SettingRouteConfig {
@@ -21,12 +21,15 @@ export class SettingsComponent implements OnDestroy {
 
   constructor(
     private portalService: PortalService,
-    private activatedRoute: ActivatedRoute,
     private router: Router,
   ) {
+    /**
+     * #NOTE: UI BUG where mat tab active isn't set when using browser's history controls (back, forward); Something to do with Location. Explore router.events.pipe(filter((e): NavigationStart))
+     */
+
     this.portalService.portalNavigation$
       .pipe(
-        take(1),
+        takeUntil(this.destroyed$),
         tap((navigations) => this._setRouteConfigs(navigations)),
       )
       .subscribe({
@@ -34,6 +37,11 @@ export class SettingsComponent implements OnDestroy {
           this.selectedRoute = this.router.url;
         },
       });
+  }
+
+  navigateToRoute(navigation: SettingRouteConfig) {
+    this.selectedRoute = navigation.route;
+    this.router.navigate([navigation.route], { replaceUrl: true });
   }
 
   private _setRouteConfigs(navigations: any) {

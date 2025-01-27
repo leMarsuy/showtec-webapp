@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { settingsChildGuard } from './settings-child.guard';
 import { SettingsComponent } from './settings.component';
 
 const routes: Routes = [
@@ -9,6 +10,7 @@ const routes: Routes = [
     data: {
       baseUrl: 'settings',
     },
+    canActivateChild: [settingsChildGuard],
     children: [
       {
         path: '',

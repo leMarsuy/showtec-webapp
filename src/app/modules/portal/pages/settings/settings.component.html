@@ -17,9 +17,8 @@
       ) {
         <a
           mat-tab-link
-          (click)="selectedRoute = routeConfigs[$index].route"
+          (click)="navigateToRoute(config)"
           [active]="selectedRoute === config.route"
-          [routerLink]="[config.route]"
         >
           {{ config.label }}
         </a>
