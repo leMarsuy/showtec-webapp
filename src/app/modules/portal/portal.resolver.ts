@@ -30,10 +30,9 @@ export const portalResolver: ResolveFn<unknown> = (
     ),
   });
 
-  /**
-   * #NOTE: There's a ghost bug where on some accounts, data.navigations is not complete/late so the permission mapping is broken
-   * Maybe create the permission mapping in sidenav component?
-   */
+  const filterRoutes = (routes: any, permissionMap: any) => {
+    return routes.filter((route: any) => permissionMap[route.path].hasAccess);
+  };
 
   return obs.pipe(
     take(1),
@@ -60,26 +59,29 @@ export const portalResolver: ResolveFn<unknown> = (
 
       const navigations = conf.data.navigations;
 
-      navigations.forEach((navigation: any, index: number) => {
-        const newItems: any = [];
-        navigation.items.forEach((route: any) => {
-          if (route?.items?.length) {
-            route.items = route.items.filter((child: any) => {
-              return permissionMap[route.path]['children'][child.path]
-                .hasAccess;
-            });
+      /**
+       *  navigations[] can results to (navigation or navGroup).items.length = 0, so we filter it out after iteration
+       */
+
+      navigations.forEach((navGroup: any) => {
+        const newNavGroupItems = [];
+
+        for (const routeGroup of navGroup.items) {
+          if (routeGroup?.items?.length) {
+            routeGroup.items = filterRoutes(
+              routeGroup.items,
+              permissionMap[routeGroup.path]['children'],
+            );
           }
 
-          if (permissionMap[route.path].hasAccess) {
-            newItems.push(route);
+          if (permissionMap[routeGroup.path].hasAccess) {
+            newNavGroupItems.push(routeGroup);
           }
-        });
-
-        navigation.items = newItems;
-        if (!navigation.items.length) {
-          navigations.splice(index, 1);
         }
+        navGroup.items = newNavGroupItems;
       });
+
+      navigations.filter((navGroup: any) => navGroup.items.length);
 
       return conf;
     }),
