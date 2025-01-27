@@ -57,31 +57,26 @@ export const portalResolver: ResolveFn<unknown> = (
 
       const conf = JSON.parse(JSON.stringify(portalConfig)) as any;
 
-      const navigations = conf.data.navigations;
+      let navigations = conf.data.navigations;
 
       /**
        *  navigations[] can results to (navigation or navGroup).items.length = 0, so we filter it out after iteration
        */
-
-      navigations.forEach((navGroup: any) => {
-        const newNavGroupItems = [];
-
-        for (const routeGroup of navGroup.items) {
-          if (routeGroup?.items?.length) {
-            routeGroup.items = filterRoutes(
-              routeGroup.items,
-              permissionMap[routeGroup.path]['children'],
+      navigations.forEach((navigation: any, index: number) => {
+        navigation.items = navigation.items.filter((item: any) => {
+          if (item.items && permissionMap[item.path].hasAccess) {
+            item.items = filterRoutes(
+              item.items,
+              permissionMap[item.path]['children'],
             );
           }
-
-          if (permissionMap[routeGroup.path].hasAccess) {
-            newNavGroupItems.push(routeGroup);
-          }
-        }
-        navGroup.items = newNavGroupItems;
+          return permissionMap[item.path].hasAccess;
+        });
       });
 
-      navigations.filter((navGroup: any) => navGroup.items.length);
+      navigations = navigations.filter(
+        (navGroup: any) => navGroup.items.length,
+      );
 
       return conf;
     }),
