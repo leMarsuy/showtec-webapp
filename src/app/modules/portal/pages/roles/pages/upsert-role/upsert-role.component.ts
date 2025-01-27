@@ -7,6 +7,7 @@ import { Role } from '@app/core/models/role.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { RoleApiService } from '@app/shared/services/api/role-api/role-api.service';
+import { isEmpty } from '@app/shared/utils/objectUtil';
 import {
   catchError,
   filter,
@@ -311,18 +312,22 @@ export class UpsertRoleComponent {
       {},
     );
 
+    const findLookupInMap = (lookupPath: string, permissionMap: any[]) => {
+      return permissionMap.find((item) => item.path === lookupPath);
+    };
+
     this.roleForm.get('permissions')?.patchValue(this.data.permissions);
 
-    this.permissions.forEach((permission: any, permissionIndex: number) => {
+    this.permissions.forEach((permission: any) => {
       const existingPermission = permissionMap[permission.path];
+      const parentPermState = this.permissionState[permission.path];
 
-      this.permissionState[permission.path].state =
-        existingPermission.hasAccess;
+      parentPermState.state = existingPermission.hasAccess;
 
       if (permission?.methods) {
         for (const key of Object.keys(permission.methods)) {
-          this.permissionState[permission.path]['methods'][key].state =
-            existingPermission['methods'][key];
+          const parentPermMethodState = parentPermState['methods'][key];
+          parentPermMethodState.state = existingPermission['methods'][key];
         }
       }
 
@@ -331,33 +336,46 @@ export class UpsertRoleComponent {
        */
       if (existingPermission?.children?.length) {
         for (const child of existingPermission.children) {
-          this.permissionState[permission.path]['children'][child.path].state =
-            !!existingPermission.children.find(
-              (existingChild: any) => existingChild.path === child.path,
-            ).hasAccess;
+          const childPermState =
+            this.permissionState[permission.path]['children'][child.path];
+
+          const childPermHasAccess = !!findLookupInMap(
+            child.path,
+            existingPermission.children,
+          ).hasAccess;
+
+          childPermState.state = childPermHasAccess;
+
+          if (childPermHasAccess) {
+            childPermState.expanded = true;
+          }
 
           if (child?.methods) {
             for (const key of Object.keys(child.methods)) {
-              if (child['methods'][key]) {
-                this.permissionState[permission.path]['children'][
-                  child.path
-                ].expanded = true;
+              const childMethodValue = !!child['methods'][key];
+              const childPermMethodState =
+                this.permissionState[permission.path]['children'][child.path][
+                  'methods'
+                ][key];
+
+              if (childMethodValue) {
+                childPermState.expanded = true;
               }
-              this.permissionState[permission.path]['children'][child.path][
-                'methods'
-              ][key].state = child['methods'][key];
+              childPermMethodState.state = childMethodValue;
             }
           }
         }
       }
 
+      // check if
+
       if (
-        this.permissionState[permission.path].state &&
-        (existingPermission?.children?.length || permission?.methods)
+        parentPermState.state &&
+        (existingPermission?.children?.length || !isEmpty(permission?.methods))
       ) {
-        this.permissionState[permission.path].expanded = true;
+        parentPermState.expanded = true;
       } else {
-        this.permissionState[permission.path].expanded = false;
+        parentPermState.expanded = false;
       }
     });
   }
