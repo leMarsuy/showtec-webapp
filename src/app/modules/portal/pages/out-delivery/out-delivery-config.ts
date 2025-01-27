@@ -12,18 +12,31 @@ export const OUT_DELIVER_CONFIG = {
     },
     {
       label: 'Customer',
-      dotNotationPath: '_customerId.name',
-      type: ColumnType.STRING,
+      dotNotationPath: '_customerId',
+      type: ColumnType.CUSTOM,
+      display: (element: any) => {
+        const customer = element?._customerId;
+        const customerName = `<p class="font-medium">${customer.name}</p>`;
+
+        if (customer.name !== customer.contactPerson) {
+          return (
+            customerName +
+            `
+            <p class="text-xs">${customer.contactPerson}</p>
+          `
+          );
+        }
+        return customerName;
+      },
     },
     {
-      label: 'Contact Person',
-      dotNotationPath: '_customerId.contactPerson',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'No. of Items',
-      dotNotationPath: 'items.length',
-      type: ColumnType.STRING,
+      label: 'No # of Items',
+      dotNotationPath: 'items',
+      type: ColumnType.CUSTOM,
+      display: (element: any) => {
+        const totalQuantity = element.items.length;
+        return `${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}`;
+      },
     },
     {
       label: 'Delivery Date',

@@ -3,7 +3,7 @@ import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { SOA_STATUSES, SoaStatus } from '@app/core/enums/soa-status.enum';
 
-export const SOA_CONFIG = {
+export const SOA_CONFIG: any = {
   tableFilters: {
     searchPlaceHolder: 'Search SOA',
     searchIcon: 'search',
@@ -17,13 +17,22 @@ export const SOA_CONFIG = {
     },
     {
       label: 'Customer',
-      dotNotationPath: '_customerId.name',
-      type: ColumnType.STRING,
-    },
-    {
-      label: 'Contact Person',
-      dotNotationPath: '_customerId.contactPerson',
-      type: ColumnType.STRING,
+      dotNotationPath: '_customerId',
+      type: ColumnType.CUSTOM,
+      display: (element: any) => {
+        const customer = element?._customerId;
+        const customerName = `<p class="font-medium">${customer.name}</p>`;
+
+        if (customer.name !== customer.contactPerson) {
+          return (
+            customerName +
+            `
+            <p class="text-xs">${customer.contactPerson}</p>
+          `
+          );
+        }
+        return customerName;
+      },
     },
     {
       label: 'Status',
