@@ -249,6 +249,9 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     },
   ];
 
+  readonly tooltip =
+    'If checked, editing Customer is disabled and must only come from the selected Purchase Order';
+
   listedItemsPage: PageEvent = {
     pageIndex: 0,
     pageSize: 100,

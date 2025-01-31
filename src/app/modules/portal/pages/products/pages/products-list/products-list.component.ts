@@ -58,6 +58,7 @@ export class ProductsListComponent {
       dotNotationPath: 'description',
       type: ColumnType.STRING,
     },
+
     {
       label: 'Sealed',
       dotNotationPath: '_$stockTypeSummary.Sealed',
@@ -75,6 +76,16 @@ export class ProductsListComponent {
       dotNotationPath: '_$stockTypeSummary.Service',
       type: ColumnType.NUMBER,
       align: Alignment.CENTER,
+    },
+    {
+      label: 'In Stock',
+      dotNotationPath: '_$stockSummary.In Stock',
+      type: ColumnType.NUMBER,
+    },
+    {
+      label: 'For Delivery',
+      dotNotationPath: '_$stockSummary.For Delivery',
+      type: ColumnType.NUMBER,
     },
     {
       label: 'Status',

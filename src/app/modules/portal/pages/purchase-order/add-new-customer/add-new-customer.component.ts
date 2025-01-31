@@ -1,6 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  CUSTOMER_TYPES,
+  CustomerType,
+} from '@app/core/enums/customer-type.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
@@ -11,20 +15,51 @@ import { filter, switchMap } from 'rxjs';
   templateUrl: './add-new-customer.component.html',
   styleUrl: './add-new-customer.component.scss',
 })
-export class AddNewCustomerComponent {
+export class AddNewCustomerComponent implements OnInit {
   private readonly snackbar = inject(SnackbarService);
   private readonly confirmation = inject(ConfirmationService);
   private readonly customerApi = inject(CustomerApiService);
+  private readonly data = inject<any>(MAT_DIALOG_DATA);
+  private readonly fb = inject(FormBuilder);
   readonly dialogRef = inject(MatDialogRef);
 
-  customerForm!: FormGroup;
+  customerTypes = CUSTOMER_TYPES;
+
+  customerForm = this.fb.group({
+    name: ['', Validators.required],
+    type: ['', [Validators.required]],
+    contactPerson: ['', [Validators.required]],
+    email: [''],
+    mobile: [''],
+    tin: [''],
+    addressDelivery: [''],
+    addressBilling: [''],
+    remarks: [''],
+  });
+
+  constructor() {
+    if (this.data.name) {
+      this.customerForm.patchValue(this.data);
+    }
+  }
+
+  ngOnInit(): void {
+    this.customerForm.get('type')?.valueChanges.subscribe((value) => {
+      if (value === CustomerType.INDIVIDUAL) {
+        this.customerForm
+          .get('contactPerson')
+          ?.setValue(this.customerForm.get('name')?.value || '');
+      }
+    });
+  }
 
   onFormEmit(e: any) {
     this.customerForm = e;
   }
 
   onSubmit() {
-    const customer = this.customerForm.getRawValue();
+    const customer = this.customerForm.getRawValue() as any;
+
     this.confirmation
       .open('Create Confirmation', 'Do you want to add this customer?')
       .afterClosed()
@@ -48,6 +83,7 @@ export class AddNewCustomerComponent {
         error: ({ error }) => {
           console.error(error);
           this.snackbar.openErrorSnackbar(error.errorCode, error.message);
+          this.dialogRef.close(false);
         },
       });
   }

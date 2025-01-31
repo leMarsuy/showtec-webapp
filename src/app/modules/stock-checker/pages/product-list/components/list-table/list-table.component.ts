@@ -50,12 +50,12 @@ export class ListTableComponent implements OnInit, OnDestroy {
     },
     {
       label: 'In Stock',
-      dotNotationPath: '_$stockTypeSummary.Sealed',
+      dotNotationPath: '_$stockDisplay.InStock',
       type: 'number',
     },
     {
       label: 'Demo Stock',
-      dotNotationPath: '_$stockTypeSummary.Demo',
+      dotNotationPath: '_$stockDisplay.Demo',
       type: 'number',
     },
     {
@@ -67,31 +67,6 @@ export class ListTableComponent implements OnInit, OnDestroy {
       label: 'Classification',
       dotNotationPath: 'classification',
     },
-    // {
-    //   label: 'Action',
-    //   dotNotationPath: 'action',
-    //   type: 'action',
-    //   actions: [
-    //     {
-    //       name: 'Test',
-    //       icon: 'edit',
-    //       action: 'test',
-    //       color: Color.INFO,
-    //     },
-    //     {
-    //       name: 'Test',
-    //       icon: 'edit',
-    //       action: 'test',
-    //       color: Color.INFO,
-    //     },
-    //     {
-    //       name: 'Test',
-    //       icon: 'edit',
-    //       action: 'test',
-    //       color: Color.INFO,
-    //     },
-    //   ],
-    // },
   ];
 
   ngOnInit(): void {

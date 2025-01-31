@@ -311,7 +311,6 @@ export class UpsertRoleComponent {
       },
       {},
     );
-
     const findLookupInMap = (lookupPath: string, permissionMap: any[]) => {
       return permissionMap.find((item) => item.path === lookupPath);
     };

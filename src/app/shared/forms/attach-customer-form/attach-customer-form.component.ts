@@ -8,7 +8,9 @@ import {
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Customer } from '@app/core/models/customer.model';
+import { AddNewCustomerComponent } from '@app/modules/portal/pages/purchase-order/add-new-customer/add-new-customer.component';
 import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
 import {
   debounceTime,
@@ -34,12 +36,16 @@ export class AttachCustomerFormComponent
 {
   @Input({ required: true }) fGroup!: FormGroup;
   @Input({ alias: 'loading' }) isLoading = false;
+  @Input() disableCreateCustomer = false;
 
   filteredCustomers!: Observable<Customer[]>;
 
   destroyed$ = new Subject<void>();
 
-  constructor(private customerApi: CustomerApiService) {}
+  constructor(
+    private customerApi: CustomerApiService,
+    private dialog: MatDialog,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     const formGroup = changes['fGroup']?.currentValue as FormGroup;
@@ -85,6 +91,31 @@ export class AttachCustomerFormComponent
       displayStr = value || '';
     }
     return displayStr;
+  }
+
+  openCreateDialog() {
+    const name =
+      typeof this.fGroup.controls['_customerId'].value === 'string'
+        ? this.fGroup.controls['_customerId'].value
+        : '';
+
+    this.dialog
+      .open(AddNewCustomerComponent, {
+        data: {
+          name,
+        },
+        height: '65vh',
+        width: '55vw',
+        autoFocus: false,
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((customer) => {
+        if (!customer) return;
+
+        this.autofillCustomerDetails(customer);
+        this.fGroup.controls['_customerId'].setValue(customer);
+      });
   }
 
   private _filterCustomers(value: string) {

@@ -152,6 +152,9 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     length: 0,
   };
 
+  readonly tooltip =
+    'If checked, editing Customer is disabled and must only come from the selected Purchase Order';
+
   constructor(
     private productApi: ProductApiService,
     private customerApi: CustomerApiService,

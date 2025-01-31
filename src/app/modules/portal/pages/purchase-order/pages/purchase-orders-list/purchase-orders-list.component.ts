@@ -117,7 +117,6 @@ export class PurchaseOrdersListComponent {
       dotNotationPath: 'purchaseOrderDate',
       type: ColumnType.DATE,
     },
-
     {
       label: 'Delivery Receipts',
       dotNotationPath: 'outDeliveries',

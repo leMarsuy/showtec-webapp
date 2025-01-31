@@ -63,6 +63,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
         next: (response) => {
           const resp = response as HttpGetResponse;
           const products = this.remapProducts(resp.records as any);
+
           this.products = products;
           this.page.length = resp.total;
         },
@@ -74,22 +75,24 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   private remapProducts(products: any) {
+    const inStock = 'In Stock';
+
     return products.map((product: any) => {
-      const _$stockTypeSummary = {
-        Sealed: 0,
+      const _$stockDisplay = {
+        InStock: 0,
         Demo: 0,
       };
 
       for (const stock of product.stocks) {
-        if (stock.type === StockType.SEALED) {
-          _$stockTypeSummary.Sealed += 1;
+        if (stock.type === StockType.SEALED && stock.status === inStock) {
+          _$stockDisplay.InStock += 1;
         }
 
-        if (stock.type === StockType.DEMO) {
-          _$stockTypeSummary.Demo += 1;
+        if (stock.type === StockType.DEMO && stock.status === inStock) {
+          _$stockDisplay.Demo += 1;
         }
       }
-      product['_$stockTypeSummary'] = _$stockTypeSummary;
+      product['_$stockDisplay'] = _$stockDisplay;
       return product;
     });
   }
