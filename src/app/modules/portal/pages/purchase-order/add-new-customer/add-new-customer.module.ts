@@ -6,6 +6,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { PopConfirmDirective } from '@app/shared/directives/pop-confirm/pop-confirm.directive';
 import { CustomerFormModule } from '@app/shared/forms/customer-form/customer-form.module';
 import { AddNewCustomerComponent } from './add-new-customer.component';
 
@@ -21,6 +22,7 @@ import { AddNewCustomerComponent } from './add-new-customer.component';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
+    PopConfirmDirective,
   ],
 })
 export class AddNewCustomerModule {}

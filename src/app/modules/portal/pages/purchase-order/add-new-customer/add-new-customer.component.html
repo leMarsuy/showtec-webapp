@@ -53,11 +53,13 @@
   <div class="w-full flex justify-between">
     <button mat-button color="warn" [mat-dialog-close]="false">Cancel</button>
     <button
+      popConfirm
       mat-flat-button
-      color="primary"
-      [disabled]="!customerForm.valid"
       cdkFocusInitial
-      (click)="onSubmit()"
+      color="primary"
+      tooltipTitle="Do you want to create this Customer?"
+      [disabled]="!customerForm.valid"
+      (afterTooltipClose)="onTooltipClose($event)"
     >
       Create Customer
     </button>

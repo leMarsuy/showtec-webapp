@@ -8,7 +8,6 @@ import {
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { CustomerApiService } from '@app/shared/services/api/customer-api/customer-api.service';
-import { filter, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-add-new-customer',
@@ -53,38 +52,28 @@ export class AddNewCustomerComponent implements OnInit {
     });
   }
 
-  onFormEmit(e: any) {
-    this.customerForm = e;
+  onTooltipClose(willSubmit: boolean) {
+    if (!willSubmit) return;
+
+    this._onSubmit();
   }
 
-  onSubmit() {
+  private _onSubmit() {
+    this.snackbar.openLoadingSnackbar('Creating Customer', 'Please Wait...');
     const customer = this.customerForm.getRawValue() as any;
 
-    this.confirmation
-      .open('Create Confirmation', 'Do you want to add this customer?')
-      .afterClosed()
-      .pipe(
-        filter((result) => result),
-        switchMap(() => {
-          this.snackbar.openLoadingSnackbar(
-            'Creating Customer',
-            'Please Wait...',
-          );
-          return this.customerApi.createCustomer(customer);
-        }),
-      )
-      .subscribe({
-        next: (customer) => {
-          this.snackbar.closeLoadingSnackbar();
-          if (!customer) return;
+    this.customerApi.createCustomer(customer).subscribe({
+      next: (customer) => {
+        this.snackbar.closeLoadingSnackbar();
+        if (!customer) return;
 
-          this.dialogRef.close(customer);
-        },
-        error: ({ error }) => {
-          console.error(error);
-          this.snackbar.openErrorSnackbar(error.errorCode, error.message);
-          this.dialogRef.close(false);
-        },
-      });
+        this.dialogRef.close(customer);
+      },
+      error: ({ error }) => {
+        console.error(error);
+        this.snackbar.openErrorSnackbar(error.errorCode, error.message);
+        this.dialogRef.close(false);
+      },
+    });
   }
 }
