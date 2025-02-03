@@ -9,6 +9,7 @@ import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Alignment } from '@app/core/enums/align.enum';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
+import { PurchaseOrderStatus } from '@app/core/enums/purchase-order.enum';
 import {
   SIGNATORY_ACTIONS,
   SignatoryAction,
@@ -99,7 +100,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
     mobile: this.fb.control('', [Validators.required]),
     address: this.fb.control('', [Validators.required]),
     tin: this.fb.control(''),
-    soaDate: this.fb.control(new Date(), [Validators.required]),
+    soaDate: this.fb.control('', [Validators.required]),
     dueDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
   });
@@ -247,6 +248,9 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       ],
     },
   ];
+
+  readonly tooltip =
+    'If checked, editing Customer is disabled and must only come from the selected Purchase Order';
 
   listedItemsPage: PageEvent = {
     pageIndex: 0,
@@ -592,7 +596,12 @@ export class SoaFormComponent implements OnInit, OnDestroy {
 
   private _filterPos(value: string) {
     return this.poApi
-      .getPurchaseOrders({ searchText: value, pageSize: 30, hasSoa: false })
+      .getPurchaseOrders({
+        searchText: value,
+        pageSize: 30,
+        hasSoa: false,
+        status: PurchaseOrderStatus.ACTIVE,
+      })
       .pipe(map((response: any) => response.records));
   }
 
@@ -706,6 +715,8 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       _customerId: po._customerId as string,
       _purchaseOrderId: po._id,
     });
+
+    this.soaForm.markAsDirty();
   }
 
   soaSummary = {
@@ -877,7 +888,7 @@ export class SoaFormComponent implements OnInit, OnDestroy {
       mobile: soa.STATIC?.mobile ?? '',
       address: soa.STATIC?.address ?? '',
       tin: soa.STATIC?.tin ?? '',
-      soaDate: soa?.soaDate ?? '',
+      soaDate: soa?.soaDate ?? new Date(),
       remarks: soa?.remarks ?? '',
     });
 

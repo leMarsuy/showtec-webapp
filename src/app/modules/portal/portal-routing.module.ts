@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PortalComponent } from './portal.component';
 import { portalGuard, roleGuard } from './portal.guard';
+import { portalResolver } from './portal.resolver';
 
 const routes: Routes = [
   {
@@ -9,6 +10,9 @@ const routes: Routes = [
     component: PortalComponent,
     canActivate: [portalGuard],
     canActivateChild: [roleGuard],
+    resolve: {
+      config: portalResolver,
+    },
     children: [
       // {
       //   path: 'dashboard',
@@ -18,75 +22,10 @@ const routes: Routes = [
       //     ),
       // },
       {
-        path: 'reports',
-        loadChildren: () =>
-          import('./reports/reports.module').then((m) => m.ReportsModule),
-      },
-      {
-        path: 'customers',
-        loadChildren: () =>
-          import('./pages/customers/customers.module').then(
-            (m) => m.CustomersModule,
-          ),
-      },
-      {
         path: 'products',
         loadChildren: () =>
           import('./pages/products/products.module').then(
             (m) => m.ProductsModule,
-          ),
-      },
-      {
-        path: 'suppliers',
-        loadChildren: () =>
-          import('./pages/suppliers/suppliers.module').then(
-            (m) => m.SuppliersModule,
-          ),
-      },
-      {
-        path: 'warehouses',
-        loadChildren: () =>
-          import('./pages/warehouses/warehouses.module').then(
-            (m) => m.WarehousesModule,
-          ),
-      },
-      {
-        path: 'out-deliveries',
-        loadChildren: () =>
-          import('./pages/out-delivery/out-delivery.module').then(
-            (m) => m.OutDeliveryModule,
-          ),
-      },
-      {
-        path: 'soa',
-        loadChildren: () =>
-          import('./pages/soa/soa.module').then((m) => m.SoaModule),
-      },
-      {
-        path: 'transactions',
-        loadChildren: () =>
-          import('./pages/transactions/transactions.module').then(
-            (m) => m.TransactionsModule
-          ),
-      },
-
-      // {
-      //   path: 'expenses',
-      //   loadChildren: () =>
-      //     import('./pages/expenses/expenses.module').then(
-      //       (m) => m.ExpensesModule
-      //     ),
-      // },
-      {
-        path: 'users',
-        loadChildren: () =>
-          import('./pages/users/users.module').then((m) => m.UsersModule),
-      },
-      {
-        path: 'vouchers',
-        loadChildren: () =>
-          import('./pages/vouchers/vouchers.module').then(
-            (m) => m.VouchersModule,
           ),
       },
       {
@@ -97,20 +36,64 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'settings',
+        path: 'soa',
         loadChildren: () =>
-          import('./pages/settings/settings.module').then(
-            (m) => m.SettingsModule,
+          import('./pages/soa/soa.module').then((m) => m.SoaModule),
+      },
+      {
+        path: 'out-deliveries',
+        loadChildren: () =>
+          import('./pages/out-delivery/out-delivery.module').then(
+            (m) => m.OutDeliveryModule,
           ),
       },
+      {
+        path: 'transactions',
+        loadChildren: () =>
+          import('./pages/transactions/transactions.module').then(
+            (m) => m.TransactionsModule,
+          ),
+      },
+      {
+        path: 'vouchers',
+        loadChildren: () =>
+          import('./pages/vouchers/vouchers.module').then(
+            (m) => m.VouchersModule,
+          ),
+      },
+      {
+        path: 'reports',
+        loadChildren: () =>
+          import('./reports/reports.module').then((m) => m.ReportsModule),
+      },
+      {
+        path: 'users',
+        loadChildren: () =>
+          import('./pages/users/users.module').then((m) => m.UsersModule),
+      },
+
       {
         path: 'roles',
         loadChildren: () =>
           import('./pages/roles/roles.module').then((m) => m.RolesModule),
       },
       {
+        path: 'settings',
+        loadChildren: () =>
+          import('./pages/settings/settings.module').then(
+            (m) => m.SettingsModule,
+          ),
+      },
+      // {
+      //   path: 'expenses',
+      //   loadChildren: () =>
+      //     import('./pages/expenses/expenses.module').then(
+      //       (m) => m.ExpensesModule
+      //     ),
+      // },
+      {
         path: '',
-        redirectTo: 'reports',
+        redirectTo: 'products',
         pathMatch: 'full',
       },
     ],

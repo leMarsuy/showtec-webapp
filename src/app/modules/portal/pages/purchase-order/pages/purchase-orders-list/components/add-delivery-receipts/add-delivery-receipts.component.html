@@ -56,14 +56,19 @@
         @for (outDelivery of filteredDr$ | async; track outDelivery._id) {
           <mat-option
             [value]="outDelivery"
-            class="py-1"
+            class="!py-2"
             [ngClass]="{
-              '!text-sky-500 !bg-sky-50 !font-medium': isInArray(outDelivery),
+              '!text-sky-600 !bg-sky-50 !font-medium': isInArray(outDelivery),
+              'border-b border-gray-300': !$last,
             }"
           >
-            <p>DR# {{ outDelivery?.code?.value }}</p>
+            <p class="font-medium">DR# {{ outDelivery?.code?.value }}</p>
             <p class="text-xs">
               {{ displayOutDeliveryOption(outDelivery) }}
+            </p>
+            <p class="text-xs">
+              <span class="mr-1">Delivery Date:</span
+              >{{ outDelivery.deliveryDate | date: "MMMM dd, yyyy" }}
             </p>
             <p class="text-xs font-medium">
               Total# of {{ outDelivery.items.length }} item/s

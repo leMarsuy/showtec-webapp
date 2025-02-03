@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
+import { ORDERED_FROM_TYPES } from '@app/core/enums/purchase-order-ordered-from';
 import { Signatory } from '@app/core/models/out-delivery.model';
 import { Product } from '@app/core/models/product.model';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
@@ -20,6 +21,7 @@ import {
 } from '@app/shared/services/data/transform-data/transform-data.service';
 import { isEmpty } from '@app/shared/utils/objectUtil';
 import { catchError, firstValueFrom, of, Subject, takeUntil } from 'rxjs';
+import { PurchaseOrderService } from '../../purchase-order.service';
 
 interface Pricing {
   STATIC: {
@@ -43,8 +45,9 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   listedTaxes: Tax[] = [];
   listedSignatories: any[] = [];
 
-  soaIcon = NavIcon.SOA;
-  drIcon = NavIcon.DELIVERY_RECEIPT;
+  readonly soaIcon = NavIcon.SOA;
+  readonly drIcon = NavIcon.DELIVERY_RECEIPT;
+  readonly orderedFromOptions = ORDERED_FROM_TYPES;
 
   isUpdate = false;
   isLoading = true;
@@ -65,6 +68,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     purchaseOrderDate: this.fb.control(new Date(), [Validators.required]),
     dueDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
+    orderedFrom: this.fb.control('', [Validators.required]),
   });
 
   purchaseOrder!: PurchaseOrder;
@@ -80,6 +84,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     private confirmation: ConfirmationService,
     private snackbar: SnackbarService,
     private dialog: MatDialog,
+    private purchaseOrderService: PurchaseOrderService,
   ) {}
 
   async ngOnInit() {
@@ -104,6 +109,13 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
           this.transformServiceId,
         );
         fromTransformData = true;
+      }
+
+      //Check if New Customer
+      const newCustomer = this.purchaseOrderService.getCustomer();
+
+      if (newCustomer) {
+        createPurchaseOrder._customerId = newCustomer;
       }
 
       //Get Most Recent PO for signatories
@@ -171,6 +183,10 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     this.router.navigate([PORTAL_PATHS.purchaseOrders.relativeUrl]);
   }
 
+  compareWith(a: string, b: string) {
+    return a === b;
+  }
+
   onTransformData(recipient: TransformReference) {
     const packet: TransformDataType = {
       from: this.transformServiceId,
@@ -211,7 +227,6 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       .subscribe((res) => {
         if (res) {
           const purchaseOrder = this._formatRequestBody();
-
           if (this.isUpdate && this.purchaseOrder._id) {
             this._updatePurchaseOrder(purchaseOrder, this.purchaseOrder._id);
           } else {
@@ -290,7 +305,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       grandtotal: 0,
     };
 
-    for (var item of this.listedProducts) {
+    for (const item of this.listedProducts) {
       summary.total += item.STATIC.unit_price * item.STATIC.quantity;
       summary.productDiscount +=
         item.STATIC.unit_price * item.STATIC.quantity * (item.STATIC.disc || 0);
@@ -298,13 +313,13 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
 
     summary.subtotal = summary.total - summary.productDiscount;
 
-    for (var disc of this.listedDiscounts) {
+    for (const disc of this.listedDiscounts) {
       summary.subtotal -= disc.value;
     }
 
     summary.grandtotal = summary.subtotal;
 
-    for (var tax of this.listedTaxes) {
+    for (const tax of this.listedTaxes) {
       summary.grandtotal += summary.subtotal * tax.value;
     }
 
@@ -329,6 +344,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       discounts: this.listedDiscounts,
       taxes: this.listedTaxes,
       remarks: rawValue.remarks,
+      orderedFrom: rawValue.orderedFrom,
     };
 
     this.listedProducts.forEach((product) => {
@@ -362,14 +378,19 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
   }
 
   private _fillForms(purchaseOrder: any, fromTransformService = false) {
-    this.poForm.patchValue({
-      _customerId: purchaseOrder?._customerId ?? '',
-      mobile: purchaseOrder?.STATIC?.mobile ?? '',
-      address: purchaseOrder?.STATIC?.address ?? '',
-      tin: purchaseOrder?.STATIC?.tin ?? '',
-      purchaseOrderDate: purchaseOrder?.purchaseOrderDate ?? '',
-      remarks: purchaseOrder?.remarks ?? '',
-    });
+    this.poForm.setValue(
+      {
+        _customerId: purchaseOrder?._customerId ?? '',
+        mobile: purchaseOrder?.STATIC?.mobile ?? '',
+        address: purchaseOrder?.STATIC?.address ?? '',
+        tin: purchaseOrder?.STATIC?.tin ?? '',
+        purchaseOrderDate: purchaseOrder?.purchaseOrderDate ?? new Date(),
+        dueDate: purchaseOrder?.dueDate ?? new Date(),
+        remarks: purchaseOrder?.remarks ?? '',
+        orderedFrom: purchaseOrder?.orderedFrom ?? '',
+      },
+      { emitEvent: true },
+    );
 
     if (Array.isArray(purchaseOrder.items) && purchaseOrder.items.length > 0) {
       for (let item of purchaseOrder.items) {
@@ -433,6 +454,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       this.transformData.deleteTransformData();
     }
 
+    this.purchaseOrderService.resetCustomer();
     this._destroyed$.next();
     this._destroyed$.complete();
   }

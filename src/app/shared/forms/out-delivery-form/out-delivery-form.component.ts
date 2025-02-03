@@ -9,6 +9,7 @@ import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { CustomerType } from '@app/core/enums/customer-type.enum';
+import { PurchaseOrderStatus } from '@app/core/enums/purchase-order.enum';
 import {
   SIGNATORY_ACTIONS,
   SignatoryAction,
@@ -151,6 +152,9 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     length: 0,
   };
 
+  readonly tooltip =
+    'If checked, editing Customer is disabled and must only come from the selected Purchase Order';
+
   constructor(
     private productApi: ProductApiService,
     private customerApi: CustomerApiService,
@@ -251,7 +255,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       mobile: outDelivery?.STATIC?.mobile ?? '',
       address: outDelivery?.STATIC?.address ?? '',
       tin: outDelivery?.STATIC?.tin ?? '',
-      deliveryDate: outDelivery?.deliveryDate ?? '',
+      deliveryDate: outDelivery?.deliveryDate ?? new Date(),
       remarks: outDelivery?.remarks ?? '',
     });
 
@@ -413,7 +417,11 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
   private _filterPos(value: string) {
     return this.poApi
-      .getPurchaseOrders({ searchText: value, pageSize: 30 })
+      .getPurchaseOrders({
+        searchText: value,
+        pageSize: 30,
+        status: PurchaseOrderStatus.ACTIVE,
+      })
       .pipe(map((response: any) => response.records));
   }
 
@@ -437,6 +445,8 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       _customerId: po._customerId as string,
       _purchaseOrderId: po._id,
     });
+
+    this.deliveryForm.markAsDirty();
   }
 
   updateSignatories(e: any) {

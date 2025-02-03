@@ -1,10 +1,9 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
 import { ContentHeaderAction } from '@app/core/interfaces/content-header-action.interface';
+import { ConfigApiService } from '@app/shared/services/api/config-api/config-api.service';
 import { UpsertRoleComponent } from './pages/upsert-role/upsert-role.component';
-import { RoleListComponent } from './pages/role-list/role-list.component';
 import { RolesService } from './roles.service';
 
 @Component({
@@ -24,7 +23,14 @@ export class RolesComponent {
   ];
 
   private readonly dialog = inject(MatDialog);
+  private readonly configApi = inject(ConfigApiService);
   private readonly rolesService = inject(RolesService);
+
+  constructor() {
+    this.configApi
+      .getRolesConfig()
+      .subscribe((roleConfig) => this.rolesService.setRolesConfig(roleConfig));
+  }
 
   actionEvent(action: string) {
     switch (action) {

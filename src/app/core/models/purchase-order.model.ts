@@ -1,4 +1,5 @@
 import { OutDeliveryStatus } from '../enums/out-delivery-status.enum';
+import { OrderedFrom } from '../enums/purchase-order-ordered-from';
 import { PurchaseOrderStatus } from '../enums/purchase-order.enum';
 import { Customer } from './customer.model';
 import { Signatory } from './out-delivery.model';
@@ -74,6 +75,7 @@ export class PurchaseOrder {
   updatedAt?: string;
   discounts?: Array<Discount>;
   taxes?: Array<Tax>;
+  orderedFrom?: OrderedFrom;
   outDeliveries: PurchaseOrderOutDelivery | [];
   soa?: PurchaseOrderSoa;
 
@@ -92,5 +94,6 @@ export class PurchaseOrder {
     this.updatedAt = model.updatedAt;
     this.outDeliveries = model.outDeliveries;
     this.soa = model.soa;
+    this.orderedFrom = model.orderedFrom;
   }
 }

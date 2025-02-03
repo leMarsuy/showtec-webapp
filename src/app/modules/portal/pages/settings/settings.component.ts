@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import { Subject, takeUntil, tap } from 'rxjs';
+import { PortalService } from '../../portal.service';
 
 interface SettingRouteConfig {
   label: string;
@@ -12,27 +13,55 @@ interface SettingRouteConfig {
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
 })
-export class SettingsComponent {
-  private readonly router = inject(Router);
+export class SettingsComponent implements OnDestroy {
+  routeConfigs!: SettingRouteConfig[];
+  selectedRoute!: string;
 
-  routeConfigs: SettingRouteConfig[] = [
-    {
-      label: 'Your Account',
-      route: `/${PORTAL_PATHS.settings.account.relativeUrl}`,
-    },
-    {
-      label: 'Products',
-      route: `/${PORTAL_PATHS.settings.product.relativeUrl}`,
-    },
-    {
-      label: 'Vouchers',
-      route: `/${PORTAL_PATHS.settings.voucher.relativeUrl}`,
-    },
-  ];
-  selectedRoute = this.routeConfigs[0];
+  private destroyed$ = new Subject<void>();
 
-  navigateTo(config: SettingRouteConfig) {
-    this.selectedRoute = config;
-    this.router.navigate([config.route]);
+  constructor(
+    private portalService: PortalService,
+    private router: Router,
+  ) {
+    /**
+     * #NOTE: UI BUG where mat tab active isn't set when using browser's history controls (back, forward); Something to do with Location. Explore router.events.pipe(filter((e): NavigationStart))
+     */
+
+    this.portalService.portalNavigation$
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap((navigations) => this._setRouteConfigs(navigations)),
+      )
+      .subscribe({
+        next: () => {
+          this.selectedRoute = this.router.url;
+        },
+      });
+  }
+
+  navigateToRoute(navigation: SettingRouteConfig) {
+    this.selectedRoute = navigation.route;
+    this.router.navigate([navigation.route], { replaceUrl: true });
+  }
+
+  private _setRouteConfigs(navigations: any) {
+    let settingNavigation: any;
+    navigations.forEach((navigation: any) => {
+      const finder = navigation.items.find((a: any) => a.path === 'settings');
+      if (finder) {
+        settingNavigation = finder;
+        return;
+      }
+    });
+
+    this.routeConfigs = settingNavigation?.items.map((childRoute: any) => ({
+      label: childRoute.name,
+      route: `/portal/${childRoute.parentPath}/${childRoute.path}`,
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 }

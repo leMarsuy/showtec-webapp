@@ -1,10 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
 
-import { ProductListRoutingModule } from './product-list-routing.module';
-import { ProductListComponent } from './product-list.component';
 import { ListFilterModule } from './components/list-filter/list-filter.module';
 import { ListTableModule } from './components/list-table/list-table.module';
+import { ProductListRoutingModule } from './product-list-routing.module';
+import { ProductListComponent } from './product-list.component';
 
 @NgModule({
   declarations: [ProductListComponent],
@@ -14,7 +14,6 @@ import { ListTableModule } from './components/list-table/list-table.module';
     ProductListRoutingModule,
     ListFilterModule,
     ListTableModule,
-    AsyncPipe,
   ],
 })
 export class ProductListModule {}

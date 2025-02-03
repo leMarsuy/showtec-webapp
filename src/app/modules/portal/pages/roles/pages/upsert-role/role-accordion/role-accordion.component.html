@@ -1,0 +1,71 @@
+<div class="w-full">
+  <main
+    class="border border-gray-300 rounded-md px-2 py-1.5 w-full overflow-hidden"
+    [formGroup]="$any(fGroup)"
+  >
+    <button
+      class="flex items-center w-full transition-all duration-100 ease-in"
+      [ngClass]="{
+        'border-b border-gray-300 mb-1.5':
+          state.expanded && (config?.methods || config?.children?.length),
+      }"
+      (click)="permissionClicked(state, config)"
+    >
+      <mat-checkbox
+        color="primary"
+        [checked]="state.state"
+        [disabled]="config.persistent"
+      ></mat-checkbox>
+      <h3 class="font-bold text-gray-600 ml-1.5">{{ config.name }}</h3>
+    </button>
+
+    <!-- Expandable if has children or methods -->
+    @if (config?.methods || !!config?.children?.length) {
+      <section [@expandCollapse]="state.expanded ? 'expanded' : 'collapsed'">
+        <!-- Methods -->
+        @if (config?.methods) {
+          <div class="grid grid-cols-2">
+            @for (method of config?.methods | keyvalue; track method.key) {
+              <button
+                class="flex items-center w-full"
+                (click)="
+                  methodClicked(
+                    state['methods'][$any(method.key)],
+                    $any(method.key)
+                  )
+                "
+              >
+                <mat-checkbox
+                  color="primary"
+                  [checked]="state['methods'][$any(method.key)].state"
+                ></mat-checkbox>
+                <h3 class="font-bold text-gray-600 ml-1.5">
+                  {{ $any(method.value).name }}
+                </h3>
+                <mat-icon
+                  *ngIf="$any(method.value).note"
+                  [matTooltip]="$any(method.value).note"
+                  class="inline-flex ml-2.5 text-[20px] text-sky-700"
+                  fontIcon="info"
+                ></mat-icon>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Children -->
+        @if (!!config?.children?.length) {
+          <div class="flex flex-col gap-2">
+            @for (child of config.children; track $index) {
+              <app-role-accordion
+                [config]="config['children'][$index]"
+                [state]="state['children'][child.path]"
+                [fGroup]="$any(fGroup).get('children.' + $index)"
+              ></app-role-accordion>
+            }
+          </div>
+        }
+      </section>
+    }
+  </main>
+</div>

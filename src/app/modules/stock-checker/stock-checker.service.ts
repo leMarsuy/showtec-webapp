@@ -10,6 +10,7 @@ export interface ClassificationOption {
   providedIn: 'root',
 })
 export class StockCheckerService {
+  private isUser!: boolean;
   private classificationFilterSubject = new BehaviorSubject<
     ClassificationOption[]
   >([]);
@@ -35,5 +36,13 @@ export class StockCheckerService {
       .filter((item) => item['selected'])
       .map((item) => item.classification.replace(' ', '_'))
       .join(',');
+  }
+
+  isUserSession() {
+    return this.isUser;
+  }
+
+  setIsUser(isUser: boolean) {
+    this.isUser = isUser;
   }
 }
