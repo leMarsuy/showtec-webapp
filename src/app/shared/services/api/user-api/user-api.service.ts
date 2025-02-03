@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpService } from '../../http/http.service';
+import { Status } from '@app/core/enums/status.enum';
+import { QueryParams } from '@core/interfaces/query-params.interface';
 import { User } from '@core/models/user.model';
 import { environment } from '../../../../../environments/environment';
-import { QueryParams } from '@core/interfaces/query-params.interface';
+import { HttpService } from '../../http/http.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,8 +23,9 @@ export class UserApiService {
       sanitizedQuery = {
         pageIndex: query.pageIndex ?? 0,
         pageSize: query.pageSize ?? 0,
-        sort: query.sort,
-        searchText: query.searchText,
+        sort: query.sort ?? '',
+        searchText: query.searchText ?? '',
+        status: query.status ?? '',
       };
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }
@@ -34,5 +36,11 @@ export class UserApiService {
 
   updateUserById(_id: string, updateBody: User) {
     return this.httpService.put(`${this.apiPrefix}/${_id}`, updateBody);
+  }
+
+  patchUserStatus(userId: string, status: Status) {
+    return this.httpService.patch(`${this.apiPrefix}/${userId}/status`, {
+      status,
+    });
   }
 }

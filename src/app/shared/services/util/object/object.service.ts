@@ -1,9 +1,23 @@
 import { Injectable } from '@angular/core';
+import { Customer } from '@app/core/models/customer.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ObjectService {
+  displayCustomer(customer: Customer) {
+    let displayStr = '';
+    if (customer?.name) {
+      displayStr = customer.name;
+      if (customer.name != customer.contactPerson) {
+        displayStr += ` (${customer.contactPerson})`;
+      }
+    } else {
+      displayStr = customer.name ?? '';
+    }
+    return displayStr;
+  }
+
   isEmpty(object: any) {
     for (const key in object) {
       if (key) return false;
@@ -45,6 +59,7 @@ export class ObjectService {
 
   showIf(document: any, condition: any): boolean {
     let mutatedCondition: any = {};
+
     if (condition) {
       if (Object.keys(condition).length > 1) {
         mutatedCondition['$and'] = [];
@@ -125,6 +140,18 @@ export class ObjectService {
           case '$lte':
             isConditionMet = actualValue <= conditionValue[operator];
             break;
+          case '$exists':
+            isConditionMet = !!actualValue === conditionValue[operator];
+            break;
+          case '$empty': {
+            const isEmpty = Array.isArray(actualValue)
+              ? actualValue.length === 0
+              : this.isEmpty(actualValue);
+            const shouldBeEmpty = conditionValue[operator];
+
+            isConditionMet = isEmpty === shouldBeEmpty;
+            break;
+          }
           case '$in':
             isConditionMet = Array.isArray(actualValue)
               ? actualValue.some((val) =>

@@ -1,24 +1,22 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Alignment } from '@app/core/enums/align.enum';
+import { Color } from '@app/core/enums/color.enum';
+import { ProductStatus } from '@app/core/enums/product-status.enum';
+import { StockType } from '@app/core/enums/stock-type.enum';
+import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
+import { FileService } from '@app/shared/services/file/file.service';
+import { generateFileName } from '@app/shared/utils/stringUtil';
+import { ColumnType } from '@core/enums/column-type.enum';
 import { HttpGetResponse } from '@core/interfaces/http-get-response.interface';
 import { TableColumn } from '@core/interfaces/table-column.interface';
 import { Product } from '@core/models/product.model';
 import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
 import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ColumnType } from '@core/enums/column-type.enum';
-import { Color } from '@app/core/enums/color.enum';
-import { ProductStatus } from '@app/core/enums/product-status.enum';
-import { PRODUCT_CLASSIFICATIONS } from '@app/core/lists/product-classifications.list';
-import { Alignment } from '@app/core/enums/align.enum';
-import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
-import { ExcelService } from '@app/shared/services/excel/excel.service';
-import { QueryParams } from '@app/core/interfaces/query-params.interface';
-import { generateFileName } from '@app/shared/utils/stringUtil';
-import { FileService } from '@app/shared/services/file/file.service';
 
 @Component({
   selector: 'app-products-list',
@@ -46,11 +44,6 @@ export class ProductsListComponent {
   sort = '';
   columns: TableColumn[] = [
     {
-      label: 'SKU',
-      dotNotationPath: 'sku',
-      type: ColumnType.STRING,
-    },
-    {
       label: 'Brand',
       dotNotationPath: 'brand',
       type: ColumnType.STRING,
@@ -65,11 +58,34 @@ export class ProductsListComponent {
       dotNotationPath: 'description',
       type: ColumnType.STRING,
     },
+
     {
-      label: 'Stock',
-      dotNotationPath: '_$stockSummary.In Stock',
+      label: 'Sealed',
+      dotNotationPath: '_$stockTypeSummary.Sealed',
       type: ColumnType.NUMBER,
       align: Alignment.CENTER,
+    },
+    {
+      label: 'Demo',
+      dotNotationPath: '_$stockTypeSummary.Demo',
+      type: ColumnType.NUMBER,
+      align: Alignment.CENTER,
+    },
+    {
+      label: 'Service',
+      dotNotationPath: '_$stockTypeSummary.Service',
+      type: ColumnType.NUMBER,
+      align: Alignment.CENTER,
+    },
+    {
+      label: 'In Stock',
+      dotNotationPath: '_$stockSummary.In Stock',
+      type: ColumnType.NUMBER,
+    },
+    {
+      label: 'For Delivery',
+      dotNotationPath: '_$stockSummary.For Delivery',
+      type: ColumnType.NUMBER,
     },
     {
       label: 'Status',
@@ -116,7 +132,7 @@ export class ProductsListComponent {
       next: (resp) => {
         var response = resp as HttpGetResponse;
         this.snackbarService.closeLoadingSnackbar();
-        this.products = response.records as Product[];
+        this.products = this.remapProducts(response.records as Product[]);
         this.page.length = response.total;
       },
       error: (err: HttpErrorResponse) => {
@@ -201,6 +217,33 @@ export class ProductsListComponent {
       complete: () => {
         this.downloading = false;
       },
+    });
+  }
+  private remapProducts(products: any) {
+    return products.map((product: any) => {
+      const _$stockTypeSummary = {
+        Sealed: 0,
+        Demo: 0,
+        Service: 0,
+      };
+
+      for (const stock of product.stocks) {
+        switch (stock.type) {
+          case StockType.SEALED:
+            _$stockTypeSummary.Sealed += 1;
+            break;
+          case StockType.DEMO:
+            _$stockTypeSummary.Demo += 1;
+            break;
+          case StockType.SERVICE:
+            _$stockTypeSummary.Service += 1;
+            break;
+          default:
+            break;
+        }
+      }
+      product['_$stockTypeSummary'] = _$stockTypeSummary;
+      return product;
     });
   }
 }

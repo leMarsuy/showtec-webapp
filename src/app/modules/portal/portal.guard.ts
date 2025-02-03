@@ -5,7 +5,12 @@ import {
   CanActivateFn,
   Router,
 } from '@angular/router';
-import { AUTH_PATHS, PORTAL_PATHS } from '@app/core/constants/nav-paths';
+import {
+  AUTH_PATHS,
+  EXCLUDED_PATHS,
+  PORTAL_PATHS,
+} from '@app/core/constants/nav-paths';
+import { Status } from '@app/core/enums/status.enum';
 import { UserType } from '@app/core/enums/user-type.enum';
 import {
   selectUser,
@@ -15,7 +20,7 @@ import {
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { AuthService } from '@app/shared/services/api';
 import { Store } from '@ngrx/store';
-import { catchError, combineLatest, map, of } from 'rxjs';
+import { catchError, combineLatest, map, of, take } from 'rxjs';
 
 export const portalGuard: CanActivateFn = () => {
   const router = inject(Router);
@@ -23,6 +28,13 @@ export const portalGuard: CanActivateFn = () => {
   const store = inject(Store);
   const snackbar = inject(SnackbarService);
   const auth = localStorage.getItem('auth');
+
+  const forceLogoutUser = () => {
+    store.dispatch(UserActions.removeUser({}));
+    localStorage.removeItem('auth');
+    router.navigate([AUTH_PATHS.login.relativeUrl]);
+    return false;
+  };
 
   if (!auth) {
     router.navigate([AUTH_PATHS.login.relativeUrl]);
@@ -32,6 +44,15 @@ export const portalGuard: CanActivateFn = () => {
   return authApi.me().pipe(
     map((response) => {
       store.dispatch(UserActions.setUser(response));
+
+      if (response.status !== Status.ACTIVE) {
+        snackbar.openErrorSnackbar(
+          `Access Denied`,
+          `Your account is not active. Please contact your Administrator.`,
+          { duration: 3000 },
+        );
+        return forceLogoutUser();
+      }
 
       //Bypass guard if userType === 'Admin'
       if (response.userType === UserType.ADMIN) {
@@ -44,10 +65,7 @@ export const portalGuard: CanActivateFn = () => {
           `You do not have any permissions granted for access. Please contact your Administrator.`,
           { duration: 3000 },
         );
-        store.dispatch(UserActions.removeUser({}));
-        localStorage.removeItem('auth');
-        router.navigate([AUTH_PATHS.login.relativeUrl]);
-        return false;
+        return forceLogoutUser();
       }
 
       return true;
@@ -78,6 +96,7 @@ export const roleGuard: CanActivateChildFn = (
     store.select(selectUser()),
     store.select(selectUserPermissions()),
   ]).pipe(
+    take(1),
     map(([user, userPermission]) => {
       //Bypass guard if userType === 'Admin'
       if (user.userType === UserType.ADMIN) {
@@ -91,7 +110,8 @@ export const roleGuard: CanActivateChildFn = (
       const hasAccess = permission?.hasAccess;
       if (!hasAccess) {
         const firstPermission = userPermission?.find(
-          (permission) => permission.hasAccess,
+          (permission) =>
+            permission.hasAccess && !EXCLUDED_PATHS.includes(permission.path),
         );
         router.navigate([PORTAL_PATHS.baseUrl, firstPermission?.path]);
       }

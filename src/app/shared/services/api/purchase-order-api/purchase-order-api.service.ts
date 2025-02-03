@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { PurchaseOrderStatus } from '@app/core/enums/purchase-order.enum';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { PurchaseOrder } from '@app/core/models/purchase-order.model';
 import { Transaction } from '@app/core/models/soa.model';
-import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
 import { HttpService } from '../../http/http.service';
@@ -12,8 +12,7 @@ import { UtilService } from '../../util/util.service';
   providedIn: 'root',
 })
 export class PurchaseOrderApiService {
-  apiUrl = environment.API_URL;
-  apiPrefix = 'purchase-orders';
+  private apiPrefix = 'purchase-orders';
 
   constructor(
     private httpService: HttpService,
@@ -54,8 +53,8 @@ export class PurchaseOrderApiService {
         monitorStatus: query.status ?? '', // monitorStatus is used
       };
 
-      if (query.hasSoa) {
-        sanitizedQuery = { hasSoa: query.hasSoa };
+      if (typeof query.hasSoa === 'boolean') {
+        sanitizedQuery = { ...sanitizedQuery, hasSoa: query.hasSoa };
       }
 
       if (query?.date) {
@@ -117,6 +116,16 @@ export class PurchaseOrderApiService {
     return this.httpService.patch(
       `${this.apiPrefix}/${purchaseOrderId}/out-deliveries`,
       { outDeliveries },
+    );
+  }
+
+  patchPurchaseOrderStatusById(
+    purchaseOrderId: string,
+    status: PurchaseOrderStatus,
+  ) {
+    return this.httpService.patch(
+      `${this.apiPrefix}/${purchaseOrderId}/status`,
+      { status },
     );
   }
 

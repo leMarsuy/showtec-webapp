@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { ErrorComponent } from './error/error.component';
+import { InfoComponent } from './info/info.component';
 import { LoadingComponent } from './loading/loading.component';
 import { SuccessComponent } from './success/success.component';
-
 
 export interface SnackbarOptions {
   duration?: number;
@@ -28,13 +28,23 @@ export class SnackbarService {
     );
   }
 
-  openErrorSnackbar(title: string, message?: string, opts? : SnackbarOptions) {
+  openErrorSnackbar(title: string, message?: string, opts?: SnackbarOptions) {
     return this.snackbar.openFromComponent(ErrorComponent, {
       data: {
         title,
         duration: opts?.duration ?? 1500,
         message:
           message || 'Something went wrong while connecting to our server.',
+      },
+    });
+  }
+
+  openInfoSnackbar(title: string, message?: string) {
+    return this.snackbar.openFromComponent(InfoComponent, {
+      duration: 3000,
+      data: {
+        title,
+        message: message,
       },
     });
   }

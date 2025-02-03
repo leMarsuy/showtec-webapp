@@ -1,5 +1,6 @@
 import { Status } from '../enums/status.enum';
 import { UserType } from '../enums/user-type.enum';
+import { CreatedBy } from '../interfaces/createdBy.interface';
 import { Permission } from './role.model';
 
 export class User {
@@ -13,6 +14,7 @@ export class User {
   permissions?: Permission[];
   _roleId?: string;
   userType: UserType;
+  createdBy?: CreatedBy;
 
   constructor(model: User) {
     this._id = model._id;
@@ -25,5 +27,6 @@ export class User {
     this._roleId = model._roleId;
     this.permissions = model.permissions ?? [];
     this.userType = model.userType;
+    this.createdBy = model.createdBy;
   }
 }

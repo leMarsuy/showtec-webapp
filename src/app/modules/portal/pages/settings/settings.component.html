@@ -1,29 +1,33 @@
 <div class="px-4 py-4">
-  <app-content-header icon="settings" label="SETTINGS">
-  </app-content-header>
+  <app-content-header icon="settings" label="SETTINGS"> </app-content-header>
 </div>
 <div class="flex flex-col rounded-xl bg-white mx-4">
   <div class="p-4">
-
-    <div class="flex items-center mx-8 mt-3">
-
-      @for(config of routeConfigs; track config; let isFirst = $first; let isLast = $last) {
-      <button
-        class=" transition-colors duration-175 ease-in-out px-5 py-2 bg-gray-200 text-gray-500 hover:bg-gray-100 active:bg-gray-300"
-        [routerLink]="[config.route]"
-        routerLinkActive="!bg-white !text-gray-700 border-b border-gray-400 hover:!bg-gray-100 active:!bg-gray-300"
-        [ngClass]="{
-        'rounded-tl-md rounded-bl-md': isFirst,
-        'rounded-tr-md rounded-br-md': isLast,
-        }">
-        {{config.label}}
-      </button>
+    <nav
+      class="mb-1.5"
+      mat-tab-nav-bar
+      [mat-stretch-tabs]="false"
+      [tabPanel]="tabPanel"
+    >
+      @for (
+        config of routeConfigs;
+        track config.route;
+        let isFirst = $first;
+        let isLast = $last
+      ) {
+        <a
+          mat-tab-link
+          (click)="navigateToRoute(config)"
+          [active]="selectedRoute === config.route"
+        >
+          {{ config.label }}
+        </a>
       }
-    </div>
-
-    <div class="mt-4 mx-8">
-      <router-outlet></router-outlet>
-    </div>
-
+    </nav>
+    <mat-tab-nav-panel #tabPanel>
+      <section class="pb-4 rounded-md">
+        <router-outlet></router-outlet>
+      </section>
+    </mat-tab-nav-panel>
   </div>
 </div>

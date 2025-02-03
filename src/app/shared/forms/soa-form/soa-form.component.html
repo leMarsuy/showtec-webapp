@@ -156,7 +156,7 @@
   </div>
 
   <div class="bg-white rounded-xl p-4 w-[25rem] sticky top-16 h-fit">
-    <div class="col-span-2">
+    <div class="col-span-2 flex items-center gap-2.5">
       <mat-checkbox
         class="example-margin"
         [ngModel]="usePurchaseOrder"
@@ -164,8 +164,12 @@
       >
         Use Purchase Order
       </mat-checkbox>
+      <mat-icon
+        fontIcon="info"
+        class="text-blue-600 text-[20px]"
+        [matTooltip]="tooltip"
+      ></mat-icon>
     </div>
-
     @if (usePurchaseOrder) {
       <div class="col-span-2">
         <mat-form-field

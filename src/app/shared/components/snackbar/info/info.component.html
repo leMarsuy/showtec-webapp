@@ -1,0 +1,16 @@
+<div class="flex text-white bg-{{ color }}-500 p-[14px]">
+  <mat-icon class="mr-2 text-md">info</mat-icon>
+  <span class="grow">
+    <p class="font-black">{{ data.title || "INFO" }}</p>
+    <p
+      [innerHTML]="
+        data.message || 'Something went wrong while performing this action.'
+      "
+    ></p>
+  </span>
+  <span class="flex-none w-[2rem] text-right">
+    <mat-icon (click)="snackBarRef.dismiss()" class="cursor-pointer">
+      close
+    </mat-icon>
+  </span>
+</div>

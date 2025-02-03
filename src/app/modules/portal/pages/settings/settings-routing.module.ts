@@ -1,11 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { settingsChildGuard } from './settings-child.guard';
 import { SettingsComponent } from './settings.component';
 
 const routes: Routes = [
   {
     path: '',
     component: SettingsComponent,
+    data: {
+      baseUrl: 'settings',
+    },
+    canActivateChild: [settingsChildGuard],
     children: [
       {
         path: '',
@@ -31,6 +36,28 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/voucher-settings/voucher-settings.module').then(
             (m) => m.VoucherSettingsModule,
+          ),
+      },
+      {
+        path: 'customers',
+        loadChildren: () =>
+          import('./pages/customers/customers.module').then(
+            (m) => m.CustomersModule,
+          ),
+      },
+
+      {
+        path: 'suppliers',
+        loadChildren: () =>
+          import('./pages/suppliers/suppliers.module').then(
+            (m) => m.SuppliersModule,
+          ),
+      },
+      {
+        path: 'warehouses',
+        loadChildren: () =>
+          import('./pages/warehouses/warehouses.module').then(
+            (m) => m.WarehousesModule,
           ),
       },
       {
