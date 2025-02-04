@@ -94,6 +94,7 @@
     <mat-form-field [formGroup]="poForm" class="w-full">
       <mat-label>Ordered From</mat-label>
       <mat-select formControlName="orderedFrom" [compareWith]="compareWith">
+        <mat-option value="">None</mat-option>
         @for (option of orderedFromOptions; track $index) {
           <mat-option [value]="option">{{ option }}</mat-option>
         }
