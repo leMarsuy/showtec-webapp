@@ -68,7 +68,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
     purchaseOrderDate: this.fb.control(new Date(), [Validators.required]),
     dueDate: this.fb.control(new Date(), [Validators.required]),
     remarks: this.fb.control(''),
-    orderedFrom: this.fb.control('', [Validators.required]),
+    orderedFrom: this.fb.control(''),
   });
 
   purchaseOrder!: PurchaseOrder;
@@ -344,7 +344,7 @@ export class UpsertPurchaseOrderComponent implements OnInit, OnDestroy {
       discounts: this.listedDiscounts,
       taxes: this.listedTaxes,
       remarks: rawValue.remarks,
-      orderedFrom: rawValue.orderedFrom,
+      orderedFrom: rawValue.orderedFrom ?? '',
     };
 
     this.listedProducts.forEach((product) => {
