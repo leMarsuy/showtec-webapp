@@ -120,7 +120,7 @@ export class AttachCustomerFormComponent
 
   private _filterCustomers(value: string) {
     return this.customerApi
-      .getCustomers({ searchText: value, pageSize: 5 })
+      .getCustomersForPurchaseOrder({ searchText: value, pageSize: 8 })
       .pipe(map((response: any) => response.records));
   }
 
