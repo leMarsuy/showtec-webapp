@@ -43,7 +43,25 @@ export class TransactionListComponent {
       dotNotationPath: 'code.value',
       type: ColumnType.STRING,
     },
+    {
+      label: 'Customer',
+      dotNotationPath: 'STATIC',
+      type: ColumnType.CUSTOM,
+      display: (element: any) => {
+        const customer = element?.STATIC;
+        const customerName = `<p class="font-medium">${customer.name}</p>`;
 
+        if (customer.name !== customer.contactPerson) {
+          return (
+            customerName +
+            `
+            <p class="text-xs">${customer.contactPerson}</p>
+          `
+          );
+        }
+        return customerName;
+      },
+    },
     {
       label: 'Amount',
       dotNotationPath: 'amount',
