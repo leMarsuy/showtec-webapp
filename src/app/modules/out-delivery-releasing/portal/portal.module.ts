@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { PdfJsViewerModule } from 'ng2-pdfjs-viewer';
 import { QrScannerDialogModule } from './components/qr-scanner-dialog/qr-scanner-dialog.module';
 
 @NgModule({
@@ -20,6 +21,7 @@ import { QrScannerDialogModule } from './components/qr-scanner-dialog/qr-scanner
     MatDialogModule,
     MatButtonModule,
     QrScannerDialogModule,
+    PdfJsViewerModule,
     AsyncPipe,
   ],
 })

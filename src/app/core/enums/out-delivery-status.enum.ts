@@ -3,6 +3,7 @@ export enum OutDeliveryStatus {
   INACTIVE = 'Inactive',
   DELETED = 'Deleted',
   CANCELLED = 'Cancelled',
+  RELEASED = 'Released',
   PENDING = 'Pending',
 }
 

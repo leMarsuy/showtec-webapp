@@ -16,7 +16,7 @@ import {
   ScannerQRCodeResult,
   ScannerQRCodeSymbolType,
 } from 'ngx-scanner-qrcode';
-import { Subject, takeUntil } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-qr-scanner-dialog',
@@ -25,7 +25,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   @ViewChild(NgxScannerQrcodeComponent)
-  scanner?: NgxScannerQrcodeComponent;
+  scanner!: NgxScannerQrcodeComponent;
 
   private outDeliveryApi = inject(OutDeliveryApiService);
   private snackbar = inject(SnackbarService);
@@ -41,7 +41,7 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   rearCameraRegex = /back|trás|rear|traseira|environment|ambiente/gi;
 
   scannerConfig: ScannerQRCodeConfig = {
-    isMasked: true,
+    isMasked: false,
     symbolType: [ScannerQRCodeSymbolType.ScannerQRCode_QRCODE],
     constraints: {
       audio: false,
@@ -56,9 +56,14 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   constructor() {}
 
   ngAfterViewInit(): void {
-    this.scanner?.start();
-    this.scanner?.devices
-      .pipe(takeUntil(this.destroyed$))
+    this.scanner.isReady
+      .pipe(
+        filter((ready) => ready),
+        switchMap(() => {
+          this.scanner.start();
+          return this.scanner.devices.pipe(takeUntil(this.destroyed$));
+        }),
+      )
       .subscribe((devices) => {
         if (!devices?.length) return;
 
@@ -74,7 +79,9 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
       });
   }
 
-  onChangeDevice(device: ScannerQRCodeDevice) {
+  onChangeDevice(device: ScannerQRCodeDevice | null) {
+    if (!device) return;
+
     this.selectedDevice = device;
     this.scanner?.playDevice(device.deviceId);
   }
