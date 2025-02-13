@@ -58,8 +58,24 @@ export class OutDeliveryApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}/prices`);
   }
 
+  getOutDeliveryByCode(code: string) {
+    return this.httpService.get(`${this.apiPrefix}/code/${code}`);
+  }
+
   getPdfOutDelivery(_id: string) {
     return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
+      map((response: any) => {
+        const filename = this.file.getFileNameFromResponseHeader(response);
+        return {
+          blob: response.body,
+          filename,
+        };
+      }),
+    );
+  }
+
+  getPdfOutDeliveryByCode(code: string) {
+    return this.httpService.getBlob(`${this.apiPrefix}/pdf/${code}`).pipe(
       map((response: any) => {
         const filename = this.file.getFileNameFromResponseHeader(response);
         return {
