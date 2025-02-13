@@ -36,7 +36,8 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   showError = false;
   errorMessage = 'Something went wrong.';
 
-  devices!: any;
+  devices: ScannerQRCodeDevice[] = [];
+  selectedDevice: any = null;
   rearCameraRegex = /back|trás|rear|traseira|environment|ambiente/gi;
 
   scannerConfig: ScannerQRCodeConfig = {
@@ -61,13 +62,21 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
       .subscribe((devices) => {
         if (!devices?.length) return;
 
-        const device: ScannerQRCodeDevice =
-          devices.find((f: ScannerQRCodeDevice) =>
-            this.rearCameraRegex.test(f.label),
-          ) ?? devices[0];
+        this.devices = devices;
 
-        this.scanner?.playDevice(device.deviceId);
+        const device = devices.find((f) =>
+          /back|rear|environment/gi.test(f.label),
+        );
+
+        this.scanner?.playDevice(
+          device ? device.deviceId : devices[0].deviceId,
+        );
       });
+  }
+
+  onChangeDevice(device: ScannerQRCodeDevice) {
+    this.selectedDevice = device;
+    this.scanner?.playDevice(device.deviceId);
   }
 
   onScanRead(output: ScannerQRCodeResult[]) {

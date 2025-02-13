@@ -10,6 +10,20 @@
 
 <section class="relative flex flex-col justify-center items-center">
   <div class="relative w-full">
+    <mat-form-field>
+      <mat-select>
+        <mat-select-trigger>{{
+          selectedDevice ?? "Select Device"
+        }}</mat-select-trigger>
+        <mat-option [value]="null">Select Device</mat-option>
+        @for (device of devices; track device.deviceId) {
+          <mat-option (onSelectionChange)="onChangeDevice(device)">{{
+            device.label
+          }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
     <ngx-scanner-qrcode
       style="object-fit: contain"
       (event)="onScanRead($event)"
