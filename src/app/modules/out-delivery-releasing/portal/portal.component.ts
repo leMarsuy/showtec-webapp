@@ -38,19 +38,21 @@ export class PortalComponent {
         }),
       )
       .subscribe((response: { blob: Blob; filename: string }) => {
-        const pdfLink = URL.createObjectURL(response.blob);
+        const blob = new Blob([response.blob], { type: 'application/pdf' });
 
-        const glink = this._createGoogleDocLink(this._sanitizeBlobURL(pdfLink));
+        const pdfLink = URL.createObjectURL(blob);
+
+        window.open(pdfLink);
 
         setTimeout(() => {
           this.pdfData =
-            this.domSanitizer.bypassSecurityTrustResourceUrl(glink);
+            this.domSanitizer.bypassSecurityTrustResourceUrl(pdfLink);
         }, 1000);
       });
   }
 
   private _createGoogleDocLink(pdfUrl: string) {
-    return `https://docs.google.com/gview?url=${pdfUrl}&embedded=true`;
+    return `https://docs.google.com/viewer?url=${pdfUrl}&embedded=true`;
   }
 
   private _sanitizeBlobURL(url: string) {
