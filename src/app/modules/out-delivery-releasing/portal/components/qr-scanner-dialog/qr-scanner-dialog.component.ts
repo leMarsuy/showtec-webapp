@@ -41,7 +41,7 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   rearCameraRegex = /back|trás|rear|traseira|environment|ambiente/gi;
 
   scannerConfig: ScannerQRCodeConfig = {
-    isMasked: false,
+    isMasked: true,
     symbolType: [ScannerQRCodeSymbolType.ScannerQRCode_QRCODE],
     constraints: {
       audio: false,
@@ -80,6 +80,8 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   }
 
   onScanRead(output: ScannerQRCodeResult[]) {
+    console.log(output);
+
     if (!output) return;
 
     this.scanner?.pause();
