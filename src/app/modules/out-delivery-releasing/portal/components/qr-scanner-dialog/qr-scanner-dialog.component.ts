@@ -16,7 +16,7 @@ import {
   ScannerQRCodeResult,
   ScannerQRCodeSymbolType,
 } from 'ngx-scanner-qrcode';
-import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-qr-scanner-dialog',
@@ -60,26 +60,14 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   constructor() {}
 
   ngAfterViewInit(): void {
-    this.scanner.isReady
-      .pipe(
-        filter((ready) => ready),
-        switchMap(() => {
-          this.scanner.start();
-          this.scanner.pause();
-          return this.scanner.devices.pipe(takeUntil(this.destroyed$));
-        }),
-      )
-      .subscribe((devices) => {
-        console.log(devices);
-        if (!devices?.length) return;
-        this.devices = devices;
-
-        const device = devices.find((f) => this.rearCameraRegex.test(f.label));
-
-        this.scanner?.playDevice(
-          device ? device.deviceId : devices[0].deviceId,
-        );
-      });
+    this.scanner.isReady.pipe(filter((ready) => ready)).subscribe(() => {
+      const playDeviceFacingBack = (devices: any[]) => {
+        // front camera or back camera check here!
+        const device = devices.find((f) => this.rearCameraRegex.test(f.label)); // Default Back Facing Camera
+        this.scanner.playDevice(device ? device.deviceId : devices[0].deviceId);
+      };
+      this.scanner.start(playDeviceFacingBack).subscribe();
+    });
   }
 
   onChangeDevice(device: ScannerQRCodeDevice | null) {
