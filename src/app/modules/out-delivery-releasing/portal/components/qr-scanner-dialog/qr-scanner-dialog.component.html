@@ -10,7 +10,10 @@
 
 <section class="relative flex flex-col justify-center items-center">
   @for (device of devices; track device.deviceId) {
-    <div class="bg-white p-2">{{ device | json }}</div>
+    <div class="bg-white p-2">
+      {{ device | json }}
+      <p>REGEX {{ rearCameraRegex.test(device.label) }} | {{ device.label }}</p>
+    </div>
   }
 
   <div class="relative w-full">

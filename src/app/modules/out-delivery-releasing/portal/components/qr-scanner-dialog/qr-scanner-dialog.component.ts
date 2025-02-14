@@ -38,7 +38,11 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
 
   devices: ScannerQRCodeDevice[] = [];
   selectedDevice: any = null;
-  rearCameraRegex = /back|trás|rear|traseira|environment|ambiente/gi;
+  // rearCameraRegex = /back|trás|rear|traseira|environment|ambiente/gi;
+  rearCameraRegex = new RegExp(
+    'back|trás|rear|traseira|environment|ambiente',
+    'gi',
+  );
 
   scannerConfig: ScannerQRCodeConfig = {
     isMasked: false,
