@@ -9,28 +9,7 @@
 </section>
 
 <section class="relative flex flex-col justify-center items-center">
-  @for (device of devices; track device.deviceId) {
-    <div class="bg-white p-2">
-      {{ device | json }}
-      <p>REGEX {{ rearCameraRegex.test(device.label) }} | {{ device.label }}</p>
-    </div>
-  }
-
   <div class="relative w-full">
-    <mat-form-field>
-      <mat-select>
-        <mat-select-trigger>{{
-          selectedDevice ?? "Select Device"
-        }}</mat-select-trigger>
-        <mat-option [value]="null">Select Device</mat-option>
-        @for (device of devices; track device.deviceId) {
-          <mat-option (onSelectionChange)="onChangeDevice(device)">{{
-            device.label
-          }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
     <ngx-scanner-qrcode
       style="object-fit: contain"
       (event)="onScanRead($event)"
@@ -40,10 +19,12 @@
 
   @if (scanner?.isLoading) {
     <div
-      class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-65 flex items-center justify-center"
+      class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-85 flex items-center justify-center"
     >
       <mat-spinner class="!h-8 !w-8"></mat-spinner>
-      <span class="text-white text-base font-medium ml-2">Loading Camera</span>
+      <span class="text-white text-base font-medium ml-2"
+        >Connecting to Camera...</span
+      >
     </div>
   }
 </section>
@@ -53,9 +34,12 @@
     class="absolute top-0 bg-black bg-opacity-55 w-full h-full flex items-center justify-center"
   >
     <div class="border border-gray-200 rounded-md bg-white p-4 flex flex-col">
-      <article class="flex items-center gap-2 mb-1.5 w-[65vw]">
-        <mat-icon class="flex-none" fontIcon="info" />
-        <p>{{ errorMessage }}</p>
+      <article class="w-[85vw]">
+        <div class="flex items-center gap-2 mb-2.5">
+          <mat-icon class="flex-none" fontIcon="info" />
+          <p class="text-sm font-medium">{{ errorTitle }}</p>
+        </div>
+        <p class="text-xs">{{ errorMessage }}</p>
       </article>
 
       <button class="self-end" mat-button (click)="closeError()">Ok</button>

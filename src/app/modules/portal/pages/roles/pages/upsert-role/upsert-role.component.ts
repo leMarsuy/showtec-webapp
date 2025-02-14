@@ -311,6 +311,7 @@ export class UpsertRoleComponent {
       },
       {},
     );
+
     const findLookupInMap = (lookupPath: string, permissionMap: any[]) => {
       return permissionMap.find((item) => item.path === lookupPath);
     };
@@ -323,10 +324,10 @@ export class UpsertRoleComponent {
 
       parentPermState.state = existingPermission.hasAccess;
 
-      if (permission?.methods) {
-        for (const key of Object.keys(permission.methods)) {
+      if (parentPermState?.methods) {
+        for (const key of Object.keys(parentPermState.methods)) {
           const parentPermMethodState = parentPermState['methods'][key];
-          parentPermMethodState.state = existingPermission['methods'][key];
+          parentPermMethodState.state = !!existingPermission['methods']?.[key];
         }
       }
 
@@ -367,10 +368,10 @@ export class UpsertRoleComponent {
       }
 
       // check if
-
       if (
         parentPermState.state &&
-        (existingPermission?.children?.length || !isEmpty(permission?.methods))
+        (existingPermission?.children?.length ||
+          !isEmpty(parentPermState?.methods))
       ) {
         parentPermState.expanded = true;
       } else {

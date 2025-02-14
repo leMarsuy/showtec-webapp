@@ -34,15 +34,17 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   private destroyed$ = new Subject<void>();
 
   showError = false;
-  errorMessage = 'Something went wrong.';
+  errorTitle = 'This QR is not recognized by our system.';
+  errorMessage =
+    'Please make sure that the QR you are scanning is for Delivery';
 
   devices: ScannerQRCodeDevice[] = [];
-  selectedDevice: any = null;
-  // rearCameraRegex = /back|trás|rear|traseira|environment|ambiente/gi;
   rearCameraRegex = new RegExp(
     'back|trás|rear|traseira|environment|ambiente',
     'gi',
   );
+
+  useCamera!: ScannerQRCodeDevice;
 
   scannerConfig: ScannerQRCodeConfig = {
     isMasked: false,
@@ -52,7 +54,7 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
       video: {
         width: { exact: 640, ideal: 1920 },
         height: { ideal: 1080 },
-        aspectRatio: { ideal: 1.7777777778 },
+        aspectRatio: { ideal: 0.5625 },
       },
     },
   };
@@ -62,24 +64,32 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.scanner.isReady.pipe(filter((ready) => ready)).subscribe(() => {
       const playDeviceFacingBack = (devices: any[]) => {
-        // front camera or back camera check here!
-        const device = devices.find((f) => this.rearCameraRegex.test(f.label)); // Default Back Facing Camera
-        this.scanner.playDevice(device ? device.deviceId : devices[0].deviceId);
+        let useCameraId;
+
+        const cameraDeviceIdFromStorage =
+          localStorage.getItem('cameraDeviceId');
+
+        if (!cameraDeviceIdFromStorage) {
+          const findRearCamera = devices.find((device) =>
+            this.rearCameraRegex.test(device.label),
+          );
+
+          this.useCamera = findRearCamera ? findRearCamera : devices[0];
+
+          useCameraId = this.useCamera.deviceId;
+          localStorage.setItem('cameraDeviceId', useCameraId);
+        } else {
+          useCameraId = cameraDeviceIdFromStorage;
+        }
+
+        this.scanner.playDevice(useCameraId);
       };
+
       this.scanner.start(playDeviceFacingBack).subscribe();
     });
   }
 
-  onChangeDevice(device: ScannerQRCodeDevice | null) {
-    if (!device) return;
-
-    this.selectedDevice = device;
-    this.scanner?.playDevice(device.deviceId);
-  }
-
   onScanRead(output: ScannerQRCodeResult[]) {
-    console.log(output);
-
     if (!output) return;
 
     this.scanner?.pause();
@@ -91,11 +101,10 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
       },
       error: ({ error }: HttpErrorResponse) => {
         if (error.code !== 404) {
-          console.log(error);
+          console.error(error);
           this.snackbar.openErrorSnackbar(error.code, error.message);
         } else {
           this.showError = true;
-          this.errorMessage = 'This delivery is not recognized by our system.';
         }
       },
     });
