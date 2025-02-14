@@ -9,6 +9,10 @@
 </section>
 
 <section class="relative flex flex-col justify-center items-center">
+  @for (device of devices; track device.deviceId) {
+    <div class="bg-white p-2">{{ device | json }}</div>
+  }
+
   <div class="relative w-full">
     <mat-form-field>
       <mat-select>

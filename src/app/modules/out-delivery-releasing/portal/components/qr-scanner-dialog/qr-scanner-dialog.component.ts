@@ -61,17 +61,16 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
         filter((ready) => ready),
         switchMap(() => {
           this.scanner.start();
+          this.scanner.pause();
           return this.scanner.devices.pipe(takeUntil(this.destroyed$));
         }),
       )
       .subscribe((devices) => {
+        console.log(devices);
         if (!devices?.length) return;
-
         this.devices = devices;
 
-        const device = devices.find((f) =>
-          /back|rear|environment/gi.test(f.label),
-        );
+        const device = devices.find((f) => this.rearCameraRegex.test(f.label));
 
         this.scanner?.playDevice(
           device ? device.deviceId : devices[0].deviceId,
