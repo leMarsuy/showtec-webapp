@@ -1,8 +1,8 @@
-import { DOCUMENT } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
+  HostListener,
   inject,
   OnDestroy,
   OnInit,
@@ -36,7 +36,6 @@ export class QrScannerDialogComponent
   private snackbar = inject(SnackbarService);
   private outDeliveryReleasingService = inject(OutDeliveryReleasingService);
   private dialogRef = inject(MatDialogRef<QrScannerDialogComponent>);
-  private document = inject<Document>(DOCUMENT);
 
   private destroyed$ = new Subject<void>();
 
@@ -54,17 +53,25 @@ export class QrScannerDialogComponent
   useCamera!: ScannerQRCodeDevice;
 
   scannerConfig!: ScannerQRCodeConfig;
+  screenHeight = 0;
+  screenWidth = 0;
+
+  @HostListener('window:resize', ['$event']) onResize() {
+    this.screenHeight = window.innerHeight;
+    this.screenWidth = window.innerWidth;
+  }
 
   constructor() {
+    this.onResize();
+
     this.scannerConfig = {
       isMasked: false,
       symbolType: [ScannerQRCodeSymbolType.ScannerQRCode_QRCODE],
       constraints: {
         audio: false,
         video: {
-          width: { ideal: this.document.defaultView?.innerWidth },
-          height: { ideal: this.document.defaultView?.innerHeight },
-          aspectRatio: { ideal: 0.5625 },
+          width: { exact: this.screenWidth },
+          height: { exact: this.screenHeight },
         },
       },
     };

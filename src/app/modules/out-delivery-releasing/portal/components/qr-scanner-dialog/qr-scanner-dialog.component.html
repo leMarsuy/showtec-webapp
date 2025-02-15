@@ -11,9 +11,10 @@
 <section class="relative flex flex-col justify-center items-center">
   <div class="relative w-full">
     <ngx-scanner-qrcode
-      style="object-fit: contain"
       (event)="onScanRead($event)"
       [config]="scannerConfig"
+      [style.height]="screenHeight"
+      [style.width]="screenWidth"
     />
   </div>
 
