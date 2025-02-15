@@ -30,9 +30,9 @@ export class SnackbarService {
 
   openErrorSnackbar(title: string, message?: string, opts?: SnackbarOptions) {
     return this.snackbar.openFromComponent(ErrorComponent, {
+      duration: opts?.duration ?? 3000,
       data: {
         title,
-        duration: opts?.duration ?? 1500,
         message:
           message || 'Something went wrong while connecting to our server.',
       },

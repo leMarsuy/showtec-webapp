@@ -12,6 +12,7 @@ import { HttpGetResponse } from '@app/core/interfaces/http-get-response.interfac
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { PdfViewerComponent } from '@app/shared/components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
@@ -44,6 +45,8 @@ export class OutDeliveryListComponent {
   tableFilterStatuses = [
     'All',
     OutDeliveryStatus.PENDING,
+    OutDeliveryStatus.RELEASED,
+    OutDeliveryStatus.DELIVERED,
     OutDeliveryStatus.CANCELLED,
   ];
   selectedFilterStatus: OutDeliveryStatus | string = 'All';
@@ -66,6 +69,7 @@ export class OutDeliveryListComponent {
     private fileApi: FileService,
     private outDeliveryDataService: OutDeliveryDataService,
     private store: Store,
+    private confirmationService: ConfirmationService,
   ) {
     this.getOutDeliverys();
   }
@@ -125,6 +129,9 @@ export class OutDeliveryListComponent {
         break;
       case 'change-status-cancel':
         this._cancelItem(outDelivery);
+        break;
+      case 'delivered':
+        this._deliverItem(outDelivery);
         break;
       case 'clone':
         this.outDeliveryDataService.setOutDelivery(outDelivery);
@@ -187,6 +194,38 @@ export class OutDeliveryListComponent {
         this.snackbarService.openErrorSnackbar(error.errorCode, error.message);
       },
     });
+  }
+
+  private _deliverItem(outDelivery: OutDelivery) {
+    this.confirmationService
+      .open('Mark this Delivery as Delivered', 'Do you want to continue?')
+      .afterClosed()
+      .pipe(
+        filter((confirm) => confirm),
+        switchMap(() => {
+          this.snackbarService.openLoadingSnackbar(
+            'Updating Delivery Status',
+            'Please wait...',
+          );
+          return this.outdeliveryApi.deliverOutDeliveryById(
+            outDelivery._id as string,
+          );
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.snackbarService.closeLoadingSnackbar();
+          this.snackbarService.openSuccessSnackbar('Update Success!');
+          setTimeout(() => {
+            this.getOutDeliverys();
+          }, 200);
+        },
+        error: ({ error }) => {
+          console.error(error);
+          this.snackbarService.closeLoadingSnackbar();
+          this.snackbarService.openErrorSnackbar(error.code, error.message);
+        },
+      });
   }
 
   private _cancelItem(outDelivery: OutDelivery) {

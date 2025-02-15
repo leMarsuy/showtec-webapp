@@ -92,6 +92,18 @@ export const OUT_DELIVER_CONFIG = {
           },
         },
         {
+          name: 'Mark Delivered',
+          icon: 'task',
+          action: 'delivered',
+          color: Color.INFO,
+          showIfCondition: {
+            $or: [
+              { status: OutDeliveryStatus.PENDING },
+              { status: OutDeliveryStatus.RELEASED },
+            ],
+          },
+        },
+        {
           name: 'Cancel Delivery',
           icon: 'block',
           action: 'change-status-cancel',
