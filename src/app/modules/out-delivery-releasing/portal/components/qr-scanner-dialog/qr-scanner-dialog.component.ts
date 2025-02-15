@@ -4,9 +4,11 @@ import {
   Component,
   inject,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { OutDeliveryReleasingService } from '@app/modules/out-delivery-releasing/out-delivery-releasing.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
 import {
@@ -23,12 +25,15 @@ import { filter, Subject } from 'rxjs';
   templateUrl: './qr-scanner-dialog.component.html',
   styleUrl: './qr-scanner-dialog.component.scss',
 })
-export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
+export class QrScannerDialogComponent
+  implements AfterViewInit, OnInit, OnDestroy
+{
   @ViewChild(NgxScannerQrcodeComponent)
   scanner!: NgxScannerQrcodeComponent;
 
   private outDeliveryApi = inject(OutDeliveryApiService);
   private snackbar = inject(SnackbarService);
+  private outDeliveryReleasingService = inject(OutDeliveryReleasingService);
   private dialogRef = inject(MatDialogRef<QrScannerDialogComponent>);
 
   private destroyed$ = new Subject<void>();
@@ -60,6 +65,14 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   };
 
   constructor() {}
+
+  ngOnInit(): void {
+    this.outDeliveryReleasingService.closeScanner$
+      .pipe(filter((shouldClose) => shouldClose))
+      .subscribe(() => {
+        this.scanner?.stop();
+      });
+  }
 
   ngAfterViewInit(): void {
     this.scanner.isReady.pipe(filter((ready) => ready)).subscribe(() => {
@@ -122,6 +135,6 @@ export class QrScannerDialogComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
-    this.scanner?.stop();
+    // this.scanner?.stop();
   }
 }

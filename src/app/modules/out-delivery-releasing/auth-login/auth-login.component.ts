@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,6 +30,34 @@ export class AuthLoginComponent {
   }
 
   login() {
-    this.router.navigate([RELEASING_PATHS.portal.relativeUrl]);
+    this.loginForm.disable();
+    this.snackbar.openLoadingSnackbar(
+      'Login',
+      'Validating your credentials...',
+    );
+
+    const { email, password } = this.loginForm.getRawValue();
+    this.authService.loginReleasing(email ?? '', password ?? '').subscribe({
+      next: () => {
+        this.snackbar.closeLoadingSnackbar().then(() => {
+          this.router.navigate([RELEASING_PATHS.portal.relativeUrl]);
+          this.loginForm.enable();
+          this.snackbar.openSuccessSnackbar(
+            'AuthSuccess',
+            'Redirecting to your dashboard...',
+          );
+        });
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error(err);
+        this.loginForm.enable();
+        this.snackbar.closeLoadingSnackbar().then(() => {
+          this.snackbar.openErrorSnackbar(
+            err.error.errorCode,
+            err.error.message,
+          );
+        });
+      },
+    });
   }
 }

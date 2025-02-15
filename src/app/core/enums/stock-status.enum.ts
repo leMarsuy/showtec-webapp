@@ -5,6 +5,8 @@ export enum StockStatus {
   // IN_TRANSIT = 'In Transit',
   // RECEIVED = 'Received',
   RETURNED = 'Returned',
+  RELEASED = 'Released',
+  SOLD = 'Sold',
   // FOR_REPAIR = 'For Repair',
   // FOR_LOAN = 'For Loan',
 }
