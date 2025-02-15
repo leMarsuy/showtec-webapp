@@ -122,4 +122,7 @@ export const PATHS = {
   },
 };
 
-export const EXCLUDED_PATHS = [`/${PATHS.stockChecker.baseUrl}`];
+export const EXCLUDED_PATHS = [
+  `/${PATHS.stockChecker.baseUrl}`,
+  `/${RELEASING_PATHS.baseUrl}`,
+];

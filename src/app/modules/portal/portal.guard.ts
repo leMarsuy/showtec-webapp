@@ -108,10 +108,11 @@ export const roleGuard: CanActivateChildFn = (
       );
 
       const hasAccess = permission?.hasAccess;
+
       if (!hasAccess) {
         const firstPermission = userPermission?.find(
           (permission) =>
-            permission.hasAccess && !EXCLUDED_PATHS.includes(permission.path),
+            permission?.hasAccess && !EXCLUDED_PATHS.includes(permission.path),
         );
         router.navigate([PORTAL_PATHS.baseUrl, firstPermission?.path]);
       }

@@ -7,7 +7,6 @@ import { Role } from '@app/core/models/role.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { RoleApiService } from '@app/shared/services/api/role-api/role-api.service';
-import { isEmpty } from '@app/shared/utils/objectUtil';
 import {
   catchError,
   filter,
@@ -146,6 +145,8 @@ export class UpsertRoleComponent {
   }
 
   onSubmit() {
+    const requestBody = this.roleForm.getRawValue();
+
     this.confirmation
       .open(
         `${this.submitLabel} Confirmation`,
@@ -313,70 +314,110 @@ export class UpsertRoleComponent {
     );
 
     const findLookupInMap = (lookupPath: string, permissionMap: any[]) => {
-      return permissionMap.find((item) => item.path === lookupPath);
+      try {
+        return permissionMap.find((item) => item.path === lookupPath);
+      } catch (e) {
+        return null;
+      }
     };
 
-    this.roleForm.get('permissions')?.patchValue(this.data.permissions);
+    const permissionsPatcher: any = [];
 
     this.permissions.forEach((permission: any) => {
+      let patcher: any = {
+        path: permission.path,
+      };
+
       const existingPermission = permissionMap[permission.path];
       const parentPermState = this.permissionState[permission.path];
 
-      parentPermState.state = existingPermission.hasAccess;
+      const parentHasAccessValue =
+        permission?.persistent || !!existingPermission?.hasAccess;
+
+      parentPermState.state = parentHasAccessValue;
+      patcher.hasAccess = parentHasAccessValue;
 
       if (parentPermState?.methods) {
+        patcher['methods'] = {};
+
         for (const key of Object.keys(parentPermState.methods)) {
           const parentPermMethodState = parentPermState['methods'][key];
           parentPermMethodState.state = !!existingPermission['methods']?.[key];
+          patcher['methods'][key] = !!existingPermission['methods']?.[key];
         }
       }
 
       /**
        * #NOTE: Limitation of current logic; Route must not have "grand children", Route Child must not have children.
        */
-      if (existingPermission?.children?.length) {
-        for (const child of existingPermission.children) {
+      if (permission?.children?.length) {
+        let childHasAccessChecker = false;
+
+        patcher['children'] = [];
+
+        for (const child of permission.children) {
+          let childPatcher: any = {
+            path: child.path,
+          };
+
+          const childPerm = findLookupInMap(
+            child.path,
+            existingPermission.children,
+          );
+
           const childPermState =
             this.permissionState[permission.path]['children'][child.path];
 
-          const childPermHasAccess = !!findLookupInMap(
-            child.path,
-            existingPermission.children,
-          ).hasAccess;
+          const childPermHasAccess = childPerm ? !!childPerm?.hasAccess : false;
 
-          childPermState.state = childPermHasAccess;
+          const childHasAccessValue = child?.persistent || childPermHasAccess;
 
-          if (childPermHasAccess) {
+          childPermState.state = childHasAccessValue;
+          childPatcher.hasAccess = childHasAccessValue;
+
+          if (childHasAccessValue) {
+            childHasAccessChecker = true;
             childPermState.expanded = true;
           }
 
           if (child?.methods) {
+            childPatcher.methods = {};
+
             for (const key of Object.keys(child.methods)) {
-              const childMethodValue = !!child['methods'][key];
+              const childPermMethodValue = childPerm
+                ? !!childPerm?.['methods']?.[key]
+                : false;
+
               const childPermMethodState =
                 this.permissionState[permission.path]['children'][child.path][
                   'methods'
                 ][key];
 
-              if (childMethodValue) {
+              childPatcher['methods'][key] = childPermMethodValue;
+              childPermMethodState.state = childPermMethodValue;
+
+              if (childPermMethodValue) {
                 childPermState.expanded = true;
               }
-              childPermMethodState.state = childMethodValue;
             }
           }
-        }
+
+          if (childPermState.expanded) {
+            parentPermState.state = true;
+            parentPermState.expanded = true;
+          }
+
+          patcher['children'].push(childPatcher);
+        } // end for children loop
       }
 
-      // check if
-      if (
-        parentPermState.state &&
-        (existingPermission?.children?.length ||
-          !isEmpty(parentPermState?.methods))
-      ) {
+      if (parentPermState.state) {
         parentPermState.expanded = true;
-      } else {
-        parentPermState.expanded = false;
       }
+
+      permissionsPatcher.push(patcher);
     });
+
+    this.roleForm.get('permissions')?.patchValue(permissionsPatcher);
   }
 }
