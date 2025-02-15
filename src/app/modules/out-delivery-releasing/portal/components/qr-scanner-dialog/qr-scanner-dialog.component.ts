@@ -50,9 +50,6 @@ export class QrScannerDialogComponent
 
   useCamera!: ScannerQRCodeDevice;
 
-  screenHeight = 0;
-  screenWidth = 0;
-
   scannerConfig: ScannerQRCodeConfig = {
     isMasked: false,
     symbolType: [ScannerQRCodeSymbolType.ScannerQRCode_QRCODE],
