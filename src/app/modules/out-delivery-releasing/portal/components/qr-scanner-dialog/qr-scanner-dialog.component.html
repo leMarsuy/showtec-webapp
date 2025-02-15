@@ -1,5 +1,5 @@
 <section
-  class="bg-rose-500 w-full p-4 text-white flex justify-between items-center"
+  class="bg-rose-500 w-full p-4 text-white flex justify-between items-center overflow-hidden"
 >
   <button class="flex items-center" (click)="closeDialog()">
     <mat-icon fontIcon="arrow_back" />
@@ -9,12 +9,11 @@
 </section>
 
 <section class="relative flex flex-col justify-center items-center">
-  <div class="relative w-full">
+  <div class="relative">
     <ngx-scanner-qrcode
+      class="[&>video]:!max-h-screen [&>video]:!min-h-screen [&>video]:!object-cover"
+      style="object-fit: cover"
       (event)="onScanRead($event)"
-      [config]="scannerConfig"
-      [style.height]="screenHeight"
-      [style.width]="screenWidth"
     />
   </div>
 
