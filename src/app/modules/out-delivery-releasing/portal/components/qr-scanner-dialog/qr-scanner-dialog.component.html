@@ -12,6 +12,7 @@
   <div class="relative">
     <ngx-scanner-qrcode
       class="[&>video]:!max-h-screen [&>video]:!min-h-screen [&>video]:!object-cover"
+      [config]="scannerConfig"
       style="object-fit: cover"
       (event)="onScanRead($event)"
     />
