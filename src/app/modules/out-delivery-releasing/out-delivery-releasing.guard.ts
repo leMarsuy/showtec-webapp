@@ -47,6 +47,11 @@ export const outDeliveryReleasingPortalGuard: CanActivateFn = (
     map((response) => {
       store.dispatch(UserActions.setUser(response));
 
+      //Bypass guard if userType === 'Admin'
+      if (response.userType === UserType.ADMIN) {
+        return true;
+      }
+
       if (response.status !== Status.ACTIVE) {
         snackbar.openErrorSnackbar(
           `Access Denied`,
@@ -55,11 +60,6 @@ export const outDeliveryReleasingPortalGuard: CanActivateFn = (
         );
         forceLogoutUser();
         return false;
-      }
-
-      //Bypass guard if userType === 'Admin'
-      if (response.userType === UserType.ADMIN) {
-        return true;
       }
 
       if (!response.permissions?.length) {
@@ -120,6 +120,13 @@ export const outDeliveryReleasingAuthGuard: CanActivateFn = (route, state) => {
         );
         removeCachedUser();
         return true;
+      }
+
+      //Bypass guard if user is admin
+      if (response.userType === UserType.ADMIN) {
+        store.dispatch(UserActions.setUser(response));
+        router.navigate([RELEASING_PATHS.portal.relativeUrl]);
+        return false;
       }
 
       if (!response.permissions?.length) {
