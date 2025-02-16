@@ -58,8 +58,6 @@ export class RoleAccordionComponent implements OnInit {
         state['methods'][key].state = false;
         this.fGroup.get('methods')?.get(key)?.setValue(false);
       });
-
-      this.fGroup.markAsPristine();
     }
 
     //Uncheck all children
@@ -86,8 +84,6 @@ export class RoleAccordionComponent implements OnInit {
           });
         }
       });
-
-      this.fGroup.markAsPristine();
     }
   }
 

@@ -26,6 +26,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'releasing',
+    loadChildren: () =>
+      import(
+        './modules/out-delivery-releasing/out-delivery-releasing.module'
+      ).then((m) => m.OutDeliveryReleasingModule),
+  },
+  {
     path: '',
     redirectTo: 'auth',
     pathMatch: 'full',

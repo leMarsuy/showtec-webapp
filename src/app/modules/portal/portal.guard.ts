@@ -36,6 +36,10 @@ export const portalGuard: CanActivateFn = () => {
     return false;
   };
 
+  if (snackbar._loadingSnackbarRef) {
+    snackbar.closeLoadingSnackbar();
+  }
+
   if (!auth) {
     router.navigate([AUTH_PATHS.login.relativeUrl]);
     return false;
@@ -108,10 +112,11 @@ export const roleGuard: CanActivateChildFn = (
       );
 
       const hasAccess = permission?.hasAccess;
+
       if (!hasAccess) {
         const firstPermission = userPermission?.find(
           (permission) =>
-            permission.hasAccess && !EXCLUDED_PATHS.includes(permission.path),
+            permission?.hasAccess && !EXCLUDED_PATHS.includes(permission.path),
         );
         router.navigate([PORTAL_PATHS.baseUrl, firstPermission?.path]);
       }

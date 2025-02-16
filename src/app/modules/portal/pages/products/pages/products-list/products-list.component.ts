@@ -51,14 +51,11 @@ export class ProductsListComponent {
     {
       label: 'Model',
       dotNotationPath: 'model',
-      type: ColumnType.STRING,
+      type: ColumnType.CUSTOM,
+      display: (element: any) => {
+        return `<p class="font-medium">${element.model}</p> <p class="text-xs">${element?.description}</p>`;
+      },
     },
-    {
-      label: 'Description',
-      dotNotationPath: 'description',
-      type: ColumnType.STRING,
-    },
-
     {
       label: 'Sealed',
       dotNotationPath: '_$stockTypeSummary.Sealed',
