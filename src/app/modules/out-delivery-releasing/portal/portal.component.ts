@@ -50,6 +50,10 @@ export class PortalComponent {
   }
 
   onNavigatePortal() {
+    this.snackbar.openLoadingSnackbar(
+      'Redirecting to Portal',
+      'Please wait...',
+    );
     this.router.navigate(['/' + PORTAL_PATHS.baseUrl]);
   }
 

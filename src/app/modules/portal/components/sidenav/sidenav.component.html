@@ -12,6 +12,7 @@
       routerLinkActive="bg-gray-200 text-gray-900"
       [matTooltip]="item.name"
       matTooltipPosition="right"
+      (click)="initiateLoading(item)"
     >
       <mat-icon class="flex-none">{{ item.icon }}</mat-icon>
       @if (expanded) {

@@ -28,7 +28,7 @@
   <!-- Portal -->
   <section class="w-full mb-4">
     <div class="rounded-md bg-white m-4 flex items-center px-2 py-2.5 gap-2">
-      <mat-icon fontIcon="checklist" />
+      <mat-icon fontIcon="approval" />
       <span class="">Delivery Releasing</span>
     </div>
 
@@ -36,8 +36,8 @@
       <div
         class="rounded-md mx-4 py-2.5 px-4 bg-amber-100 border border-amber-500 text-amber-700 flex items-center"
       >
-        <div class="grow">{{ infoMessage }}</div>
-        <button class="flex items-center" (click)="showInfo = false">
+        <div class="grow text-sm">{{ infoMessage }}</div>
+        <button class="flex items-center pl-1.5" (click)="showInfo = false">
           <mat-icon fontIcon="close" />
         </button>
       </div>

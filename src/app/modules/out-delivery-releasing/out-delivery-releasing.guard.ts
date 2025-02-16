@@ -35,6 +35,10 @@ export const outDeliveryReleasingPortalGuard: CanActivateFn = (
     return false;
   };
 
+  if (snackbar._loadingSnackbarRef) {
+    snackbar.closeLoadingSnackbar();
+  }
+
   if (!auth) {
     redirectUserToReleasingAuth();
   }
@@ -97,6 +101,10 @@ export const outDeliveryReleasingAuthGuard: CanActivateFn = (route, state) => {
     store.dispatch(UserActions.removeUser({}));
     localStorage.removeItem('auth');
   };
+
+  if (snackbar._loadingSnackbarRef) {
+    snackbar.closeLoadingSnackbar();
+  }
 
   if (!auth) {
     return true;

@@ -36,6 +36,10 @@ export const portalGuard: CanActivateFn = () => {
     return false;
   };
 
+  if (snackbar._loadingSnackbarRef) {
+    snackbar.closeLoadingSnackbar();
+  }
+
   if (!auth) {
     router.navigate([AUTH_PATHS.login.relativeUrl]);
     return false;
