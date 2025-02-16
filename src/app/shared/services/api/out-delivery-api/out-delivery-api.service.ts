@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { OutDelivery } from '@core/models/out-delivery.model';
 import { map } from 'rxjs';
@@ -58,8 +57,24 @@ export class OutDeliveryApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}/prices`);
   }
 
+  getOutDeliveryByCode(code: string) {
+    return this.httpService.get(`${this.apiPrefix}/code/${code}`);
+  }
+
   getPdfOutDelivery(_id: string) {
     return this.httpService.getBlob(`${this.apiPrefix}/pdf/${_id}`).pipe(
+      map((response: any) => {
+        const filename = this.file.getFileNameFromResponseHeader(response);
+        return {
+          blob: response.body,
+          filename,
+        };
+      }),
+    );
+  }
+
+  getPdfOutDeliveryByCode(code: string) {
+    return this.httpService.getBlob(`${this.apiPrefix}/pdf/${code}`).pipe(
       map((response: any) => {
         const filename = this.file.getFileNameFromResponseHeader(response);
         return {
@@ -78,11 +93,11 @@ export class OutDeliveryApiService {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
   }
 
-  patchOutDeliveryStatus(status: OutDeliveryStatus, _id: string) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, {
-      status,
-    });
-  }
+  // patchOutDeliveryStatus(status: OutDeliveryStatus, _id: string) {
+  //   return this.httpService.patch(`${this.apiPrefix}/${_id}/status`, {
+  //     status,
+  //   });
+  // }
 
   exportOutDeliveries(query?: QueryParams) {
     let sanitizedQuery: QueryParams = {};
@@ -107,9 +122,12 @@ export class OutDeliveryApiService {
   }
 
   cancelOutDeliveryById(_id: string) {
-    const status = OutDeliveryStatus.CANCELLED;
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/cancel`, {
-      status,
-    });
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/cancel`);
+  }
+  releaseOutDeliveryById(_id: string) {
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/release`);
+  }
+  deliverOutDeliveryById(_id: string) {
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/deliver`);
   }
 }

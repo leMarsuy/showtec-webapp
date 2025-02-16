@@ -99,6 +99,18 @@ export const PORTAL_PATHS = {
   },
 };
 
+export const RELEASING_PATHS = {
+  baseUrl: 'releasing',
+  auth: {
+    baseUrl: 'auth',
+    relativeUrl: 'releasing/auth',
+  },
+  portal: {
+    baseUrl: 'portal',
+    relativeUrl: 'releasing/portal',
+  },
+};
+
 export const PATHS = {
   auth: AUTH_PATHS,
   portal: PORTAL_PATHS,
@@ -110,4 +122,7 @@ export const PATHS = {
   },
 };
 
-export const EXCLUDED_PATHS = [`/${PATHS.stockChecker.baseUrl}`];
+export const EXCLUDED_PATHS = [
+  `/${PATHS.stockChecker.baseUrl}`,
+  `/${RELEASING_PATHS.baseUrl}`,
+];

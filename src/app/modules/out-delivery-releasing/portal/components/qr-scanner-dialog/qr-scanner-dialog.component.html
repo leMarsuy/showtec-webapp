@@ -1,0 +1,49 @@
+<section
+  class="bg-rose-500 w-full h-[20vh] p-4 text-white flex justify-between items-center"
+>
+  <button class="flex items-center" (click)="closeDialog()">
+    <mat-icon fontIcon="arrow_back" />
+  </button>
+  <h1 class="inline-block text-center">QR Reader</h1>
+  <div></div>
+</section>
+
+<section class="relative flex flex-col justify-center items-center">
+  <div class="relative">
+    <ngx-scanner-qrcode
+      class="[&>video]:!max-h-screen [&>video]:!min-h-screen [&>video]:!object-cover"
+      [config]="scannerConfig"
+      style="object-fit: cover"
+      (event)="onScanRead($event)"
+    />
+  </div>
+
+  @if (scanner?.isLoading) {
+    <div
+      class="absolute top-0 left-0 h-full w-full bg-black bg-opacity-85 flex items-center justify-center"
+    >
+      <mat-spinner class="!h-8 !w-8"></mat-spinner>
+      <span class="text-white text-base font-medium ml-2"
+        >Connecting to Camera...</span
+      >
+    </div>
+  }
+</section>
+
+@if (showError) {
+  <section
+    class="absolute top-0 bg-black bg-opacity-55 w-full h-full flex items-center justify-center"
+  >
+    <div class="border border-gray-200 rounded-md bg-white p-4 flex flex-col">
+      <article class="w-[85vw] md:w-[65vw]">
+        <div class="flex items-center gap-2 mb-2.5">
+          <mat-icon class="flex-none" fontIcon="info" />
+          <p class="text-sm font-medium">{{ errorTitle }}</p>
+        </div>
+        <p class="text-xs">{{ errorMessage }}</p>
+      </article>
+
+      <button class="self-end" mat-button (click)="closeError()">Ok</button>
+    </div>
+  </section>
+}

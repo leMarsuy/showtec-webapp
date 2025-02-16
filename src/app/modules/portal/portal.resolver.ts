@@ -70,11 +70,11 @@ export const portalResolver: ResolveFn<unknown> = (
               permissionMap[item.path]['children'],
             );
           }
-          return permissionMap[item.path].hasAccess;
+          return !!permissionMap[item.path]?.hasAccess;
         });
       });
 
-      navigations = navigations.filter(
+      conf.data.navigations = navigations.filter(
         (navGroup: any) => navGroup.items.length,
       );
 

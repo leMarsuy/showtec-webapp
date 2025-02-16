@@ -11,7 +11,7 @@ import { environment } from '../../../../../environments/environment';
   providedIn: 'root',
 })
 export class AuthService {
-  apiUrl = environment.API_URL;
+  private apiUrl = environment.API_URL;
   constructor(
     private http: HttpClient,
     private store: Store,
@@ -28,6 +28,20 @@ export class AuthService {
           localStorage.setItem('auth', response.token ?? '');
           delete response.token;
           this.store.dispatch(UserActions.setUser(response));
+        }),
+      );
+  }
+
+  loginReleasing(email: string, password: string) {
+    return this.http
+      .post<User & { token?: string }>(this.apiUrl + '/auth/login/releasing', {
+        email,
+        password,
+      })
+      .pipe(
+        tap((response) => {
+          localStorage.setItem('auth', response.token ?? '');
+          delete response.token;
         }),
       );
   }

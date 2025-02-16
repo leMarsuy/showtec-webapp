@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -55,7 +55,7 @@ export class HttpService {
     return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body, this.options);
   }
 
-  patch<T>(endpoint: string, body: any) {
+  patch<T>(endpoint: string, body?: any) {
     return this.http.patch<T>(`${this.apiUrl}/${endpoint}`, body, this.options);
   }
 

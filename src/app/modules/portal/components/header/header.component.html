@@ -18,8 +18,12 @@
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="onAccountSettings()">
           Account Settings
+          <mat-icon fontIcon="settings" />
         </button>
-        <button mat-menu-item (click)="onLogout()">Logout</button>
+        <button mat-menu-item (click)="onLogout()">
+          <span>Logout</span>
+          <mat-icon fontIcon="logout" />
+        </button>
       </mat-menu>
     }
   </div>

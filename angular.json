@@ -26,6 +26,16 @@
             "assets": [
               {
                 "glob": "**/*",
+                "input": "node_modules/ngx-scanner-qrcode/wasm/",
+                "output": "./assets/wasm/"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/ng2-pdfjs-viewer/pdfjs",
+                "output": "./assets/pdfjs"
+              },
+              {
+                "glob": "**/*",
                 "input": "public"
               }
             ],
