@@ -22,6 +22,13 @@ const routes: Routes = [
       //     ),
       // },
       {
+        path: 'test-warehouse',
+        loadChildren: () =>
+          import(
+            './pages/warehouse-stock-transfer/warehouse-stock-transfer.module'
+          ).then((m) => m.WarehouseStockTransferModule),
+      },
+      {
         path: 'products',
         loadChildren: () =>
           import('./pages/products/products.module').then(
