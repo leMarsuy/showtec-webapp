@@ -22,17 +22,17 @@ const routes: Routes = [
       //     ),
       // },
       {
-        path: 'test-warehouse',
-        loadChildren: () =>
-          import(
-            './pages/warehouse-stock-transfer/warehouse-stock-transfer.module'
-          ).then((m) => m.WarehouseStockTransferModule),
-      },
-      {
         path: 'products',
         loadChildren: () =>
           import('./pages/products/products.module').then(
             (m) => m.ProductsModule,
+          ),
+      },
+      {
+        path: 'warehousing',
+        loadChildren: () =>
+          import('./pages/warehousing/warehousing.module').then(
+            (m) => m.WarehousingModule,
           ),
       },
       {
