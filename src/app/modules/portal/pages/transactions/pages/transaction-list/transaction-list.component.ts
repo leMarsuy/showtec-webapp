@@ -100,7 +100,7 @@ export class TransactionListComponent {
         },
         {
           value: PaymentStatus.CANCELED,
-          color: Color.DEAD,
+          color: Color.ERROR,
         },
       ],
     },

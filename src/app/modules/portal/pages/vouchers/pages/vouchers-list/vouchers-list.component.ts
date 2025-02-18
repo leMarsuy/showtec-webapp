@@ -86,8 +86,24 @@ export class VouchersListComponent {
           value: VoucherStatus.ACTIVE,
         },
         {
+          color: Color.INFO,
+          value: VoucherStatus.RELEASE,
+        },
+        {
+          color: Color.INFO,
+          value: VoucherStatus.PENDING,
+        },
+        {
+          color: Color.INFO,
+          value: VoucherStatus.LIQUIDATED,
+        },
+        {
           color: Color.ERROR,
           value: VoucherStatus.DELETED,
+        },
+        {
+          color: Color.ERROR,
+          value: VoucherStatus.CANCELLED,
         },
       ],
     },
