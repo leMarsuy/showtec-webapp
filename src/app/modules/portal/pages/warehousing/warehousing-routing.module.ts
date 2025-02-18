@@ -6,7 +6,27 @@ const routes: Routes = [
   {
     path: '',
     component: WarehousingComponent,
-    children: [],
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import(
+            './pages/warehouse-preview-list/warehouse-preview-list.module'
+          ).then((m) => m.WarehousePreviewListModule),
+      },
+      {
+        path: 'transfer-stocks',
+        loadChildren: () =>
+          import(
+            './pages/warehouse-stock-transfer/warehouse-stock-transfer.module'
+          ).then((m) => m.WarehouseStockTransferModule),
+      },
+      {
+        path: '**',
+        redirectTo: 'list',
+        pathMatch: 'full',
+      },
+    ],
   },
 ];
 
