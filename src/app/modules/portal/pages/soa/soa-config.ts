@@ -41,7 +41,7 @@ export const SOA_CONFIG: any = {
       colorCodes: [
         {
           value: SoaStatus.PENDING,
-          color: Color.DEAD,
+          color: Color.INFO,
         },
         {
           value: SoaStatus.PAID,

@@ -58,7 +58,15 @@ export const OUT_DELIVER_CONFIG = {
           color: Color.SUCCESS,
         },
         {
+          value: OutDeliveryStatus.DELIVERED,
+          color: Color.SUCCESS,
+        },
+        {
           value: OutDeliveryStatus.PENDING,
+          color: Color.INFO,
+        },
+        {
+          value: OutDeliveryStatus.RELEASED,
           color: Color.INFO,
         },
         {
