@@ -57,6 +57,8 @@ import { SnackbarService } from '../../components/snackbar/snackbar.service';
 })
 export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   @Input() _id!: string;
+  @Input() isScannerDisabled = false;
+
   private transformServiceId: TransformReference = 'delivery-receipt';
 
   signatoryActions = SIGNATORY_ACTIONS;
@@ -271,7 +273,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
             {
               serialNumber: item.STATIC.serialNumber,
               _id: item.STATIC._stockId,
-              status: StockStatus.FOR_DELIVERY,
+              status: item.status ?? StockStatus.FOR_DELIVERY,
             },
           ],
         };
@@ -617,6 +619,10 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
   }
 
   private async _componentInit() {
+    if (this.isScannerDisabled) {
+      this.serialNumberControl.disable();
+    }
+
     //If DR Update
     if (this._id) {
       this._outDeliveryUpdateInit();

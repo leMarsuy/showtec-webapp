@@ -22,6 +22,8 @@ export const editOutDeliveryGuard: CanActivateFn = (
   const allowedStatus: any = [
     OutDeliveryStatus.ACTIVE,
     OutDeliveryStatus.PENDING,
+    OutDeliveryStatus.RELEASED,
+    OutDeliveryStatus.DELIVERED,
   ];
 
   if (!outDeliveryId) {
@@ -33,6 +35,7 @@ export const editOutDeliveryGuard: CanActivateFn = (
     map((response) => {
       const dr = response as OutDelivery;
       if (dr && allowedStatus.includes(dr.status)) {
+        route.data = dr;
         return true;
       } else {
         return false;
