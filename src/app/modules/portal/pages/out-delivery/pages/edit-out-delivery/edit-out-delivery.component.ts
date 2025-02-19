@@ -3,6 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { NavIcon } from '@app/core/enums/nav-icons.enum';
+import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryFormComponent } from '@app/shared/forms/out-delivery-form/out-delivery-form.component';
@@ -12,7 +13,7 @@ import {
   TransformDataType,
   TransformReference,
 } from '@app/shared/services/data/transform-data/transform-data.service';
-import { map, switchMap, take } from 'rxjs';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-edit-out-delivery',
@@ -28,6 +29,7 @@ export class EditOutDeliveryComponent {
   _id!: string;
   navIcon = NavIcon;
   loading = false;
+  disableScanner = false;
 
   constructor(
     private aRoute: ActivatedRoute,
@@ -36,18 +38,14 @@ export class EditOutDeliveryComponent {
     private outDeliveryApi: OutDeliveryApiService,
     private snackbar: SnackbarService,
   ) {
-    aRoute.params
-      .pipe(
-        take(1),
-        switchMap((res: any) => {
-          this._id = res._id;
-          return this.outDeliveryApi.getOutDeliveryById(res._id);
-        }),
-        map((outDelivery: any) => outDelivery._purchaseOrderId),
-      )
-      .subscribe((purchaseOrderId: any) => {
-        this.hasPurchaseOrderId = !!purchaseOrderId;
-      });
+    this.aRoute.data.pipe(take(1)).subscribe((outDelivery: any) => {
+      this._id = outDelivery?._id;
+      this.disableScanner = [
+        OutDeliveryStatus.DELIVERED,
+        OutDeliveryStatus.RELEASED,
+      ].includes(outDelivery?.status);
+      this.hasPurchaseOrderId = !!outDelivery?._purchaseOrderId;
+    });
   }
 
   navigateBack() {
