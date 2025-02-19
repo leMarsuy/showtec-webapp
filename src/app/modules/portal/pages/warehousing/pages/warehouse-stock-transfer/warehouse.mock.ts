@@ -6,6 +6,7 @@ export const mock = [
       {
         id: 'stock_a1b2c3',
         serialNumber: 'SN001',
+        model: 'TEST',
         scanDate: '2024-02-10',
         purchaseDate: '2024-01-15',
         purchaseCode: 1001,
@@ -17,6 +18,7 @@ export const mock = [
       {
         id: 'stock_d4e5f6',
         serialNumber: 'SN002',
+        model: 'TEST',
         scanDate: '2024-02-11',
         purchaseDate: '2024-01-16',
         purchaseCode: 1002,
@@ -34,6 +36,7 @@ export const mock = [
       {
         id: 'stock_g7h8i9',
         serialNumber: 'SN003',
+        model: 'TEST',
         scanDate: '2024-02-12',
         purchaseDate: '2024-01-17',
         purchaseCode: 1003,
@@ -51,6 +54,7 @@ export const mock = [
       {
         id: 'stock_j1k2l3',
         serialNumber: 'SN004',
+        model: 'TEST',
         scanDate: '2024-02-13',
         purchaseDate: '2024-01-18',
         purchaseCode: 1004,
@@ -62,6 +66,7 @@ export const mock = [
       {
         id: 'stock_m4n5o6',
         serialNumber: 'SN005',
+        model: 'TEST',
         scanDate: '2024-02-14',
         purchaseDate: '2024-01-19',
         purchaseCode: 1005,
@@ -74,11 +79,12 @@ export const mock = [
   },
   {
     name: 'No Warehouse',
-    id: '',
+    id: 'no-warehouse',
     stocks: [
       {
         id: 'stock_p7q8r9',
         serialNumber: 'SN006',
+        model: 'TEST',
         scanDate: '2024-02-15',
         purchaseDate: '2024-01-20',
         purchaseCode: 1006,
@@ -98,6 +104,7 @@ export const mockObj = {
       {
         id: 'stock_a1b2c3',
         serialNumber: 'SN001',
+        model: 'ACME (CA-EN28) CARDBOARD (5PIN VERSION)',
         scanDate: '2024-02-10',
         purchaseDate: '2024-01-15',
         purchaseCode: 1001,
@@ -109,6 +116,7 @@ export const mockObj = {
       {
         id: 'stock_d4e5f6',
         serialNumber: 'SN002',
+        model: 'TEST',
         scanDate: '2024-02-11',
         purchaseDate: '2024-01-16',
         purchaseCode: 1002,
@@ -125,6 +133,7 @@ export const mockObj = {
       {
         id: 'stock_g7h8i9',
         serialNumber: 'SN003',
+        model: 'TEST',
         scanDate: '2024-02-12',
         purchaseDate: '2024-01-17',
         purchaseCode: 1003,
@@ -141,6 +150,7 @@ export const mockObj = {
       {
         id: 'stock_j1k2l3',
         serialNumber: 'SN004',
+        model: 'TEST',
         scanDate: '2024-02-13',
         purchaseDate: '2024-01-18',
         purchaseCode: 1004,
@@ -152,6 +162,7 @@ export const mockObj = {
       {
         id: 'stock_m4n5o6',
         serialNumber: 'SN005',
+        model: 'TEST',
         scanDate: '2024-02-14',
         purchaseDate: '2024-01-19',
         purchaseCode: 1005,
@@ -162,12 +173,13 @@ export const mockObj = {
       },
     ],
   },
-  '': {
+  'no-warehouse': {
     name: 'No Warehouse',
     stocks: [
       {
         id: 'stock_p7q8r9',
         serialNumber: 'SN006',
+        model: 'TEST',
         scanDate: '2024-02-15',
         purchaseDate: '2024-01-20',
         purchaseCode: 1006,

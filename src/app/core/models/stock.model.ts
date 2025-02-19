@@ -12,6 +12,7 @@ export class Stock {
   type: StockType;
   remarks?: string;
   status: StockStatus;
+  model?: string;
 
   constructor(model: Stock) {
     this._id = model._id;
@@ -24,5 +25,6 @@ export class Stock {
     this.type = model.type;
     this.remarks = model.remarks;
     this.status = model.status;
+    this.model = model.model;
   }
 }
