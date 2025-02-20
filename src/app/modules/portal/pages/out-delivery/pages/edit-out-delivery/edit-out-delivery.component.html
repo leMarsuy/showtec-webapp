@@ -50,7 +50,10 @@
   </div>
   @if (_id) {
     <div class="w-full" [class.pointer-events-none]="loading">
-      <app-out-delivery-form [_id]="_id"></app-out-delivery-form>
+      <app-out-delivery-form
+        [isScannerDisabled]="disableScanner"
+        [_id]="_id"
+      ></app-out-delivery-form>
     </div>
   }
 </div>
