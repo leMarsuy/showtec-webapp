@@ -34,6 +34,7 @@ export class CustomerApiService {
     });
   }
 
+  //TODO: Update Customer methods to getCustomers (for no role permissions) and getCustomersByPermission|getCustomersByAccess|getCustomersByRole (for canViewAll Method Permission)
   getCustomers(query?: QueryParams) {
     let sanitizedQuery: QueryParams = {};
     if (query)
