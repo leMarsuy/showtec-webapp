@@ -8,11 +8,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { StockDropListComponent } from './components/stock-drop-list/stock-drop-list.component';
 import { WarehouseStockTransferRoutingModule } from './warehouse-stock-transfer-routing.module';
 import { WarehouseStockTransferComponent } from './warehouse-stock-transfer.component';
+import { WarehouseStockTransferService } from './warehouse-stock-transfer.service';
 
 @NgModule({
-  declarations: [WarehouseStockTransferComponent],
+  declarations: [WarehouseStockTransferComponent, StockDropListComponent],
   imports: [
     CommonModule,
     WarehouseStockTransferRoutingModule,
@@ -27,5 +29,6 @@ import { WarehouseStockTransferComponent } from './warehouse-stock-transfer.comp
     ReactiveFormsModule,
     AsyncPipe,
   ],
+  providers: [WarehouseStockTransferService],
 })
 export class WarehouseStockTransferModule {}

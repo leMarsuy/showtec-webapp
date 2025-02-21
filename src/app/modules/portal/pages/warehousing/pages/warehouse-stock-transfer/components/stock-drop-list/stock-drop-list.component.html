@@ -1,7 +1,82 @@
-<main cdkDropList>
-  <!-- Warehouse List -->
-  <section></section>
+<main
+  [formGroup]="fGroup"
+  class="flex flex-col p-3 border border-gray-500 rounded-md gap-1"
+>
+  <div
+    class="flex min-w-full max-w-full w-full"
+    (click)="onWarehouseSelectClick(select)"
+  >
+    <mat-form-field
+      appearance="outline"
+      class="pointer-events-none w-full select-none"
+    >
+      <mat-select
+        #select
+        placeholder="Select Warehouse"
+        formControlName="warehouse"
+      >
+        @for (warehouse of warehouseList; track warehouse._id) {
+          <div>
+            <mat-option [value]="warehouse">{{ warehouse.name }} </mat-option>
+          </div>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-  <!-- Warehouse Stock List -->
-  <section></section>
+  <mat-form-field appearance="outline">
+    <input
+      matInput
+      placeholder="Search by Model | Serial No"
+      [formControl]="searchControl"
+      type="text"
+    />
+  </mat-form-field>
+
+  <button
+    class="border border-gray-300 px-2 py-1.5 hover:border-gray-500 active:bg-gray-500"
+    (click)="logForm()"
+  >
+    LOG FORM
+  </button>
+
+  <section
+    class="bg-gray-100 border border-gray-200 rounded-md p-1.5 flex flex-col gap-1.5 min-h-[45vh] max-h-[45vh] overflow-y-scroll"
+    cdkDropList
+  >
+    @if (fGroup.controls["stocks"].value.length) {
+      @for (stock of filteredStocks; track $index) {
+        <div
+          class="bg-white rounded border border-gray-400 py-1.5 px-2.5 shadow-sm flex items-center justify-between"
+          cdkDrag
+        >
+          <section class="flex items-center pb-1 gap-1.5">
+            <mat-checkbox
+              [checked]="stockStates[stock._id]"
+              (change)="onCheckboxClick($event, stock._id)"
+            />
+            <div class="flex flex-col">
+              <p
+                class="inline-flex items-center font-medium text-black tracking-wide"
+              >
+                {{ stock.model }}
+                <span
+                  class="text-xs font-normal text-center px-2 py-1 bg-sky-100 border border-sky-500 rounded-full text-sky-700 ml-1.5"
+                >
+                  {{ stock.type }}
+                </span>
+              </p>
+              <p class="text-sm text-gray-500">
+                {{ stock.serialNumber }}
+              </p>
+            </div>
+          </section>
+
+          <section class="flex items-center cursor-pointer" cdkDragHandle>
+            <mat-icon class="text-gray-400" fontIcon="menu" />
+          </section>
+        </div>
+      }
+    }
+  </section>
 </main>

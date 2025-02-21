@@ -8,210 +8,79 @@
     >
       <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
     </button>
+    <button
+      class="border border-gray-300 px-2 py-1.5 hover:border-gray-500 active:bg-gray-500"
+      (click)="logHistory()"
+    >
+      LOG HISTORY
+    </button>
   </div>
 
   <section
     class="drop-list-group-boundary grid grid-cols-11 gap-4 w-full rounded-xl bg-white text-gray-900 p-4 grow"
     cdkDropListGroup
   >
-    <!-- From List -->
-    <section
-      class="col-span-5 flex flex-col p-3 border border-gray-500 rounded-md gap-1"
-      [formGroup]="formGroupA"
-    >
-      <!-- Warehouse Select -->
-      <mat-form-field appearance="outline">
-        <mat-select
-          placeholder="Select Warehouse"
-          formControlName="warehouse"
-          (selectionChange)="warehouseChange($event, 'A')"
-        >
-          @for (warehouse of warehouseListA$ | async; track warehouse.id) {
-            <div>
-              <mat-option [value]="warehouse">{{ warehouse.name }} </mat-option>
-            </div>
-          }
-        </mat-select>
-      </mat-form-field>
-      <!-- Stock Search -->
-      <mat-form-field appearance="outline">
-        <input
-          matInput
-          placeholder="Search by Model | Serial No"
-          formControlName="searchText"
-          type="text"
-        />
-      </mat-form-field>
+    <div class="col-span-5">
+      <app-stock-drop-list
+        [fGroup]="formGroupA"
+        [warehouseList]="warehouseListA$ | async"
+        (emitCheckedStocks)="
+          onEmitCheckedStocks($event, formGroupA.controls['checkedStocks'])
+        "
+      ></app-stock-drop-list>
+    </div>
 
-      <button (click)="logFormGroupValue(formGroupA)">LOG FORM A VALUE</button>
-
-      <!-- From Stock List -->
-      <section
-        class="bg-gray-100 border border-gray-200 rounded-md p-1.5 flex flex-col gap-1.5 min-h-[45vh] max-h-[45vh] overflow-y-scroll"
-        cdkDropList
-        *ngIf="{
-          groupAStocks: $any(formGroupA)?.controls['stocks'],
-          stockArrayControls: $any(formGroupA)?.controls['stocks'].controls,
-        } as stocksA"
-      >
-        @if ($any(stocksA).groupAStocks.value?.length) {
-          @for (stock of stockListA$ | async; track $index) {
-            <div
-              class="bg-white rounded border border-gray-400 py-1.5 px-2.5 shadow-sm flex items-center justify-between"
-              cdkDrag
-            >
-              <section class="flex items-center pb-1 gap-1.5">
-                <mat-checkbox
-                  [checked]="stock.checked"
-                  (change)="
-                    checkboxClick(
-                      $event,
-                      stock,
-                      stocksA.stockArrayControls[$index]
-                    )
-                  "
-                />
-                <div class="flex flex-col">
-                  <p
-                    class="inline-flex items-center font-medium text-black tracking-wide"
-                  >
-                    {{ stock.model }}
-                    <span
-                      class="text-xs font-normal text-center px-2 py-1 bg-sky-100 border border-sky-500 rounded-full text-sky-700 ml-1.5"
-                    >
-                      {{ stock.type }}
-                    </span>
-                  </p>
-                  <p class="text-sm text-gray-500">
-                    {{ stock.serialNumber }}
-                  </p>
-                </div>
-              </section>
-
-              <section class="flex items-center cursor-pointer" cdkDragHandle>
-                <mat-icon class="text-gray-400" fontIcon="menu" />
-              </section>
-            </div>
-          }
-        }
-      </section>
-      <!-- End From Stock List -->
-    </section>
-
-    <!-- TRANFER CONTROLS -->
-    <section class="col-span-1 flex flex-col justify-center">
+    <div class="col-span-1 flex flex-col justify-center">
       <div class="flex flex-col justify-center items-center">
-        <p class="font-medium text-xs mb-1.5">Move by Batch</p>
+        <p class="font-medium text-xs mb-1.5">Move All</p>
         <mat-slide-toggle
           class="example-margin"
           [checked]="isBatchMove"
+          disabled
           hideIcon="true"
           (toggleChange)="isBatchMove = !isBatchMove"
         />
       </div>
 
       <div class="flex flex-col justify-center items-center mt-4 gap-1.5">
-        <!-- FROM A to B -->
-
         <button
-          class="group flex justify-center items-center border border-[transparent] rounded-full p-2 h-[3rem] w-[3rem] hover:border-gray-200 hover:shadow-lg active:bg-gray-200 transition-all duration-75 ease-in-out"
-          (click)="transferStocks('A')"
+          class="group flex justify-center items-center border border-[transparent] rounded-full p-2 h-[3rem] w-[3rem] hover:text-sky-500 hover:border-gray-200 hover:shadow-lg active:bg-gray-200 transition-all duration-75 ease-in-out"
+          (click)="transferStocks(formGroupA, formGroupB)"
+          [disabled]="!shouldTransfer(formGroupA, formGroupB)"
+          [ngClass]="{
+            'pointer-events-none bg-gray-200 text-gray-300': !shouldTransfer(
+              formGroupA,
+              formGroupB
+            ),
+          }"
         >
-          <mat-icon class="group-hover:text-sky-500" fontIcon="arrow_forward" />
+          <mat-icon fontIcon="arrow_forward" />
         </button>
 
-        <!-- FROM B TO A -->
         <button
-          class="group flex justify-center items-center border border-[transparent] rounded-full p-2 h-[3rem] w-[3rem] hover:border-gray-200 hover:shadow-lg active:bg-gray-200 transition-all duration-75 ease-in-out"
-          (click)="transferStocks('B')"
+          class="group flex justify-center items-center border border-[transparent] rounded-full p-2 h-[3rem] w-[3rem] hover:text-sky-500 hover:border-gray-200 hover:shadow-lg active:bg-gray-200 transition-all duration-75 ease-in-out"
+          (click)="transferStocks(formGroupB, formGroupA)"
+          [disabled]="!shouldTransfer(formGroupB, formGroupA)"
+          [ngClass]="{
+            'pointer-events-none bg-gray-200 text-gray-300': !shouldTransfer(
+              formGroupB,
+              formGroupA
+            ),
+          }"
         >
-          <mat-icon
-            class="group-hover:text-sky-500"
-            fontIcon="arrow_backward"
-          />
+          <mat-icon fontIcon="arrow_backward" />
         </button>
       </div>
-    </section>
+    </div>
 
-    <!-- To List -->
-    <section
-      class="col-span-5 flex flex-col p-3 border border-gray-500 rounded-md gap-1"
-      [formGroup]="formGroupB"
-    >
-      <!-- Warehouse Select -->
-      <mat-form-field appearance="outline">
-        <mat-select
-          placeholder="Select Warehouse"
-          formControlName="warehouse"
-          (selectionChange)="warehouseChange($event, 'B')"
-        >
-          @for (warehouse of warehouseListB$ | async; track warehouse.id) {
-            <mat-option [value]="warehouse">{{ warehouse.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <!-- Stock Search -->
-      <mat-form-field appearance="outline">
-        <input
-          matInput
-          placeholder="Search by Model | Serial No"
-          formControlName="searchText"
-          type="text"
-        />
-      </mat-form-field>
-
-      <button (click)="logFormGroupValue(formGroupB)">LOG FORM B VALUE</button>
-
-      <!-- To Stock List -->
-      <section
-        class="bg-gray-100 border border-gray-200 rounded-md p-1.5 flex flex-col gap-1.5 min-h-[45vh] max-h-[45vh] overflow-y-scroll"
-        cdkDropList
-        *ngIf="{
-          groupBStocks: $any(formGroupB)?.controls['stocks'],
-          stockArrayControls: $any(formGroupB)?.controls['stocks'].controls,
-        } as stocksB"
-      >
-        @if ($any(stocksB).groupBStocks.value?.length) {
-          @for (stock of stockListB$ | async; track $index) {
-            <div
-              class="bg-white rounded border border-gray-400 py-1.5 px-2.5 shadow-sm flex items-center justify-between"
-              cdkDrag
-            >
-              <section class="flex items-center pb-1 gap-1.5">
-                <mat-checkbox
-                  (change)="
-                    checkboxClick(
-                      $event,
-                      stock,
-                      stocksB.stockArrayControls[$index]
-                    )
-                  "
-                />
-                <div class="flex flex-col">
-                  <p
-                    class="inline-flex items-center font-medium text-black tracking-wide"
-                  >
-                    {{ stock["model"] }}
-                    <span
-                      class="text-xs font-normal text-center px-2 py-1 bg-sky-100 border border-sky-500 rounded-full text-sky-700 ml-1.5"
-                    >
-                      {{ stock["type"] }}
-                    </span>
-                  </p>
-                  <p class="text-sm text-gray-500">
-                    {{ stock["serialNumber"] }}
-                  </p>
-                </div>
-              </section>
-
-              <section class="flex items-center cursor-pointer" cdkDragHandle>
-                <mat-icon class="text-gray-400" fontIcon="menu" />
-              </section>
-            </div>
-          }
-        }
-      </section>
-      <!-- End To Stock List -->
-    </section>
+    <div class="col-span-5">
+      <app-stock-drop-list
+        [fGroup]="formGroupB"
+        [warehouseList]="warehouseListB$ | async"
+        (emitCheckedStocks)="
+          onEmitCheckedStocks($event, formGroupB.controls['checkedStocks'])
+        "
+      ></app-stock-drop-list>
+    </div>
   </section>
 </div>
