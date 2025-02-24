@@ -52,6 +52,11 @@
           cdkDrag
           [cdkDragData]="stock"
         >
+          <div
+            class="bg-gray-300 rounded border-2 border-dashed border-gray-400 h-[4rem]"
+            *cdkDragPlaceholder
+          ></div>
+
           <section class="flex items-center pb-1 gap-1.5">
             <mat-checkbox
               [checked]="stockStates[stock._id]"
@@ -59,7 +64,7 @@
             />
             <div class="flex flex-col">
               <p
-                class="inline-flex items-center font-medium text-black tracking-wide"
+                class="inline-flex items-center font-medium text-black tracking-wide max-w-3/4"
               >
                 {{ stock.model }}
                 <span
@@ -74,18 +79,22 @@
             </div>
           </section>
 
-          <section
-            class="flex items-center"
-            cdkDragHandle
-            [cdkDragHandleDisabled]="!isDraggable"
-          >
-            <mat-icon
-              [ngClass]="{
-                'text-gray-500 cursor-pointer': isDraggable,
-                'text-gray-200': !isDraggable,
-              }"
-              fontIcon="menu"
-            />
+          <section class="flex items-center justify-between gap-2.5">
+            <div class="text-sm font-medium">Qty: {{ stock.quantity }}</div>
+
+            <div
+              class="flex items-center"
+              cdkDragHandle
+              [cdkDragHandleDisabled]="!isDraggable"
+            >
+              <mat-icon
+                [ngClass]="{
+                  'text-gray-500 cursor-grab': isDraggable,
+                  'text-gray-200': !isDraggable,
+                }"
+                fontIcon="menu"
+              />
+            </div>
           </section>
         </div>
       }

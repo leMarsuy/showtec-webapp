@@ -22,7 +22,17 @@ import {
   take,
   takeUntil,
 } from 'rxjs';
+import { TransferStock } from '../../warehouse-stock-transfer.component';
 import { WarehouseStockTransferService } from '../../warehouse-stock-transfer.service';
+
+/**
+ * @param currentIndex: Index of the stock dropped data that it will be going to
+ * @param previousIndex: Index of the stock dropped data that it came from
+ */
+export interface StockDropEventEmitted {
+  currentIndex: number;
+  previousIndex: number;
+}
 
 @Component({
   selector: 'app-stock-drop-list',
@@ -33,14 +43,14 @@ export class StockDropListComponent implements OnInit, OnDestroy {
   @Input() warehouseList: any = [];
   @Input() fGroup!: FormGroup;
   @Output() onCheckedStocksChanged = new EventEmitter<any>();
-  @Output() onDropStock = new EventEmitter<any>();
+  @Output() onDropStock = new EventEmitter<StockDropEventEmitted>();
 
   private warehouseStockTransferService = inject(WarehouseStockTransferService);
   private confirmation = inject(ConfirmationService);
   private destroyed$ = new Subject<void>();
 
   searchControl = new FormControl('');
-  filteredStocks: Stock[] = [];
+  filteredStocks: TransferStock[] = [];
 
   stockStates: Record<string, boolean> = {};
 
@@ -66,13 +76,6 @@ export class StockDropListComponent implements OnInit, OnDestroy {
         }
         this.stockStates = {};
         this.searchControl.setValue('');
-      });
-
-    this.fGroup
-      .get('stocks')
-      ?.valueChanges.pipe(takeUntil(this.destroyed$))
-      .subscribe(() => {
-        this._filterStocks('');
       });
 
     this.fGroup
@@ -109,7 +112,7 @@ export class StockDropListComponent implements OnInit, OnDestroy {
     if (event.previousContainer === event.container) {
       this._reorderStocks(currentIndex, previousIndex);
     } else {
-      const dropEmit = { currentIndex, previousIndex };
+      const dropEmit: StockDropEventEmitted = { currentIndex, previousIndex };
       this.onDropStock.emit(dropEmit);
     }
   }

@@ -14,12 +14,6 @@
     >
       LOG HISTORY
     </button>
-    <button
-      class="border border-gray-300 px-2 py-1.5 text-white hover:border-gray-500 active:bg-gray-500"
-      (click)="refreshStockTable()"
-    >
-      REFRESH STOCK TABLE
-    </button>
   </div>
 
   <section
@@ -43,8 +37,7 @@
         <mat-slide-toggle
           class="example-margin"
           [checked]="isBatchMove"
-          (toggleChange)="batchMoveStateToggle()"
-          disabled
+          (toggleChange)="isBatchMove = !isBatchMove"
           hideIcon
         />
       </div>

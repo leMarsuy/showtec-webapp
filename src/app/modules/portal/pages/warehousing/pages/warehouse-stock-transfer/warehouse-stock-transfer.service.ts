@@ -2,11 +2,19 @@ import { Injectable } from '@angular/core';
 import { StockType } from '@app/core/enums/stock-type.enum';
 import { BehaviorSubject, Subject } from 'rxjs';
 
+/**
+ * @param stockId
+ * @param type Stock.type
+ * @param fromWarehouseId
+ * @param toWarehouseId
+ * @param quantity
+ */
 export interface StockTransferHistory {
   stockId: string;
   type: StockType;
   fromWarehouseId: string;
   toWarehouseId: string;
+  quantity?: number;
 }
 
 @Injectable({
@@ -31,14 +39,6 @@ export class WarehouseStockTransferService {
 
   resetFormListener$$ = new Subject<void>();
   populateStockListener$$ = new Subject<void>();
-
-  // Batch Move State
-  private batchMoveState$$ = new Subject<boolean>();
-  batchMoveState$ = this.batchMoveState$$.asObservable();
-
-  setBatchMoveState(isBatchMove: boolean) {
-    this.batchMoveState$$.next(isBatchMove);
-  }
 
   // isDraggable State
   private draggableState$$ = new Subject<boolean>();
