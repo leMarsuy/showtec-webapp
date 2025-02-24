@@ -31,4 +31,20 @@ export class WarehouseStockTransferService {
 
   resetFormListener$$ = new Subject<void>();
   populateStockListener$$ = new Subject<void>();
+
+  // Batch Move State
+  private batchMoveState$$ = new Subject<boolean>();
+  batchMoveState$ = this.batchMoveState$$.asObservable();
+
+  setBatchMoveState(isBatchMove: boolean) {
+    this.batchMoveState$$.next(isBatchMove);
+  }
+
+  // isDraggable State
+  private draggableState$$ = new Subject<boolean>();
+  draggableState$ = this.draggableState$$.asObservable();
+
+  setDraggableState(isDraggable: boolean) {
+    this.draggableState$$.next(isDraggable);
+  }
 }
