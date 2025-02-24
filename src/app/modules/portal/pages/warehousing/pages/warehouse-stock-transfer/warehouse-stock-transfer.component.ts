@@ -73,6 +73,8 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
   }
 
   constructor() {
+    this.warehouseStockTransferService.setBatchMoveState(this.isBatchMove);
+
     this.warehouseListA$.next(this.warehouseList);
     this.warehouseListB$.next(this.warehouseList);
   }
@@ -85,14 +87,20 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     this.formGroupA.controls['warehouse'].valueChanges
       .pipe(distinctUntilChanged(), startWith({}), takeUntil(this.destroyed$))
       .subscribe((warehouse) => {
-        console.log('FORM GROUP A');
+        this.setDraggableState(
+          warehouse,
+          this.formGroupB.controls['warehouse'].value,
+        );
         this.warehouseChange(this.formGroupA, warehouse, this.warehouseListB$);
       });
 
     this.formGroupB.controls['warehouse'].valueChanges
       .pipe(distinctUntilChanged(), startWith({}), takeUntil(this.destroyed$))
       .subscribe((warehouse) => {
-        console.log('FORM GROUP B');
+        this.setDraggableState(
+          warehouse,
+          this.formGroupA.controls['warehouse'].value,
+        );
         this.warehouseChange(this.formGroupB, warehouse, this.warehouseListA$);
       });
 
@@ -101,6 +109,14 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this._resetForms();
       });
+  }
+
+  setDraggableState(fromWarehouse: any, toWarehouse: any) {
+    let state = false;
+    if (fromWarehouse._id && toWarehouse._id) {
+      state = true;
+    }
+    this.warehouseStockTransferService.setDraggableState(state);
   }
 
   async warehouseChange(
@@ -125,6 +141,23 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     formControl.setValue(checkedStocks);
   }
 
+  onEmitDropStock(
+    event: { currentIndex: number; previousIndex: number },
+    fromFormGroup: FormGroup,
+    toFormGroup: FormGroup,
+  ) {
+    const fromStocksFormArray = fromFormGroup.controls['stocks'] as FormArray;
+    const fromStocksGroups = fromStocksFormArray.controls;
+    const sourceFormGroup = fromStocksFormArray.at(event.previousIndex);
+
+    fromStocksGroups.splice(event.previousIndex, 1);
+
+    const toStocksFormArray = toFormGroup.controls['stocks'] as FormArray;
+    toStocksFormArray.insert(event.currentIndex, sourceFormGroup);
+
+    this._refreshStockList();
+  }
+
   shouldTransfer(fromFormGroup: FormGroup, toFormGroup: FormGroup) {
     let result = true;
     if (
@@ -136,6 +169,7 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     if (!fromFormGroup.controls['checkedStocks'].value.length) {
       result = false;
     }
+
     return result;
   }
 
@@ -154,7 +188,7 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     const toStockList = toFormGroup.controls['stocks'].getRawValue();
 
     const toMoveStocksFormArray: any =
-      this._convertArrayToArrayForm(toStockList);
+      this._convertStockArrayToArrayForm(toStockList);
 
     const stocksToBeMoved =
       fromFormGroup.controls['checkedStocks'].getRawValue();
@@ -194,12 +228,17 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
       fromFormGroup.setControl('stocks', new FormArray([]));
     } else {
       const remainingFormArray: any =
-        this._convertArrayToArrayForm(remainingStocks);
+        this._convertStockArrayToArrayForm(remainingStocks);
       fromFormGroup.setControl('stocks', remainingFormArray);
     }
     fromFormGroup.controls['checkedStocks'].setValue([]);
 
-    this.warehouseStockTransferService.populateStockListener$$.next();
+    this._refreshStockList();
+  }
+
+  batchMoveStateToggle() {
+    this.isBatchMove = !this.isBatchMove;
+    this.warehouseStockTransferService.setBatchMoveState(this.isBatchMove);
   }
 
   private _populateStocksFromSource(formGroup: FormGroup) {
@@ -207,10 +246,14 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     const warehouseId = formGroup.get('warehouse')?.value._id;
     const stocksFromReference = (mockObj as any)[warehouseId].stocks ?? [];
     const formArray: FormArray<any> =
-      this._convertArrayToArrayForm(stocksFromReference);
+      this._convertStockArrayToArrayForm(stocksFromReference);
 
     formGroup.setControl('stocks', formArray);
     formGroup.setControl('immutableStocks', formArray);
+  }
+
+  refreshStockTable() {
+    this._refreshStockList();
   }
 
   private _validateTransferHistory(newHistory: StockTransferHistory) {
@@ -220,14 +263,14 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
 
     if (!foundStockIdHistory) {
       this.transferHistory.push(newHistory);
-      this.warehouseStockTransferService.setHistory(this.transferHistory);
+      this._setTransferHistory();
       return;
     }
 
     this.transferHistory = this.transferHistory.filter(
       (history) => history.stockId !== newHistory.stockId,
     );
-    this.warehouseStockTransferService.setHistory(this.transferHistory);
+    this._setTransferHistory();
   }
 
   private _resetForms() {
@@ -236,14 +279,13 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
 
     this.formGroupA.setControl('stocks', aStockArray);
     this.formGroupB.setControl('stocks', bStockArray);
-
-    this.warehouseStockTransferService.populateStockListener$$.next();
-
     this.transferHistory = [];
-    this.warehouseStockTransferService.setHistory(this.transferHistory);
+
+    this._refreshStockList();
+    this._setTransferHistory();
   }
 
-  private _convertArrayToArrayForm(array: any[]): FormArray {
+  private _convertStockArrayToArrayForm(array: any[]): FormArray {
     const formArray = new FormArray([] as any);
     for (const stock of array) {
       const stockFormGroup = new FormGroup({
@@ -260,8 +302,19 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     return formArray;
   }
 
+  private _refreshStockList() {
+    this.warehouseStockTransferService.populateStockListener$$.next();
+  }
+
+  private _setTransferHistory() {
+    this.warehouseStockTransferService.setHistory(this.transferHistory);
+  }
+
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
+
+    this.warehouseListA$.complete();
+    this.warehouseListB$.complete();
   }
 }

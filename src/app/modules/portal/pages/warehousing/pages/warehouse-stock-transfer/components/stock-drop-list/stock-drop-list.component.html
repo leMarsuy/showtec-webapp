@@ -43,12 +43,14 @@
   <section
     class="bg-gray-100 border border-gray-200 rounded-md p-1.5 flex flex-col gap-1.5 min-h-[45vh] max-h-[45vh] overflow-y-scroll"
     cdkDropList
+    (cdkDropListDropped)="stockDrop($event)"
   >
     @if (fGroup.controls["stocks"].value.length) {
       @for (stock of filteredStocks; track $index) {
         <div
           class="bg-white rounded border border-gray-400 py-1.5 px-2.5 shadow-sm flex items-center justify-between"
           cdkDrag
+          [cdkDragData]="stock"
         >
           <section class="flex items-center pb-1 gap-1.5">
             <mat-checkbox
@@ -72,8 +74,18 @@
             </div>
           </section>
 
-          <section class="flex items-center cursor-pointer" cdkDragHandle>
-            <mat-icon class="text-gray-400" fontIcon="menu" />
+          <section
+            class="flex items-center"
+            cdkDragHandle
+            [cdkDragHandleDisabled]="!isDraggable"
+          >
+            <mat-icon
+              [ngClass]="{
+                'text-gray-500 cursor-pointer': isDraggable,
+                'text-gray-200': !isDraggable,
+              }"
+              fontIcon="menu"
+            />
           </section>
         </div>
       }

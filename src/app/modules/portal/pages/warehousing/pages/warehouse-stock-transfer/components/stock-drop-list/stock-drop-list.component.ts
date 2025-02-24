@@ -1,3 +1,4 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import {
   Component,
   EventEmitter,
@@ -7,7 +8,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelect } from '@angular/material/select';
 import { Stock } from '@app/core/models/stock.model';
@@ -31,7 +32,8 @@ import { WarehouseStockTransferService } from '../../warehouse-stock-transfer.se
 export class StockDropListComponent implements OnInit, OnDestroy {
   @Input() warehouseList: any = [];
   @Input() fGroup!: FormGroup;
-  @Output() emitCheckedStocks = new EventEmitter<any>();
+  @Output() onCheckedStocksChanged = new EventEmitter<any>();
+  @Output() onDropStock = new EventEmitter<any>();
 
   private warehouseStockTransferService = inject(WarehouseStockTransferService);
   private confirmation = inject(ConfirmationService);
@@ -42,8 +44,16 @@ export class StockDropListComponent implements OnInit, OnDestroy {
 
   stockStates: Record<string, boolean> = {};
 
+  isDraggable!: boolean;
+
   constructor() {
     this.searchControl.disable();
+
+    this.warehouseStockTransferService.draggableState$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((draggableState) => {
+        this.isDraggable = draggableState;
+      });
   }
 
   ngOnInit(): void {
@@ -84,12 +94,24 @@ export class StockDropListComponent implements OnInit, OnDestroy {
     this.warehouseStockTransferService.populateStockListener$$
       .pipe(takeUntil(this.destroyed$))
       .subscribe(() => {
-        this._filterStocks('');
+        const useSearchText = this.searchControl.value ?? '';
+        this._filterStocks(useSearchText);
       });
   }
 
   logForm() {
     console.log(this.fGroup.getRawValue());
+  }
+
+  stockDrop(event: CdkDragDrop<any>) {
+    const { currentIndex, previousIndex } = event;
+
+    if (event.previousContainer === event.container) {
+      this._reorderStocks(currentIndex, previousIndex);
+    } else {
+      const dropEmit = { currentIndex, previousIndex };
+      this.onDropStock.emit(dropEmit);
+    }
   }
 
   async onWarehouseSelectClick(select: MatSelect) {
@@ -140,10 +162,26 @@ export class StockDropListComponent implements OnInit, OnDestroy {
     }
 
     if (!checkedStocks.length) {
-      this.emitCheckedStocks.emit([]);
+      this.onCheckedStocksChanged.emit([]);
     } else {
-      this.emitCheckedStocks.emit(checkedStocks);
+      this.onCheckedStocksChanged.emit(checkedStocks);
     }
+  }
+
+  private _reorderStocks(currentIndex: number, previousIndex: number) {
+    const stocksFormArray = this.fGroup.controls['stocks'] as FormArray;
+    const sourceFormGroup = stocksFormArray.at(previousIndex);
+    const formGroups = stocksFormArray.controls;
+
+    if (formGroups.length <= 1) {
+      return;
+    }
+
+    formGroups.splice(previousIndex, 1);
+    formGroups.splice(currentIndex, 0, sourceFormGroup);
+
+    const useSearchText = this.searchControl.value ?? '';
+    this._filterStocks(useSearchText);
   }
 
   private _filterStocks(searchText: string) {

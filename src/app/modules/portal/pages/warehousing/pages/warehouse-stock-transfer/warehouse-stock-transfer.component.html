@@ -9,10 +9,16 @@
       <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
     </button>
     <button
-      class="border border-gray-300 px-2 py-1.5 hover:border-gray-500 active:bg-gray-500"
+      class="border border-gray-300 px-2 py-1.5 text-white hover:border-gray-500 active:bg-gray-500"
       (click)="logHistory()"
     >
       LOG HISTORY
+    </button>
+    <button
+      class="border border-gray-300 px-2 py-1.5 text-white hover:border-gray-500 active:bg-gray-500"
+      (click)="refreshStockTable()"
+    >
+      REFRESH STOCK TABLE
     </button>
   </div>
 
@@ -24,10 +30,11 @@
       <app-stock-drop-list
         [fGroup]="formGroupA"
         [warehouseList]="warehouseListA$ | async"
-        (emitCheckedStocks)="
+        (onCheckedStocksChanged)="
           onEmitCheckedStocks($event, formGroupA.controls['checkedStocks'])
         "
-      ></app-stock-drop-list>
+        (onDropStock)="onEmitDropStock($event, formGroupB, formGroupA)"
+      />
     </div>
 
     <div class="col-span-1 flex flex-col justify-center">
@@ -36,9 +43,9 @@
         <mat-slide-toggle
           class="example-margin"
           [checked]="isBatchMove"
+          (toggleChange)="batchMoveStateToggle()"
           disabled
-          hideIcon="true"
-          (toggleChange)="isBatchMove = !isBatchMove"
+          hideIcon
         />
       </div>
 
@@ -77,10 +84,11 @@
       <app-stock-drop-list
         [fGroup]="formGroupB"
         [warehouseList]="warehouseListB$ | async"
-        (emitCheckedStocks)="
+        (onCheckedStocksChanged)="
           onEmitCheckedStocks($event, formGroupB.controls['checkedStocks'])
         "
-      ></app-stock-drop-list>
+        (onDropStock)="onEmitDropStock($event, formGroupA, formGroupB)"
+      />
     </div>
   </section>
 </div>
