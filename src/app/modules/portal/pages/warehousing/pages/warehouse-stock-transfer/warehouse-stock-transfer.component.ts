@@ -74,7 +74,6 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.warehouseStockTransferService.setBatchMoveState(this.isBatchMove);
-
     this.warehouseListA$.next(this.warehouseList);
     this.warehouseListB$.next(this.warehouseList);
   }
@@ -148,12 +147,32 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
   ) {
     const fromStocksFormArray = fromFormGroup.controls['stocks'] as FormArray;
     const fromStocksGroups = fromStocksFormArray.controls;
-    const sourceFormGroup = fromStocksFormArray.at(event.previousIndex);
+    const stockFormGroup = fromStocksFormArray.at(event.previousIndex);
+    const stock = stockFormGroup.getRawValue();
 
     fromStocksGroups.splice(event.previousIndex, 1);
 
     const toStocksFormArray = toFormGroup.controls['stocks'] as FormArray;
-    toStocksFormArray.insert(event.currentIndex, sourceFormGroup);
+    toStocksFormArray.insert(event.currentIndex, stockFormGroup);
+
+    const fromWarehouseId =
+      fromFormGroup.controls['warehouse'].getRawValue()._id !== 'no-warehouse'
+        ? fromFormGroup.controls['warehouse'].getRawValue()._id
+        : '';
+
+    const toWarehouseId =
+      toFormGroup.controls['warehouse'].getRawValue()._id !== 'no-warehouse'
+        ? toFormGroup.controls['warehouse'].getRawValue()._id
+        : '';
+
+    const history: StockTransferHistory = {
+      fromWarehouseId,
+      toWarehouseId,
+      stockId: stock._id,
+      type: stock.type,
+    };
+
+    this._validateTransferHistory(history);
 
     this._refreshStockList();
   }
@@ -176,7 +195,7 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
   transferStocks(fromFormGroup: FormGroup, toFormGroup: FormGroup) {
     const fromWarehouseId =
       fromFormGroup.controls['warehouse'].getRawValue()._id !== 'no-warehouse'
-        ? toFormGroup.controls['warehouse'].getRawValue()._id
+        ? fromFormGroup.controls['warehouse'].getRawValue()._id
         : '';
 
     const toWarehouseId =
