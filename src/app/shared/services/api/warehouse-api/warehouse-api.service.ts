@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpService } from '../../http/http.service';
-import { environment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { Warehouse } from '@core/models/warehouse.model';
+import { environment } from '../../../../../environments/environment';
+import { HttpService } from '../../http/http.service';
 
 @Injectable({
   providedIn: 'root',
@@ -34,5 +34,13 @@ export class WarehouseApiService {
 
   updateWarehouseById(_id: string, updateBody: Warehouse) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}`, updateBody);
+  }
+
+  getAllStocks() {
+    return this.httpService.get(`${this.apiPrefix}/all-stocks`);
+  }
+
+  getWarehouseAllStocksById(warehouseId: string) {
+    return this.httpService.get(`${this.apiPrefix}/${warehouseId}/stocks`);
   }
 }
