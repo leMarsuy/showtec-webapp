@@ -40,7 +40,60 @@
     LOG FORM
   </button>
 
-  <section
+  <cdk-virtual-scroll-viewport
+    class="bg-gray-100 border border-gray-200 rounded-md p-1.5 flex flex-col gap-1.5 min-h-[45vh] max-h-[45vh] overflow-y-scroll"
+    minBufferPx="500"
+    maxBufferPx="1000"
+    itemSize="48"
+    cdkDropList
+    (cdkDropListDropped)="stockDrop($event)"
+  >
+    <div *cdkVirtualFor="let stock of filteredStocks">
+      <div
+        class="bg-white rounded border border-gray-400 py-1.5 px-2.5 shadow-sm flex items-center justify-between m-1.5"
+        cdkDrag
+        [cdkDragData]="stock"
+      >
+        <section class="flex items-center pb-1 gap-1.5">
+          <mat-checkbox
+            [checked]="stockStates[stock._id]"
+            (change)="onCheckboxClick($event, stock._id)"
+          />
+          <div class="flex flex-col">
+            <p
+              class="inline-flex items-center font-medium text-black tracking-wide max-w-3/4"
+            >
+              {{ stock.serialNumber }}
+            </p>
+            <p class="text-sm text-gray-500">
+              {{ stock.sku }}
+            </p>
+          </div>
+        </section>
+
+        <section class="flex items-center justify-between gap-2.5">
+          <div class="text-sm font-medium">Qty: {{ stock.quantity }}</div>
+          <div [class]="setCssClassByType(stock.type)">
+            {{ stock.type }}
+          </div>
+          <div
+            class="flex items-center"
+            cdkDragHandle
+            [cdkDragHandleDisabled]="!isDraggable"
+          >
+            <mat-icon
+              [ngClass]="{
+                'text-gray-500 cursor-grab': isDraggable,
+                'text-gray-200': !isDraggable,
+              }"
+              fontIcon="menu"
+            />
+          </div>
+        </section>
+      </div>
+    </div>
+  </cdk-virtual-scroll-viewport>
+  <!-- <section
     class="bg-gray-100 border border-gray-200 rounded-md p-1.5 flex flex-col gap-1.5 min-h-[45vh] max-h-[45vh] overflow-y-scroll"
     cdkDropList
     (cdkDropListDropped)="stockDrop($event)"
@@ -99,5 +152,5 @@
         </div>
       }
     }
-  </section>
+  </section> -->
 </main>

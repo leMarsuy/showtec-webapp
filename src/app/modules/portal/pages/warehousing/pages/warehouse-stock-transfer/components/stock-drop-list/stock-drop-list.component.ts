@@ -11,7 +11,7 @@ import {
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelect } from '@angular/material/select';
-import { Stock } from '@app/core/models/stock.model';
+import { StockType } from '@app/core/enums/stock-type.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import {
   debounceTime,
@@ -43,7 +43,7 @@ export class StockDropListComponent implements OnInit, OnDestroy {
   @Input() warehouseList: any = [];
   @Input() fGroup!: FormGroup;
   @Output() onCheckedStocksChanged = new EventEmitter<any>();
-  @Output() onDropStock = new EventEmitter<StockDropEventEmitted>();
+  @Output() onDropStock = new EventEmitter<TransferStock>();
 
   private warehouseStockTransferService = inject(WarehouseStockTransferService);
   private confirmation = inject(ConfirmationService);
@@ -108,12 +108,12 @@ export class StockDropListComponent implements OnInit, OnDestroy {
 
   stockDrop(event: CdkDragDrop<any>) {
     const { currentIndex, previousIndex } = event;
+    const transferStock = event.item.data;
 
     if (event.previousContainer === event.container) {
       this._reorderStocks(currentIndex, previousIndex);
     } else {
-      const dropEmit: StockDropEventEmitted = { currentIndex, previousIndex };
-      this.onDropStock.emit(dropEmit);
+      this.onDropStock.emit(transferStock);
     }
   }
 
@@ -194,12 +194,27 @@ export class StockDropListComponent implements OnInit, OnDestroy {
 
     if (searchText) {
       useList = stockList.filter(
-        (stock: Stock) =>
-          stock.model!.toLowerCase().includes(sanitizedSearchText) ||
+        (stock: TransferStock) =>
+          stock.sku!.toLowerCase().includes(sanitizedSearchText) ||
           stock.serialNumber.toLowerCase().includes(sanitizedSearchText),
       );
     }
     this.filteredStocks = useList;
+  }
+
+  setCssClassByType(stockType: string) {
+    let color = 'emerald';
+
+    switch (stockType) {
+      case StockType.DEMO:
+        color = 'sky';
+        break;
+      case StockType.SERVICE:
+        color = 'amber';
+        break;
+    }
+
+    return `text-xs font-normal text-center px-2 py-1 bg-${color}-100 border border-${color}-500 rounded-full text-${color}-700 ml-1.5`;
   }
 
   ngOnDestroy(): void {

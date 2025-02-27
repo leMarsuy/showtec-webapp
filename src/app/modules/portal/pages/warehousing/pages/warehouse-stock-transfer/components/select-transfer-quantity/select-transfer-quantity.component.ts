@@ -37,6 +37,10 @@ export class SelectTransferQuantityComponent {
 
       for (const stock of stocks) {
         const formGroup = this.fb.group({
+          _id: [{ value: stock._id, disabled: true }],
+          serialNumber: [{ value: stock.serialNumber, disabled: true }],
+          type: [{ value: stock.type, disabled: true }],
+          model: [{ value: stock.model, disabled: true }],
           quantity: [0, [Validators.max(stock.quantity), Validators.min(1)]],
         }) as FormGroup;
 
@@ -46,6 +50,10 @@ export class SelectTransferQuantityComponent {
       useStockFormControl = formArray as FormArray;
     } else {
       useStockFormControl = this.fb.group({
+        _id: [{ value: stocks._id, disabled: true }],
+        serialNumber: [{ value: stocks.serialNumber, disabled: true }],
+        type: [{ value: stocks.type, disabled: true }],
+        model: [{ value: stocks.model, disabled: true }],
         quantity: [0, [Validators.max(stocks.quantity), Validators.min(1)]],
       }) as FormGroup;
     }
@@ -80,4 +88,6 @@ export class SelectTransferQuantityComponent {
       event.preventDefault();
     }
   }
+
+  onConfirm() {}
 }

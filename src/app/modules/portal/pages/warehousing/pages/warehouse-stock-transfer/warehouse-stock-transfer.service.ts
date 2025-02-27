@@ -10,11 +10,12 @@ import { BehaviorSubject, Subject } from 'rxjs';
  * @param quantity
  */
 export interface StockTransferHistory {
-  stockId: string;
+  productId: string;
   type: StockType;
   fromWarehouseId: string;
   toWarehouseId: string;
-  quantity?: number;
+  quantity: number;
+  serialNumber: string;
 }
 
 @Injectable({

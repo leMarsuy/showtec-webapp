@@ -39,6 +39,7 @@
           [checked]="isBatchMove"
           (toggleChange)="isBatchMove = !isBatchMove"
           hideIcon
+          disabled
         />
       </div>
 
@@ -82,6 +83,23 @@
         "
         (onDropStock)="onEmitDropStock($event, formGroupA, formGroupB)"
       />
+    </div>
+
+    <div class="col-span-11">
+      <button
+        mat-button
+        [disabled]="!transferHistory.length"
+        (click)="onResetClick()"
+      >
+        Reset
+      </button>
+      <button
+        mat-flat-button
+        [disabled]="!transferHistory.length"
+        (click)="onResetClick()"
+      >
+        Save Changes
+      </button>
     </div>
   </section>
 </div>

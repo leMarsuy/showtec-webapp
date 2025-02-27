@@ -1,4 +1,5 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -33,6 +34,7 @@ import { WarehouseStockTransferService } from './warehouse-stock-transfer.servic
     MatCheckboxModule,
     MatSlideToggleModule,
     MatDialogModule,
+    ScrollingModule,
     DragDropModule,
     FormsModule,
     ReactiveFormsModule,
