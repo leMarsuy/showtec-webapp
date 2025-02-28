@@ -199,6 +199,7 @@ export class StockDropListComponent implements OnInit, OnDestroy {
           stock.serialNumber.toLowerCase().includes(sanitizedSearchText),
       );
     }
+
     this.filteredStocks = useList;
   }
 

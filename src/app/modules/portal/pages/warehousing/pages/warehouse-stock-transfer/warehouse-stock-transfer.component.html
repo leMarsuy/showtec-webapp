@@ -39,7 +39,6 @@
           [checked]="isBatchMove"
           (toggleChange)="isBatchMove = !isBatchMove"
           hideIcon
-          disabled
         />
       </div>
 
@@ -96,7 +95,7 @@
       <button
         mat-flat-button
         [disabled]="!transferHistory.length"
-        (click)="onResetClick()"
+        (click)="onSubmitClick()"
       >
         Save Changes
       </button>

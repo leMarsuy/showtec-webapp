@@ -4,16 +4,16 @@ export const mockObj = {
     stocks: [
       {
         _id: 'stock_a1b2c3',
-        serialNumber: 'SN001',
+        supplierId: 'SUP001',
         model: 'ACME (CA-EN28) CARDBOARD (5PIN VERSION)',
         scanDate: '2024-02-10',
         purchaseDate: '2024-01-15',
         purchaseCode: 1001,
         status: 'In Stock',
         type: 'Sealed',
-        supplierId: 'SUP001',
-        quantity: 3,
-        warehouseId: 'wh_1a2b3c',
+        serialNumber: 'SN001',
+        _productId: 'productId',
+        _warehouseId: 'wh_1a2b3c',
       },
       {
         _id: 'stock_d4e5f6',

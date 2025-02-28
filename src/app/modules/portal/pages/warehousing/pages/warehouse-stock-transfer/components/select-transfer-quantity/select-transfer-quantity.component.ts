@@ -30,48 +30,33 @@ export class SelectTransferQuantityComponent {
     this.fromWarehouse = fromWarehouse;
     this.toWarehouse = toWarehouse;
 
-    let useStockFormControl: any;
+    const formArray = new FormArray<any>([]);
 
-    if (this.data['isArray']) {
-      const formArray = new FormArray<any>([]);
-
-      for (const stock of stocks) {
-        const formGroup = this.fb.group({
-          _id: [{ value: stock._id, disabled: true }],
-          serialNumber: [{ value: stock.serialNumber, disabled: true }],
-          type: [{ value: stock.type, disabled: true }],
-          model: [{ value: stock.model, disabled: true }],
-          quantity: [0, [Validators.max(stock.quantity), Validators.min(1)]],
-        }) as FormGroup;
-
-        formArray.push(formGroup);
-      }
-
-      useStockFormControl = formArray as FormArray;
-    } else {
-      useStockFormControl = this.fb.group({
-        _id: [{ value: stocks._id, disabled: true }],
-        serialNumber: [{ value: stocks.serialNumber, disabled: true }],
-        type: [{ value: stocks.type, disabled: true }],
-        model: [{ value: stocks.model, disabled: true }],
-        quantity: [0, [Validators.max(stocks.quantity), Validators.min(1)]],
+    for (const stock of stocks) {
+      const formGroup = this.fb.group({
+        _id: [{ value: stock._id, disabled: true }],
+        serialNumber: [{ value: stock.serialNumber, disabled: true }],
+        type: [{ value: stock.type, disabled: true }],
+        sku: [{ value: stock.sku, disabled: true }],
+        _productId: [{ value: stock._productId, disabled: true }],
+        _warehouseId: [{ value: stock._warehouseId, disabled: true }],
+        quantity: [0, [Validators.max(stock.quantity), Validators.min(1)]],
       }) as FormGroup;
+
+      formArray.push(formGroup);
     }
 
     this.form = this.fb.group({
-      stocks: useStockFormControl,
+      stocks: formArray,
     });
   }
 
   addMinusStock(
     method: 'add' | 'minus',
     formControl: FormControl,
-    index?: number,
+    index: number,
   ) {
-    const maxValueLimit =
-      this.data['isArray'] && index !== undefined
-        ? this.data['stocks'][index]['quantity']
-        : this.data['stocks']['quantity'];
+    const maxValueLimit = this.data['stocks'][index]['quantity'];
 
     const currentValue = formControl.value;
 
@@ -89,5 +74,7 @@ export class SelectTransferQuantityComponent {
     }
   }
 
-  onConfirm() {}
+  onConfirm() {
+    this.dialogRef.close(this.form.getRawValue().stocks);
+  }
 }

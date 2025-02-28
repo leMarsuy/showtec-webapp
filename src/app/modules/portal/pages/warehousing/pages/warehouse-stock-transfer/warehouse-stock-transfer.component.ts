@@ -6,6 +6,7 @@ import { StockWarehouseState } from '@app/core/enums/warehouse.enum';
 import { Stock } from '@app/core/models/stock.model';
 import { Warehouse } from '@app/core/models/warehouse.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { WarehouseApiService } from '@app/shared/services/api/warehouse-api/warehouse-api.service';
 import { isEmpty } from '@app/shared/utils/objectUtil';
 import {
@@ -39,6 +40,7 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private confirmation = inject(ConfirmationService);
+  private snackbar = inject(SnackbarService);
   private warehouseApi = inject(WarehouseApiService);
   private dialog = inject(MatDialog);
   private warehouseStockTransferService = inject(WarehouseStockTransferService);
@@ -194,7 +196,7 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     fromFormGroup.setControl('stocks', newFromStockFormArray);
 
     const toStocksArrayRaw = toFormGroup.controls['stocks'].getRawValue();
-    toStocksArrayRaw.splice(0, 0, toBeTransferStock);
+    toStocksArrayRaw.push(toBeTransferStock);
 
     const newToStockFormArray =
       this._convertStockArrayToArrayForm(toStocksArrayRaw);
@@ -221,24 +223,15 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
     const fromWarehouse = fromFormGroup.controls['warehouse'].getRawValue();
     const toWarehouse = toFormGroup.controls['warehouse'].getRawValue();
     let useStocks = fromFormGroup.controls['checkedStocks'].getRawValue();
-    let isArray = true;
-
-    // You can only drop one item at a time
-    if (dropEvent) {
-      // useStocks =
-      //   fromFormGroup.controls['stocks'].value[dropEvent.previousIndex];
-      isArray = false;
-    }
 
     const afterClosed$ = this.dialog
       .open(SelectTransferQuantityComponent, {
         data: {
-          stocks: useStocks,
+          stocks: dropEvent ? [dropEvent] : useStocks,
           warehouse: {
             fromWarehouse,
             toWarehouse,
           },
-          isArray,
         },
         autoFocus: false,
         disableClose: true,
@@ -247,8 +240,68 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
       })
       .afterClosed();
 
-    const dialogResponse = await lastValueFrom(afterClosed$);
-    if (!dialogResponse) return;
+    const stocksFromDialog = await lastValueFrom(afterClosed$);
+    if (!stocksFromDialog) return;
+
+    const fromStocksFormArr = fromFormGroup.get('stocks') as FormArray;
+    const fromStocksArrRaw = fromStocksFormArr.getRawValue();
+    const toStocksFormArr = toFormGroup.get('stocks') as FormArray;
+    const toStocksArrRaw = toStocksFormArr.getRawValue();
+
+    for (const toMoveStock of stocksFromDialog) {
+      const fromStockIndex = fromStocksArrRaw.findIndex(
+        (stock: any) => stock._id === toMoveStock._id,
+      );
+
+      if (fromStockIndex === -1) {
+        console.error(toMoveStock);
+        throw new Error('Stock not found');
+      }
+
+      const fromStock = fromStocksArrRaw[fromStockIndex];
+
+      const remainingQty = fromStock.quantity - toMoveStock.quantity;
+      if (remainingQty === 0) {
+        fromStocksFormArr.removeAt(fromStockIndex);
+      } else {
+        fromStocksFormArr
+          .at(fromStockIndex)
+          ?.get('quantity')
+          ?.setValue(remainingQty);
+      }
+
+      const toStockIndex = toStocksArrRaw.findIndex(
+        (stock: any) => stock._id === toMoveStock._id,
+      );
+
+      if (toStockIndex === -1) {
+        const stockFormGroup = this.fb.group({
+          _id: toMoveStock['_id'],
+          serialNumber: toMoveStock['serialNumber'],
+          _productId: toMoveStock['_productId'],
+          type: toMoveStock['type'],
+          sku: toMoveStock['sku'],
+          quantity: toMoveStock['quantity'],
+          _warehouseId: '',
+        });
+        toStocksFormArr.push(stockFormGroup);
+      } else {
+        const existingStock = toStocksArrRaw[toStockIndex];
+
+        toStocksFormArr
+          .at(toStockIndex)
+          ?.get('quantity')
+          ?.setValue(existingStock.quantity + toMoveStock.quantity);
+      }
+
+      toStocksFormArr
+        .at(toStockIndex)
+        ?.get('_warehouseId')
+        ?.setValue(toWarehouse._id);
+    }
+
+    fromFormGroup.controls['checkedStocks'].setValue([]);
+    this._refreshStockList();
   }
 
   shouldTransfer(fromFormGroup: FormGroup, toFormGroup: FormGroup) {
@@ -343,8 +396,36 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
       fromFormGroup.setControl('stocks', remainingFormArray);
     }
     fromFormGroup.controls['checkedStocks'].setValue([]);
-
     this._refreshStockList();
+  }
+
+  onSubmitClick() {
+    const changedStocks = [
+      ...this._getChangedStocksFromWhForm(this.formGroupA),
+      ...this._getChangedStocksFromWhForm(this.formGroupB),
+    ];
+
+    //api call for warehouse stock transfer
+  }
+
+  private _getChangedStocksFromWhForm(formGroup: FormGroup) {
+    const { stocks, immutableStockIdMap } = formGroup.getRawValue();
+
+    const changedStocks = [];
+
+    for (const stock of stocks) {
+      const immutableStock = immutableStockIdMap[stock._id];
+
+      if (stock.quantity !== immutableStock.quantity && stock.quantity !== 0) {
+        changedStocks.push({
+          ...stock,
+          _id: undefined,
+          sku: undefined,
+        });
+      }
+    }
+
+    return changedStocks;
   }
 
   private async _populateStocksFromSource(formGroup: FormGroup) {
@@ -370,8 +451,14 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
       warehouseStocks as any[],
     );
 
+    const immutableStockIdMap = formArray.getRawValue().reduce((acc, stock) => {
+      acc[stock._id] = stock;
+      return acc;
+    }, {});
+
     formGroup.setControl('stocks', formArray);
     formGroup.setControl('immutableStocks', formArray);
+    formGroup.addControl('immutableStockIdMap', immutableStockIdMap);
   }
 
   private _validateTransferHistory(newHistory: StockTransferHistory) {
@@ -382,8 +469,6 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
         history.type === newHistory.type &&
         history.serialNumber === newHistory.serialNumber,
     );
-
-    console.log(foundStockIdHistoryIndex);
 
     if (foundStockIdHistoryIndex < 0) {
       this.transferHistory.push(newHistory);
@@ -411,10 +496,20 @@ export class WarehouseStockTransferComponent implements OnInit, OnDestroy {
   private _convertStockArrayToArrayForm(
     array: Record<string, any>[],
   ): FormArray {
+    const existingIds: string[] = [];
+
     const formArray = new FormArray([] as any);
     for (const stock of array) {
+      const id = crypto.randomUUID();
+
+      if (existingIds.includes(id)) {
+        //TODO: Handle duplicate id, show modal, refresh page
+        this.snackbar.openErrorSnackbar('Please refresh the page');
+        throw new Error('Warehouse Duplicate id found');
+      }
+
       const stockFormGroup = new FormGroup({
-        _id: new FormControl(crypto.randomUUID()),
+        _id: new FormControl(id),
         serialNumber: new FormControl(stock['serialNumber']),
         _productId: new FormControl(stock['_productId']),
         type: new FormControl(stock['type']),
