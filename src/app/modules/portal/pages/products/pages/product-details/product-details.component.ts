@@ -113,6 +113,14 @@ export class ProductDetailsComponent implements OnInit {
           value: StockStatus.FOR_DELIVERY,
         },
         {
+          color: Color.INFO,
+          value: StockStatus.RELEASED,
+        },
+        {
+          color: Color.WARNING,
+          value: StockStatus.SOLD,
+        },
+        {
           color: Color.ERROR,
           value: StockStatus.RETURNED,
         },
