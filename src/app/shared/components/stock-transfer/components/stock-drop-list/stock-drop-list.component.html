@@ -71,6 +71,7 @@
     itemSize="62"
     (cdkDropListDropped)="drop($event)"
     [cdkDropListDisabled]="!selectedWarehouse()"
+    [cdkDropListSortingDisabled]="true"
     cdkDropList
   >
     <div
@@ -87,6 +88,7 @@
       >
         <section class="flex items-center pb-1 gap-1.5">
           <mat-checkbox
+            [disabled]="!otherSelectedWarehouse()"
             [checked]="warehouseState.selected.includes(stock._id)"
             (change)="onCheckboxClick($event, stock._id)"
           />
@@ -109,7 +111,12 @@
           <div>
             {{ stock.type }}
           </div>
-          <div class="flex items-center cursor-grab px-4 h-full" cdkDragHandle>
+          <div
+            class="flex items-center px-4 h-full"
+            [class.cursor-grab]="otherSelectedWarehouse()"
+            cdkDragHandle
+            [cdkDragHandleDisabled]="!otherSelectedWarehouse()"
+          >
             <mat-icon fontIcon="menu" />
           </div>
         </section>
