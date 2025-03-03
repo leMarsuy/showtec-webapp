@@ -58,10 +58,14 @@
       <div class="flex items-center">
         <button
           class="text-sm underline text-left"
-          [disabled]="!otherSelectedWarehouse()"
+          [disabled]="
+            !otherSelectedWarehouse() || !warehouseState.filtered?.length
+          "
           [ngClass]="{
-            'text-gray-400 cursor-not-allowed': !otherSelectedWarehouse(),
-            'text-blue-500': otherSelectedWarehouse(),
+            'text-gray-400 cursor-not-allowed':
+              !otherSelectedWarehouse() || !warehouseState.filtered?.length,
+            'text-blue-500':
+              otherSelectedWarehouse() && warehouseState.filtered?.length,
           }"
           matRipple
           (click)="
@@ -70,7 +74,11 @@
               : selectAllClick()
           "
         >
-          {{ warehouseState.selected.length ? "Deselect All" : "Select All" }}
+          {{
+            warehouseState.filtered?.length && selectedInFilter.length
+              ? "Deselect All"
+              : "Select All"
+          }}
         </button>
 
         <div class="border-r border-gray-500 ml-1.5 mr-2 h-4">&nbsp;</div>

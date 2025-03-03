@@ -25,6 +25,7 @@ import { Warehouse } from '@app/core/models/warehouse.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { WarehouseApiService } from '@app/shared/services/api/warehouse-api/warehouse-api.service';
 import { EMPTY, Subject, switchMap, takeUntil } from 'rxjs';
+import { WarehouseStock } from '../../stock-transfer.component';
 import { WarehouseStockTransferService } from '../../warehouse-stock-transfer.service';
 
 @Component({
@@ -68,6 +69,14 @@ export class StockDropListComponent implements OnDestroy {
   }
 
   searchKeyword = '';
+
+  get selectedInFilter() {
+    return this.warehouseState.selected.filter((selected: string) =>
+      this.warehouseState.filtered.find(
+        (stock: WarehouseStock) => stock._id === selected,
+      ),
+    );
+  }
 
   private _destroyed$ = new Subject<void>();
   private _subCallback = {
@@ -216,7 +225,12 @@ export class StockDropListComponent implements OnDestroy {
   }
 
   deselectAllClick() {
-    this.warehouseState.selected = [];
+    this.warehouseState.selected = this.warehouseState.selected.filter(
+      (selected: string) =>
+        !this.warehouseState.filtered.find(
+          (stock: any) => stock._id === selected,
+        ),
+    );
   }
 
   ngOnDestroy(): void {
