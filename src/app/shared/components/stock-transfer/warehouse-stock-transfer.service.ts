@@ -62,6 +62,7 @@ export class WarehouseStockTransferService {
   }
 
   setChangedStocks() {
+    const changedStocks = [];
     for (const warehouseName of ['A', 'B']) {
       const warehouseState = this.warehouseState[warehouseName];
 
@@ -80,7 +81,7 @@ export class WarehouseStockTransferService {
           !idMap[stockId] ||
           (idMap[stockId] && idMap[stockId].quantity !== stock.quantity)
         ) {
-          this.changedStocks.push({
+          changedStocks.push({
             _productId: stock._productId,
             _warehouseId:
               stock._warehouseId === 'none' ? undefined : stock._warehouseId,
@@ -91,5 +92,7 @@ export class WarehouseStockTransferService {
         }
       }
     }
+
+    this.changedStocks = changedStocks;
   }
 }

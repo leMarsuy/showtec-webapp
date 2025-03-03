@@ -68,7 +68,7 @@ export class StockTransferComponent {
       next: (response) => {
         response.records.unshift({
           _id: 'none',
-          name: 'No Warehouse',
+          name: 'NO WAREHOUSE',
         } as Warehouse);
 
         this.warehouses.set(response.records);
