@@ -52,7 +52,14 @@ export class SelectTransferQuantityComponent implements OnDestroy {
         sku: [{ value: stock.sku, disabled: true }],
         _productId: [{ value: stock._productId, disabled: true }],
         _warehouseId: [{ value: stock._warehouseId, disabled: true }],
-        quantity: [0, [Validators.max(stock.quantity), Validators.min(1)]],
+        quantity: [
+          stock.quantity === 1 ? 1 : undefined,
+          [
+            Validators.max(stock.quantity),
+            Validators.min(1),
+            Validators.required,
+          ],
+        ],
         _stockIds: [{ value: stock._stockIds, disabled: true }],
       }) as FormGroup;
 

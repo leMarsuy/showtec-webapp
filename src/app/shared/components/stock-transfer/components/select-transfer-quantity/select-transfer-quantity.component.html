@@ -58,6 +58,7 @@
               $any(form).controls['stocks'].controls[$index].get('quantity')
             "
             #quantity
+            [maxLength]="data['stocks'][$index].quantity.toString().length"
             type="number"
             (keydown)="restrictNumericInput($event)"
             class="min-w-[3rem] w-[3rem] h-[2rem] border border-gray-600 rounded pl-1.5 py-1"
