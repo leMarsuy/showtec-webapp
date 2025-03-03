@@ -219,17 +219,22 @@ export class StockDropListComponent implements OnDestroy {
   }
 
   selectAllClick() {
-    this.warehouseState.selected = this.warehouseState.filtered.map(
-      (stock: any) => stock._id,
+    const newSelected = this.warehouseState.filtered.map(
+      (stock: WarehouseStock) => stock._id,
     );
+
+    this.warehouseState.selected = [
+      ...new Set([...this.warehouseState.selected, ...newSelected]),
+    ];
   }
 
   deselectAllClick() {
+    const toDeselect = this.warehouseState.filtered.map(
+      (stock: WarehouseStock) => stock._id,
+    );
+
     this.warehouseState.selected = this.warehouseState.selected.filter(
-      (selected: string) =>
-        !this.warehouseState.filtered.find(
-          (stock: any) => stock._id === selected,
-        ),
+      (selected: string) => !toDeselect.includes(selected),
     );
   }
 

@@ -69,7 +69,7 @@
           }"
           matRipple
           (click)="
-            warehouseState.selected.length
+            warehouseState.filtered?.length && selectedInFilter.length
               ? deselectAllClick()
               : selectAllClick()
           "
