@@ -1,0 +1,12 @@
+<div class="px-4 py-4">
+  <app-content-header
+    icon="settings"
+    label="WAREHOUSING"
+    [actions]="actions"
+    (actionEmitter)="actionEvent($event)"
+  >
+  </app-content-header>
+</div>
+<div class="px-4">
+  <app-stock-transfer />
+</div>

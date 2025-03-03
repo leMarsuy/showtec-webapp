@@ -5,4 +5,5 @@ export interface QueryParams {
   sort?: string;
   date?: any;
   status?: any;
+  [key: string]: any;
 }

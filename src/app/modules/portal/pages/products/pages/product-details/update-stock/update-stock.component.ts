@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
@@ -6,19 +7,18 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
-import { Stock } from '@core/models/stock.model';
-import { WarehouseApiService } from '@shared/services/api/warehouse-api/warehouse-api.service';
-import { SupplierApiService } from '@shared/services/api/supplier-api/supplier-api.service';
-import { Warehouse } from '@core/models/warehouse.model';
-import { Supplier } from '@core/models/supplier.model';
-import { map, Observable, startWith } from 'rxjs';
-import { HttpGetResponse } from '@core/interfaces/http-get-response.interface';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { STOCK_TYPES, StockType } from '@app/core/enums/stock-type.enum';
+import { HttpGetResponse } from '@core/interfaces/http-get-response.interface';
+import { Stock } from '@core/models/stock.model';
+import { Supplier } from '@core/models/supplier.model';
+import { Warehouse } from '@core/models/warehouse.model';
+import { SnackbarService } from '@shared/components/snackbar/snackbar.service';
+import { ProductApiService } from '@shared/services/api/product-api/product-api.service';
+import { SupplierApiService } from '@shared/services/api/supplier-api/supplier-api.service';
+import { WarehouseApiService } from '@shared/services/api/warehouse-api/warehouse-api.service';
+import { map, Observable, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-update-stock',
@@ -206,12 +206,11 @@ export class UpdateStockComponent implements AfterViewInit {
     });
   }
 
-  displayFn(_id: string): string {
-    // if (!_id)
-    return _id;
-    // var entity =
-    //   this.suppliers.find((o) => o._id == _id) ||
-    //   this.warehouses.find((o) => o._id == _id);
-    // return entity?.name || '';
+  displayWarehouse(warehouse: Warehouse): string {
+    return warehouse.name;
+  }
+
+  displaySupplier(supplier: Supplier): string {
+    return supplier.name;
   }
 }

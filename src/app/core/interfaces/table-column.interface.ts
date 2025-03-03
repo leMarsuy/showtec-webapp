@@ -26,4 +26,5 @@ export interface TableColumn {
   colorCodes?: ColorCode[];
   align?: Alignment;
   options?: Array<string | number>;
+  valueIfEmpty?: string;
 }

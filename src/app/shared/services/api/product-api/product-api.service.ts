@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpService } from '../../http/http.service';
-import { environment } from '../../../../../environments/environment';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { Product } from '@core/models/product.model';
 import { Stock } from '@core/models/stock.model';
+import { environment } from '../../../../../environments/environment';
+import { HttpService } from '../../http/http.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,13 +23,18 @@ export class ProductApiService {
 
   getProducts(query?: QueryParams) {
     var sanitizedQuery: QueryParams = {};
-    if (query)
+    if (query) {
       sanitizedQuery = {
         pageIndex: query.pageIndex || 0,
         pageSize: query.pageSize || 0,
         sort: query.sort || '',
         searchText: query.searchText || '',
       };
+
+      if (query['_warehouseId']) {
+        sanitizedQuery['_warehouseId'] = query['_warehouseId'];
+      }
+    }
 
     return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
   }

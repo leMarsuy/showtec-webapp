@@ -29,6 +29,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'warehousing',
+        loadChildren: () =>
+          import('./pages/warehousing/warehousing.module').then(
+            (m) => m.WarehousingModule,
+          ),
+      },
+      {
         path: 'purchase-orders',
         loadChildren: () =>
           import('./pages/purchase-order/purchase-order.module').then(

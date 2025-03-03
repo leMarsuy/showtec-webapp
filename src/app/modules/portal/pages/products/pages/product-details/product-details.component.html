@@ -1,77 +1,104 @@
-@if(product){
-<div class="flex gap-4">
-  <div class="rounded-xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16 flex-none">
-    <div>
-      <div class="flex mb-2">
-        <button mat-button [routerLink]="'../'">
-          <mat-icon>arrow_back</mat-icon>Back to Product List
+@if (product) {
+  <div class="flex gap-4">
+    <div
+      class="rounded-xl bg-white p-4 w-[24rem] text-gray-900 h-fit sticky top-16 flex-none"
+    >
+      <div>
+        <div class="flex mb-2">
+          <button mat-button [routerLink]="'../'">
+            <mat-icon>arrow_back</mat-icon>Back to Product List
+          </button>
+        </div>
+        <div class="grid grid-cols-2 gap-2 w-full">
+          <div
+            class="col-span-2 p-4 bg-amber-100 rounded-xl border-2 border-amber-500"
+          >
+            <p>
+              <b>{{ product.brand }} {{ product.model }} </b>
+            </p>
+          </div>
+
+          <div class="col-span-2 p-4 rounded-xl border-2">
+            <small class="text-gray-500 mb-2">Expected Orders</small>
+            <p>{{ product.$$expectedOrders?.count || 0 }}</p>
+          </div>
+
+          <div class="col-span-2 p-4 rounded-xl border-2">
+            <small class="text-gray-500 mb-2">Total Sale as of Today</small>
+            <p>
+              PHP
+              {{ product.$$expectedOrders?.saleAmount || 0 | number: "0.2" }}
+            </p>
+          </div>
+
+          <div class="col-span-2 p-4 rounded-xl border-2">
+            <small class="text-gray-500 mb-2">In Stock</small>
+            <p>{{ product._$stockSummary?.["In Stock"] }}</p>
+          </div>
+
+          <div class="col-span-2 p-4 rounded-xl border-2">
+            <small class="text-gray-500 mb-2">With DR</small>
+            <p>
+              {{ product._$stockSummary?.["For Delivery"] }}
+            </p>
+          </div>
+
+          <div class="col-span-2 p-4 rounded-xl border-2">
+            <small class="text-gray-500 mb-2">SRP</small>
+            <p>{{ product.price.amount | number }}</p>
+          </div>
+        </div>
+        <div class="flex pt-4 justify-end">
+          <button mat-raised-button (click)="editProduct()">
+            Edit Details
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="rounded-xl bg-white p-4 w-full text-gray-900 flex flex-col">
+      <div class="flex gap-4 mb-4 justify-between">
+        <div class="flex gap-2">
+          @for (status of STOCK_STATUSES; track $index) {
+            @if (selectedStockStatus == status) {
+              <button mat-flat-button>
+                {{ status }}
+              </button>
+            } @else {
+              <button mat-stroked-button (click)="filterTabClick(status)">
+                {{ status }}
+              </button>
+            }
+          }
+        </div>
+        <button mat-flat-button color="primary" (click)="openNewStock()">
+          + New Stock
         </button>
       </div>
-      <div class="grid grid-cols-2 gap-2 w-full">
-        <div class="col-span-2 p-4 bg-amber-100 rounded-xl border-2 border-amber-500">
-          <p>
-            <b>{{ product.brand }} {{ product.model }} </b>
-          </p>
-        </div>
 
-        <div class="col-span-2 p-4 rounded-xl border-2">
-          <small class="text-gray-500 mb-2">Expected Orders</small>
-          <p>{{ product.$$expectedOrders?.count || 0 }}</p>
-        </div>
+      <mat-form-field appearance="outline" class="w-1/4">
+        <mat-label>Warehouse</mat-label>
+        <mat-select
+          [(ngModel)]="warehouseId"
+          (selectionChange)="warehouseFilterchange($event)"
+        >
+          @for (warehouse of warehouses; track warehouse._id) {
+            <mat-option [value]="warehouse._id">{{
+              warehouse.name
+            }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
-        <div class="col-span-2 p-4 rounded-xl border-2">
-          <small class="text-gray-500 mb-2">Total Sale as of Today</small>
-          <p>
-            PHP {{ product.$$expectedOrders?.saleAmount || 0 | number : "0.2" }}
-          </p>
-        </div>
-
-        <div class="col-span-2 p-4 rounded-xl border-2">
-          <small class="text-gray-500 mb-2">In Stock</small>
-          <p>{{ product._$stockSummary?.["In Stock"] }}</p>
-        </div>
-
-        <div class="col-span-2 p-4 rounded-xl border-2">
-          <small class="text-gray-500 mb-2">With DR</small>
-          <p>
-            {{ product._$stockSummary?.["For Delivery"] }}
-          </p>
-        </div>
-
-        <div class="col-span-2 p-4 rounded-xl border-2">
-          <small class="text-gray-500 mb-2">SRP</small>
-          <p>{{ product.price.amount | number }}</p>
-        </div>
-      </div>
-      <div class="flex pt-4 justify-end">
-        <button mat-raised-button (click)="editProduct()">Edit Details</button>
+      <div class="w-full">
+        <app-table
+          [dataSource]="filteredStocks"
+          [columns]="columns"
+          [page]="page"
+          (pageEmitter)="pageEvent($event)"
+          (actionEmitter)="actionEvent($event)"
+        >
+        </app-table>
       </div>
     </div>
   </div>
-  <div class="rounded-xl bg-white p-4 w-full text-gray-900">
-    <div class="flex gap-4 mb-4 justify-between">
-      <div class="flex gap-2">
-        @for (status of STOCK_STATUSES; track $index) { @if( selectedStockStatus
-        == status) {
-        <button mat-flat-button>
-          {{ status }}
-        </button>
-        } @else{
-        <button mat-stroked-button (click)="filterStocks(status)">
-          {{ status }}
-        </button>
-
-        } }
-      </div>
-      <button mat-flat-button color="primary" (click)="openNewStock()">
-        + New Stock
-      </button>
-    </div>
-    <div class="w-full">
-      <app-table [dataSource]="filteredStocks" [columns]="columns" [page]="page" (pageEmitter)="pageEvent($event)"
-        (actionEmitter)="actionEvent($event)">
-      </app-table>
-    </div>
-  </div>
-</div>
 }

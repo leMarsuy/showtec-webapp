@@ -5,13 +5,14 @@ export class Stock {
   _id: string;
   serialNumber: string;
   _supplierId?: string;
-  _warehouseId?: string;
+  _warehouseId: any;
   purchaseDate?: Date;
   purchaseCost?: Number;
   scanDate?: Date;
   type: StockType;
   remarks?: string;
   status: StockStatus;
+  model?: string;
 
   constructor(model: Stock) {
     this._id = model._id;
@@ -24,5 +25,6 @@ export class Stock {
     this.type = model.type;
     this.remarks = model.remarks;
     this.status = model.status;
+    this.model = model.model;
   }
 }
