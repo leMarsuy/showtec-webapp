@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -15,6 +15,8 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { Subject, takeUntil } from 'rxjs';
+import { WarehouseStock } from '../../stock-transfer.component';
 
 @Component({
   selector: 'app-select-transfer-quantity',
@@ -29,13 +31,15 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
   ],
 })
-export class SelectTransferQuantityComponent {
+export class SelectTransferQuantityComponent implements OnDestroy {
   private fb = inject(FormBuilder);
 
   public data = inject<Record<string, any>>(MAT_DIALOG_DATA);
   public dialogRef = inject(MatDialogRef<SelectTransferQuantityComponent>);
 
   form!: FormGroup;
+
+  private _destroyed$ = new Subject<void>();
 
   constructor() {
     const formArray = new FormArray<any>([]);
@@ -58,6 +62,32 @@ export class SelectTransferQuantityComponent {
     this.form = this.fb.group({
       stocks: formArray,
     });
+
+    this.form
+      .get('stocks')
+      ?.valueChanges.pipe(takeUntil(this._destroyed$))
+      .subscribe(() => {
+        const stocks = this.form.getRawValue().stocks;
+        for (const stock of stocks) {
+          if (!stock.quantity) {
+            continue;
+          }
+
+          const stockIndex = this.data['stocks'].findIndex(
+            (s: WarehouseStock) => s._id === stock._id,
+          );
+
+          const stockQuantity = this.data['stocks'][stockIndex]['quantity'];
+
+          if (stock.quantity > stockQuantity || stock.quantity < 1) {
+            this.form
+              .get('stocks')
+              ?.get(String(stockIndex))
+              ?.get('quantity')
+              ?.patchValue(stockQuantity);
+          }
+        }
+      });
   }
 
   addMinusStock(
@@ -85,5 +115,10 @@ export class SelectTransferQuantityComponent {
 
   onConfirm() {
     this.dialogRef.close(this.form.getRawValue().stocks);
+  }
+
+  ngOnDestroy(): void {
+    this._destroyed$.next();
+    this._destroyed$.complete();
   }
 }
