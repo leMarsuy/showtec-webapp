@@ -54,14 +54,35 @@
     }
   </div>
   @if (selectedWarehouse()) {
-    <div class="flex items-center">
-      <div class="text-sm text-gray-500">
-        {{ warehouseState.selected.length }} selected item(s)
+    <div class="flex flex-col">
+      <div class="flex items-center">
+        <button
+          class="text-sm underline text-left"
+          [disabled]="!otherSelectedWarehouse()"
+          [ngClass]="{
+            'text-gray-400 cursor-not-allowed': !otherSelectedWarehouse(),
+            'text-blue-500': otherSelectedWarehouse(),
+          }"
+          matRipple
+          (click)="
+            warehouseState.selected.length
+              ? deselectAllClick()
+              : selectAllClick()
+          "
+        >
+          {{ warehouseState.selected.length ? "Deselect All" : "Select All" }}
+        </button>
+
+        <div class="border-r border-gray-500 ml-1.5 mr-2 h-4">&nbsp;</div>
+
+        <div class="text-sm text-gray-500">
+          {{ warehouseState.selected.length }} selected item(s)
+        </div>
+        <div class="text-sm text-gray-500 ml-auto">
+          {{ warehouseState.filtered?.length }} item(s)
+        </div>
+        <div class="flex items-center gap-1.5"></div>
       </div>
-      <div class="text-sm text-gray-500 ml-auto">
-        {{ warehouseState.filtered?.length }} item(s)
-      </div>
-      <div class="flex items-center gap-1.5"></div>
     </div>
   }
   <cdk-virtual-scroll-viewport

@@ -16,6 +16,7 @@ import {
   MatCheckboxChange,
   MatCheckboxModule,
 } from '@angular/material/checkbox';
+import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -39,6 +40,7 @@ import { WarehouseStockTransferService } from '../../warehouse-stock-transfer.se
     MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
+    MatRippleModule,
   ],
   templateUrl: './stock-drop-list.component.html',
   styleUrl: './stock-drop-list.component.scss',
@@ -207,7 +209,15 @@ export class StockDropListComponent implements OnDestroy {
     return item._id;
   }
 
-  openChangeWhConfirmation(selectRef: MatSelect) {}
+  selectAllClick() {
+    this.warehouseState.selected = this.warehouseState.filtered.map(
+      (stock: any) => stock._id,
+    );
+  }
+
+  deselectAllClick() {
+    this.warehouseState.selected = [];
+  }
 
   ngOnDestroy(): void {
     this._destroyed$.next();
