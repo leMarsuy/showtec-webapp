@@ -16,12 +16,15 @@ import { UpdateFieldComponent } from './update-field/update-field.component';
 import { UpdateStockComponent } from './update-stock/update-stock.component';
 
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatSelectChange } from '@angular/material/select';
 import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Alignment } from '@app/core/enums/align.enum';
 import { StockType } from '@app/core/enums/stock-type.enum';
 import { FormField } from '@app/core/interfaces/form-field.interface';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
+import { Warehouse } from '@app/core/models/warehouse.model';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { WarehouseApiService } from '@app/shared/services/api/warehouse-api/warehouse-api.service';
 import { EditProductComponent } from '../../edit-product/edit-product.component';
 import { EditStockComponent } from './edit-stock/edit-stock.component';
 import { OutdeliverySummaryComponent } from './outdelivery-summary/outdelivery-summary.component';
@@ -74,6 +77,12 @@ export class ProductDetailsComponent implements OnInit {
       label: 'S/N',
       dotNotationPath: 'serialNumber',
       type: ColumnType.STRING,
+    },
+    {
+      label: 'Warehouse',
+      dotNotationPath: '_warehouseId.name',
+      type: ColumnType.STRING,
+      valueIfEmpty: '-',
     },
     {
       label: 'Stock Age',
@@ -148,6 +157,9 @@ export class ProductDetailsComponent implements OnInit {
     },
   ];
 
+  warehouses: Warehouse[] = [];
+  warehouseId = 'all';
+
   constructor(
     private productApi: ProductApiService,
     private activatedRoute: ActivatedRoute,
@@ -155,10 +167,33 @@ export class ProductDetailsComponent implements OnInit {
     private snackbarService: SnackbarService,
     private dialog: MatDialog,
     private confirmation: ConfirmationService,
+    private warehouseApiService: WarehouseApiService,
   ) {
     activatedRoute.params.pipe(map((p) => p['_id'])).subscribe((_id) => {
       this._id = _id;
       this.getProductById();
+    });
+
+    this.warehouseApiService.getWarehouses().subscribe({
+      next: (response) => {
+        const otherOpts = [
+          {
+            _id: 'all',
+            name: 'ALL',
+          },
+          {
+            _id: 'none',
+            name: 'NO WAREHOUSE',
+          },
+        ] as Warehouse[];
+
+        response.records.unshift(...otherOpts);
+        this.warehouses = response.records;
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error(err);
+        this.snackbarService.openErrorSnackbar(err.error.message);
+      },
     });
   }
 
@@ -174,7 +209,8 @@ export class ProductDetailsComponent implements OnInit {
             return -1;
           }) || [];
         this.page.length = this.product.stocks.length;
-        this.filterStocks('All');
+        this.selectedStockStatus = 'All';
+        this._filterStocks();
       },
       error: (err) => {
         this.snackbarService.openErrorSnackbar(
@@ -197,6 +233,11 @@ export class ProductDetailsComponent implements OnInit {
     ];
   }
 
+  warehouseFilterchange(event: MatSelectChange) {
+    this.warehouseId = event.value;
+    this._filterStocks();
+  }
+
   actionEvent(e: any) {
     const { action } = e.action;
     const stock = e.element;
@@ -211,15 +252,9 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
 
-  filterStocks(status: string) {
+  filterTabClick(status: string) {
     this.selectedStockStatus = status;
-    if (this.selectedStockStatus != 'All')
-      this.filteredStocks = [
-        ...this.product.stocks.filter(
-          (o) => o.status === this.selectedStockStatus,
-        ),
-      ];
-    else this.filteredStocks = [...this.product.stocks];
+    this._filterStocks();
   }
 
   openNewStock() {
@@ -395,5 +430,35 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe((res) => {
         if (res) this.getProductById();
       });
+  }
+
+  private _filterStocks() {
+    this.filteredStocks = [
+      ...this.product.stocks.filter((o) => {
+        const status =
+          this.selectedStockStatus === 'All' ? '' : this.selectedStockStatus;
+        const warehouseId = this.warehouseId === 'all' ? '' : this.warehouseId;
+
+        if (status && warehouseId) {
+          if (warehouseId === 'none') {
+            return o._warehouseId === undefined && o.status === status;
+          }
+          return o._warehouseId?._id === warehouseId && o.status === status;
+        }
+
+        if (status) {
+          return o.status === status;
+        }
+
+        if (warehouseId) {
+          if (warehouseId === 'none') {
+            return o._warehouseId === undefined;
+          }
+          return o._warehouseId?._id === warehouseId;
+        }
+
+        return true;
+      }),
+    ];
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { WarehouseStockHistory } from '@app/core/models/warehouse-stock-history';
 import { QueryParams } from '@core/interfaces/query-params.interface';
 import { Warehouse } from '@core/models/warehouse.model';
 import { environment } from '../../../../../environments/environment';
@@ -25,7 +26,10 @@ export class WarehouseApiService {
         sort: query.sort,
         searchText: query.searchText,
       };
-    return this.httpService.get(`${this.apiPrefix}`, sanitizedQuery);
+    return this.httpService.get<{
+      records: Warehouse[];
+      total: number;
+    }>(`${this.apiPrefix}`, sanitizedQuery);
   }
 
   getWarehouseById(_id: string) {
@@ -37,10 +41,27 @@ export class WarehouseApiService {
   }
 
   getAllStocks() {
-    return this.httpService.get(`${this.apiPrefix}/all-stocks`);
+    return this.httpService.get<{
+      records: unknown[];
+      total: number;
+    }>(`${this.apiPrefix}/all-stocks`);
   }
 
   getWarehouseAllStocksById(warehouseId: string) {
-    return this.httpService.get(`${this.apiPrefix}/${warehouseId}/stocks`);
+    return this.httpService.get<{
+      records: unknown[];
+      total: number;
+    }>(`${this.apiPrefix}/${warehouseId}/stocks`);
+  }
+
+  transferStocksWarehouse(payload: unknown) {
+    return this.httpService.patch(`${this.apiPrefix}/stocks`, payload);
+  }
+
+  getWarehouseStockHistories(query: any) {
+    return this.httpService.get<{
+      records: WarehouseStockHistory[];
+      total: number;
+    }>(`${this.apiPrefix}/histories`, query);
   }
 }

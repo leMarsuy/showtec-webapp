@@ -5,7 +5,7 @@ export class Stock {
   _id: string;
   serialNumber: string;
   _supplierId?: string;
-  _warehouseId?: string;
+  _warehouseId: any;
   purchaseDate?: Date;
   purchaseCost?: Number;
   scanDate?: Date;

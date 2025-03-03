@@ -1,17 +1,33 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-select-transfer-quantity',
   templateUrl: './select-transfer-quantity.component.html',
   styleUrl: './select-transfer-quantity.component.scss',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    MatIconModule,
+    MatDialogModule,
+    MatButtonModule,
+    CommonModule,
+  ],
 })
 export class SelectTransferQuantityComponent {
   private fb = inject(FormBuilder);
@@ -20,19 +36,11 @@ export class SelectTransferQuantityComponent {
   public dialogRef = inject(MatDialogRef<SelectTransferQuantityComponent>);
 
   form!: FormGroup;
-  fromWarehouse!: any;
-  toWarehouse!: any;
 
   constructor() {
-    const stocks = this.data['stocks'];
-    const { fromWarehouse, toWarehouse } = this.data['warehouse'];
-
-    this.fromWarehouse = fromWarehouse;
-    this.toWarehouse = toWarehouse;
-
     const formArray = new FormArray<any>([]);
 
-    for (const stock of stocks) {
+    for (const stock of this.data['stocks']) {
       const formGroup = this.fb.group({
         _id: [{ value: stock._id, disabled: true }],
         serialNumber: [{ value: stock.serialNumber, disabled: true }],
@@ -41,6 +49,7 @@ export class SelectTransferQuantityComponent {
         _productId: [{ value: stock._productId, disabled: true }],
         _warehouseId: [{ value: stock._warehouseId, disabled: true }],
         quantity: [0, [Validators.max(stock.quantity), Validators.min(1)]],
+        _stockIds: [{ value: stock._stockIds, disabled: true }],
       }) as FormGroup;
 
       formArray.push(formGroup);

@@ -2,8 +2,13 @@
 <section mat-dialog-content>
   <p class="text-md">
     Transferring stocks from
-    <span class="font-medium text-sky-500">{{ fromWarehouse.name }}</span> to
-    <span class="font-medium text-sky-500">{{ toWarehouse.name }}</span>
+    <span class="font-medium text-sky-500">{{
+      data["sourceWarehouse"].name
+    }}</span>
+    to
+    <span class="font-medium text-sky-500">{{
+      data["destinationWarehouse"].name
+    }}</span>
   </p>
 
   <div

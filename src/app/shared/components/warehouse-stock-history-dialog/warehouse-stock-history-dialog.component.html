@@ -1,0 +1,85 @@
+<div mat-dialog-title class="border-b border-b-gray-200">
+  <span>Transfer History</span>
+  <button
+    matRipple
+    mat-icon-button
+    (click)="closeDialog()"
+    class="float-right mt-4 w-10 h-10 rounded-full"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="flex flex-col">
+  <div class="grid grid-cols-3 gap-6 mx-6 mt-3" [formGroup]="formGroup">
+    <div class="col-span relative">
+      <mat-form-field appearance="outline" class="w-full">
+        <input
+          matInput
+          placeholder="Search SKU | Model"
+          formControlName="search"
+          (keyup.enter)="searchClick()"
+        />
+        <mat-icon
+          matPrefix
+          class="cursor-pointer"
+          fontIcon="close"
+          (click)="formGroup.get('search')?.reset(''); searchClick()"
+        />
+        <mat-icon
+          matSuffix
+          class="cursor-pointer"
+          fontIcon="search"
+          (click)="searchClick()"
+        />
+      </mat-form-field>
+      <!-- <button
+        class="w-7 h-7 rounded-full text-gray-700 hover:bg-gray-100 absolute left-4 top-3 flex items-center justify-center"
+      >
+        <mat-icon fontIcon="close" />
+      </button> -->
+    </div>
+
+    <mat-form-field appearance="outline" class="col-span">
+      <mat-label>From Warehouse</mat-label>
+      <mat-select
+        formControlName="_fromWarehouseId"
+        (selectionChange)="warehouseFilterchange()"
+      >
+        @for (warehouse of warehouses; track warehouse._id) {
+          <!-- @if (
+            formGroup.get("_toWarehouseId")?.value !== warehouse._id ||
+            ["all", "no-warehouse"].includes(warehouse._id)
+          ) { -->
+          <mat-option [value]="warehouse._id">{{ warehouse.name }}</mat-option>
+          <!-- } -->
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="col-span">
+      <mat-label>To Warehouse</mat-label>
+      <mat-select
+        formControlName="_toWarehouseId"
+        (selectionChange)="warehouseFilterchange()"
+      >
+        @for (warehouse of warehouses; track warehouse._id) {
+          <!-- @if (
+            formGroup.get("_fromWarehouseId")?.value !== warehouse._id ||
+            ["all", "no-warehouse"].includes(warehouse._id)
+          ) { -->
+          <mat-option [value]="warehouse._id">{{ warehouse.name }}</mat-option>
+          <!-- } -->
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <app-table
+    [dataSource]="dataSource"
+    [columns]="columns"
+    [page]="page"
+    (rowEmitter)="rowClick($event)"
+    (pageEmitter)="pageEvent($event)"
+  >
+  </app-table>
+</div>
