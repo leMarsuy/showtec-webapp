@@ -15,6 +15,7 @@ export class WarehouseStockTransferService {
     },
   };
   changedStocks: any[] = [];
+  changeStocksIds: any[] = [];
 
   private _listChanged$ = new Subject<void>();
   private _resetClicked$ = new Subject<void>();
@@ -63,6 +64,7 @@ export class WarehouseStockTransferService {
 
   setChangedStocks() {
     const changedStocks = [];
+    const changeStocksIds = [];
     for (const warehouseName of ['A', 'B']) {
       const warehouseState = this.warehouseState[warehouseName];
 
@@ -81,6 +83,7 @@ export class WarehouseStockTransferService {
           !idMap[stockId] ||
           (idMap[stockId] && idMap[stockId].quantity !== stock.quantity)
         ) {
+          changeStocksIds.push(stock._id);
           changedStocks.push({
             _productId: stock._productId,
             _warehouseId:
@@ -93,6 +96,7 @@ export class WarehouseStockTransferService {
       }
     }
 
+    this.changeStocksIds = changeStocksIds;
     this.changedStocks = changedStocks;
   }
 }

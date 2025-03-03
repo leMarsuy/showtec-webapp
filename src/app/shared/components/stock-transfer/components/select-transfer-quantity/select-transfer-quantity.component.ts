@@ -44,7 +44,21 @@ export class SelectTransferQuantityComponent implements OnDestroy {
   constructor() {
     const formArray = new FormArray<any>([]);
 
-    for (const stock of this.data['stocks']) {
+    const sortedStocks = this.data['stocks'].sort(
+      (a: WarehouseStock, b: WarehouseStock) => {
+        if (a.quantity > b.quantity) {
+          return -1;
+        }
+
+        if (a.quantity < b.quantity) {
+          return 1;
+        }
+
+        return 0;
+      },
+    );
+
+    for (const stock of sortedStocks) {
       const formGroup = this.fb.group({
         _id: [{ value: stock._id, disabled: true }],
         serialNumber: [{ value: stock.serialNumber, disabled: true }],
