@@ -64,6 +64,7 @@ export class StockTransferComponent {
   isSubmitting = false;
 
   constructor() {
+    this.warehouseStockTransferService.resetValues();
     this.warehouseApiService.getWarehouses().subscribe({
       next: (response) => {
         response.records.unshift({

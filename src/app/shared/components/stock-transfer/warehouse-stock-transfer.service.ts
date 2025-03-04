@@ -54,6 +54,19 @@ export class WarehouseStockTransferService {
 
   constructor() {}
 
+  resetValues() {
+    this._warehouseState = {
+      A: {
+        selected: [],
+      },
+      B: {
+        selected: [],
+      },
+    };
+    this.changedStocks = [];
+    this.changeStocksIds = [];
+  }
+
   listChange() {
     this._listChanged$.next();
   }
