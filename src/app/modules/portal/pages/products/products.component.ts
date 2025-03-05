@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AddProductComponent } from './add-product/add-product.component';
+import { StockTransferDialogComponent } from '@app/shared/components/stock-transfer-dialog/stock-transfer-dialog.component';
 import { ContentHeaderAction } from '@core/interfaces/content-header-action.interface';
+import { AddProductComponent } from './add-product/add-product.component';
 import { BatchAddProductComponent } from './batch-add-product/batch-add-product.component';
 
 @Component({
@@ -11,6 +12,11 @@ import { BatchAddProductComponent } from './batch-add-product/batch-add-product.
 })
 export class ProductsComponent {
   actions: ContentHeaderAction[] = [
+    {
+      id: 'stock-transfer',
+      icon: 'swap_horiz',
+      label: 'Stock Transfer',
+    },
     {
       id: 'batch',
       icon: 'post_add',
@@ -55,6 +61,13 @@ export class ProductsComponent {
       });
   }
 
+  openTransferStock() {
+    this.dialog.open(StockTransferDialogComponent, {
+      minWidth: '60vw',
+      disableClose: true,
+    });
+  }
+
   actionEvent(action: string) {
     switch (action) {
       case 'add':
@@ -63,6 +76,10 @@ export class ProductsComponent {
 
       case 'batch':
         this.openBatchAdd();
+        break;
+
+      case 'stock-transfer':
+        this.openTransferStock();
         break;
 
       default:

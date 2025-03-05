@@ -1,0 +1,160 @@
+<main class="flex flex-col p-3 border border-gray-500 rounded-md gap-1">
+  <div class="flex min-w-full max-w-full w-full">
+    <div class="relative w-full">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-select
+          #selectRef
+          placeholder="Select Warehouse"
+          [(ngModel)]="selectedWarehouse"
+          (ngModelChange)="onWarehouseChange($event)"
+          [disabled]="!!selectedWarehouse()"
+        >
+          <mat-select-trigger>
+            <span class="text-gray-700">
+              {{ selectedWarehouse()?.name }}
+            </span>
+          </mat-select-trigger>
+          @for (warehouse of warehouses(); track warehouse._id) {
+            @if (otherSelectedWarehouse()?._id !== warehouse._id) {
+              <mat-option [value]="warehouse">{{ warehouse.name }} </mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (selectedWarehouse()) {
+        <button
+          class="w-7 h-7 rounded-full text-gray-600 hover:bg-gray-100 absolute right-10 top-3.5 flex items-center justify-center"
+          (click)="unselectWarehouseClick(selectRef)"
+        >
+          <mat-icon fontIcon="close" />
+        </button>
+      }
+    </div>
+  </div>
+  <div class="relative w-full">
+    <mat-form-field appearance="outline" class="w-full">
+      <input
+        matInput
+        placeholder="Search by Model | Serial No"
+        [disabled]="!selectedWarehouse()"
+        [(ngModel)]="searchKeyword"
+        (ngModelChange)="searchKeywordChange($event)"
+        type="text"
+      />
+    </mat-form-field>
+
+    @if (searchKeyword) {
+      <button
+        class="w-7 h-7 rounded-full text-gray-400 hover:bg-gray-100 absolute right-4 top-4 flex items-center justify-center"
+        (click)="onResetSearchKeywordClick()"
+      >
+        <mat-icon fontIcon="close" />
+      </button>
+    }
+  </div>
+  @if (selectedWarehouse()) {
+    <div class="flex flex-col">
+      <div class="flex items-center">
+        <button
+          class="text-sm underline text-left"
+          [disabled]="
+            !otherSelectedWarehouse() || !warehouseState.filtered?.length
+          "
+          [ngClass]="{
+            'text-gray-400 cursor-not-allowed':
+              !otherSelectedWarehouse() || !warehouseState.filtered?.length,
+            'text-blue-500':
+              otherSelectedWarehouse() && warehouseState.filtered?.length,
+          }"
+          matRipple
+          (click)="
+            warehouseState.filtered?.length && selectedInFilter.length
+              ? deselectAllClick()
+              : selectAllClick()
+          "
+        >
+          {{
+            warehouseState.filtered?.length && selectedInFilter.length
+              ? "Deselect All"
+              : "Select All"
+          }}
+        </button>
+
+        <div class="border-r border-gray-500 ml-1.5 mr-2 h-4">&nbsp;</div>
+
+        <div class="text-sm text-gray-500">
+          {{ warehouseState.selected.length }} total selected item(s)
+        </div>
+        <div class="text-sm text-gray-500 ml-auto">
+          {{ warehouseState.filtered?.length }} item(s)
+        </div>
+        <div class="flex items-center gap-1.5"></div>
+      </div>
+    </div>
+  }
+  <cdk-virtual-scroll-viewport
+    class="warehouse-drop-list bg-gray-100 border border-gray-200 rounded-md p-1.5 flex flex-col gap-1.5 min-h-[45vh] max-h-[45vh] overflow-y-scroll"
+    minBufferPx="500"
+    maxBufferPx="1000"
+    itemSize="62"
+    (cdkDropListDropped)="drop($event)"
+    [cdkDropListDisabled]="!selectedWarehouse()"
+    [cdkDropListSortingDisabled]="true"
+    cdkDropList
+  >
+    <div
+      *cdkVirtualFor="
+        let stock of warehouseState.filtered || [];
+        trackBy: trackById;
+        templateCacheSize: 0
+      "
+    >
+      <div
+        class="bg-white rounded border h-[62px] pl-2.5 shadow-sm flex items-center justify-between m-1.5"
+        [class]="
+          warehouseStockTransferService.changeStocksIds.includes(stock._id)
+            ? 'border-blue-400 bg-blue-50'
+            : 'border-gray-400'
+        "
+        cdkDrag
+        [cdkDragData]="stock"
+      >
+        <section class="flex items-center pb-1 gap-1.5">
+          <mat-checkbox
+            [disabled]="!otherSelectedWarehouse()"
+            [checked]="warehouseState.selected.includes(stock._id)"
+            (change)="onCheckboxClick($event, stock._id)"
+          />
+          <div class="flex flex-col">
+            <p
+              class="inline-flex items-center font-medium text-black tracking-wide max-w-3/4"
+            >
+              {{ stock.serialNumber }}
+            </p>
+            <p class="text-sm text-gray-500">
+              {{ stock.sku }}
+            </p>
+          </div>
+        </section>
+
+        <section
+          class="flex items-center justify-between gap-2.5 h-full select-none"
+        >
+          <div class="text-sm font-medium">Qty: {{ stock.quantity }}</div>
+          <div>
+            {{ stock.type }}
+          </div>
+          <div
+            class="flex items-center px-4 h-full"
+            [class.cursor-grab]="otherSelectedWarehouse()"
+            cdkDragHandle
+            [cdkDragHandleDisabled]="!otherSelectedWarehouse()"
+          >
+            <mat-icon fontIcon="menu" />
+          </div>
+        </section>
+      </div>
+    </div>
+  </cdk-virtual-scroll-viewport>
+</main>

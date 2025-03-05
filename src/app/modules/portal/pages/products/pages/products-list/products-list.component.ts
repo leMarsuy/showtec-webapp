@@ -56,6 +56,35 @@ export class ProductsListComponent {
         return `<p class="font-medium">${element.model}</p> <p class="text-xs">${element?.description}</p>`;
       },
     },
+    // {
+    //   label: 'Warehouse',
+    //   dotNotationPath: '',
+    //   type: ColumnType.CUSTOM,
+    //   display: (element: any) => {
+    //     const warehouses = element.stocks.reduce(
+    //       (acc: string[], curr: Stock) => {
+    //         if (!curr._warehouseId || acc.includes(curr._warehouseId?.name)) {
+    //           return acc;
+    //         }
+
+    //         acc.push(curr._warehouseId.name);
+
+    //         return acc;
+    //       },
+    //       [],
+    //     );
+
+    //     if (!warehouses.length) {
+    //       return 'NO WAREHOUSE';
+    //     }
+
+    //     return `
+    //       <div class="max-h-[100px]">
+    //         ${warehouses.join(', ')}
+    //       </div>
+    //     `;
+    //   },
+    // },
     {
       label: 'Sealed',
       dotNotationPath: '_$stockTypeSummary.Sealed',
@@ -216,6 +245,7 @@ export class ProductsListComponent {
       },
     });
   }
+
   private remapProducts(products: any) {
     return products.map((product: any) => {
       const _$stockTypeSummary = {

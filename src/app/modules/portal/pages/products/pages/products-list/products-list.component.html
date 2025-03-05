@@ -3,29 +3,50 @@
     <div class="flex">
       <div class="flex grow">
         <mat-form-field appearance="outline" class="w-[32rem]">
-          <input matInput placeholder="Search SKU | Brand | Model" [formControl]="searchText"
-            (keyup.enter)="getProducts()" />
-          <mat-icon matSuffix class="cursor-pointer" (click)="getProducts()" fontIcon="search" />
+          <input
+            matInput
+            placeholder="Search SKU | Brand | Model"
+            [formControl]="searchText"
+            (keyup.enter)="getProducts()"
+          />
+          <mat-icon
+            matSuffix
+            class="cursor-pointer"
+            (click)="getProducts()"
+            fontIcon="search"
+          />
         </mat-form-field>
-
       </div>
 
       <div class="flex">
-        <button mat-icon-button (click)="exportExcelProductSNs()" [disabled]="downloading"
-          matTooltip="Download Serial Numbers">
+        <button
+          mat-icon-button
+          (click)="exportExcelProductSNs()"
+          [disabled]="downloading"
+          matTooltip="Download Serial Numbers"
+        >
           <mat-icon class="mr-2">
             {{ downloading ? "downloading" : "download" }}
           </mat-icon>
         </button>
-        <button mat-icon-button (click)="exportExcelProducts()" [disabled]="downloading" matTooltip="Download Products">
+        <button
+          mat-icon-button
+          (click)="exportExcelProducts()"
+          [disabled]="downloading"
+          matTooltip="Download Products"
+        >
           <mat-icon class="mr-2">
             {{ downloading ? "downloading" : "download_for_offline" }}
           </mat-icon>
         </button>
       </div>
-
-
     </div>
-    <app-table [dataSource]="products" [columns]="columns" [page]="page" (rowEmitter)="rowEvent($event)"
-      (pageEmitter)="pageEvent($event)"></app-table>
+    <app-table
+      [dataSource]="products"
+      [columns]="columns"
+      [page]="page"
+      (rowEmitter)="rowEvent($event)"
+      (pageEmitter)="pageEvent($event)"
+    ></app-table>
   </div>
+</div>

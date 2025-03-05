@@ -1,7 +1,12 @@
 <p mat-dialog-title>
   NEW STOCK: <u>{{ data.name }}</u>
-  <span class="text-xs float-right mt-2 font-light text-emerald-500 top-0" matTooltip="Barcode Listener Activated">
-    <mat-checkbox [(ngModel)]="allowDuplicates" (change)="focusToSerialNumber()">Allow Duplicates</mat-checkbox>
+  <span
+    class="text-xs float-right mt-2 font-light text-emerald-500 top-0"
+    matTooltip="Barcode Listener Activated"
+  >
+    <mat-checkbox [(ngModel)]="allowDuplicates" (change)="focusToSerialNumber()"
+      >Allow Duplicates</mat-checkbox
+    >
   </span>
 </p>
 <mat-dialog-content>
@@ -9,25 +14,49 @@
     <mat-card class="p-4 w-[20rem]" [formGroup]="stockDetailsForm">
       <mat-form-field class="w-full">
         <mat-label>Date Purchased</mat-label>
-        <input matInput [matDatepicker]="purchasePicker" formControlName="purchaseDate" placeholder="MM/DD/YYYY" />
-        <mat-datepicker-toggle matIconSuffix [for]="purchasePicker"></mat-datepicker-toggle>
+        <input
+          matInput
+          [matDatepicker]="purchasePicker"
+          formControlName="purchaseDate"
+          placeholder="MM/DD/YYYY"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="purchasePicker"
+        ></mat-datepicker-toggle>
         <mat-datepicker #purchasePicker></mat-datepicker>
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Warehouse</mat-label>
-        <input type="text" matInput formControlName="_warehouseId" [matAutocomplete]="warehouseAuto" />
-        <mat-autocomplete #warehouseAuto="matAutocomplete" [displayWith]="displayFn">
+        <input
+          type="text"
+          matInput
+          formControlName="_warehouseId"
+          [matAutocomplete]="warehouseAuto"
+        />
+        <mat-autocomplete
+          #warehouseAuto="matAutocomplete"
+          [displayWith]="displayWarehouse"
+        >
           @for (option of filteredWarehouses | async; track option) {
-          <mat-option [value]="option._id">{{ option.name }}</mat-option>
+            <mat-option [value]="option">{{ option.name }}</mat-option>
           }
         </mat-autocomplete>
       </mat-form-field>
       <mat-form-field class="w-full">
         <mat-label>Supplier</mat-label>
-        <input type="text" matInput formControlName="_supplierId" [matAutocomplete]="supplierAuto" />
-        <mat-autocomplete #supplierAuto="matAutocomplete" [displayWith]="displayFn">
+        <input
+          type="text"
+          matInput
+          formControlName="_supplierId"
+          [matAutocomplete]="supplierAuto"
+        />
+        <mat-autocomplete
+          #supplierAuto="matAutocomplete"
+          [displayWith]="displaySupplier"
+        >
           @for (option of filteredSuppliers | async; track option) {
-          <mat-option [value]="option._id">{{ option.name }}</mat-option>
+            <mat-option [value]="option">{{ option.name }}</mat-option>
           }
         </mat-autocomplete>
       </mat-form-field>
@@ -53,57 +82,85 @@
       </div>
       <div class="h-[18rem] overflow-y-auto border-b-2 border-gray-200 pb-2">
         @for (stock of scannedStocks; track $index) {
-        <div class="flex">
-          <div class="w-full px-4 content-center">{{ stock.serialNumber }}</div>
-          @if(isStockTypeEditing[stock.serialNumber+"_"+$index]) {
-          <div class="w-full px-4 flex items-center gap-2 content-center cursor-pointer">
-            <select name="{{stock.serialNumber}}" #selectEl>
-              @for(option of STOCK_TYPE_OPTIONS; track option) {
-              <option [value]="option">{{option}}</option>
-              }
-            </select>
+          <div class="flex">
+            <div class="w-full px-4 content-center">
+              {{ stock.serialNumber }}
+            </div>
+            @if (isStockTypeEditing[stock.serialNumber + "_" + $index]) {
+              <div
+                class="w-full px-4 flex items-center gap-2 content-center cursor-pointer"
+              >
+                <select name="{{ stock.serialNumber }}" #selectEl>
+                  @for (option of STOCK_TYPE_OPTIONS; track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
 
-            <mat-icon class="text-green-400" (click)="onStockTypeChange(stock, $index, selectEl)">
-              check
-            </mat-icon>
-          </div>
-          } @else {
-          <div class="w-full px-4 content-center">
-            <button class="outline-none cursor-pointer hover:text-blue-500 transition-color duration-175"
-              (click)="openTypeSelection(stock, $index)">
-              {{ stock.type }}
-            </button>
-          </div>
-          }
+                <mat-icon
+                  class="text-green-400"
+                  (click)="onStockTypeChange(stock, $index, selectEl)"
+                >
+                  check
+                </mat-icon>
+              </div>
+            } @else {
+              <div class="w-full px-4 content-center">
+                <button
+                  class="outline-none cursor-pointer hover:text-blue-500 transition-color duration-175"
+                  (click)="openTypeSelection(stock, $index)"
+                >
+                  {{ stock.type }}
+                </button>
+              </div>
+            }
 
-          <div class="w-[12rem] flex-none px-4 content-center">
-            {{ stock.scanDate | date : "MM-dd-YY, hh:mm:ss" }}
+            <div class="w-[12rem] flex-none px-4 content-center">
+              {{ stock.scanDate | date: "MM-dd-YY, hh:mm:ss" }}
+            </div>
+            <div class="w-[5rem] flex-none px-4 content-center">
+              <mat-icon class="text-rose-500" (click)="removeStock($index)">
+                remove
+              </mat-icon>
+            </div>
           </div>
-          <div class="w-[5rem] flex-none px-4 content-center">
-            <mat-icon class="text-rose-500" (click)="removeStock($index)">
-              remove
-            </mat-icon>
-          </div>
-        </div>
         }
         <div class="p-4 text-center text-gray-400">-- end of list --</div>
       </div>
 
-      <div class="absolute bottom-0 flex w-full gap-2 pr-8" [formGroup]="stockForm">
+      <div
+        class="absolute bottom-0 flex w-full gap-2 pr-8"
+        [formGroup]="stockForm"
+      >
         <mat-form-field class="w-full" appearance="outline">
-          <input id="serialNumber" #serialNumber matInput placeholder="Serial No." formControlName="serialNumber"
-            (keyup.enter)="addStock()" cdkFocusInitial />
+          <input
+            id="serialNumber"
+            #serialNumber
+            matInput
+            placeholder="Serial No."
+            formControlName="serialNumber"
+            (keyup.enter)="addStock()"
+            cdkFocusInitial
+          />
           <mat-icon matSuffix>qr_code</mat-icon>
         </mat-form-field>
-        <button mat-flat-button class="mat-button-lg" (click)="addStock()" [disabled]="!stockForm.valid">
+        <button
+          mat-flat-button
+          class="mat-button-lg"
+          (click)="addStock()"
+          [disabled]="!stockForm.valid"
+        >
           Encode
         </button>
       </div>
     </mat-card>
-    <mat-card class="p-4 w-full w-[15rem] flex flex-none justify-center text-center">
-      <h1 class="text-[5rem] font-black mb-10 text-{{
+    <mat-card
+      class="p-4 w-full w-[15rem] flex flex-none justify-center text-center"
+    >
+      <h1
+        class="text-[5rem] font-black mb-10 text-{{
           allowDuplicates ? 'rose' : 'emerald'
-        }}-500">
+        }}-500"
+      >
         {{ scannedStocks.length }}
       </h1>
       <p class="font-black text-{{ allowDuplicates ? 'rose' : 'emerald' }}-500">
@@ -120,7 +177,13 @@
   <div class="w-full flex justify-between">
     <button mat-button color="warn" mat-dialog-close="">Cancel</button>
 
-    <button mat-flat-button color="primary" cdkFocusInitial [disabled]="isFormValid" (click)="stockToProduct()">
+    <button
+      mat-flat-button
+      color="primary"
+      cdkFocusInitial
+      [disabled]="isFormValid"
+      (click)="stockToProduct()"
+    >
       Stock to {{ data.name }}
     </button>
   </div>
