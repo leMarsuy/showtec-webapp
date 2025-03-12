@@ -122,6 +122,8 @@ export const OUT_DELIVER_CONFIG = {
             $or: [
               { status: OutDeliveryStatus.ACTIVE },
               { status: OutDeliveryStatus.PENDING },
+              { status: OutDeliveryStatus.RELEASED },
+              { status: OutDeliveryStatus.DELIVERED },
             ],
           },
         },
