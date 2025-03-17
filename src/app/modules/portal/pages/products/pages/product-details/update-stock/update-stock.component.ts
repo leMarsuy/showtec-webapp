@@ -132,8 +132,16 @@ export class UpdateStockComponent implements AfterViewInit {
   stockToProduct() {
     this.loading = true;
 
+    const payload = this.stocks.map((stock: any) => {
+      return {
+        ...stock,
+        _supplierId: stock._supplierId?._id || undefined,
+        _warehouseId: stock._warehouseId?._id || undefined,
+      };
+    });
+
     this.productApi
-      .stockToProduct(this.data._id, this.stocks, this.allowDuplicates)
+      .stockToProduct(this.data._id, payload, this.allowDuplicates)
       .subscribe({
         next: (res) => {
           this.snackBarService.openSuccessSnackbar(
