@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpService } from '../../http/http.service';
-import { Voucher } from '@app/core/models/voucher.model';
+import { VoucherStatus } from '@app/core/enums/voucher-status.enum';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
+import { Voucher } from '@app/core/models/voucher.model';
 import { environment } from '@env/environment';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
-import { VoucherStatus } from '@app/core/enums/voucher-status.enum';
+import { HttpService } from '../../http/http.service';
 import { UtilService } from '../../util/util.service';
 
 @Injectable({
@@ -47,8 +47,8 @@ export class VoucherApiService {
     return this.httpService.get(`${this.apiPrefix}/${_id}`);
   }
 
-  getRecentVoucher() {
-    return this.httpService.get(`${this.apiPrefix}/recent`);
+  getRecentVoucher(query?: QueryParams) {
+    return this.httpService.get<Voucher>(`${this.apiPrefix}/recent`, query);
   }
 
   updateVoucherById(_id: string, updateBody: Voucher) {
