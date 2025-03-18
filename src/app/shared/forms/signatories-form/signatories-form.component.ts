@@ -37,7 +37,7 @@ import {
   styleUrl: './signatories-form.component.scss',
 })
 export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() signatories: Array<any> = [];
+  @Input() listedSignatories: Array<any> = [];
   @Input({ alias: 'loading' }) isLoading = false;
   @Input() signatoryDefaultAction = SignatoryAction.APPROVED;
   @Output() signatoriesEmitter = new EventEmitter<Array<any>>();
@@ -83,6 +83,8 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
     length: 0,
   };
 
+  signatories: Array<any> = [];
+
   searchUserControl = new FormControl();
   filteredUsers!: Observable<User[]>;
 
@@ -105,8 +107,9 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (!changes['signatories']?.isFirstChange()) {
-      this.page.length = this.signatories.length;
+    if (changes['listedSignatories']) {
+      this.signatories = [...this.listedSignatories];
+      this._syncSignatories();
     }
   }
 
@@ -115,8 +118,8 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
 
     switch (action) {
       case 'remove':
-        this._removeFromList(e.i);
-        this._emitSignatories();
+        this.removeSignatory(e.i);
+
         break;
 
       default:
@@ -124,12 +127,12 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  updateSignatories(e: any) {
-    deepInsert(e.newValue, e.column.dotNotationPath, e.element);
-    this._copySignatoriesToSelf();
+  removeSignatory(index: number) {
+    this.signatories.splice(index, 1);
+    this._syncSignatories();
   }
 
-  pushToList(user: User) {
+  addSignatory(user: User) {
     this.signatories.push({
       ...user,
       _userId: user._id,
@@ -139,27 +142,48 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
       },
       action: this.signatoryDefaultAction,
     });
-    this._copySignatoriesToSelf();
+
+    this._syncSignatories();
+
     this.searchUserControl.reset();
   }
 
-  private _copySignatoriesToSelf() {
-    this.signatories.sort((a, b) => {
-      const aIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === a.action,
-      );
-      const bIndex = SIGNATORY_ACTIONS.findIndex(
-        (action) => action === b.action,
-      );
-      return aIndex - bIndex;
-    });
-    this.signatories = [...this.signatories];
-    this.page.length = -1;
-    this._emitSignatories();
-    setTimeout(() => {
-      this.page.length = this.signatories.length;
-    }, 20);
+  updateSignatories(e: any) {
+    deepInsert(e.newValue, e.column.dotNotationPath, e.element);
+    this._syncSignatories();
   }
+
+  // pushToList(user: User) {
+  //   this.signatories.push({
+  //     ...user,
+  //     _userId: user._id,
+  //     STATIC: {
+  //       name: user.name,
+  //       designation: user.designation,
+  //     },
+  //     action: this.signatoryDefaultAction,
+  //   });
+  //   this._copySignatoriesToSelf();
+  //   this.searchUserControl.reset();
+  // }
+
+  // private _copySignatoriesToSelf() {
+  //   this.signatories.sort((a, b) => {
+  //     const aIndex = SIGNATORY_ACTIONS.findIndex(
+  //       (action) => action === a.action,
+  //     );
+  //     const bIndex = SIGNATORY_ACTIONS.findIndex(
+  //       (action) => action === b.action,
+  //     );
+  //     return aIndex - bIndex;
+  //   });
+  //   this.signatories = [...this.signatories];
+  //   this.page.length = -1;
+  //   this._emitSignatories();
+  //   setTimeout(() => {
+  //     this.page.length = this.signatories.length;
+  //   }, 20);
+  // }
 
   private _filterUsers(value: string) {
     return this.userApi
@@ -167,14 +191,19 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
       .pipe(map((response: any) => response.records));
   }
 
-  private _removeFromList(i: number) {
-    this.signatories.splice(i, 1);
-    this._copySignatoriesToSelf();
-  }
-
-  private _emitSignatories() {
+  private _syncSignatories(): void {
+    this.page.length = this.signatories.length;
     this.signatoriesEmitter.emit(this.signatories);
   }
+
+  // private _removeFromList(i: number) {
+  //   this.signatories.splice(i, 1);
+  //   this._copySignatoriesToSelf();
+  // }
+
+  // private _emitSignatories() {
+  //   this.signatoriesEmitter.emit(this.signatories);
+  // }
 
   ngOnDestroy(): void {
     this.destroyed$.next();
