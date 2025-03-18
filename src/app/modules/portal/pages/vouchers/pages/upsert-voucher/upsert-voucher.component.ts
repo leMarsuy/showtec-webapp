@@ -139,7 +139,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
               if (voucher) {
                 const checkNo = Number(voucher?.checkNo);
                 if (Number.isInteger(checkNo)) {
-                  checkNoControl?.setValue(checkNo + 1);
+                  checkNoControl?.setValue((checkNo + 1).toString());
                 } else {
                   checkNoControl?.setValue(voucher.checkNo);
                 }
