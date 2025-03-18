@@ -19,6 +19,7 @@ import {
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 import { User } from '@app/core/models/user.model';
 import { UserApiService } from '@app/shared/services/api/user-api/user-api.service';
+import { deepInsert } from '@app/shared/utils/deepInsert';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -147,10 +148,10 @@ export class SignatoriesFormComponent implements OnInit, OnDestroy, OnChanges {
     this.searchUserControl.reset();
   }
 
-  // updateSignatories(e: any) {
-  //   deepInsert(e.newValue, e.column.dotNotationPath, e.element);
-  //   this._copySignatoriesToSelf();
-  // }
+  updateSignatories(e: any) {
+    deepInsert(e.newValue, e.column.dotNotationPath, e.element);
+    this._syncSignatories();
+  }
 
   // pushToList(user: User) {
   //   this.signatories.push({

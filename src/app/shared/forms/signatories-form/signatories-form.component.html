@@ -12,6 +12,7 @@
     [dataSource]="signatories"
     [page]="page"
     (actionEmitter)="actionEventHandler($event)"
+    (updateCellEmitter)="updateSignatories($event)"
   >
   </app-table>
 } @else {
