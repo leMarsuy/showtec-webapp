@@ -35,6 +35,12 @@ export const SOA_CONFIG: any = {
       },
     },
     {
+      label: 'PO No.',
+      dotNotationPath: '_purchaseOrderId.code.value',
+      type: ColumnType.STRING,
+      valueIfEmpty: '-',
+    },
+    {
       label: 'Status',
       dotNotationPath: 'status',
       type: ColumnType.STATUS,
