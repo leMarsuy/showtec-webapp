@@ -121,8 +121,8 @@ export class OutDeliveryApiService {
     );
   }
 
-  cancelOutDeliveryById(_id: string) {
-    return this.httpService.patch(`${this.apiPrefix}/${_id}/cancel`);
+  cancelOutDeliveryById(_id: string, body: any) {
+    return this.httpService.patch(`${this.apiPrefix}/${_id}/cancel`, body);
   }
   releaseOutDeliveryById(_id: string) {
     return this.httpService.patch(`${this.apiPrefix}/${_id}/release`);

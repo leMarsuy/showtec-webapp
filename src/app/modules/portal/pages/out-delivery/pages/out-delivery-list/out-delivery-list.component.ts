@@ -246,9 +246,11 @@ export class OutDeliveryListComponent {
       .afterClosed()
       .pipe(
         filter((result) => result),
-        switchMap(() => {
+        switchMap((result) => {
           this._setLoadingState(true, 'Cancelling Delivery');
-          return this.outdeliveryApi.cancelOutDeliveryById(outDeliveryId);
+          return this.outdeliveryApi.cancelOutDeliveryById(outDeliveryId, {
+            canceledRemarks: result.remarks,
+          });
         }),
       )
       .subscribe({
