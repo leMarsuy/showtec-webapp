@@ -37,22 +37,21 @@ export const OUT_DELIVER_CONFIG = {
         const totalQuantity = element.items.length;
         const itemSummary = element.itemSummary;
 
+        const initialDisplay = `<p class="font-medium">${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}</p>`;
+
         if (itemSummary) {
-          const itemSummaryHtml = Object.entries(itemSummary)
-            .map(
-              ([key, value]) =>
-                `<li class="text-gray-600"><span class="font-medium">${key}</span>: ${value}</li>`,
-            )
-            .join('');
+          const itemSummaryText = Object.entries(itemSummary)
+            .map(([key, value]) => `${value} ${key}`)
+            .join(', ');
 
           return `
-            <div class="p-3">
-                <p class="font-semibold text-gray-800">${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}</p>
-                <ul class="ml-4 list-disc">${itemSummaryHtml}</ul>
+            <div class="py-1">
+                ${initialDisplay}
+                <p class="text-xs">${itemSummaryText}</p>
             </div>`;
         }
 
-        return `<p class="p-3 font-semibold text-gray-800">${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}</p>`;
+        return initialDisplay;
       },
     },
     {
