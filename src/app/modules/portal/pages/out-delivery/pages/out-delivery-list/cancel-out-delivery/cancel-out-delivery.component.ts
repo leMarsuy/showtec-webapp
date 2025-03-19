@@ -1,7 +1,5 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
-import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
 
 @Component({
   selector: 'app-cancel-out-delivery',
@@ -28,12 +26,14 @@ export class CancelOutDeliveryComponent {
     },
   ];
 
+  cancellationReason = '';
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private _dialogRef: MatDialogRef<CancelOutDeliveryComponent>,
   ) {}
 
-  onDialogClose(isConfirm = false) {
-    this._dialogRef.close(isConfirm);
+  onDialogClose(isConfirm = false, remarks?: string) {
+    this._dialogRef.close({ isConfirm, remarks });
   }
 }

@@ -30,12 +30,28 @@ export const OUT_DELIVER_CONFIG = {
       },
     },
     {
-      label: 'No # of Items',
+      label: 'No. of Items',
       dotNotationPath: 'items',
       type: ColumnType.CUSTOM,
       display: (element: any) => {
         const totalQuantity = element.items.length;
-        return `${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}`;
+        const itemSummary = element.itemSummary;
+
+        const initialDisplay = `<p class="font-medium">${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}</p>`;
+
+        if (itemSummary) {
+          const itemSummaryText = Object.entries(itemSummary)
+            .map(([key, value]) => `${value} ${key}`)
+            .join(', ');
+
+          return `
+            <div class="py-1">
+                ${initialDisplay}
+                <p class="text-xs">${itemSummaryText}</p>
+            </div>`;
+        }
+
+        return initialDisplay;
       },
     },
     {
@@ -76,6 +92,18 @@ export const OUT_DELIVER_CONFIG = {
       ],
     },
     {
+      label: 'Cancelled Date',
+      dotNotationPath: 'canceledAt',
+      type: ColumnType.DATE,
+      valueIfEmpty: '-',
+    },
+    {
+      label: 'Cancelled Remarks',
+      dotNotationPath: 'canceledRemarks',
+      type: ColumnType.STRING,
+      valueIfEmpty: '-',
+    },
+    {
       label: 'Action',
       dotNotationPath: '_id',
       type: ColumnType.ACTION,
@@ -114,7 +142,7 @@ export const OUT_DELIVER_CONFIG = {
           },
         },
         {
-          name: 'Cancel Delivery',
+          name: 'Cancel/Return Delivery',
           icon: 'block',
           action: 'change-status-cancel',
           color: Color.ERROR,
