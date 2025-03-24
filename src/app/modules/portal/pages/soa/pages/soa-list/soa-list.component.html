@@ -6,9 +6,9 @@
           matInput
           [placeholder]="placeholder"
           [formControl]="searchText"
-          (keyup.enter)="getSoas()"
+          (keyup.enter)="search()"
         />
-        <mat-icon matSuffix class="cursor-pointer" (click)="getSoas()">
+        <mat-icon matSuffix class="cursor-pointer" (click)="search()">
           search
         </mat-icon>
       </mat-form-field>
@@ -17,7 +17,18 @@
       <div class="flex gap-6">
         <mat-form-field appearance="outline">
           <mat-select
-            [formControl]="statusControl"
+            [formControl]="poFilterControl"
+            (selectionChange)="onFilterPOChange($event)"
+          >
+            @for (filter of poFilter; track $index) {
+              <mat-option [value]="filter">{{ filter }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-select
+            [formControl]="poFilterControl"
             (selectionChange)="onFilterStatusChange($event)"
           >
             @for (status of tableFilterStatuses; track $index) {

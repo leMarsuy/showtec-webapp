@@ -5,10 +5,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
-import {
-  REGISTERED_BANKS,
-  RegisteredBank,
-} from '@app/core/enums/registered-bank.enum';
+import { REGISTERED_BANKS } from '@app/core/enums/registered-bank.enum';
 import { SignatoryAction } from '@app/core/enums/signatory-action.enum';
 import { Signatory } from '@app/core/models/out-delivery.model';
 import { Voucher } from '@app/core/models/voucher.model';
@@ -18,7 +15,7 @@ import { SnackbarService } from '@app/shared/components/snackbar/snackbar.servic
 import { ConfigApiService } from '@app/shared/services/api/config-api/config-api.service';
 import { VoucherApiService } from '@app/shared/services/api/voucher-api/voucher-api.service';
 import { isEmpty } from '@app/shared/utils/objectUtil';
-import { catchError, firstValueFrom, of, Subject, takeUntil } from 'rxjs';
+import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { VoucherConfig } from '../../../settings/pages/voucher-settings/voucher-settings.component';
 import { AccountTitle } from './account-title.list';
 import { VoucherDataService } from './voucher-data.service';
@@ -41,6 +38,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
 
   isUpdate = false;
   isLoading = true;
+  checkingCheckNo = false;
 
   signatoryAction = SignatoryAction.APPROVED;
   listedSignatories: Array<any> = [];
@@ -96,36 +94,76 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     const resolverResponse = await firstValueFrom(activateRouteData$);
     //Upsert Create
     if (isEmpty(resolverResponse)) {
-      const createVoucher: any = {};
+      // const createVoucher: any = {};
 
-      //Get Latest Voucher
-      const getRecentVoucher$ = this.voucherApi.getRecentVoucher().pipe(
-        takeUntil(this._destroyed$),
-        catchError(() => of(false)),
-      );
-      const recentVoucher = (await firstValueFrom(
-        getRecentVoucher$,
-      )) as Voucher;
+      // //Get Latest Voucher
+      // const getRecentVoucher$ = this.voucherApi.getRecentVoucher().pipe(
+      //   takeUntil(this._destroyed$),
+      //   catchError(() => of(false)),
+      // );
+      // const recentVoucher = (await firstValueFrom(
+      //   getRecentVoucher$,
+      // )) as Voucher;
 
-      if (recentVoucher) {
-        const checkNo = Number(recentVoucher.checkNo);
+      // if (recentVoucher) {
+      //   const checkNo = Number(recentVoucher.checkNo);
 
-        createVoucher['signatories'] = recentVoucher.signatories;
+      //   createVoucher['signatories'] = recentVoucher.signatories;
 
-        if (Number.isInteger(checkNo)) {
-          createVoucher['checkNo'] = checkNo + 1;
-        }
-      }
+      //   if (Number.isInteger(checkNo)) {
+      //     createVoucher['checkNo'] = checkNo + 1;
+      //   }
+      // }
 
       //Check if upsert create initiated by reuse voucher
       const voucherClone = this.voucherData.Voucher as Voucher;
-      if (voucherClone) {
-        Object.assign(createVoucher, voucherClone);
-      }
+      // if (voucherClone) {
+      //   Object.assign(createVoucher, voucherClone);
+      // }
 
-      this.voucher = createVoucher;
-      this._patchFormValues(createVoucher);
+      // this.voucher = createVoucher;
+      this._patchFormValues(voucherClone);
       this.isLoading = false;
+
+      this.voucherForm
+        .get('bank')
+        ?.valueChanges.pipe(takeUntil(this._destroyed$))
+        .subscribe((bank) => {
+          this.checkingCheckNo = true;
+          const checkNoControl = this.voucherForm.get('checkNo');
+          this.listedSignatories = [];
+          checkNoControl?.setValue('');
+          this.voucherApi.getRecentVoucher({ bank }).subscribe({
+            next: (recentVoucher) => {
+              const voucher = recentVoucher;
+              if (voucher) {
+                const checkNo = Number(voucher?.checkNo);
+                if (Number.isInteger(checkNo)) {
+                  checkNoControl?.setValue((checkNo + 1).toString());
+                } else {
+                  checkNoControl?.setValue(voucher.checkNo);
+                }
+              }
+
+              if (voucher?.signatories?.length) {
+                for (let signatory of voucher.signatories) {
+                  this.listedSignatories.push({
+                    name: signatory.STATIC.name,
+                    designation: signatory.STATIC.designation,
+                    action: signatory.action,
+                    _id: signatory._userId,
+                  });
+                }
+              }
+
+              this.checkingCheckNo = false;
+            },
+            error: (err) => {
+              console.error(err);
+              this.checkingCheckNo = false;
+            },
+          });
+        });
     }
 
     //Upsert Update
@@ -136,6 +174,10 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       this._patchFormValues(this.voucher);
       this.isLoading = false;
     }
+  }
+
+  onPayeeChange(payeeName: string) {
+    this.voucherForm.get('payee')?.setValue(payeeName);
   }
 
   onSubmit() {
@@ -171,7 +213,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
   private _patchFormValues(voucher: any) {
     this.voucherForm.patchValue({
       payee: voucher?.payee ?? '',
-      bank: voucher?.bank ?? RegisteredBank.CHINABANK,
+      bank: voucher?.bank ?? '',
       accountsTotal: voucher?.accountsTotal ?? '',
       checkNo: voucher?.checkNo ?? '',
       checkDate: voucher?.checkDate ?? null,
@@ -179,7 +221,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       particulars: voucher?.particulars ?? [],
     });
 
-    if (Array.isArray(voucher.signatories) && voucher.signatories.length > 0) {
+    if (Array.isArray(voucher?.signatories) && voucher.signatories.length > 0) {
       for (let signatory of voucher.signatories) {
         this.listedSignatories.push({
           name: signatory.STATIC.name,

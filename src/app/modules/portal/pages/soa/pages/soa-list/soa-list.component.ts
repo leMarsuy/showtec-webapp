@@ -37,9 +37,11 @@ export class SoaListComponent implements OnDestroy {
   columns: TableColumn[] = SOA_CONFIG.tableColumns;
 
   statusControl = new FormControl('All');
+  poFilterControl = new FormControl('All');
   tableFilterStatuses = SOA_CONFIG.tableFilters.statuses;
   selectedFilterStatus: SoaStatus | string = 'All';
   selectedFilterDate = DateFilterType.ALL_TIME;
+  poFilter = ['All', 'With PO', 'Without PO'];
 
   page: PageEvent = {
     pageIndex: 0,
@@ -66,9 +68,50 @@ export class SoaListComponent implements OnDestroy {
     this.getSoas();
   }
 
-  getSoas(isPageEvent = false) {
-    this.setQuery(isPageEvent);
+  search() {
+    this.query.searchText = this.searchText.value ?? '';
+    this.query.pageIndex = 0;
 
+    this.getSoas();
+  }
+
+  pageEvent(e: PageEvent) {
+    const pageIndex = e.pageIndex || 0;
+    const pageSize = e.pageSize || 10;
+    this.page.pageSize = pageSize;
+    this.page.pageIndex = pageIndex;
+
+    this.query = {
+      ...this.query,
+      pageIndex,
+      pageSize,
+    };
+
+    this.getSoas();
+  }
+
+  onFilterPOChange(event: MatSelectChange) {
+    const poFilter = event.value === 'All' ? '' : event.value;
+    this.query['poFilter'] = poFilter;
+    this.query.pageIndex = 0;
+    this.getSoas();
+  }
+
+  onFilterStatusChange(event: MatSelectChange) {
+    const status = event.value === 'All' ? '' : event.value;
+    this.query['status'] = status;
+    this.query.pageIndex = 0;
+    this.getSoas();
+  }
+
+  onFilterDateChange(dateFilter: any) {
+    const date = dateFilter === DateFilterType.ALL_TIME ? '' : dateFilter;
+    this.query['date'] = date;
+    this.query.pageIndex = 0;
+    this.getSoas();
+  }
+
+  getSoas() {
     this.snackbarService.openLoadingSnackbar('Fetching SOAS', 'Please Wait...');
     this.soaApi
       .getSoas(this.query)
@@ -83,41 +126,17 @@ export class SoaListComponent implements OnDestroy {
           this.soas = response.records as SOA[];
           this.page.length = response.total;
         },
+        error: ({ error }: HttpErrorResponse) => {
+          this.snackbarService.openErrorSnackbar(
+            error.errorCode,
+            error.message,
+          );
+          this.page.length = 0;
+        },
       });
   }
 
-  private setQuery(isPageEvent = false) {
-    const status =
-      this.selectedFilterStatus === 'All' ? '' : this.selectedFilterStatus;
-
-    const date =
-      this.selectedFilterDate === DateFilterType.ALL_TIME
-        ? ''
-        : this.selectedFilterDate;
-
-    const pageIndex = isPageEvent ? this.page.pageIndex : 0;
-
-    const searchText = this.searchText.value ?? '';
-
-    this.query = {
-      searchText,
-      status,
-      date,
-      pageIndex,
-      pageSize: this.page.pageSize,
-    };
-  }
-
-  pageEvent(e: PageEvent) {
-    this.page.pageSize = e.pageSize;
-    this.page.pageIndex = e.pageIndex;
-    this.getSoas(true);
-  }
-
   actionEvent(e: any) {
-    // const action => contains table column action data
-    // const element => contains table row data
-
     const { action } = e.action;
     const soa = e.element;
 
@@ -153,16 +172,6 @@ export class SoaListComponent implements OnDestroy {
       disableClose: true,
       autoFocus: false,
     });
-  }
-
-  onFilterStatusChange(event: MatSelectChange) {
-    this.selectedFilterStatus = event.value;
-    this.getSoas();
-  }
-
-  onFilterDateChange(dateFilter: any) {
-    this.selectedFilterDate = dateFilter;
-    this.getSoas();
   }
 
   exportTableExcel() {
