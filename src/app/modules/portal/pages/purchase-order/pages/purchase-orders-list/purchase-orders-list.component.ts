@@ -79,6 +79,7 @@ export class PurchaseOrdersListComponent {
       label: 'Ordered From',
       dotNotationPath: 'orderedFrom',
       type: ColumnType.STRING,
+      valueIfEmpty: '-',
     },
     {
       label: 'Status',
@@ -152,6 +153,7 @@ export class PurchaseOrdersListComponent {
       label: 'SOA',
       dotNotationPath: 'soa.code.value',
       type: ColumnType.STRING,
+      valueIfEmpty: '-',
     },
     {
       label: 'Created By',

@@ -1,0 +1,44 @@
+<mat-form-field
+  appearance="outline"
+  floatLabel="always"
+  class="w-full col-span-2 px-4"
+>
+  <input
+    type="text"
+    matInput
+    placeholder="Payee"
+    [formControl]="supplierControl"
+    [matAutocomplete]="auto"
+    (keyup)="optionSelected(supplierControl.value || '')"
+  />
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    (optionSelected)="optionSelected($event.option.value)"
+  >
+    @if (isLoading === false) {
+      @if (supplierControl.value) {
+        <mat-option [value]="supplierControl.value">
+          <p>
+            Add as
+            <span class="font-semibold">{{ supplierControl.value }}</span>
+          </p>
+        </mat-option>
+      }
+      @if (!(filteredSuppliers$ | async)?.length) {
+        <mat-option disabled>
+          <p>No suppliers found</p>
+        </mat-option>
+      } @else {
+        @for (supplierName of filteredSuppliers$ | async; track supplierName) {
+          <mat-option [value]="supplierName">
+            {{ supplierName }}
+          </mat-option>
+        }
+      }
+    } @else {
+      <mat-option disabled>
+        <p>Loading...</p>
+      </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>

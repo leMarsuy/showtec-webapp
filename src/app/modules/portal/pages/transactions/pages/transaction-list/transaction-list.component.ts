@@ -75,7 +75,10 @@ export class TransactionListComponent {
     {
       label: 'Bank',
       dotNotationPath: 'bank',
-      type: ColumnType.STRING,
+      type: ColumnType.CUSTOM,
+      display: (element: any) => {
+        return element.bank === 'OTHERS' ? element.specificBank : element.bank;
+      },
     },
     {
       label: 'Payment Status',

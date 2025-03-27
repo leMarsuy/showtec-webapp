@@ -2,75 +2,150 @@
   <div class="flex flex-col h-fit w-fit gap-y-4 sticky top-16">
     <button
       class="outline-none bg-white rounded-xl hover:ring-2 hover:ring-blue-300 p-4 h-[54px] w-[54px] flex justify-center items-center cursor-pointer"
-      (click)="navigateBack()" matTooltip="Back to Table" matTooltipPosition="right">
+      (click)="navigateBack()"
+      matTooltip="Back to Table"
+      matTooltipPosition="right"
+    >
       <mat-icon class="text-rose-500 inline-block" fontIcon="arrow_back" />
     </button>
   </div>
   <div class="w-full bg-white rounded-xl p-4 grow gap-4 flex flex-col">
-    @if(isLoading === false) {
-    <form [formGroup]="voucherForm">
-      <div class="w-full bg-white rounder-lg grid grid-cols-2 grid-rows-2 pt-4">
-        <!-- PAYEE -->
-        <mat-form-field appearance="outline" floatLabel="always" class="w-full col-span-2 px-4">
-          <input formControlName="payee" matInput type="text" placeholder="Payee" />
-        </mat-form-field>
+    @if (isLoading === false) {
+      <form [formGroup]="voucherForm">
+        <div
+          class="w-full bg-white rounder-lg grid grid-cols-2 grid-rows-2 pt-4"
+        >
+          <!-- PAYEE -->
+          <!-- <mat-form-field
+            appearance="outline"
+            floatLabel="always"
+            class="w-full col-span-2 px-4"
+          >
+            <input
+              formControlName="payee"
+              matInput
+              type="text"
+              placeholder="Payee"
+            />
+          </mat-form-field> -->
+          <div class="w-full col-span-2">
+            <app-supplier-autocomplete
+              (selectionChange)="onPayeeChange($event)"
+            />
+          </div>
 
-        <!-- TOTAL AMOUNT -->
-        <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-4 pr-2">
-          <input formControlName="accountsTotal" matInput type="number" placeholder="Total Amount"
-            class="pointer-events-none" />
-        </mat-form-field>
+          <!-- TOTAL AMOUNT -->
+          <mat-form-field
+            appearance="outline"
+            floatLabel="always"
+            class="w-full pl-4 pr-2"
+          >
+            <input
+              formControlName="accountsTotal"
+              matInput
+              type="number"
+              placeholder="Total Amount"
+              class="pointer-events-none"
+            />
+          </mat-form-field>
 
-        <!-- ISSUING BANK -->
-        <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-2 pr-4">
-          <mat-select formControlName="bank" placeholder="Issuing Bank">
-            @for(bank of banks; track bank) {
-            <mat-option [value]="bank">{{ bank }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+          <!-- ISSUING BANK -->
+          <mat-form-field
+            appearance="outline"
+            floatLabel="always"
+            class="w-full pl-2 pr-4"
+          >
+            <mat-select formControlName="bank" placeholder="Issuing Bank">
+              @for (bank of banks; track bank) {
+                <mat-option [value]="bank">{{ bank }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (voucherForm.value.bank === "OTHERS") {
+            <mat-form-field
+              appearance="outline"
+              floatLabel="always"
+              class="w-full col-span-2 px-4"
+            >
+              <input
+                matInput
+                type="text"
+                formControlName="specificBank"
+                placeholder="Bank Name"
+              />
+            </mat-form-field>
+          }
 
-        <!-- CHECK NO -->
-        <mat-form-field appearance="outline" floatLabel="always" class="w-full pl-4 pr-2">
-          <input formControlName="checkNo" matInput type="text" placeholder="Check No" />
-        </mat-form-field>
+          <!-- CHECK NO -->
+          <mat-form-field
+            appearance="outline"
+            floatLabel="always"
+            class="w-full pl-4 pr-2"
+          >
+            <input
+              formControlName="checkNo"
+              matInput
+              type="text"
+              [placeholder]="checkingCheckNo ? 'Checking...' : 'Check No.'"
+              [disabled]="checkingCheckNo"
+            />
+          </mat-form-field>
 
-        <!-- CHECK DATE -->
-        <mat-form-field appearance="outline" class="w-full pl-2 pr-4">
-          <input matInput [matDatepicker]="picker" formControlName="checkDate" placeholder="Check Date">
-          <mat-hint>MM/DD/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconPrefix [for]="picker" class="ml-2"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </div>
+          <!-- CHECK DATE -->
+          <mat-form-field appearance="outline" class="w-full pl-2 pr-4">
+            <input
+              matInput
+              [matDatepicker]="picker"
+              formControlName="checkDate"
+              placeholder="Check Date"
+            />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle
+              matIconPrefix
+              [for]="picker"
+              class="ml-2"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
 
-      <!-- PARTICULARS -->
-      <app-particulars-array-form [fArray]="$any(voucherForm).get('particulars')"
-        [defaultValueArray]="voucher ? voucher.particulars : null">
-      </app-particulars-array-form>
+        <!-- PARTICULARS -->
+        <app-particulars-array-form
+          [fArray]="$any(voucherForm).get('particulars')"
+          [defaultValueArray]="voucher ? voucher.particulars : null"
+        >
+        </app-particulars-array-form>
 
+        <!-- DISTRIBUTION OF ACCOUNTS -->
+        <app-accounts-array-form
+          [fArray]="$any(voucherForm).get('accounts')"
+          [defaultValueArray]="voucher ? voucher.accounts : null"
+          [accountTitles]="accountTitles"
+        >
+        </app-accounts-array-form>
 
-      <!-- DISTRIBUTION OF ACCOUNTS -->
-      <app-accounts-array-form [fArray]="$any(voucherForm).get('accounts')"
-        [defaultValueArray]="voucher ? voucher.accounts : null" [accountTitles]="accountTitles">
-      </app-accounts-array-form>
+        <!-- SIGNATORIES -->
+        <div class="bg-white m-4">
+          <app-signatories-form
+            [listedSignatories]="listedSignatories"
+            [signatoryDefaultAction]="signatoryAction"
+            (signatoriesEmitter)="signatoriesEmitHandler($event)"
+          />
+        </div>
 
-      <!-- SIGNATORIES -->
-      <div class="bg-white m-4">
-        <app-signatories-form [signatories]="listedSignatories" [signatoryDefaultAction]="signatoryAction"
-          (signatoriesEmitter)="signatoriesEmitHandler($event)" />
-      </div>
-
-      <div class="flex justify-end mt-4 mx-4 mb-2">
-        <button [disabled]="!isVoucherFormValid" mat-flat-button color="primary" (click)="onSubmit()">
-          {{isUpdate ? 'Update Voucher' : 'Create Voucher'}}
-        </button>
-      </div>
-
-    </form>
+        <div class="flex justify-end mt-4 mx-4 mb-2">
+          <button
+            [disabled]="!isVoucherFormValid"
+            mat-flat-button
+            color="primary"
+            (click)="onSubmit()"
+          >
+            {{ isUpdate ? "Update Voucher" : "Create Voucher" }}
+          </button>
+        </div>
+      </form>
     } @else {
-    <voucher-skeleton-form-loading></voucher-skeleton-form-loading>
+      <voucher-skeleton-form-loading></voucher-skeleton-form-loading>
     }
-
   </div>
 </div>

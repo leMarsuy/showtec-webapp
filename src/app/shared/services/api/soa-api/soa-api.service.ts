@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { QueryParams } from '@app/core/interfaces/query-params.interface';
 import { SOA, Transaction } from '@app/core/models/soa.model';
 import { environment } from '@env/environment';
-import { HttpService } from '../../http/http.service';
 import { map } from 'rxjs';
 import { FileService } from '../../file/file.service';
+import { HttpService } from '../../http/http.service';
 import { UtilService } from '../../util/util.service';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class SoaApiService {
   createPayment(soaId: string, transaction: Transaction) {
     return this.httpService.post(
       `${this.apiPrefix}/payment/${soaId}`,
-      transaction
+      transaction,
     );
   }
 
@@ -50,6 +50,7 @@ export class SoaApiService {
         sort: query.sort ?? '',
         searchText: query.searchText ?? '',
         monitorStatus: query.status ?? '', // monitorStatus is used
+        poFilter: query['poFilter'] ?? '',
       };
 
       if (query?.date) {
