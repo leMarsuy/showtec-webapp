@@ -2,15 +2,15 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
-import { SOA, Transaction } from '@app/core/models/soa.model';
-import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
-import { AddPaymentComponent } from '../add-payment/add-payment.component';
-import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
 import { Color } from '@app/core/enums/color.enum';
-import { SoaStatus } from '@app/core/enums/soa-status.enum';
-import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
-import { UpdatePaymentComponent } from '../update-payment/update-payment.component';
 import { PaymentStatus } from '@app/core/enums/payment-status.enum';
+import { SoaStatus } from '@app/core/enums/soa-status.enum';
+import { SOA } from '@app/core/models/soa.model';
+import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
+import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
+import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
+import { AddPaymentComponent } from '../add-payment/add-payment.component';
+import { UpdatePaymentComponent } from '../update-payment/update-payment.component';
 
 @Component({
   selector: 'app-view-soa',
@@ -79,7 +79,7 @@ export class ViewSoaComponent {
         break;
     }
 
-    return `w-fit px-4 border-2 border-${color}-500 text-${color}-500 bg-${color}-100 text-center rounded-xl`;
+    return `w-fit px-4 border-2 border-${color}-500 text-${color}-500 bg-${color}-100 text-center rounded-xl cursor-pointer hover:bg-${color}-200`;
   }
 
   getProductById() {

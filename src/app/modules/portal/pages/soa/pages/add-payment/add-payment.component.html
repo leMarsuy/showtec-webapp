@@ -80,6 +80,13 @@
       </mat-select>
     </mat-form-field>
 
+    @if (transactionForm.value.bank === "OTHERS") {
+      <mat-form-field class="w-full">
+        <mat-label>Bank Name</mat-label>
+        <input matInput type="text" formControlName="specificBank" />
+      </mat-form-field>
+    }
+
     <mat-form-field class="w-full">
       <mat-label>Remarks</mat-label>
       <input matInput type="text" formControlName="remarks" />

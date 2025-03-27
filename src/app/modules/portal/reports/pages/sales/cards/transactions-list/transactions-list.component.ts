@@ -69,7 +69,12 @@ export class TransactionsListComponent implements OnInit {
     {
       label: 'Company Bank',
       dotNotationPath: 'transactions.bank',
-      type: ColumnType.STRING,
+      type: ColumnType.CUSTOM,
+      display: (element: any) => {
+        return element.transactions.bank === 'OTHERS'
+          ? element.transactions.specificBank
+          : element.transactions.bank;
+      },
     },
   ];
 
