@@ -59,12 +59,26 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     this.voucherForm = this.formBuilder.group({
       payee: ['', Validators.required],
       bank: ['', Validators.required],
+      specificBank: [''],
       accountsTotal: ['', Validators.required],
       accounts: this.formBuilder.array([]),
       particulars: this.formBuilder.array([]),
       checkNo: ['', Validators.required],
       checkDate: [null, Validators.required],
     });
+
+    this.voucherForm
+      .get('bank')
+      ?.valueChanges.pipe(takeUntil(this._destroyed$))
+      .subscribe((bank) => {
+        if (bank === 'OTHERS') {
+          this.voucherForm
+            .get('specificBank')
+            ?.setValidators(Validators.required);
+        } else {
+          this.voucherForm.get('specificBank')?.clearValidators();
+        }
+      });
 
     this.configApi.getConfigByName(this.configName).subscribe({
       next: (response) => {
@@ -129,6 +143,10 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
         .get('bank')
         ?.valueChanges.pipe(takeUntil(this._destroyed$))
         .subscribe((bank) => {
+          if (bank === 'OTHERS') {
+            this.voucherForm.get('checkNo')?.setValue('');
+            return;
+          }
           this.checkingCheckNo = true;
           const checkNoControl = this.voucherForm.get('checkNo');
           this.listedSignatories = [];

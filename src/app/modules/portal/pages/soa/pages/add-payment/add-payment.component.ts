@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -11,6 +11,7 @@ import { REGISTERED_BANKS } from '@app/core/enums/registered-bank.enum';
 import { Transaction } from '@app/core/models/soa.model';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-add-payment',
@@ -18,11 +19,12 @@ import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service'
   providers: [provideNativeDateAdapter()],
   styleUrl: './add-payment.component.scss',
 })
-export class AddPaymentComponent {
+export class AddPaymentComponent implements OnDestroy {
   paymentMethods = PAYMENT_METHODS;
   submitting = false;
   registeredBanks = REGISTERED_BANKS;
 
+  private _destroyed = new Subject<void>();
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { _id: string; balance: number },
     private soaApi: SoaApiService,
@@ -31,6 +33,7 @@ export class AddPaymentComponent {
     private dialogRef: MatDialogRef<AddPaymentComponent>,
   ) {
     this.onTransactionFormChange();
+    this.onBankChange();
   }
 
   transactionForm = this.fb.group({
@@ -40,6 +43,7 @@ export class AddPaymentComponent {
     remarks: [''],
     // both
     bank: [''],
+    specificBank: [''],
     // bt
     referenceNo: [''],
     // check
@@ -54,7 +58,8 @@ export class AddPaymentComponent {
   onTransactionFormChange() {
     this.transactionForm
       .get('paymentMethod')
-      ?.valueChanges.subscribe((paymentMethod) => {
+      ?.valueChanges.pipe(takeUntil(this._destroyed))
+      .subscribe((paymentMethod) => {
         var tform = this.transactionForm;
 
         tform.get('bank')?.clearValidators();
@@ -91,6 +96,23 @@ export class AddPaymentComponent {
       });
   }
 
+  onBankChange() {
+    this.transactionForm
+      .get('bank')
+      ?.valueChanges.pipe(takeUntil(this._destroyed))
+      .subscribe((bank) => {
+        console.log(bank);
+        if (bank === 'OTHERS') {
+          this.transactionForm
+            .get('specificBank')
+            ?.setValidators(Validators.required);
+        } else {
+          this.transactionForm.get('specificBank')?.setValue('');
+          this.transactionForm.get('specificBank')?.clearValidators();
+        }
+      });
+  }
+
   submit() {
     this.submitting = true;
     var transaction: Transaction =
@@ -109,5 +131,10 @@ export class AddPaymentComponent {
         this.sb.openErrorSnackbar(err.error.errorCode, err.error.message);
       },
     });
+  }
+
+  ngOnDestroy(): void {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 }

@@ -3,6 +3,7 @@ export enum RegisteredBank {
   CHINABANK = 'CHINABANK',
   SECURITY_BANK = 'SECURITY BANK',
   GLOBAL_PAYMENT = 'GLOBAL PAYMENT',
+  OTHERS = 'OTHERS',
 }
 
 export const REGISTERED_BANKS = Object.values(RegisteredBank);
