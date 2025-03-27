@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, Inject } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -11,6 +11,7 @@ import { REGISTERED_BANKS } from '@app/core/enums/registered-bank.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-update-payment',
@@ -18,7 +19,7 @@ import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service'
   providers: [provideNativeDateAdapter()],
   styleUrl: './update-payment.component.scss',
 })
-export class UpdatePaymentComponent {
+export class UpdatePaymentComponent implements OnDestroy {
   paymentStatuses = PAYMENT_STATUSES;
   submitting = false;
   registeredBanks = REGISTERED_BANKS;
@@ -27,8 +28,11 @@ export class UpdatePaymentComponent {
     status: ['', Validators.required],
     remarks: [''],
     bank: [''],
+    specificBank: [''],
     depositedDate: [null],
   });
+
+  private _destroyed = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -41,34 +45,55 @@ export class UpdatePaymentComponent {
     this.transactionForm.get('status')?.setValue(this.data.status);
     this.transactionForm.get('bank')?.setValue(this.data.bank);
     this.transactionForm.get('remarks')?.setValue(this.data.remarks);
+    this.transactionForm.get('specificBank')?.setValue(this.data.specificBank);
     this.onTransactionFormChange();
+    this.onBankChange();
   }
 
   onTransactionFormChange() {
-    this.transactionForm.get('status')?.valueChanges.subscribe((status) => {
-      var tform = this.transactionForm;
+    this.transactionForm
+      .get('status')
+      ?.valueChanges.pipe(takeUntil(this._destroyed))
+      .subscribe((status) => {
+        var tform = this.transactionForm;
 
-      switch (status) {
-        case PaymentStatus.COMPLETED:
-          if (['Bank Transfer', 'Check'].includes(this.data.paymentMethod)) {
-            tform.get('depositedDate')?.setValidators(Validators.required);
-            tform.get('bank')?.setValidators(Validators.required);
-          }
-          break;
+        switch (status) {
+          case PaymentStatus.COMPLETED:
+            if (['Bank Transfer', 'Check'].includes(this.data.paymentMethod)) {
+              tform.get('depositedDate')?.setValidators(Validators.required);
+              tform.get('bank')?.setValidators(Validators.required);
+            }
+            break;
 
-        case PaymentStatus.CANCELED:
+          case PaymentStatus.CANCELED:
 
-        default:
-          tform.get('depositedDate')?.clearValidators();
-          tform.get('depositedDate')?.setValue(null);
-          tform.get('bank')?.clearValidators();
-          tform.get('bank')?.setValue(null);
-          break;
-      }
+          default:
+            tform.get('depositedDate')?.clearValidators();
+            tform.get('depositedDate')?.setValue(null);
+            tform.get('bank')?.clearValidators();
+            tform.get('bank')?.setValue(null);
+            break;
+        }
 
-      tform.get('depositedDate')?.updateValueAndValidity();
-      tform.get('bank')?.updateValueAndValidity();
-    });
+        tform.get('depositedDate')?.updateValueAndValidity();
+        tform.get('bank')?.updateValueAndValidity();
+      });
+  }
+
+  onBankChange() {
+    this.transactionForm
+      .get('bank')
+      ?.valueChanges.pipe(takeUntil(this._destroyed))
+      .subscribe((bank) => {
+        if (bank === 'OTHERS') {
+          this.transactionForm
+            .get('specificBank')
+            ?.setValidators(Validators.required);
+        } else {
+          this.transactionForm.get('specificBank')?.setValue('');
+          this.transactionForm.get('specificBank')?.clearValidators();
+        }
+      });
   }
 
   submit() {
@@ -95,5 +120,10 @@ export class UpdatePaymentComponent {
           });
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 }

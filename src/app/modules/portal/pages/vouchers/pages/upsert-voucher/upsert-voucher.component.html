@@ -61,6 +61,20 @@
               }
             </mat-select>
           </mat-form-field>
+          @if (voucherForm.value.bank === "OTHERS") {
+            <mat-form-field
+              appearance="outline"
+              floatLabel="always"
+              class="w-full col-span-2 px-4"
+            >
+              <input
+                matInput
+                type="text"
+                formControlName="specificBank"
+                placeholder="Bank Name"
+              />
+            </mat-form-field>
+          }
 
           <!-- CHECK NO -->
           <mat-form-field
