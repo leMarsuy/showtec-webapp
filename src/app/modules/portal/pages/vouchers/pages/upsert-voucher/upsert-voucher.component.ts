@@ -130,19 +130,16 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
       // }
 
       //Check if upsert create initiated by reuse voucher
-      const voucherClone = this.voucherData.Voucher as Voucher;
+
       // if (voucherClone) {
       //   Object.assign(createVoucher, voucherClone);
       // }
-
-      // this.voucher = createVoucher;
-      this._patchFormValues(voucherClone);
-      this.isLoading = false;
 
       this.voucherForm
         .get('bank')
         ?.valueChanges.pipe(takeUntil(this._destroyed$))
         .subscribe((bank) => {
+          if (!bank) return;
           if (bank === 'OTHERS') {
             this.voucherForm.get('checkNo')?.setValue('');
             return;
@@ -182,6 +179,10 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
             },
           });
         });
+      const voucherClone = this.voucherData.Voucher as Voucher;
+      this.voucher = voucherClone;
+      this._patchFormValues(this.voucher);
+      this.isLoading = false;
     }
 
     //Upsert Update
@@ -232,6 +233,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     this.voucherForm.patchValue({
       payee: voucher?.payee ?? '',
       bank: voucher?.bank ?? '',
+      specificBank: voucher?.specificBank ?? '',
       accountsTotal: voucher?.accountsTotal ?? '',
       checkNo: voucher?.checkNo ?? '',
       checkDate: voucher?.checkDate ?? null,
@@ -249,6 +251,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
         });
       }
     }
+    console.log(this.voucherForm);
   }
 
   private _formatResponseBody() {
