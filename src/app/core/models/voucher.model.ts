@@ -28,6 +28,7 @@ export class Voucher {
   accounts: VoucherAccount[];
   particulars: VoucherParticular[];
   bank: RegisteredBank;
+  specificBank?: string;
   status: VoucherStatus;
   payee: string;
   accountsTotal: number;
@@ -40,6 +41,7 @@ export class Voucher {
     this.signatories = model.signatories;
     this.accounts = model.accounts;
     this.bank = model.bank;
+    this.specificBank = model.specificBank;
     this.status = model.status;
     this.payee = model.payee;
     this.accountsTotal = model.accountsTotal;

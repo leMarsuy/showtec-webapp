@@ -55,6 +55,7 @@ export class VoucherDataService {
     return {
       payee: voucher.payee,
       bank: voucher.bank,
+      specificBank: voucher.specificBank,
       particulars,
       accounts,
     };
