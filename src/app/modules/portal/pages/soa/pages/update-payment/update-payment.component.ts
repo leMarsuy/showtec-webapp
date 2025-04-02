@@ -3,11 +3,15 @@ import { Component, Inject, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { PaymentMethod } from '@app/core/enums/payment-method.enum';
 import {
   PAYMENT_STATUSES,
   PaymentStatus,
 } from '@app/core/enums/payment-status.enum';
-import { REGISTERED_BANKS } from '@app/core/enums/registered-bank.enum';
+import {
+  REGISTERED_BANKS,
+  RegisteredBank,
+} from '@app/core/enums/registered-bank.enum';
 import { ConfirmationService } from '@app/shared/components/confirmation/confirmation.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { SoaApiService } from '@app/shared/services/api/soa-api/soa-api.service';
@@ -32,7 +36,7 @@ export class UpdatePaymentComponent implements OnDestroy {
     depositedDate: [null],
   });
 
-  private _destroyed = new Subject<void>();
+  private _destroyed$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -44,8 +48,12 @@ export class UpdatePaymentComponent implements OnDestroy {
   ) {
     this.transactionForm.get('status')?.setValue(this.data.status);
     this.transactionForm.get('bank')?.setValue(this.data.bank);
-    this.transactionForm.get('remarks')?.setValue(this.data.remarks);
     this.transactionForm.get('specificBank')?.setValue(this.data.specificBank);
+    this.transactionForm
+      .get('depositedDate')
+      ?.setValue(this.data.depositedDate);
+    this.transactionForm.get('remarks')?.setValue(this.data.remarks);
+
     this.onTransactionFormChange();
     this.onBankChange();
   }
@@ -53,14 +61,20 @@ export class UpdatePaymentComponent implements OnDestroy {
   onTransactionFormChange() {
     this.transactionForm
       .get('status')
-      ?.valueChanges.pipe(takeUntil(this._destroyed))
+      ?.valueChanges.pipe(takeUntil(this._destroyed$))
       .subscribe((status) => {
         var tform = this.transactionForm;
 
         switch (status) {
           case PaymentStatus.COMPLETED:
-            if (['Bank Transfer', 'Check'].includes(this.data.paymentMethod)) {
+            if (this.data.paymentMethod === PaymentMethod.CHECK) {
               tform.get('depositedDate')?.setValidators(Validators.required);
+              tform.get('bank')?.setValidators(Validators.required);
+            } else if (
+              this.data.paymentMethod === PaymentMethod.BANK_TRANSFER
+            ) {
+              tform.get('depositedDate')?.clearValidators();
+              tform.get('depositedDate')?.setValue(null);
               tform.get('bank')?.setValidators(Validators.required);
             }
             break;
@@ -83,9 +97,9 @@ export class UpdatePaymentComponent implements OnDestroy {
   onBankChange() {
     this.transactionForm
       .get('bank')
-      ?.valueChanges.pipe(takeUntil(this._destroyed))
+      ?.valueChanges.pipe(takeUntil(this._destroyed$))
       .subscribe((bank) => {
-        if (bank === 'OTHERS') {
+        if (bank === RegisteredBank.OTHERS) {
           this.transactionForm
             .get('specificBank')
             ?.setValidators(Validators.required);
@@ -93,6 +107,7 @@ export class UpdatePaymentComponent implements OnDestroy {
           this.transactionForm.get('specificBank')?.setValue('');
           this.transactionForm.get('specificBank')?.clearValidators();
         }
+        this.transactionForm.get('specificBank')?.updateValueAndValidity();
       });
   }
 
@@ -105,16 +120,22 @@ export class UpdatePaymentComponent implements OnDestroy {
       .afterClosed()
       .subscribe((res) => {
         if (res) {
+          this.sb.openLoadingSnackbar(
+            'Loading',
+            'Updating Payment Transaction...',
+          );
           var body = this.transactionForm.getRawValue();
           this.soaApi.updatePayment(this.data._id, body).subscribe({
             next: (response) => {
+              this.sb.closeLoadingSnackbar();
               this.sb.openSuccessSnackbar(
-                'PaymentUpdate',
+                'Payment Updated',
                 'Update of Payment Transaction is Successful',
               );
               this.dialogRef.close(true);
             },
             error: (err: HttpErrorResponse) => {
+              this.sb.closeLoadingSnackbar();
               this.sb.openErrorSnackbar(err.error.errorCode, err.error.message);
             },
           });
@@ -123,7 +144,7 @@ export class UpdatePaymentComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._destroyed.next();
-    this._destroyed.complete();
+    this._destroyed$.next();
+    this._destroyed$.complete();
   }
 }
