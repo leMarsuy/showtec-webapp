@@ -261,7 +261,7 @@ export class OutDeliveryListComponent {
             'Delivery has been cancelled.',
           );
           setTimeout(() => {
-            this.getOutDeliverys();
+            this.getOutDeliverys(true);
           }, 800);
         },
         error: ({ error }: HttpErrorResponse) => {
