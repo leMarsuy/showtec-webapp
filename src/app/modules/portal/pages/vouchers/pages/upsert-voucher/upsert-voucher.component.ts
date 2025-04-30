@@ -57,6 +57,7 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog,
   ) {
     this.voucherForm = this.formBuilder.group({
+      _supplierId: [''],
       payee: ['', Validators.required],
       bank: ['', Validators.required],
       specificBank: [''],
@@ -195,8 +196,9 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
     }
   }
 
-  onPayeeChange(payeeName: string) {
-    this.voucherForm.get('payee')?.setValue(payeeName);
+  onPayeeChange(payee: any) {
+    this.voucherForm.get('_supplierId')?.setValue(payee._id);
+    this.voucherForm.get('payee')?.setValue(payee.name);
   }
 
   onSubmit() {
@@ -231,13 +233,14 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
 
   private _patchFormValues(voucher: any) {
     this.voucherForm.patchValue({
+      _supplierId: voucher?._supplierId ?? null,
       payee: voucher?.payee ?? '',
       bank: voucher?.bank ?? '',
       specificBank: voucher?.specificBank ?? '',
       accountsTotal: voucher?.accountsTotal ?? '',
       checkNo: voucher?.checkNo ?? '',
       checkDate: voucher?.checkDate ?? null,
-      accounts: voucher?.accoutns ?? [],
+      accounts: voucher?.accounts ?? [],
       particulars: voucher?.particulars ?? [],
     });
 
@@ -251,7 +254,6 @@ export class UpsertVoucherComponent implements OnInit, OnDestroy {
         });
       }
     }
-    console.log(this.voucherForm);
   }
 
   private _formatResponseBody() {
