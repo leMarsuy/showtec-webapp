@@ -16,6 +16,7 @@ export class TableCellComponent {
   @Input() colIndex!: any;
   @Output() actionEmitter: EventEmitter<any> = new EventEmitter();
   @Output() updateCellEmitter: EventEmitter<any> = new EventEmitter();
+  @Output() customClicked: EventEmitter<any> = new EventEmitter<any>();
 
   utilService = inject(UtilService);
 
