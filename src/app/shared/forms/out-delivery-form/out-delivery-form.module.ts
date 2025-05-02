@@ -13,10 +13,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmationModule } from '../../components/confirmation/confirmation.module';
 import { TableModule } from '../../components/table/table.module';
+import { ChangeStatusDialogComponent } from './change-status-dialog/change-status-dialog.component';
 import { OutDeliveryFormComponent } from './out-delivery-form.component';
 
 @NgModule({
-  declarations: [OutDeliveryFormComponent],
+  declarations: [OutDeliveryFormComponent, ChangeStatusDialogComponent],
   imports: [
     CommonModule,
     MatFormFieldModule,
