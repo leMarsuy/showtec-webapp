@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { AgingType } from '@app/core/enums/aging-type.enum';
 import { TableColumn } from '@app/core/interfaces/table-column.interface';
 
@@ -12,11 +12,4 @@ export class StaticTableCellComponent {
 
   @Input() column!: TableColumn;
   @Input() element!: any;
-
-  @Output() customClicked = new EventEmitter<any>();
-
-  customClick(e: any) {
-    if (!this.column.clickable) return;
-    this.customClicked.emit(e);
-  }
 }

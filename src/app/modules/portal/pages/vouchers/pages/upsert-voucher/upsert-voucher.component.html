@@ -30,10 +30,6 @@
           </mat-form-field> -->
           <div class="w-full col-span-2">
             <app-supplier-autocomplete
-              [initialValue]="{
-                payee: voucher ? voucher.payee : null,
-                _supplierId: voucher ? voucher._supplierId : null,
-              }"
               (selectionChange)="onPayeeChange($event)"
             />
           </div>

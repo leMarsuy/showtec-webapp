@@ -13,8 +13,6 @@ export class Product {
   };
   createdAt: string;
   updatedAt: string;
-  status?: string;
-  remarks?: string;
   stocks: Stock[];
   _$stockSummary: any;
 
@@ -32,6 +30,5 @@ export class Product {
     this.updatedAt = model.updatedAt;
     this.stocks = model.stocks || [];
     this._$stockSummary = model._$stockSummary;
-    this.status = model.status || 'Active';
   }
 }

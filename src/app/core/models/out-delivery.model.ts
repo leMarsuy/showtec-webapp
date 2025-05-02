@@ -18,8 +18,6 @@ export interface OutDeliveryItems {
     model: string;
     serialNumber: string;
     classification: string;
-    status: string;
-    remarks?: string;
   };
 }
 

@@ -1,68 +1,48 @@
 <!-- <button (click)="check()">checker</button> -->
 <table mat-table [dataSource]="dataSource ?? []" class="w-full">
   @for (column of columns; track $index) {
-    <ng-container [matColumnDef]="column.label">
-      <th
-        mat-header-cell
-        *matHeaderCellDef
-        class="w-{{ column.width || 'auto' }}"
-      >
-        <div class="flex justify-{{ column.align || 'start' }}">
-          {{ column.label }}
-        </div>
-      </th>
+  <ng-container [matColumnDef]="column.label">
+    <th mat-header-cell *matHeaderCellDef class="w-{{ column.width || 'auto' }}">
+      <div class="flex justify-{{ column.align || 'start' }}">
+        {{ column.label }}
+      </div>
+    </th>
 
-      <td mat-cell *matCellDef="let element; let i = index">
-        <app-table-cell
-          [colIndex]="$index"
-          [rowIndex]="i"
-          [element]="element"
-          [column]="column"
-          (updateCellEmitter)="updateCellEmitter.emit($event)"
-          (actionEmitter)="actionEmitter.emit($event)"
-          (customClicked)="customClicked.emit($event)"
-        >
-        </app-table-cell>
-      </td>
-    </ng-container>
+    <td mat-cell *matCellDef="let element; let i = index">
+      <app-table-cell [colIndex]="$index" [rowIndex]="i" [element]="element" [column]="column"
+        (updateCellEmitter)="updateCellEmitter.emit($event)" (actionEmitter)="actionEmitter.emit($event)">
+      </app-table-cell>
+    </td>
+  </ng-container>
   }
 
   <!--  -->
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  @if (page.length >= 0) {
-    <tr
-      mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      (click)="rowEmitter.emit(row)"
-      class="hover:bg-gray-100"
-    ></tr>
+  @if(page.length >= 0) {
+  <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="rowEmitter.emit(row)" class="hover:bg-gray-100">
+  </tr>
   }
 
   <!--  -->
 </table>
-@if (page.length === 0) {
-  <div class="py-5 text-gray-500 flex justify-center gap-4">
-    <mat-icon>error</mat-icon>
-    <h1>Empty Table</h1>
+@if(page.length === 0) {
+<div class="py-5 text-gray-500 flex justify-center gap-4">
+  <mat-icon>error</mat-icon>
+  <h1>Empty Table</h1>
+</div>
+} @else if(page.length < 0) { <div class="text-center py-12 text-gray-500">
+  <mat-icon>timer</mat-icon>
+  <h1>Loading Table...</h1>
   </div>
-} @else if (page.length < 0) {
-  <div class="text-center py-12 text-gray-500">
-    <mat-icon>timer</mat-icon>
-    <h1>Loading Table...</h1>
-  </div>
-}
+  }
 
-@if (page && hasPagination) {
+  @if (page && hasPagination) {
   <!-- <mat-paginator class="py-2 border-t-2 border-gray-200" [length]="page.length" [pageSize]="page.pageSize"
     [pageIndex]="page.pageIndex" (page)="pageEmitter.emit($event)" aria-label="Select page">
   </mat-paginator> -->
 
-  <app-pagination
-    [totalItems]="page.length"
-    [itemsPerPage]="page.pageSize || 10"
-    [itemsPerPageOptions]="[5, 10, 25, 50]"
-    [currentPage]="$any(page.pageIndex || 0) + 1"
-    (paginationChange)="onPaginationChange($event)"
-  ></app-pagination>
-}
+  <app-pagination [totalItems]="page.length" [itemsPerPage]="page.pageSize || 10"
+    [itemsPerPageOptions]="[5, 10, 25, 50]" [currentPage]="$any(page.pageIndex || 0) + 1"
+    (paginationChange)="onPaginationChange($event)"></app-pagination>
+  }

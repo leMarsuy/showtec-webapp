@@ -1,11 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,7 +9,6 @@ import { PORTAL_PATHS } from '@app/core/constants/nav-paths';
 import { Color } from '@app/core/enums/color.enum';
 import { ColumnType } from '@app/core/enums/column-type.enum';
 import { CustomerType } from '@app/core/enums/customer-type.enum';
-import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { PurchaseOrderStatus } from '@app/core/enums/purchase-order.enum';
 import {
   SIGNATORY_ACTIONS,
@@ -43,7 +36,6 @@ import {
   catchError,
   debounceTime,
   distinctUntilChanged,
-  filter,
   firstValueFrom,
   map,
   Observable,
@@ -56,7 +48,6 @@ import {
 import { ConfirmationService } from '../../components/confirmation/confirmation.service';
 import { PdfViewerComponent } from '../../components/pdf-viewer/pdf-viewer.component';
 import { SnackbarService } from '../../components/snackbar/snackbar.service';
-import { ChangeStatusDialogComponent } from './change-status-dialog/change-status-dialog.component';
 
 @Component({
   selector: 'app-out-delivery-form',
@@ -144,42 +135,17 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       type: ColumnType.STRING,
     },
     {
-      label: 'Status',
-      dotNotationPath: 'status',
-      type: ColumnType.CUSTOM,
-      clickable: true,
-      display: (element: any) => {
-        const color =
-          element.status === OutDeliveryStatus.ACTIVE || !element.status
-            ? Color.SUCCESS
-            : Color.ERROR;
-        const _basecss = `w-fit px-4 border-2 border-${color}-500 text-${color}-500 bg-${color}-100 text-center rounded-xl cursor-pointer`;
-        const _hovercss = `hover:bg-${color}-200 hover:text-${color}-600 hover:border-${color}-600`;
-
-        return `
-                <div class="${_basecss + ' ' + _hovercss}">
-                  ${element.status || 'Active'}
-                </div>`;
-      },
-    },
-    {
-      label: 'Remarks',
-      dotNotationPath: 'remarks',
-      type: ColumnType.STRING,
-      valueIfEmpty: '-',
-    },
-    {
       label: 'S/N',
       dotNotationPath: 'stocks.0.serialNumber',
       type: ColumnType.STRING,
     },
-    // {
-    //   label: 'Remove',
-    //   dotNotationPath: 'stocks',
-    //   type: ColumnType.ACTION,
-    //   width: '[2rem]',
-    //   actions: [{ icon: 'remove', name: 'remove', color: Color.ERROR }],
-    // },
+    {
+      label: 'Remove',
+      dotNotationPath: 'stocks',
+      type: ColumnType.ACTION,
+      width: '[2rem]',
+      actions: [{ icon: 'remove', name: 'remove', color: Color.ERROR }],
+    },
   ];
 
   listedItemsPage: PageEvent = {
@@ -204,7 +170,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
     private snackbarService: SnackbarService,
     private confirmation: ConfirmationService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -239,34 +204,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.destroyed$),
     );
-  }
-
-  customClicked(e: any) {
-    this.dialog
-      .open(ChangeStatusDialogComponent, {
-        data: e,
-        disableClose: true,
-        autoFocus: false,
-        width: '55%',
-      })
-      .afterClosed()
-      .pipe(filter((result) => result.isConfirm))
-      .subscribe((result) => {
-        const itemIndex = this.listedItems.findIndex(
-          (item) => item._id === e._id,
-        );
-        if (itemIndex !== -1) {
-          const item = { ...this.listedItems[itemIndex] };
-          const itemStatus = item.status;
-          item.remarks = result.remarks;
-          item.status =
-            itemStatus === 'Active' || !itemStatus ? 'Removed' : 'Active';
-          this.listedItems[itemIndex] = item;
-          this.listedItems = [...this.listedItems];
-        }
-        this.cdr.detectChanges();
-        this.deliveryForm.markAsDirty();
-      });
   }
 
   usePoCheckChange() {
@@ -332,8 +269,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
           brand: item.STATIC.brand,
           model: item.STATIC.model,
           classification: item.STATIC.classification,
-          status: item.STATIC.status,
-          remarks: item.STATIC.remarks,
           stocks: [
             {
               serialNumber: item.STATIC.serialNumber,
@@ -619,6 +554,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
 
   updateOutDelivery() {
     const outdelivery = this._formatBodyRequest();
+
     this.outdeliveryApi.updateOutDeliveryById(this._id, outdelivery).subscribe({
       next: (res: any) => {
         const od = res;
@@ -630,7 +566,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
             od.STATIC.name +
             '.',
         );
-        // this.displayPDF(od);
+        this.displayPDF(od);
         this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
       },
       error: (err: HttpErrorResponse) => {
@@ -775,8 +711,6 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
           sku: item.sku,
           brand: item.brand,
           model: item.model,
-          status: item.status ? item.status : 'Active',
-          remarks: item.remarks,
           serialNumber: item.stocks[0].serialNumber,
           classification: item.classification || '-',
         },

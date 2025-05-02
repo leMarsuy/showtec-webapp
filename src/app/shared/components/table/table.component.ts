@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { PageEvent } from '@angular/material/paginator';
 import { TableColumn } from '@core/interfaces/table-column.interface';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-table',
@@ -21,7 +21,6 @@ export class TableComponent {
   @Output() pageEmitter: EventEmitter<PageEvent> = new EventEmitter();
   @Output() actionEmitter: EventEmitter<any> = new EventEmitter();
   @Output() updateCellEmitter: EventEmitter<any> = new EventEmitter();
-  @Output() customClicked: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() {}
 

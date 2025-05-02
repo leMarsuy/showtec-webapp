@@ -14,10 +14,9 @@
   <mat-autocomplete
     #auto="matAutocomplete"
     (optionSelected)="optionSelected($event.option.value)"
-    [displayWith]="displayFn"
   >
     @if (isLoading === false) {
-      @if (supplierControl.value && !supplierControl.value._id) {
+      @if (supplierControl.value) {
         <mat-option [value]="supplierControl.value">
           <p>
             Add as
@@ -30,9 +29,9 @@
           <p>No suppliers found</p>
         </mat-option>
       } @else {
-        @for (supplier of filteredSuppliers$ | async; track supplier._id) {
-          <mat-option [value]="supplier">
-            {{ supplier.name }}
+        @for (supplierName of filteredSuppliers$ | async; track supplierName) {
+          <mat-option [value]="supplierName">
+            {{ supplierName }}
           </mat-option>
         }
       }
