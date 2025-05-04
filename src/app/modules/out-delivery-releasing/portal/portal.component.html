@@ -1,4 +1,5 @@
 <main class="flex flex-col min-h-screen bg-gray-800">
+  <!-- Navbar -->
   <section class="sticky top-0 z-10 flex w-full bg-white shadow-sm">
     <div class="flex items-center grow ml-4 py-4">
       <img [src]="logoSrc" class="w-auto h-7" />
@@ -24,7 +25,13 @@
     </div>
   </section>
 
+  <!-- Portal -->
   <section class="w-full mb-4">
+    <div class="rounded-md bg-white m-4 flex items-center px-2 py-2.5 gap-2">
+      <mat-icon fontIcon="approval" />
+      <span class="">Delivery Releasing</span>
+    </div>
+
     @if (showInfo) {
       <div
         class="rounded-md mx-4 py-2.5 px-4 bg-amber-100 border border-amber-500 text-amber-700 flex items-center"
@@ -35,62 +42,54 @@
         </button>
       </div>
     }
-    @if (tabIndex === 0) {
-      <div class="rounded-md bg-white m-4 flex items-center px-2 py-2.5 gap-2">
-        <mat-icon fontIcon="approval" />
-        <span class="">Delivery Releasing</span>
-      </div>
 
-      <div class="rounded-md bg-white mx-4 mt-4 p-4 flex flex-col">
-        @if (pdfData) {
-          <div class="mb-4 flex items-center justify-between">
-            <button
-              mat-stroked-button
-              [disabled]="loading$ | async"
-              (click)="onNewQRScan()"
-            >
-              <mat-icon fontIcon="qr_code_scanner" />
-              Scan New QR
-            </button>
-          </div>
-        }
+    <div class="rounded-md bg-white mx-4 mt-4 p-4 flex flex-col">
+      @if (pdfData) {
+        <div class="mb-4 flex items-center justify-between">
+          <button
+            mat-stroked-button
+            [disabled]="loading$ | async"
+            (click)="onScannerOpen()"
+          >
+            <mat-icon fontIcon="qr_code_scanner" />
+            Scan New QR
+          </button>
+        </div>
+      }
 
-        @if (pdfData) {
-          <div class="flex h-full">
-            <ng2-pdfjs-viewer
-              [pdfSrc]="pdfData"
-              [download]="false"
-              [print]="false"
-              [openFile]="false"
-              [viewBookmark]="false"
-              class="block h-[65vh] w-full"
-            ></ng2-pdfjs-viewer>
-          </div>
-        } @else {
-          <div class="bg-gray-300 h-[55vh] flex justify-center items-center">
-            <button mat-flat-button (click)="onScannerOpen()">
-              <mat-icon fontIcon="qr_code_scanner" />
-              <span class="font-medium">Scan QR</span>
-            </button>
-          </div>
-        }
+      @if (pdfData) {
+        <div class="flex h-full">
+          <ng2-pdfjs-viewer
+            [pdfSrc]="pdfData"
+            [download]="false"
+            [print]="false"
+            [openFile]="false"
+            [viewBookmark]="false"
+            class="block h-[65vh] w-full"
+          ></ng2-pdfjs-viewer>
+        </div>
+      } @else {
+        <div class="bg-gray-300 h-[55vh] flex justify-center items-center">
+          <button mat-flat-button (click)="onScannerOpen()">
+            <mat-icon fontIcon="qr_code_scanner" />
+            <span class="font-medium">Scan QR</span>
+          </button>
+        </div>
+      }
 
-        @if (outDelivery) {
-          <div class="flex justify-end items-center mt-2.5 gap-2.5">
-            <button
-              mat-flat-button
-              [disabled]="
-                outDelivery.status !== pendingStatus || (loading$ | async)
-              "
-              (click)="onReleaseOutDelivery()"
-            >
-              Mark as Released
-            </button>
-          </div>
-        }
-      </div>
-    } @else {
-      <app-qr-scanner-dialog (qrCodeScanned)="qrCodeScanned($event)" />
-    }
+      @if (outDelivery) {
+        <div class="flex justify-end items-center mt-2.5 gap-2.5">
+          <button
+            mat-flat-button
+            [disabled]="
+              outDelivery.status !== pendingStatus || (loading$ | async)
+            "
+            (click)="onReleaseOutDelivery()"
+          >
+            Mark as Released
+          </button>
+        </div>
+      }
+    </div>
   </section>
 </main>

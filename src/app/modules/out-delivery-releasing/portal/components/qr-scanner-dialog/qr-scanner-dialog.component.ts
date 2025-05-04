@@ -2,13 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   AfterViewInit,
   Component,
-  EventEmitter,
   inject,
   OnDestroy,
   OnInit,
-  Output,
   ViewChild,
 } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
+import { OutDeliveryReleasingService } from '@app/modules/out-delivery-releasing/out-delivery-releasing.service';
 import { SnackbarService } from '@app/shared/components/snackbar/snackbar.service';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
 import {
@@ -18,7 +18,7 @@ import {
   ScannerQRCodeResult,
   ScannerQRCodeSymbolType,
 } from 'ngx-scanner-qrcode';
-import { filter } from 'rxjs';
+import { filter, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-qr-scanner-dialog',
@@ -28,13 +28,14 @@ import { filter } from 'rxjs';
 export class QrScannerDialogComponent
   implements AfterViewInit, OnInit, OnDestroy
 {
-  private outDeliveryApi = inject(OutDeliveryApiService);
-  private snackbar = inject(SnackbarService);
-  // private dialogRef = inject(MatDialogRef<QrScannerDialogComponent>);
-
-  @Output() qrCodeScanned = new EventEmitter<any>();
   @ViewChild(NgxScannerQrcodeComponent)
   scanner!: NgxScannerQrcodeComponent;
+
+  private outDeliveryApi = inject(OutDeliveryApiService);
+  private snackbar = inject(SnackbarService);
+  private outDeliveryReleasingService = inject(OutDeliveryReleasingService);
+  private dialogRef = inject(MatDialogRef<QrScannerDialogComponent>);
+  private destroyed$ = new Subject<void>();
 
   showError = false;
   errorTitle = 'This QR is not recognized by our system.';
@@ -56,7 +57,13 @@ export class QrScannerDialogComponent
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.outDeliveryReleasingService.closeScanner$
+      .pipe(filter((shouldClose) => shouldClose))
+      .subscribe(() => {
+        this.scanner?.stop();
+      });
+  }
 
   ngAfterViewInit(): void {
     this.scanner.isReady.pipe(filter((ready) => ready)).subscribe(() => {
@@ -94,8 +101,7 @@ export class QrScannerDialogComponent
 
     this.outDeliveryApi.getOutDeliveryByCode(drCode).subscribe({
       next: (outDelivery) => {
-        this.qrCodeScanned.emit(outDelivery);
-        // this.dialogRef.close(outDelivery);
+        this.dialogRef.close(outDelivery);
       },
       error: ({ error }: HttpErrorResponse) => {
         if (error.code !== 404) {
@@ -109,8 +115,7 @@ export class QrScannerDialogComponent
   }
 
   closeDialog() {
-    window.location.href = window.location.pathname;
-    // this.dialogRef.close(false);
+    this.dialogRef.close(false);
   }
 
   closeError() {
@@ -119,7 +124,8 @@ export class QrScannerDialogComponent
   }
 
   ngOnDestroy(): void {
-    this.scanner?.stop();
-    console.log('Scanner stopped');
+    this.destroyed$.next();
+    this.destroyed$.complete();
+    // this.scanner?.stop();
   }
 }

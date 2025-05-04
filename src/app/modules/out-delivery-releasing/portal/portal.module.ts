@@ -23,7 +23,6 @@ import { QrScannerDialogModule } from './components/qr-scanner-dialog/qr-scanner
     QrScannerDialogModule,
     PdfJsViewerModule,
     AsyncPipe,
-    QrScannerDialogModule,
   ],
 })
 export class PortalModule {}
