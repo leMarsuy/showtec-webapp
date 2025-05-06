@@ -34,7 +34,9 @@ export const OUT_DELIVER_CONFIG = {
       dotNotationPath: 'items',
       type: ColumnType.CUSTOM,
       display: (element: any) => {
-        const totalQuantity = element.items.length;
+        const totalQuantity = element.items.filter(
+          (item: any) => item.STATIC.status === 'Active' || !item.STATIC.status,
+        ).length;
         const itemSummary = element.itemSummary;
 
         const initialDisplay = `<p class="font-medium">${totalQuantity} ${totalQuantity > 1 ? 'items' : 'item'}</p>`;
