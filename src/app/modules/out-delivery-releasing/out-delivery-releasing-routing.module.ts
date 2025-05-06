@@ -4,7 +4,6 @@ import {
   outDeliveryReleasingAuthGuard,
   outDeliveryReleasingPortalGuard,
 } from './out-delivery-releasing.guard';
-import { OutDeliveryReleasingService } from './out-delivery-releasing.service';
 
 const routes: Routes = [
   {
@@ -16,7 +15,6 @@ const routes: Routes = [
   {
     path: 'portal',
     canActivate: [outDeliveryReleasingPortalGuard],
-    providers: [OutDeliveryReleasingService],
     loadChildren: () =>
       import('./portal/portal.module').then((m) => m.PortalModule),
   },

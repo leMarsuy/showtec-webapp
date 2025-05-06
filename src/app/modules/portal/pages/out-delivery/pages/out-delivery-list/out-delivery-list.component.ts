@@ -245,7 +245,7 @@ export class OutDeliveryListComponent {
       })
       .afterClosed()
       .pipe(
-        filter((result) => result),
+        filter((result) => result.isConfirm),
         switchMap((result) => {
           this._setLoadingState(true, 'Cancelling Delivery');
           return this.outdeliveryApi.cancelOutDeliveryById(outDeliveryId, {
@@ -261,7 +261,7 @@ export class OutDeliveryListComponent {
             'Delivery has been cancelled.',
           );
           setTimeout(() => {
-            this.getOutDeliverys();
+            this.getOutDeliverys(true);
           }, 800);
         },
         error: ({ error }: HttpErrorResponse) => {

@@ -10,6 +10,7 @@
         [dataSource]="listedItems"
         [page]="listedItemsPage"
         (actionEmitter)="actionEventItems($event)"
+        (customClicked)="customClicked($event)"
       ></app-table>
       <div class="flex gap-4" *ngIf="!isScannerDisabled">
         <mat-form-field class="w-full">

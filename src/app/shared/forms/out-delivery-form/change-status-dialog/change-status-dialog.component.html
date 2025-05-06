@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>
+  {{
+    data.status === "Active" || !data.status
+      ? "Remove this item"
+      : "Change Status to Active"
+  }}
+</h1>
+<mat-dialog-content class="p-8">
+  <p class="mt-4">
+    Are you sure you want to
+    <strong>{{
+      data.status === "Active" || !data.status
+        ? "remove this item"
+        : "change the status to Active"
+    }}</strong
+    >?
+  </p>
+
+  <!-- New Remarks Textarea -->
+  <mat-form-field class="w-full mt-4" appearance="outline">
+    <mat-label>Reason for Status Change</mat-label>
+    <textarea
+      matInput
+      [(ngModel)]="statusChangeReason"
+      rows="3"
+      placeholder="Enter reason..."
+    ></textarea>
+  </mat-form-field>
+
+  <div class="flex mt-4 items-center justify-between">
+    <button mat-button color="warn" (click)="onDialogClose()">Cancel</button>
+    <button mat-flat-button (click)="onDialogClose(true)">Confirm</button>
+  </div>
+</mat-dialog-content>

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PORTAL_PATHS, RELEASING_PATHS } from '@app/core/constants/nav-paths';
 import { OutDeliveryStatus } from '@app/core/enums/out-delivery-status.enum';
 import { OutDelivery } from '@app/core/models/out-delivery.model';
@@ -10,7 +10,6 @@ import { SnackbarService } from '@app/shared/components/snackbar/snackbar.servic
 import { AuthService } from '@app/shared/services/api';
 import { OutDeliveryApiService } from '@app/shared/services/api/out-delivery-api/out-delivery-api.service';
 import { BehaviorSubject, filter, switchMap } from 'rxjs';
-import { QrScannerDialogComponent } from './components/qr-scanner-dialog/qr-scanner-dialog.component';
 
 @Component({
   selector: 'app-portal',
@@ -24,6 +23,7 @@ export class PortalComponent {
   private snackbar = inject(SnackbarService);
   private confirmation = inject(ConfirmationService);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
   readonly logoSrc = 'images/logo.png';
 
@@ -36,6 +36,18 @@ export class PortalComponent {
 
   outDelivery: OutDelivery | null = null;
   pdfData!: any;
+
+  tabIndex = 0;
+
+  constructor() {
+    this.activatedRoute.queryParams.subscribe((params) => {
+      if (params['tab'] === '1') {
+        this.tabIndex = 1;
+      } else {
+        this.tabIndex = 0;
+      }
+    });
+  }
 
   onLogout() {
     this.authServiceApi.logout().subscribe({
@@ -58,26 +70,43 @@ export class PortalComponent {
   }
 
   onScannerOpen() {
-    const scannerDialog = this.dialog.open(QrScannerDialogComponent, {
-      panelClass: ['fullscreen-dialog', 'not-rounded-dialog'],
-      autoFocus: false,
-      disableClose: true,
-    });
+    this.tabIndex = 1;
+    // const scannerDialog = this.dialog.open(QrScannerDialogComponent, {
+    //   panelClass: ['fullscreen-dialog', 'not-rounded-dialog'],
+    //   autoFocus: false,
+    //   disableClose: true,
+    // });
 
-    scannerDialog
-      .afterClosed()
-      .pipe(
-        filter((dialogResponse) => dialogResponse),
-        switchMap((outDelivery: OutDelivery) => {
-          this.outDelivery = outDelivery;
-          this._showSnackbarInfoByOutDeliveryStatus(outDelivery);
+    // scannerDialog
+    //   .afterClosed()
+    //   .pipe(
+    //     filter((dialogResponse) => dialogResponse),
+    //     switchMap((outDelivery: OutDelivery) => {
+    //       this.outDelivery = outDelivery;
+    //       this._showSnackbarInfoByOutDeliveryStatus(outDelivery);
 
-          return this.outDeliveryApi.getPdfOutDelivery(outDelivery._id ?? '');
-        }),
-      )
-      .subscribe((response: { blob: Blob; filename: string }) => {
+    //       return this.outDeliveryApi.getPdfOutDelivery(outDelivery._id ?? '');
+    //     }),
+    //   )
+    //   .subscribe((response: { blob: Blob; filename: string }) => {
+    //     this.pdfData = URL.createObjectURL(response.blob);
+    //   });
+  }
+
+  qrCodeScanned(outDelivery: OutDelivery) {
+    this.outDelivery = outDelivery;
+    this._showSnackbarInfoByOutDeliveryStatus(outDelivery);
+
+    this.outDeliveryApi.getPdfOutDelivery(outDelivery._id ?? '').subscribe({
+      next: (response: { blob: Blob; filename: string }) => {
         this.pdfData = URL.createObjectURL(response.blob);
-      });
+        this.tabIndex = 0;
+      },
+    });
+  }
+
+  onNewQRScan() {
+    window.location.href = window.location.pathname + '?tab=1';
   }
 
   onReleaseOutDelivery() {
