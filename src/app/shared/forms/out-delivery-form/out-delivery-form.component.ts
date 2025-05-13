@@ -630,7 +630,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
             od.STATIC.name +
             '.',
         );
-        // this.displayPDF(od);
+        this.displayPDF(od);
         this.router.navigate([PORTAL_PATHS.deliveryReceipts.relativeUrl]);
       },
       error: (err: HttpErrorResponse) => {
