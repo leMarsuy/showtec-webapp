@@ -253,7 +253,7 @@ export class OutDeliveryFormComponent implements OnInit, OnDestroy {
       .pipe(filter((result) => result.isConfirm))
       .subscribe((result) => {
         const itemIndex = this.listedItems.findIndex(
-          (item) => item._id === e._id,
+          (item) => item.stocks[0]._id === e.stocks[0]._id,
         );
         if (itemIndex !== -1) {
           const item = { ...this.listedItems[itemIndex] };
