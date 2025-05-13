@@ -111,12 +111,12 @@ export const OUT_DELIVER_CONFIG = {
       type: ColumnType.ACTION,
       align: Alignment.CENTER,
       actions: [
-        // {
-        //   name: 'Print Delivery',
-        //   icon: 'print',
-        //   action: 'print',
-        //   color: Color.DEAD,
-        // },
+        {
+          name: 'Print Delivery',
+          icon: 'print',
+          action: 'print',
+          color: Color.DEAD,
+        },
         {
           name: 'Edit Delivery',
           icon: 'edit',
