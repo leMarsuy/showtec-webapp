@@ -31,6 +31,7 @@ export class Voucher {
   specificBank?: string;
   status: VoucherStatus;
   payee: string;
+  _supplierId?: string;
   accountsTotal: number;
   checkDate: string;
   checkNo: string;
@@ -48,5 +49,6 @@ export class Voucher {
     this.particulars = model.particulars;
     this.checkDate = model.checkDate;
     this.checkNo = model.checkNo;
+    this._supplierId = model._supplierId;
   }
 }

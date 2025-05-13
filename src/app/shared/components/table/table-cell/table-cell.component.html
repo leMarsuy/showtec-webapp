@@ -1,34 +1,51 @@
-<div class="flex justify-{{ column.align || 'start' }}" *ngIf="!element['__editOn' + rowIndex + '_' + colIndex]"
+<div
+  class="flex justify-{{ column.align || 'start' }}"
+  *ngIf="!element['__editOn' + rowIndex + '_' + colIndex]"
   (click)="
     element['__editOn' + rowIndex + '_' + colIndex] = true && column.editable
-  ">
-  <app-static-table-cell [column]="column" [element]="element"></app-static-table-cell>
+  "
+>
+  <app-static-table-cell
+    [column]="column"
+    [element]="element"
+    (customClicked)="customClicked.emit($event)"
+  ></app-static-table-cell>
 </div>
 
 <div class="flex gap-2" *ngIf="element['__editOn' + rowIndex + '_' + colIndex]">
-  <app-editable-table-cell [column]="column" [element]="element" [rowIndex]="rowIndex" [colIndex]="colIndex"
-    (updateCellEmitter)="updateCellEvent($event)"></app-editable-table-cell>
+  <app-editable-table-cell
+    [column]="column"
+    [element]="element"
+    [rowIndex]="rowIndex"
+    [colIndex]="colIndex"
+    (updateCellEmitter)="updateCellEvent($event)"
+  ></app-editable-table-cell>
 </div>
 
-@if (column.type == 'action') {
-<!--  -->
-<div class="flex justify-center text-center">
-  @for (action of column.actions; track action) {
-  @if (action.showIfCondition ? utilService.object.showIf(element, action.showIfCondition) : true) {
-  <button [matTooltip]="action.name" mat-icon-button (click)="actionEmitter.emit({action, element, i:rowIndex})">
-    <mat-icon class="text-{{ action.color }}-500 cursor-pointer">
-      {{ action.icon }}
-    </mat-icon>
-  </button>
-  }
-  }
-</div>
-
-} @else if (column.type == 'status') {
-
-<!--  -->
-<div [class]="_cssStatus(element, column)">
-  {{ column.dotNotationPath | deepFind : element }}
-</div>
-
+@if (column.type == "action") {
+  <!--  -->
+  <div class="flex justify-center text-center">
+    @for (action of column.actions; track action) {
+      @if (
+        action.showIfCondition
+          ? utilService.object.showIf(element, action.showIfCondition)
+          : true
+      ) {
+        <button
+          [matTooltip]="action.name"
+          mat-icon-button
+          (click)="actionEmitter.emit({ action, element, i: rowIndex })"
+        >
+          <mat-icon class="text-{{ action.color }}-500 cursor-pointer">
+            {{ action.icon }}
+          </mat-icon>
+        </button>
+      }
+    }
+  </div>
+} @else if (column.type == "status") {
+  <!--  -->
+  <div [class]="_cssStatus(element, column)">
+    {{ column.dotNotationPath | deepFind: element }}
+  </div>
 }
